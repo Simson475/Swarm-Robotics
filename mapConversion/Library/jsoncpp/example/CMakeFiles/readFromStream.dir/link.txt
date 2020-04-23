@@ -1,0 +1,1 @@
+/usr/bin/clang++  -g -fno-omit-frame-pointer   -rdynamic CMakeFiles/readFromStream.dir/readFromStream/readFromStream.cpp.o  -o ../../../bin/readFromStream ../../libjsoncpp.a 

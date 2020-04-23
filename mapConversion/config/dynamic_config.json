@@ -1,0 +1,8 @@
+{
+    "next_station": 2,
+    "next_waypoint": 10,
+    "robot_info_map": {},
+    "station_eta": 10,
+    "stations_to_visit": [2,1,3,0],
+    "visited_waypoints": []
+}

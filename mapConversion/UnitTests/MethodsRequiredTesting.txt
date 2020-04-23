@@ -1,0 +1,24 @@
+map_elements:
+    Line class:
+        bool ContainsPoint(Point point, double SELECTION_FUZZINESS);                                                    HIGH
+        bool pointBelongsToLine(Point& p);                                                                              HIGH
+    Figure class:
+        void convexHull();                                                                                              HIGH(Very complex)
+        void findAvrgCenter(std::vector<Point>& hull);                                                                  LOW
+        void connectLines();                                                                                            LOW
+        std::pair<Point, Point> moveLine(Point p1, Point p2, float d);                                                  MEDIUM
+        shared_ptr<Point> findIntersection(std::pair<Point, Point>& pair1, std::pair<Point, Point>& pair2);             MEDIUM
+        bool isInside(Point p);                                                                                         LOW
+
+map_structure:
+    vector<vector<float>> floydShortest(int amountOfStations);                                                          LOW
+    void setAllPossibleLines();                                                                                         HIGH(Very complex)
+    void eliminateBadLines(std::vector<weak_ptr<Line>>& hardLines, vector<Line>& lines);                                MEDIUM
+
+stratego:
+    all methods                                                                                                         LOW
+
+Main:
+    std::string readFromFile(std::string fileName, int &width, int &height);                                            LOW
+    void harvestData(std::vector<std::vector<pair<int, bool>>> &result, std::string data, int width, int height);       HIGH
+    std::vector<Figure> extractFigures(std::vector<std::vector<pair<int, bool>>> &data);                                HIGH
