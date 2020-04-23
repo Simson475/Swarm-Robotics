@@ -1,0 +1,16 @@
+/.vscode
+/extra/.vscode
+/mapConversion/.vscode
+/simulation/build/
+/simulation/vscode/
+/simulation/.vscode/ipch/
+/simulation/visualGraph/build/
+/simulation/visualGraph/test/build/
+/extra/build/
+/extra/experiment/scene*/fb*
+/extra/experiment/scene*/jobs.json
+/extra/testing/build/
+/mapConversion/build/
+/mapConversion/Plotting/
+/mapConversion/UnitTests/build/
+
