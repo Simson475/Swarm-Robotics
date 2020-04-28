@@ -13,5 +13,6 @@
 /mapConversion/build/
 /mapConversion/Plotting/
 /mapConversion/UnitTests/build/
-
+/config/waypoint_strategy.json
+/config/station_strategy.json
 **/.idea/*

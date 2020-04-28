@@ -1,17 +1,17 @@
 #ifndef MAP_STRUCTURE
 #define MAP_STRUCTURE
 #include "json.hpp"
-#include "map_elements.h"
+#include "Models/Figure.hpp"
 
 using namespace std;
 
 class Map_Structure {
 public:
   std::vector<std::shared_ptr<Point>> stations;
-  std::vector<std::weak_ptr<Point>> points;
+  std::vector<std::shared_ptr<Point>> points;
   std::vector<Line> lines;
   std::vector<std::shared_ptr<Figure>> figures;
-  std::vector<std::weak_ptr<Line>> hardLines;
+  std::vector<std::shared_ptr<Line>> hardLines;
   //ID's of all stations
   std::vector<int> stationIDs;
   //ID's of all drop points aka end stations
@@ -40,7 +40,7 @@ public:
   void setAllPossibleLines();
 
   // Functions eliminates all theStaticMap::lines which have intersection
-  void eliminateBadLines(std::vector<weak_ptr<Line>>& hardLines, vector<Line>& lines);
+  void eliminateBadLines(std::vector<shared_ptr<Line>>& hardLines, vector<Line>& lines);
 
   //function which return shortest path between two points
   std::vector<Point> findPath(int startId, int destinationId);
@@ -50,6 +50,9 @@ public:
 
   //Assistant function for floyd shortest path
   vector<vector<float>> createCopyList();
+
+  //sorts all the lines in order
+  void sortLines();
 
 private:
   Map_Structure() {}

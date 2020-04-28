@@ -1,176 +1,4 @@
-#include "map_elements.h"
-
-unsigned int Point::id_counter = 0;
-Point::Point(float x, float y, float z, Type type, std::string name,
-             shared_ptr<Figure> fig) {
-
-  id = -1;
-
-  this->pType = type;
-  this->name = name;
-  this->x = x;
-  this->y = y;
-  this->z = z;
-  this->fig = fig;
-}
-Point::Point() {
-  id = -1;
-  this->pType = via;
-  x, y, z = 0;
-}
-Point::Point(Point &&p)
-    : name(std::move(p.name)), id(std::move(p.id)), adjIDs(std::move(p.adjIDs)),
-      pType(std::move(p.pType)) {}
-Point::Point(const Point &obj) {
-  pType = obj.pType;
-  id = obj.id;
-  name = obj.name;
-  adjIDs = obj.adjIDs;
-  x = obj.x;
-  y = obj.y;
-  z = obj.z;
-  fig = obj.fig;
-}
-Point &Point::operator=(const Point &obj) {
-  pType = obj.pType;
-  id = obj.id;
-  name = obj.name;
-  adjIDs = obj.adjIDs;
-  x = obj.x;
-  y = obj.y;
-  z = obj.z;
-  fig = obj.fig;
-  return *this;
-}
-void Point::setAdjIDs(std::vector<int> adjID) {
-  for (auto i = 0; i < adjID.size(); i++) {
-
-    adjIDs.push_back(adjID[i]);
-  }
-}
-void Point::pushAdjID(int adjID) { adjIDs.push_back(adjID); }
-void Point::resetIdCount() { id_counter = 0; }
-
-Line::Line(std::weak_ptr<Point> a, std::weak_ptr<Point> b) {
-  this->a = a;
-  this->b = b;
-  // distance between two points
-  float flatX = pow((b.lock()->getX() - a.lock()->getX()), 2);
-  float flatY = pow((b.lock()->getY() - a.lock()->getY()), 2);
-  this->distance = std::sqrt(flatX + flatY);
-
-  time = (distance * 100) / VELOCITY;
-}
-void Line::setFailureline() {
-  if (a.lock()->getId() != b.lock()->getId()) {
-    this->distance = -1;
-    this->time = -1;
-  } else
-    this->distance = 0;
-}
-float Line::getFloydTime() {
-  if (time != -1)
-    return time;
-  else
-    return INF;
-}
-void Line::SetDistance(float newDis) {
-  if (a.lock()->getId() != b.lock()->getId()) {
-    distance = newDis;
-  }
-}
-void Line::setTime(double time) {
-  if (a.lock()->getId() != b.lock()->getId()) {
-    time = time;
-  }
-}
-float Line::GetFloydDistance() {
-  if (distance != -1)
-    return distance;
-  else
-    return INF;
-}
-// First = Slope, Second = Y-Intercept
-std::pair<float, float> findLineFunction(Point p1, Point p2) {
-  float m; // slope of the line
-  if (p2.getX() != p1.getX()) {
-    m = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
-  } else {
-    return make_pair(-99999, -99999);
-  }
-  float b; // the y-intercept
-  b = p2.getY() - m * p2.getX();
-  return make_pair(m, b);
-}
-// const double SELECTION_FUZZINESS = 7  ;
-
-bool Line::ContainsPoint(Point point, double SELECTION_FUZZINESS) {
-
-  // LineGeometry lineGeo = geometry as LineGeometry;
-  Point leftPoint;
-  Point rightPoint;
-
-  // Normalize start/end to left right to make the offset calc simpler.
-  if (a.lock()->getX() <= b.lock()->getX()) {
-    leftPoint = *a.lock();
-    rightPoint = *b.lock();
-  } else {
-    leftPoint = *b.lock();
-    rightPoint = *a.lock();
-  }
-  if (point.getX() < leftPoint.getX() || point.getX() > rightPoint.getX())
-    return false;
-
-  float min_Y = min(a.lock()->getY(), b.lock()->getY());
-  float max_Y = max(a.lock()->getY(), b.lock()->getY());
-  if (point.getY() < min_Y || point.getY() > max_Y)
-    return false;
-
-  // return false;
-  // If point is out of bounds, no need to do further checks.
-  if (point.getX() + SELECTION_FUZZINESS < leftPoint.getX() ||
-      rightPoint.getX() < point.getX() - SELECTION_FUZZINESS)
-    return false;
-  else if (point.getY() + SELECTION_FUZZINESS <
-               std::min(leftPoint.getY(), rightPoint.getY()) ||
-           std::max(leftPoint.getY(), rightPoint.getY()) <
-               point.getY() - SELECTION_FUZZINESS)
-    return false;
-
-  double deltaX = rightPoint.getX() - leftPoint.getX();
-  double deltaY = rightPoint.getY() - leftPoint.getY();
-
-  // If the line is straight, the earlier boundary check is enough to determine
-  // that the point is on the line. Also prevents division by zero exceptions.
-  if (deltaX == 0 || deltaY == 0)
-    return true;
-
-  double slope = deltaY / deltaX;
-  double offseto = leftPoint.getY() - leftPoint.getX() * slope;
-  double calculatedY = point.getX() * slope + offseto;
-  // Check calculated Y matches the points Y coord with some easing.
-  bool lineContains = point.getY() - SELECTION_FUZZINESS <= calculatedY &&
-                      calculatedY <= point.getY() + SELECTION_FUZZINESS;
-
-  return lineContains;
-}
-bool Line::pointBelongsToLine(Point &p) {
-
-  std::pair<float, float> lineFunc = findLineFunction(*a.lock(), *b.lock());
-  float x, y;
-  if (lineFunc.first != -99999) {
-    float decider = (lineFunc.first * p.getX() + lineFunc.second) - p.getY();
-    if (decider == 0) {
-      return true;
-    } else
-      return false;
-  } else {
-    if (p.getX() == a.lock()->getX() || p.getY() == a.lock()->getY()) {
-      return true;
-    } else
-      return false;
-  }
-}
+#include "Figure.hpp"
 
 // To find orientation of ordered triplet (p, q, r).
 // The function returns following values
@@ -233,7 +61,7 @@ void Figure::findAvrgCenter(std::vector<Point> &hull) {
   }
   avrg_X = avrg_X / hull.size();
   avrg_Y = avrg_Y / hull.size();
-  shared_ptr<Point> savrgCenter = shared_ptr<Point>(
+  std::shared_ptr<Point> savrgCenter = std::shared_ptr<Point>(
       new Point(avrg_X, avrg_Y, 0, Type::center, "", shared_from_this()));
   avrgCenter.reset(
       new Point(avrg_X, avrg_Y, 0, Type::center, "", shared_from_this()));
@@ -256,31 +84,43 @@ void Figure::cleanUp(std::vector<Point> &hull) {
     hull.erase(std::begin(hull) + idToDelete[i]);
   }
 }
-shared_ptr<Point> Figure::findIntersection(std::pair<Point, Point> &pair1,
+// First = Slope, Second = Y-Intercept
+std::pair<float, float> findsLineFunction(Point p1, Point p2) {
+  float m; // slope of the line
+  if (p2.getX() != p1.getX()) {
+    m = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
+  } else {
+    return std::make_pair(-99999, -99999);
+  }
+  float b; // the y-intercept
+  b = p2.getY() - m * p2.getX();
+  return std::make_pair(m, b);
+}
+std::shared_ptr<Point> Figure::findIntersection(std::pair<Point, Point> &pair1,
                                            std::pair<Point, Point> &pair2) {
-  std::pair<float, float> func1 = findLineFunction(pair1.first, pair1.second);
-  std::pair<float, float> func2 = findLineFunction(pair2.first, pair2.second);
+  std::pair<float, float> func1 = findsLineFunction(pair1.first, pair1.second);
+  std::pair<float, float> func2 = findsLineFunction(pair2.first, pair2.second);
   float x, y;
   if (func1.first == -99999) {
     x = pair1.first.getX();
     y = func2.first * x + func2.second;
-    shared_ptr<Point> p = shared_ptr<Point>(new Point(
-        x, y, 0, Type::via, "", shared_ptr<Figure>(shared_from_this())));
+    std::shared_ptr<Point> p = std::shared_ptr<Point>(new Point(
+        x, y, 0, Type::via, "", std::shared_ptr<Figure>(shared_from_this())));
     p->incrementId();
     return p;
   }
   if (func2.first == -99999) {
     x = pair2.first.getX();
     y = func1.first * x + func1.second;
-    shared_ptr<Point> p = shared_ptr<Point>(new Point(
-        x, y, 0, Type::via, "", shared_ptr<Figure>(shared_from_this())));
+    std::shared_ptr<Point> p = std::shared_ptr<Point>(new Point(
+        x, y, 0, Type::via, "", std::shared_ptr<Figure>(shared_from_this())));
     p->incrementId();
     return p;
   }
   x = (func2.second - func1.second) / (func1.first - func2.first);
   y = func1.first * x + func1.second;
-  shared_ptr<Point> p = shared_ptr<Point>(new Point(
-      x, y, 0, Type::via, "", shared_ptr<Figure>(shared_from_this())));
+  std::shared_ptr<Point> p = std::shared_ptr<Point>(new Point(
+      x, y, 0, Type::via, "", std::shared_ptr<Figure>(shared_from_this())));
   p->incrementId();
   return p;
 }
@@ -288,6 +128,7 @@ bool isLeft(Point &a, Point &b, std::shared_ptr<Point> &c) {
   return ((b.getX() - a.getX()) * (c->getY() - a.getY()) -
           (b.getY() - a.getY()) * (c->getX() - a.getX())) > 0;
 }
+
 void Figure::convexHull() {
   int n = points.size();
   // There must be at least 3 points
@@ -330,14 +171,14 @@ void Figure::convexHull() {
   findAvrgCenter(hull);
   cleanConvex(hull);
   cleanUp(hull);
-  ofstream myfile;
-  myfile.open("../Plotting/plot.dat", std::ios_base::app);
+  std::ofstream myfile;
+  myfile.open("../Plotting/figures.dat", std::ios_base::app);
   for (auto &point : points) {
     myfile << point.getY() << " " << point.getX() << std::endl;
   }
   myfile.close();
 
-  std::vector<pair<Point, Point>> pairPoints;
+  std::vector<std::pair<Point, Point>> pairPoints;
   for (int i = 0; i < hull.size(); i++) {
     Point p1 = hull[i]; // create copies of point for each line
     Point p2;
@@ -345,7 +186,7 @@ void Figure::convexHull() {
       p2 = hull[i + 1];
     } else
       p2 = hull[0];
-    pair<Point, Point> pairPt;
+    std::pair<Point, Point> pairPt;
     if (isLeft(p1, p2, avrgCenter)) {
       pairPt = moveLine(p1, p2, offset * -1);
     } else
@@ -363,8 +204,8 @@ void Figure::convexHull() {
   }
   connectLines();
 
-  ofstream myfile2;
-  myfile2.open("../Plotting/plot2.dat", std::ios_base::app);
+  std::ofstream myfile2;
+  myfile2.open("../Plotting/offset.dat", std::ios_base::app);
   for (auto &pts : offsetPoints) {
     myfile2 << pts->getY() << " " << pts->getX() << "\n";
   }
@@ -379,26 +220,26 @@ std::pair<Point, Point> Figure::moveLine(Point p1, Point p2, float d) {
                    shared_from_this());
   Point p4 = Point(p2.getX() + delta_X, p2.getY() + delta_Y, 0, Type::via, "",
                    shared_from_this());
-  return make_pair(p3, p4);
+  return std::make_pair(p3, p4);
 }
 void Figure::connectLines() {
   for (int i = 0; i < offsetPoints.size(); i++) {
     if (i != offsetPoints.size() - 1)
       offSetLines.push_back(
-          shared_ptr<Line>(new Line(offsetPoints[i], offsetPoints[i + 1])));
+          std::shared_ptr<Line>(new Line(offsetPoints[i], offsetPoints[i + 1])));
     else
       offSetLines.push_back(
-          shared_ptr<Line>(new Line(offsetPoints[i], offsetPoints[0])));
+          std::shared_ptr<Line>(new Line(offsetPoints[i], offsetPoints[0])));
   }
 }
 
 // Given three colinear points p, q, r, the function checks if
 // point q lies on line segment 'pr'
 bool onSegment(Point &p, Point &q, Point &r) {
-  if (q.getX() <= max(p.getX(), r.getX()) &&
-      q.getX() >= min(p.getX(), r.getX()) &&
-      q.getY() <= max(p.getY(), r.getY()) &&
-      q.getY() >= min(p.getY(), r.getY()))
+  if (q.getX() <= std::max(p.getX(), r.getX()) &&
+      q.getX() >= std::min(p.getX(), r.getX()) &&
+      q.getY() <= std::max(p.getY(), r.getY()) &&
+      q.getY() >= std::min(p.getY(), r.getY()))
     return true;
   return false;
 }

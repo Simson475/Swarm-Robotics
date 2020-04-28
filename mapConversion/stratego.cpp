@@ -1,28 +1,28 @@
 #include "stratego.h"
 #include "map_structure.h"
 
-bool contains(int id, std::vector<weak_ptr<Point>> points) {
+bool contains(int id, std::vector<shared_ptr<Point>> points) {
   for (auto &point : points) {
-    if (point.lock()->getId() == id)
+    if (point->getId() == id)
       return true;
   }
   return false;
 }
 
-std::string setRemainingStations(std::vector<SimulationExpression> &stationPath,
-                                 std::vector<weak_ptr<Point>> vias, int run) {
-  std::vector<weak_ptr<Point>> remaining;
+std::string extractCoordinates(std::vector<SimulationExpression> &stationPath,
+                                 std::vector<shared_ptr<Point>>& vias, int run) {
+  std::vector<shared_ptr<Point>> remaining;
   std::string points = "";
   for (auto i = 0; i < stationPath[run].runs[0].values.size(); i++) {
     for (auto j = 0; j < vias.size(); j++) {
-      if (vias[j].lock()->getId() == stationPath[run].runs[0].values[i].value) {
+      if (vias[j]->getId() == stationPath[run].runs[0].values[i].value) {
         if (stationPath[run].runs[0].values[i].time == 0 &&
                 stationPath[run].runs[0].values[i].value == 0 ||
             stationPath[run].runs[0].values[i].value == -1) {
-        } else if (!contains(vias[j].lock()->getId(), remaining)) {
+        } else if (!contains(vias[j]->getId(), remaining)) {
           remaining.push_back(vias[j]);
-          points = points + "(" + std::to_string(int(vias[j].lock()->getX())) +
-                   ";" + std::to_string(int(vias[j].lock()->getY())) + ") ";
+          points = points + "(" + std::to_string(int(vias[j]->getX())) +
+                   ";" + std::to_string(int(vias[j]->getY())) + ") ";
         }
       }
     }
@@ -30,89 +30,51 @@ std::string setRemainingStations(std::vector<SimulationExpression> &stationPath,
   return points;
 }
 
-// What does the boolean value `stations` mean intuitively?
-std::string stratego::getSingleTrace(bool stations) {
-  // The name `result` is a very generic one.
-  // Is the result a map? A return string after simulation?
-  // Unless I go to check the code itself for `createModel(..)`, I have no idea of its meaning.
-  std::string result = createModel(stations);
+std::string stratego::getSingleTrace(queryType type, std::string path) {
+  std::string uppaalFormulaResults = createModel(type, path);
 
-  // Is SimulationExpression a SimulationResult?
-  std::vector<SimulationExpression> parsed = parseStr(result, ACTION);
-  nlohmann::json mainObj;
-  std::string singleTrace = "";
-
-  for (int i = 0; i < parsed.size(); i++) {
-    // Checks for XX condition as we need to exit on that.
-    if (!(parsed[i].name[0] >= 65 && parsed[i].name[0] <= 90) ||
-        (parsed[i].name[0] >= 97 && parsed[i].name[0] <= 122)) {
-      break;
-    }
-
-    // We have several JSON object in the code, but what does the
-    // JSON object represent? The names jsonObj and subObj does not
-    // contain useful information in that regard. It tells me the
-    // data type of some implementation, but it does not help in an
-    // intuitive understanding.
-    nlohmann::json jsonObj;
-    jsonObj["name"] = parsed[i].name;
-    std::vector<nlohmann::json> subObjs;
-
-    for (int j = 0; j < parsed[i].runs.size(); j++) {
-      nlohmann::json subObj;
-      subObj["number"] = parsed[i].runs[j].number;
-      std::vector<nlohmann::json> subSubObjs;
-
-      for (int k = 0; k < parsed[i].runs[j].values.size(); k++) {
-        nlohmann::json subSubObj;
-        subSubObj["time"] = parsed[i].runs[j].values[k].time;
-        subSubObj["value"] = parsed[i].runs[j].values[k].value;
-        subSubObjs.push_back(subSubObj);
-      }
-
-      subObj["values"] = subSubObjs;
-      subObjs.push_back(subObj);
-    }
-
-    jsonObj["run"] = subObjs;
-    mainObj.push_back(jsonObj);
+  //Stores each trace of result in std::vector<SimulationExpression> parsed
+  //such as:: Robot.initial_station
+  //Robot.converted_cur()
+  //Robot.converted_dest()
+  std::vector<SimulationExpression> parsed;
+  try{
+     parsed = parseStr(uppaalFormulaResults, ACTION);
   }
-
-  // The code below might benefit by being put into a helper function
-  // that has a good descriptive name.
+  catch(const char* msg){
+    throw msg;
+  }
   Map_Structure &sMap = Map_Structure::get_instance();
-
-  if (stations) {
-    // Why use weak_ptr<>? Especially when to do not check the result of `lock()`?
-    std::vector<weak_ptr<Point>> container;
-
-    for (auto & : sMap.stations)
-      container.push_back(p);
-    return setRemainingStations(parsed, container, 2);
-  } else
-    return setRemainingStations(parsed, sMap.points, 1);
+  if (type == queryType::stations)
+    // Run 2 is used for stations to extract data
+    return extractCoordinates(parsed, sMap.stations, 2);
+  else
+    // Run 1 is used for waypoints to extract data
+    return extractCoordinates(parsed, sMap.points, 1);
 }
 
-std::string stratego::createModel(bool stations) {
+std::string stratego::createModel(queryType type, std::string path) {
   std::string terminalCommand = LIBRARY_PATH;
-  if (stations) {
-    terminalCommand += " && cd ../config/ && " + UPPAAL_PATH + " " +
+  if (type == queryType::stations) {
+    terminalCommand += " && cd ../config/ && " + path + VERIFYTA + " " +
                        STATION_MODEL_PATH + " " + STATION_QUERY_PATH;
   } else {
-    terminalCommand += " && cd ../config/ && " + UPPAAL_PATH + " " +
+    terminalCommand += " && cd ../config/ && " + path + VERIFYTA + " " +
                        WAYPOINT_MODEL_PATH + " " + WAYPOINT_QUERY_PATH;
     createWaypointQ();
   }
+  
   std::string result;
   FILE *stream;
   const int max_buffer = 256;
   char buffer[max_buffer];
   stream = popen(terminalCommand.c_str(), "r");
   if (stream) {
-    while (!feof(stream))
-      if (fgets(buffer, max_buffer, stream) != NULL)
+    while (!feof(stream)){
+      if (fgets(buffer, max_buffer, stream) != NULL){
         result.append(buffer);
-    pclose(stream);
+      }
+    }
   }
   return result;
 }
@@ -125,8 +87,12 @@ std::vector<SimulationExpression> stratego::parseStr(std::string result,
       "Verifying formula " +
       std::to_string(formula_number +
                      1)); // Equal to std::string::npos if not found.
-
   std::string formula;
+  if(startIndex == std::string::npos){
+    
+    throw "Failed interecting with Uppaal, check Uppaal path";
+
+  }
   if (stopIndex == std::string::npos) {
     formula = result.substr(startIndex);
   } else {
@@ -151,7 +117,6 @@ std::vector<SimulationExpression> stratego::parseStr(std::string result,
       break;
     }
   }
-
   return values;
 }
 class SimulationParseException : public std::exception {
@@ -227,7 +192,7 @@ std::string stratego::GetStdoutFromCommand(std::string cmd) {
 void fetchData(std::vector<int> &result, std::string from, nlohmann::json &j) {
   auto &array = j.at(from);
   for (auto &&val : array) {
-    result.push_back(atoi(val.dump().c_str()));
+    result.push_back(stoi(val.dump().c_str()));
   }
 }
 std::vector<int> getAllWaypoints() {
@@ -238,7 +203,8 @@ std::vector<int> getAllWaypoints() {
     fetchData(result, "end_stations", j);
     fetchData(result, "stations", j);
     fetchData(result, "vias", j);
-  } catch (std::exception e) {
+  } catch(...){
+    throw "Static analyzes does not contain end_stations or vias or stations";
   }
   return result;
 }
@@ -253,7 +219,7 @@ std::vector<int> getEveryRobotID() {
       int k = 0;
       auto obj = uuid.get<nlohmann::json::object_t>();
       for (auto &id : obj)
-        result.push_back(atoi(id.first.c_str()));
+        result.push_back(stoi(id.first.c_str()));
     }
   } catch (std::exception e) {
   }
