@@ -13,16 +13,14 @@ std::string extractCoordinates(std::vector<SimulationExpression> &stationPath,
                                  std::vector<shared_ptr<Point>>& vias, int run) {
   std::vector<shared_ptr<Point>> remaining;
   std::string points = "";
-  for (auto i = 0; i < stationPath[run].runs[0].values.size(); i++) {
-    for (auto j = 0; j < vias.size(); j++) {
-      if (vias[j]->getId() == stationPath[run].runs[0].values[i].value) {
-        if (stationPath[run].runs[0].values[i].time == 0 &&
-                stationPath[run].runs[0].values[i].value == 0 ||
-            stationPath[run].runs[0].values[i].value == -1) {
-        } else if (!contains(vias[j]->getId(), remaining)) {
-          remaining.push_back(vias[j]);
-          points = points + "(" + std::to_string(int(vias[j]->getX())) +
-                   ";" + std::to_string(int(vias[j]->getY())) + ") ";
+  for (auto &value: stationPath[run].runs[0].values) {
+    for (auto &via: vias) {
+      if (via->getId() == value.value) {
+        if (value.time == 0 && value.value == 0 || value.value == -1) {
+        } else if (!contains(via->getId(), remaining)) {
+          remaining.push_back(via);
+          points += "(" + std::to_string(int(via->getX())) +
+                    ";" + std::to_string(int(via->getY())) + ") ";
         }
       }
     }
