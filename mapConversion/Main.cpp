@@ -11,7 +11,7 @@
 #define THRESHOLD_OF_HARD_POINT 68
 #define DEFAULT_MAP_PATH "../Data/"
 
-//Retreives data such as height, width and other paramaters of the map;
+//Retrieves data such as height, width and other paramaters of the map;
 //In the future there might be more data needed to be extracted from the map file
 std::string readFromFile(std::string fileName, int &width, int &height);
 
@@ -40,11 +40,12 @@ std::string custom_UPPAAL_PATH = "", custom_MAP_PATH = "";
 int main() {
   bool exit = false, initializedMap = false;
   int choice;
+  
   while (!exit) {
     std::cout << "Choose option 1-5" << std::endl;
-    std::cout<< "1. Setup paths" << std::endl;
+    std::cout << "1. Setup paths" << std::endl;
     std::cout
-        << "2. Initilize the map (Generates the static analyzese of the map)"
+        << "2. Initilize the map (Generates the static analysis of the map)"
         << std::endl;
     std::cout << "3. Request for station plan" << std::endl;
     std::cout << "4. Request for waypoint plan" << std::endl;
@@ -53,103 +54,105 @@ int main() {
     std::cin >> choice;
 
     switch (choice) {
-    case 1:
-      setupPaths();
-      break;
-    case 2:
-      try{
-        initializeMap();
-      }
-      catch(char const* msg){
-        std::cout << "error: "<< msg <<std::endl;
-      }
-      initializedMap = true; 
-      break;
-    case 3:
-      if (initializedMap){
-        try{
-          std::cout <<stratego::getSingleTrace(queryType::stations, custom_UPPAAL_PATH.empty()? DEFAULT_UPPAAL_PATH :custom_MAP_PATH)
-                    << std::endl;
+      case 1:
+        setupPaths();
+        break;
+      case 2:
+        try {
+          initializeMap();
         }
-        catch(char const* msg){
-          std::cout << "error: "<< msg <<std::endl;
+        catch (char const *msg) {
+          std::cout << "error: " << msg << std::endl;
         }
-      }
-      else
-        std::cout << "Please initialize map first" << std::endl;
-      break;
-    case 4:
-      if (initializedMap){
-        try{
-          std::cout << stratego::getSingleTrace(queryType::waypoints, custom_UPPAAL_PATH.empty()? DEFAULT_UPPAAL_PATH :custom_MAP_PATH)
-                  << std::endl; 
+        initializedMap = true;
+        break;
+      case 3:
+        if (initializedMap) {
+          try {
+            std::cout << stratego::getSingleTrace(queryType::stations,
+                                                  custom_UPPAAL_PATH.empty() ? DEFAULT_UPPAAL_PATH : custom_MAP_PATH)
+                      << std::endl;
+          }
+          catch (char const *msg) {
+            std::cout << "error: " << msg << std::endl;
+          }
         }
-        catch(char const* msg){
-          std::cout << "error: "<< msg <<std::endl;
+        else
+          std::cout << "Please initialize map first" << std::endl;
+        break;
+      case 4:
+        if (initializedMap) {
+          try {
+            std::cout << stratego::getSingleTrace(queryType::waypoints,
+                                                  custom_UPPAAL_PATH.empty() ? DEFAULT_UPPAAL_PATH : custom_MAP_PATH)
+                      << std::endl;
+          }
+          catch (char const *msg) {
+            std::cout << "error: " << msg << std::endl;
+          }
         }
-      }
-      else
-        std::cout << "Please initialize map first" << std::endl;
-      break;
-    case 5:
-      exit = true;
-      break; 
-    default: 
-      exit = true;
-      break;
+        else
+          std::cout << "Please initialize map first" << std::endl;
+        break;
+      case 5:
+        exit = true;
+        break;
+      default:
+        exit = true;
+        break;
     }
-    
   }
   return 0;
 }
 
 void setupPaths(){
-   int choice = 0;
-   regex regexp("^(~/|/)([[a-zA-Z_0-9]+/]*)+$"); 
-      smatch m; 
-   while (true){
-     std::cout << "Choose option 1-4" << std::endl;
-    std::cout<< "1. Set Uppaal Stratego 64-bit path" << std::endl;
-    std::cout<< "2. Set map path"<< std::endl;
+  int choice;
+  regex regexp("^(~/|/)([[a-zA-Z_0-9]+/]*)+$");
+  smatch m;
+
+  while (true){
+    std::cout << "Choose option 1-4" << std::endl;
+    std::cout << "1. Set Uppaal Stratego 64-bit path" << std::endl;
+    std::cout << "2. Set map path"<< std::endl;
     std::cout << "3. Use default paths" << std::endl;
     std::cout << "4. Back" << std::endl;
 
     std::cin >> choice;
     std::cout << "choice: "<<choice<<std::endl;
     switch (choice) {
-    case 1:
-      std::cout<<"Enter Uppaal path (Default:~/Desktop/uppaalStratego/)" <<std::endl;
-      cin >> custom_UPPAAL_PATH;
-      while(!regex_match(custom_UPPAAL_PATH, regexp)){
-        std::cout<< "Incorrect path, please try again" <<std::endl;
+      case 1:
+        std::cout<<"Enter Uppaal path (Default:~/Desktop/uppaalStratego/)" <<std::endl;
         cin >> custom_UPPAAL_PATH;
-        
-      }
-      std::cout << "New Uppaal path: " << custom_UPPAAL_PATH <<std::endl;
-      break;
-    case 2:
-      std::cout<<"Enter map and station folder path (Default:.../mapConversion/Data/)" <<std::endl;
-      std::cout<<"Map file name: data.txt" <<std::endl;
-      std::cout<<"Station file name: points.json" <<std::endl;
-      while(!regex_match(custom_MAP_PATH, regexp)){
-        std::cout<< "Incorrect path, please try again" <<std::endl;
-        cin >> custom_MAP_PATH;
-      }
-      std::cout << "New Map folder path: " << custom_MAP_PATH <<std::endl;
-      break;
-    case 3:
-      custom_MAP_PATH = "";
-      custom_UPPAAL_PATH = "";
-      std::cout<< "The paths have been chosen to be default ones" <<std::endl;
-      std::cout <<"Uppaal path:"<< DEFAULT_UPPAAL_PATH <<std::endl;
-      std::cout <<"Map folder path:"<< DEFAULT_MAP_PATH <<std::endl;
-      break; 
-    case 4:
-      return; 
-    default: return;
-    }
-   }
+        while(!regex_match(custom_UPPAAL_PATH, regexp)){
+          std::cout<< "Incorrect path, please try again" <<std::endl;
+          cin >> custom_UPPAAL_PATH;
 
+        }
+        std::cout << "New Uppaal path: " << custom_UPPAAL_PATH <<std::endl;
+        break;
+      case 2:
+        std::cout<<"Enter map and station folder path (Default:.../mapConversion/Data/)" <<std::endl;
+        std::cout<<"Map file name: data.txt" <<std::endl;
+        std::cout<<"Station file name: points.json" <<std::endl;
+        while(!regex_match(custom_MAP_PATH, regexp)){
+          std::cout<< "Incorrect path, please try again" <<std::endl;
+          cin >> custom_MAP_PATH;
+        }
+        std::cout << "New Map folder path: " << custom_MAP_PATH <<std::endl;
+        break;
+      case 3:
+        custom_MAP_PATH = "";
+        custom_UPPAAL_PATH = "";
+        std::cout<< "The paths have been chosen to be default ones" <<std::endl;
+        std::cout <<"Uppaal path:"<< DEFAULT_UPPAAL_PATH <<std::endl;
+        std::cout <<"Map folder path:"<< DEFAULT_MAP_PATH <<std::endl;
+        break;
+      case 4:
+        return;
+      default:
+        return;
+    }
+  }
 }
 
 void initializeMap() {
