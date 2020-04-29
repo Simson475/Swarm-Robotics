@@ -40,7 +40,7 @@ std::string custom_UPPAAL_PATH = "", custom_MAP_PATH = "";
 int main() {
   bool exit = false, initializedMap = false;
   int choice;
-  
+
   while (!exit) {
     std::cout << "Choose option 1-5" << std::endl;
     std::cout << "1. Setup paths" << std::endl;
