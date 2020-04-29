@@ -1,6 +1,6 @@
 #ifndef MAP_STRUCTURE
 #define MAP_STRUCTURE
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 #include "Models/Figure.hpp"
 
 using namespace std;
