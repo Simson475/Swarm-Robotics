@@ -127,6 +127,7 @@ public:
 
   const char *what() const noexcept override { return message.c_str(); }
 };
+
 SimulationExpression stratego::parseValue(std::istream &ss, std::string &line) {
   std::string name = line.substr(0, line.length() - 1);
   std::vector<SimulationTrace> runs;
@@ -195,6 +196,7 @@ void fetchData(std::vector<int> &result, std::string from, nlohmann::json &j) {
     result.push_back(stoi(val.dump().c_str()));
   }
 }
+
 std::vector<int> getAllWaypoints() {
   std::vector<int> result;
   std::ifstream i("../config/static_config.json");
@@ -203,7 +205,8 @@ std::vector<int> getAllWaypoints() {
     fetchData(result, "end_stations", j);
     fetchData(result, "stations", j);
     fetchData(result, "vias", j);
-  } catch(...){
+  }
+  catch(...){
     throw "Static analyzes does not contain end_stations or vias or stations";
   }
   return result;
@@ -221,7 +224,9 @@ std::vector<int> getEveryRobotID() {
       for (auto &id : obj)
         result.push_back(stoi(id.first.c_str()));
     }
-  } catch (std::exception e) {
+  }
+  catch (std::exception e) {
+    //@todo: Add proper error handling
   }
   return result;
 }

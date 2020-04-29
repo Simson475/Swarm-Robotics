@@ -14,22 +14,29 @@
 //Retreives data such as height, width and other paramaters of the map;
 //In the future there might be more data needed to be extracted from the map file
 std::string readFromFile(std::string fileName, int &width, int &height);
+
 //Given width and height extracts all points of the map
 void harvestData(std::vector<std::vector<pair<int, bool>>> &result,
                  std::string data, int width, int height);
+
 //Function responsible for extraction of each Figure in the map
 std::vector<Figure> extractFigures(std::vector<std::vector<pair<int, bool>>> &data);
+
 //Using GNUplot and Plotting folder data draws the final map
 void drawWorld(int width, int height);
+
 //Clean ups the Plotting folder data
 void cleanResultFiles();
+
 //Main method for parsing and creating the map
 void initializeMap();
+
 //Used for path configuration, for text user interface
 void setupPaths();
 
 Map_Structure &sMap = Map_Structure::get_instance();
 std::string custom_UPPAAL_PATH = "", custom_MAP_PATH = "";
+
 int main() {
   bool exit = false, initializedMap = false;
   int choice;
@@ -61,23 +68,23 @@ int main() {
     case 3:
       if (initializedMap){
         try{
-        std::cout <<stratego::getSingleTrace(queryType::stations, custom_UPPAAL_PATH.empty()? DEFAULT_UPPAAL_PATH :custom_MAP_PATH)
-                  << std::endl; 
+          std::cout <<stratego::getSingleTrace(queryType::stations, custom_UPPAAL_PATH.empty()? DEFAULT_UPPAAL_PATH :custom_MAP_PATH)
+                    << std::endl;
         }
         catch(char const* msg){
           std::cout << "error: "<< msg <<std::endl;
         }
-        }
+      }
       else
         std::cout << "Please initialize map first" << std::endl;
       break;
     case 4:
       if (initializedMap){
-      try{
-        std::cout << stratego::getSingleTrace(queryType::waypoints, custom_UPPAAL_PATH.empty()? DEFAULT_UPPAAL_PATH :custom_MAP_PATH)
+        try{
+          std::cout << stratego::getSingleTrace(queryType::waypoints, custom_UPPAAL_PATH.empty()? DEFAULT_UPPAAL_PATH :custom_MAP_PATH)
                   << std::endl; 
-      }
-                catch(char const* msg){
+        }
+        catch(char const* msg){
           std::cout << "error: "<< msg <<std::endl;
         }
       }
@@ -147,38 +154,38 @@ void setupPaths(){
 
 void initializeMap() {
   try{
-  cleanResultFiles();
-  
-  int width = -1, height = -1;
-  // gathers data from file and cleans it up
-  std::string data = readFromFile(custom_MAP_PATH.empty()? DEFAULT_MAP_PATH :custom_MAP_PATH , width, height);
-  std::cout << "width: " << width << std::endl;
-  std::cout << "height: " << height << std::endl;
+    cleanResultFiles();
 
-  std::vector<std::vector<pair<int, bool>>> matrix(height);
-  // harvest the data from string into 2D vector
-  harvestData(matrix, data, width, height);
-  // std::cout << "x matrix: " << matrix.back().size()<<std::endl;
-  // std::cout << "y matrix: " << matrix.size()<<std::endl;
+    int width = -1, height = -1;
+    // gathers data from file and cleans it up
+    std::string data = readFromFile(custom_MAP_PATH.empty()? DEFAULT_MAP_PATH :custom_MAP_PATH , width, height);
+    std::cout << "width: " << width << std::endl;
+    std::cout << "height: " << height << std::endl;
 
-  sMap.initializeStations(DEFAULT_MAP_PATH);
-  std::cout << "initializeStations complete" << std::endl;
+    std::vector<std::vector<pair<int, bool>>> matrix(height);
+    // harvest the data from string into 2D vector
+    harvestData(matrix, data, width, height);
+    // std::cout << "x matrix: " << matrix.back().size()<<std::endl;
+    // std::cout << "y matrix: " << matrix.size()<<std::endl;
 
-  extractFigures(matrix);
-  std::cout << "extractFigures complete" << std::endl;
+    sMap.initializeStations(DEFAULT_MAP_PATH);
+    std::cout << "initializeStations complete" << std::endl;
 
-  sMap.collectAllWayPoints();
-  std::cout << "collectAllWayPoints complete" << std::endl;
-  sMap.setAllPossibleLines();
-  std::cout << "setAllPossibleLines complete" << std::endl;
+    extractFigures(matrix);
+    std::cout << "extractFigures complete" << std::endl;
 
-  //perform sorting of all the lines for the creation of static config
-  sMap.sortLines();
-  //After the setup of the map was completed, invoked the drawing of the map
-  drawWorld(width, height);
+    sMap.collectAllWayPoints();
+    std::cout << "collectAllWayPoints complete" << std::endl;
+    sMap.setAllPossibleLines();
+    std::cout << "setAllPossibleLines complete" << std::endl;
 
-  //Invokes the creation of static_config file
-  sMap.createStaticJSON("../config");
+    //perform sorting of all the lines for the creation of static config
+    sMap.sortLines();
+    //After the setup of the map was completed, invoked the drawing of the map
+    drawWorld(width, height);
+
+    //Invokes the creation of static_config file
+    sMap.createStaticJSON("../config");
   }
   catch(char const* msg){
     throw msg;
@@ -196,13 +203,13 @@ void cleanResultFilesHelper(std::string path){
 
 void cleanResultFiles() {
   try{
-  mkdir("../Plotting", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-  cleanResultFilesHelper("../Plotting/offset.dat");
-  cleanResultFilesHelper("../Plotting/figures.dat");
-  cleanResultFilesHelper("../Plotting/stations.dat");
-  cleanResultFilesHelper("../Plotting/lines.dat");
+    mkdir("../Plotting", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    cleanResultFilesHelper("../Plotting/offset.dat");
+    cleanResultFilesHelper("../Plotting/figures.dat");
+    cleanResultFilesHelper("../Plotting/stations.dat");
+    cleanResultFilesHelper("../Plotting/lines.dat");
   }
-catch(char const* msg){
+  catch(char const* msg){
     throw msg;
   }
   return;
