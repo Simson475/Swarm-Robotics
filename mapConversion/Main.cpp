@@ -32,7 +32,7 @@ Map_Structure &sMap = Map_Structure::get_instance();
 std::string custom_UPPAAL_PATH = "", custom_MAP_PATH = "";
 int main() {
   bool exit = false, initializedMap = false;
-  int choise;
+  int choice;
   while (!exit) {
     std::cout << "Choose option 1-5" << std::endl;
     std::cout<< "1. Setup paths" << std::endl;
@@ -43,9 +43,9 @@ int main() {
     std::cout << "4. Request for waypoint plan" << std::endl;
     std::cout << "5. Exit" << std::endl;
 
-    std::cin >> choise;
+    std::cin >> choice;
 
-    switch (choise) {
+    switch (choice) {
     case 1:
       setupPaths();
       break;
@@ -97,7 +97,7 @@ int main() {
 }
 
 void setupPaths(){
-   int choise = 0;
+   int choice = 0;
    regex regexp("^(~/|/)([[a-zA-Z_0-9]+/]*)+$"); 
       smatch m; 
    while (true){
@@ -107,9 +107,9 @@ void setupPaths(){
     std::cout << "3. Use default paths" << std::endl;
     std::cout << "4. Back" << std::endl;
 
-    std::cin >> choise;
-    std::cout << "choise: "<<choise<<std::endl;
-    switch (choise) {
+    std::cin >> choice;
+    std::cout << "choice: "<<choice<<std::endl;
+    switch (choice) {
     case 1:
       std::cout<<"Enter Uppaal path (Default:~/Desktop/uppaalStratego/)" <<std::endl;
       cin >> custom_UPPAAL_PATH;
