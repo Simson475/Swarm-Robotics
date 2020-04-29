@@ -15,4 +15,5 @@
 /mapConversion/UnitTests/build/
 /config/waypoint_strategy.json
 /config/station_strategy.json
+/config/static_config.json
 **/.idea/*
