@@ -16,7 +16,7 @@ std::string extractCoordinates(std::vector<SimulationExpression> &stationPath,
   for (auto &value: stationPath[run].runs[0].values) {
     for (auto &via: vias) {
       if (via->getId() == value.value) {
-        if (value.time == 0 && value.value == 0 || value.value == -1) {
+        if ((value.time == 0 && value.value == 0) || value.value == -1) {
         } else if (!contains(via->getId(), remaining)) {
           remaining.push_back(via);
           points += "(" + std::to_string(int(via->getX())) +
