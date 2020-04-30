@@ -16,7 +16,7 @@
 #define ACTION 2
 #define LIBRARY_PATH std::string("export LD_LIBRARY_PATH=$(pwd)/../Library")
 #define DEFAULT_UPPAAL_PATH std::string("~/Desktop/uppaalStratego/")
-#define VERIFYTA std::string("bin-Linux/verifyta.bin")
+#define VERIFYTA std::string("bin-Linux/verifyta")
 #define STATION_MODEL_PATH std::string("station_scheduling.xml")
 #define STATION_QUERY_PATH std::string("station_scheduling.q")
 #define WAYPOINT_MODEL_PATH std::string("waypoint_scheduling.xml")

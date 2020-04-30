@@ -67,6 +67,7 @@ std::string stratego::createModel(queryType type, std::string path) {
   const int max_buffer = 256;
   char buffer[max_buffer];
   stream = popen(terminalCommand.c_str(), "r");
+  std::cout << terminalCommand << std::endl;
   if (stream) {
     while (!feof(stream)){
       if (fgets(buffer, max_buffer, stream) != NULL){
