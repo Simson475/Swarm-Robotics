@@ -1,5 +1,8 @@
 #include "connector.h"
 
+#define SERVER_ADDRESS "localhost"
+#define PORT 20009
+
 void error(const char *msg)
 {
     perror(msg);
@@ -15,13 +18,11 @@ std::string connectStratego(std::string station, std::string robotName, std::str
     struct sockaddr_in serv_addr;
     struct hostent *server;
 
-    portno = 20009;
+    portno = PORT;
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) 
         error("ERROR opening socket");
-    //server = gethostbyname("192.168.43.111");
-    //server = gethostbyname("172.25.20.151");
-    server = gethostbyname("localhost");
+    server = gethostbyname(SERVER_ADDRESS);
     if (server == NULL) {
         fprintf(stderr,"ERROR, no such host\n");
         exit(0);
