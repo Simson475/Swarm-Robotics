@@ -1,7 +1,10 @@
 #include "stratego.h"
 #include "map_structure.h"
+#include "Exception.hpp"
 
-bool contains(int id, std::vector<shared_ptr<Point>> points) {
+//Helper function for extractCoordinatesFromTrace in order to check if via 
+//was already added.
+bool containsHelper(int id, std::vector<shared_ptr<Point>> points) {
   for (auto &point : points) {
     if (point->getId() == id)
       return true;
@@ -9,23 +12,23 @@ bool contains(int id, std::vector<shared_ptr<Point>> points) {
   return false;
 }
 
-std::string extractCoordinates(std::vector<SimulationExpression> &stationPath,
-                                 std::vector<shared_ptr<Point>>& vias, int run) {
-  std::vector<shared_ptr<Point>> remaining;
-  std::string points = "";
-  for (auto &value: stationPath[run].runs[0].values) {
+std::string extractCoordinatesFromTrace(std::vector<Simulation> &stationPath,
+                                 std::vector<shared_ptr<Point>>& vias, traceType traceType ) {
+  std::vector<shared_ptr<Point>> remainingVias;
+  std::string viasPath = "";
+  for (auto &value: stationPath[traceType].traces[0].values) {
     for (auto &via: vias) {
-      if (via->getId() == value.value) {
-        if ((value.time == 0 && value.value == 0) || value.value == -1) {
-        } else if (!contains(via->getId(), remaining)) {
-          remaining.push_back(via);
-          points += "(" + std::to_string(int(via->getX())) +
+      if (via->getId() == value.second) {
+        if ((value.first == 0 && value.second == 0) || value.first == -1) {
+        } else if (!containsHelper(via->getId(), remainingVias)) {
+          remainingVias.push_back(via);
+          viasPath += "(" + std::to_string(int(via->getX())) +
                     ";" + std::to_string(int(via->getY())) + ") ";
         }
       }
     }
   }
-  return points;
+  return viasPath;
 }
 
 std::string stratego::getSingleTrace(queryType type, std::string path) {
@@ -35,20 +38,20 @@ std::string stratego::getSingleTrace(queryType type, std::string path) {
   //such as:: Robot.initial_station
   //Robot.converted_cur()
   //Robot.converted_dest()
-  std::vector<SimulationExpression> parsed;
+  std::vector<Simulation> parsed;
   try{
-     parsed = parseStr(uppaalFormulaResults, ACTION);
+     parsed = parseStr(uppaalFormulaResults, FORMULA_NUMBER);
   }
-  catch(const char* msg){
-    throw msg;
+  catch(Exception& e){
+    throw e;
   }
   Map_Structure &sMap = Map_Structure::get_instance();
   if (type == queryType::stations)
     // Run 2 is used for stations to extract data
-    return extractCoordinates(parsed, sMap.stations, 2);
+    return extractCoordinatesFromTrace(parsed, sMap.stations, traceType::converted_dest);
   else
     // Run 1 is used for waypoints to extract data
-    return extractCoordinates(parsed, sMap.points, 1);
+    return extractCoordinatesFromTrace(parsed, sMap.points, traceType::converted_cur);
 }
 
 std::string stratego::createModel(queryType type, std::string path) {
@@ -78,7 +81,7 @@ std::string stratego::createModel(queryType type, std::string path) {
   return result;
 }
 
-std::vector<SimulationExpression> stratego::parseStr(std::string result,
+std::vector<Simulation> stratego::parseStr(std::string result,
                                                      int formula_number) {
   const size_t startIndex =
       result.find("Verifying formula " + std::to_string(formula_number));
@@ -89,7 +92,7 @@ std::vector<SimulationExpression> stratego::parseStr(std::string result,
   std::string formula;
   if(startIndex == std::string::npos){
     
-    throw "Failed interecting with Uppaal, check Uppaal path";
+    throw Exception("Failed interecting with Uppaal, check Uppaal path");
 
   }
   if (stopIndex == std::string::npos) {
@@ -99,7 +102,7 @@ std::vector<SimulationExpression> stratego::parseStr(std::string result,
   }
 
   std::stringstream ss{formula};
-  std::vector<SimulationExpression> values;
+  std::vector<Simulation> values;
 
   std::string line;
   std::getline(ss, line); // Verifying formula \d+ at <file:line>
@@ -118,16 +121,8 @@ std::vector<SimulationExpression> stratego::parseStr(std::string result,
   }
   return values;
 }
-class SimulationParseException : public std::exception {
-  std::string message;
 
-public:
-  SimulationParseException(const std::string &inmessage) : message(inmessage) {}
-
-  const char *what() const noexcept override { return message.c_str(); }
-};
-
-SimulationExpression stratego::parseValue(std::istream &ss, std::string &line) {
+Simulation stratego::parseValue(std::istream &ss, std::string &line) {
   std::string name = line.substr(0, line.length() - 1);
   std::vector<SimulationTrace> runs;
 
@@ -149,7 +144,7 @@ SimulationExpression stratego::parseValue(std::istream &ss, std::string &line) {
   std::smatch line_match;
   std::smatch pair_match;
   while (std::regex_match(line, line_match, line_pattern)) {
-    std::vector<TimeValuePair> values;
+    std::vector<std::pair<double, int>> values;
     int run_number = std::stoi(line_match[1]);
     std::string pairs = line_match[2];
 
@@ -157,7 +152,7 @@ SimulationExpression stratego::parseValue(std::istream &ss, std::string &line) {
     while (std::regex_search(pairs, pair_match, pair_pattern)) {
       double time = std::stod(pair_match[1]);
       int value = std::stoi(pair_match[2]);
-      values.push_back(TimeValuePair{time, value});
+      values.push_back(std::make_pair(time, value));
       pairs = pair_match.suffix();
     }
 
@@ -169,7 +164,7 @@ SimulationExpression stratego::parseValue(std::istream &ss, std::string &line) {
     std::getline(ss, line);
   }
 
-  return SimulationExpression{name, runs};
+  return Simulation{name, runs};
 }
 
 std::string stratego::GetStdoutFromCommand(std::string cmd) {
@@ -206,16 +201,18 @@ std::vector<int> getAllWaypoints() {
     fetchData(result, "vias", j);
   }
   catch(...){
-    throw "Static analyzes does not contain end_stations or vias or stations";
+    throw Exception("Static analyzes does not contain end_stations or vias or stations");
   }
   return result;
 }
 
 std::vector<int> getEveryRobotID() {
   std::vector<int> result;
-  std::ifstream i("../config/dynamic_config.json");
-  nlohmann::json j = nlohmann::json::parse(i);
+  
   try {
+    std::ifstream i("../config/dynamic_config.json");
+    if(i.fail()) throw Exception("Failed opening /config/dynamic_config.json");
+    nlohmann::json j = nlohmann::json::parse(i);
     auto &uuid = j.at("robot_info_map");
     if (uuid.is_object()) {
       int k = 0;
@@ -223,9 +220,10 @@ std::vector<int> getEveryRobotID() {
       for (auto &id : obj)
         result.push_back(stoi(id.first.c_str()));
     }
+    else std::cout << "robot_info_map not found, no other robots?"<<std::endl;
   }
-  catch (std::exception e) {
-    //@todo: Add proper error handling
+  catch (Exception& e) {
+    throw e;
   }
   return result;
 }
@@ -236,7 +234,7 @@ void stratego::createWaypointQ() {
   std::ofstream query;
 
   query.open("../config/waypoint_scheduling.q");
-  query << "strategy realistic = minE (total) [<=500] {\\" << std::endl;
+  query << "strategy realistic = minE (total) [<="+ STRATEGY_UNDER+"] {\\" << std::endl;
   query << "Robot.location,Robot.dest,Robot.cur_waypoint,Robot.dest_waypoint,\\"
         << std::endl;
   int k = 2; // since we always have at least one robot;
@@ -268,7 +266,7 @@ void stratego::createWaypointQ() {
           << std::endl;
   }
   query << "	Robot.x} : <> Robot.Done" << std::endl;
-  query << "simulate 1 [<= 500] {Robot.cur_waypoint, Robot.dest_waypoint, "
+  query << "simulate 1 [<= "+ STRATEGY_UNDER+"] {Robot.cur_waypoint, Robot.dest_waypoint, "
            "Robot.Holding} under realistic"
         << std::endl;
   query << "saveStrategy(\"waypoint_strategy.json\", realistic)" << std::endl;

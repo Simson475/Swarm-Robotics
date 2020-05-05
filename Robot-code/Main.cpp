@@ -1,6 +1,7 @@
 #include "gnuplot.h"
 #include "map_structure.h"
 #include "stratego.h"
+#include "Exception.hpp"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -36,20 +37,22 @@ void setupPaths();
 
 Map_Structure &sMap = Map_Structure::get_instance();
 std::string custom_UPPAAL_PATH = "", custom_MAP_PATH = "";
+int width = -1, height = -1;
 
 int main() {
   bool exit = false, initializedMap = false;
   int choice;
 
   while (!exit) {
-    std::cout << "Choose option 1-5" << std::endl;
+    std::cout << "Choose option 1-6" << std::endl;
     std::cout << "1. Setup paths" << std::endl;
     std::cout
         << "2. Initilize the map (Generates the static analysis of the map)"
         << std::endl;
     std::cout << "3. Request for station plan" << std::endl;
     std::cout << "4. Request for waypoint plan" << std::endl;
-    std::cout << "5. Exit" << std::endl;
+    std::cout << "5. Display map" << std::endl;
+    std::cout << "6. Exit" << std::endl;
 
     std::cin >> choice;
 
@@ -61,8 +64,8 @@ int main() {
         try {
           initializeMap();
         }
-        catch (char const *msg) {
-          std::cout << "error: " << msg << std::endl;
+        catch (Exception& e) {
+          std::cout << "error: " << e.what() << std::endl;
         }
         initializedMap = true;
         break;
@@ -73,8 +76,8 @@ int main() {
                                                   custom_UPPAAL_PATH.empty() ? DEFAULT_UPPAAL_PATH : custom_MAP_PATH)
                       << std::endl;
           }
-          catch (char const *msg) {
-            std::cout << "error: " << msg << std::endl;
+          catch (Exception& e) {
+            std::cout << "error: " << e.what() << std::endl;
           }
         }
         else
@@ -87,18 +90,25 @@ int main() {
                                                   custom_UPPAAL_PATH.empty() ? DEFAULT_UPPAAL_PATH : custom_MAP_PATH)
                       << std::endl;
           }
-          catch (char const *msg) {
-            std::cout << "error: " << msg << std::endl;
+          catch (Exception& e) {
+            std::cout << "error: " << e.what() << std::endl;
           }
         }
         else
           std::cout << "Please initialize map first" << std::endl;
         break;
       case 5:
-        exit = true;
+        if (initializedMap) {
+          //After the initialization of the map was completed, one may invoke the drawing of the map
+          drawWorld(width, height);
+        }
+        else std::cout << "Please initialize map first" << std::endl;
+        break;
+      case 6:
+        return 0;
         break;
       default:
-        exit = true;
+        std::cout << "Please select a proper choise 1-6" <<std::endl;
         break;
     }
   }
@@ -159,7 +169,7 @@ void initializeMap() {
   try{
     cleanResultFiles();
 
-    int width = -1, height = -1;
+    
     // gathers data from file and cleans it up
     std::string data = readFromFile(custom_MAP_PATH.empty()? DEFAULT_MAP_PATH :custom_MAP_PATH , width, height);
     std::cout << "width: " << width << std::endl;
@@ -184,14 +194,12 @@ void initializeMap() {
 
     //perform sorting of all the lines for the creation of static config
     sMap.sortLines();
-    //After the setup of the map was completed, invoked the drawing of the map
-    drawWorld(width, height);
 
     //Invokes the creation of static_config file
     sMap.createStaticJSON("../config");
   }
-  catch(char const* msg){
-    throw msg;
+  catch(Exception& e){
+    throw e;
   }
   return;
 }
@@ -199,21 +207,27 @@ void initializeMap() {
 void cleanResultFilesHelper(std::string path){
   std::ofstream ofs;
   ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-  if(ofs.fail()) throw "Failed opening file: " + path;
+  if(ofs.fail()) throw Exception("Failed opening file: " + path);
   ofs.close();
   return;
 }
 
 void cleanResultFiles() {
   try{
-    mkdir("../Plotting", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    
+    if (mkdir("../Plotting", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1)
+    {
+      if( errno != EEXIST ) {
+        throw Exception("cannot create Plotting folder");//std::runtime_exception( strerror(errno) );
+      }
+    }
     cleanResultFilesHelper("../Plotting/offset.dat");
     cleanResultFilesHelper("../Plotting/figures.dat");
     cleanResultFilesHelper("../Plotting/stations.dat");
     cleanResultFilesHelper("../Plotting/lines.dat");
   }
-  catch(char const* msg){
-    throw msg;
+  catch(Exception& e){
+    throw e;
   }
   return;
 }
@@ -236,7 +250,7 @@ void harvestData(std::vector<std::vector<pair<int, bool>>> &result,
   ofstream myfile;
   myfile.open("../Plotting/figures.dat", std::ios_base::app);
   if(myfile.fail())
-    throw "Failed opening file: /Plotting/figures.dat";
+    throw Exception("Failed opening file: /Plotting/figures.dat");
   myfile << result[0].size() << " " << 0 << "\n";
   myfile << 0 << " " << result.size() << "\n";
   myfile << 0 << " " << 0 << "\n";
@@ -250,7 +264,7 @@ std::string readFromFile(std::string fileName, int &width, int &height) {
   std::size_t pos;
   std::string fileLoc = fileName+"data.txt";
   std::ifstream myfile(fileLoc);
-  if(myfile.fail()) throw "Failed opening file: " + fileLoc;
+  if(myfile.fail()) throw Exception("Failed opening file: " + fileLoc);
   // read from file
   while (getline(myfile, line)) {
     // if line consist of width of height harvest the values
@@ -265,7 +279,7 @@ std::string readFromFile(std::string fileName, int &width, int &height) {
     full += line;
   }
   myfile.close();
-  if(width == -1 || width == -1) throw "Map file does not consist of width or height";
+  if(width == -1 || width == -1) throw Exception("Map file does not consist of width or height");
   // clean up data
   pos = full.find("data: [") + 7;
   full = full.substr(pos, full.size());
