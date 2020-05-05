@@ -18,4 +18,5 @@
 /Robot-code/config/static_config.json
 /Robot-code/config/station_strategy.json
 /Robot-code/config/waypoint_strategy.json
+**/config/libconfig.log
 **/.idea/*
