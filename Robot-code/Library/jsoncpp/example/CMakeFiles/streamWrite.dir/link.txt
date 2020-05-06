@@ -1,1 +1,0 @@
-/usr/bin/clang++  -g -fno-omit-frame-pointer   -rdynamic CMakeFiles/streamWrite.dir/streamWrite/streamWrite.cpp.o  -o ../../../bin/streamWrite ../../libjsoncpp.a 

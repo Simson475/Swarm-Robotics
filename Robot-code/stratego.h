@@ -15,7 +15,7 @@
 
 #define FORMULA_NUMBER 2
 #define STRATEGY_UNDER std::string("500")
-#define LIBRARY_PATH std::string("export LD_LIBRARY_PATH=$(pwd)/../Library")
+#define LIBRARY_PATH std::string("export LD_LIBRARY_PATH=$(pwd)/external/lib")
 #define DEFAULT_UPPAAL_PATH std::string("~/Desktop/uppaalStratego/")
 #define VERIFYTA std::string("bin-Linux/verifyta.bin")
 #define STATION_MODEL_PATH std::string("station_scheduling.xml")
