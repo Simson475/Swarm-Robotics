@@ -20,6 +20,7 @@ std::string extractCoordinatesFromTrace(std::vector<Simulation> &stationPath,
     for (auto &via: vias) {
       if (via->getId() == value.second) {
         if ((value.first == 0 && value.second == 0) || value.first == -1) {
+            continue;
         } else if (!containsHelper(via->getId(), remainingVias)) {
           remainingVias.push_back(via);
           viasPath += "(" + std::to_string(int(via->getX())) +
