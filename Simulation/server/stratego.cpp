@@ -1,47 +1,18 @@
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include <vector>
-#include <json.hpp>
-#include <algorithm>
-#include <iostream>
-#include <regex>
-#include <sstream>
-#define ACTION 2
-#define LIBRARY_PATH std::string("export LD_LIBRARY_PATH=$(pwd)/Library")
-#define UPPAAL_PATH std::string("~/Desktop/uppaalStratego/bin-Linux/verifyta.bin")
-#define STATION_MODEL_PATH std::string("../../station_scheduling.xml")
-#define STATION_QUERY_PATH std::string("../../station_scheduling.q")
-#define WAYPOINT_MODEL_PATH std::string("../../waypoint_scheduling.xml")
-#define WAYPOINT_QUERY_PATH std::string("waypoint_scheduling.q")
+#include "stratego.hpp"
 
-
-struct TimeValuePair {
-    double time;
-    int value;
-};
-
-struct SimulationTrace {
-    int number;
-    std::vector<TimeValuePair> values;
-};
-struct SimulationExpression {
-    std::string name;
-    std::vector<SimulationTrace> runs;
-};
-
-void createWaypointQ(std::string robotName);
-std::string createModel(std::string robotName, bool stations);
-std::string GetStdoutFromCommand(std::string cmd);
-SimulationExpression parseValue(std::istream &ss,std::string &line);
-std::vector<SimulationExpression> parseStr(std::string result, int formula_number);
-
-std::string getSingleTrace(std::string robotName,bool stations){ 
-    std::string result = createModel(robotName, stations);
-    std::vector<SimulationExpression> parsed = parseStr(result, ACTION);
+std::string stratego::getSingleTrace(std::string robotName, queryType type) {
+    std::string uppaalFormulaResults = createModel(robotName, type);
+  //Stores each trace of result in std::vector<SimulationExpression> parsed
+  //such as:: Robot.initial_station
+  //Robot.converted_cur()
+  //Robot.converted_dest()
+  std::vector<Simulation> parsed;
+  try{
+     parsed = parseStr(uppaalFormulaResults, FORMULA_NUMBER);
+  }
+  catch(std::runtime_error &e){
+    throw std::runtime_error("Failed parsing uppaal results");
+  }
     nlohmann::json mainObj;
     std::string singleTrace = "";
     for (int i = 0; i <parsed.size(); i++){
@@ -52,14 +23,14 @@ std::string getSingleTrace(std::string robotName,bool stations){
         nlohmann::json jsonObj;
         jsonObj["name"] = parsed[i].name;
         std::vector<nlohmann::json> subObjs;
-        for (int j = 0; j <parsed[i].runs.size(); j++){
+        for (int j = 0; j <parsed[i].traces.size(); j++){
             nlohmann::json subObj;
-            subObj["number"] = parsed[i].runs[j].number;
+            subObj["number"] = parsed[i].traces[j].berth;
             std::vector<nlohmann::json> subSubObjs;
-            for (int k= 0; k <parsed[i].runs[j].values.size(); k++){
+            for (int k= 0; k <parsed[i].traces[j].values.size(); k++){
                 nlohmann::json subSubObj;
-                subSubObj["time"] = parsed[i].runs[j].values[k].time;
-                subSubObj["value"] = parsed[i].runs[j].values[k].value;
+                subSubObj["time"] = parsed[i].traces[j].values[k].first;
+                subSubObj["value"] = parsed[i].traces[j].values[k].second;
                 subSubObjs.push_back(subSubObj);
             }
             subObj["values"] = subSubObjs;
@@ -70,9 +41,10 @@ std::string getSingleTrace(std::string robotName,bool stations){
     }
     return mainObj.dump();
 }
-std::string createModel(std::string robotName, bool stations){
+
+std::string stratego::createModel(std::string robotName, queryType type){
     std::string terminalCommand = LIBRARY_PATH;
-    if(stations){
+    if(type == queryType::stations){
         terminalCommand +=" && cd " +robotName+ "/stations/ && "  + " " + UPPAAL_PATH + " " + STATION_MODEL_PATH + " " + STATION_QUERY_PATH;
     }else {terminalCommand +=" && cd " +robotName +"/waypoints/ && " + " " + UPPAAL_PATH + " " + WAYPOINT_MODEL_PATH + " " + WAYPOINT_QUERY_PATH;
     createWaypointQ(robotName);}
@@ -90,7 +62,7 @@ std::string createModel(std::string robotName, bool stations){
 }
 
 
-std::vector<SimulationExpression> parseStr(std::string result, int formula_number){
+std::vector<Simulation> stratego::parseStr(std::string result, int formula_number){
     const size_t startIndex = result.find("Verifying formula " + std::to_string(formula_number));
     const size_t stopIndex =
         result.find("Verifying formula " +
@@ -105,7 +77,7 @@ std::vector<SimulationExpression> parseStr(std::string result, int formula_numbe
     }
 
     std::stringstream ss{formula};
-    std::vector<SimulationExpression> values;
+    std::vector<Simulation> values;
 
     std::string line;
     std::getline(ss, line); // Verifying formula \d+ at <file:line>
@@ -125,15 +97,7 @@ std::vector<SimulationExpression> parseStr(std::string result, int formula_numbe
 
     return values;
 }
-class SimulationParseException : public std::exception {
-    std::string message;
-
-  public:
-    SimulationParseException(const std::string &inmessage) : message(inmessage) {}
-
-    const char *what() const noexcept override { return message.c_str(); }
-};
-SimulationExpression parseValue(std::istream &ss,std::string &line)
+Simulation stratego::parseValue(std::istream &ss,std::string &line)
 {
     std::string name = line.substr(0, line.length() - 1);
     std::vector<SimulationTrace> runs;
@@ -154,7 +118,7 @@ SimulationExpression parseValue(std::istream &ss,std::string &line)
     std::smatch line_match;
     std::smatch pair_match;
     while (std::regex_match(line, line_match, line_pattern)) {
-        std::vector<TimeValuePair> values;
+        std::vector<std::pair<double,int>> values;
         int run_number = std::stoi(line_match[1]);
         std::string pairs = line_match[2];
 
@@ -162,7 +126,7 @@ SimulationExpression parseValue(std::istream &ss,std::string &line)
         while (std::regex_search(pairs, pair_match, pair_pattern)) {
             double time = std::stod(pair_match[1]);
             int value = std::stoi(pair_match[2]);
-            values.push_back(TimeValuePair{time, value});
+            values.push_back(std::make_pair(time, value));
             pairs = pair_match.suffix();
         }
 
@@ -174,12 +138,12 @@ SimulationExpression parseValue(std::istream &ss,std::string &line)
         std::getline(ss, line);
     }
 
-    return SimulationExpression{name, runs};
+    return Simulation{name, runs};
 }
 
 
 
-std::string GetStdoutFromCommand(std::string cmd) {
+std::string stratego::GetStdoutFromCommand(std::string cmd) {
     std::string data;
     FILE * stream;
     const int max_buffer = 256;
@@ -211,7 +175,9 @@ std::vector<int> getAllWaypoints(std::string robotName){
         fetchData(result, "end_stations", j);
         fetchData(result, "stations", j);
         fetchData(result, "vias", j);
-  }catch(std::exception e){}
+  }catch(...){
+      throw std::runtime_error("Failed reading end_stations or stations or vias from robot: "+robotName);
+  }
   return result;
 }
 
@@ -228,17 +194,19 @@ std::vector<int> getEveryRobotID(std::string robotName){
         for (auto& id : obj)
             result.push_back(atoi(id.first.c_str()));
     }
-  }catch(std::exception e){}
+  }catch(std::exception const& e){
+      throw std::runtime_error("Failed robot_info_map of robot: " + robotName);
+  }
   return result;
 }
 
-void createWaypointQ(std::string robotName) {
+void stratego::createWaypointQ(std::string robotName) {
     std::vector<int> robots = getEveryRobotID(robotName);
     std::vector<int> waypoints = getAllWaypoints(robotName);
   std::ofstream query;
 
   query.open(robotName + "/waypoints/waypoint_scheduling.q");
-  query << "strategy realistic = minE (total) [<=500] {\\" << std::endl;
+  query << "strategy realistic = minE (total) [<="+STRATEGY_UNDER+"] {\\" << std::endl;
   query << "Robot.location,Robot.dest,Robot.cur_waypoint,Robot.dest_waypoint,\\"
         << std::endl;
   int k = 2; // since we always have at least one robot;
@@ -269,7 +237,7 @@ void createWaypointQ(std::string robotName) {
           << std::endl;
   }
   query << "	Robot.x} : <> Robot.Done" << std::endl;
-  query << "simulate 1 [<= 500] {Robot.cur_waypoint, Robot.dest_waypoint, "
+  query << "simulate 1 [<= "+STRATEGY_UNDER+"] {Robot.cur_waypoint, Robot.dest_waypoint, "
            "Robot.Holding} under realistic"
         << std::endl;
   query << "saveStrategy(\"waypoint_strategy.json\", realistic)" << std::endl;

@@ -6,9 +6,11 @@
 #include <dirent.h>
 #include <sys/types.h>
 #include <experimental/filesystem>
-#include "../loop_functions/map_elements.h"
-#include "../loop_functions/robot.h"
-#include "../loop_functions/map_structure.h"
+#include "../models/line.hpp"
+#include "../models/point.hpp"
+#include "../models/box.hpp"
+#include "../models/robot.hpp"
+#include "../models/map_structure.hpp"
 #include "../loop_functions/trajectory_qtuser_functions.h"
 #include <argos3/core/utility/configuration/argos_configuration.h>
 
@@ -66,7 +68,7 @@ TEST_CASE("creation of box", "[base elements]"){
     b.setBoxCorner();
     for(auto i = 0; i < 4; i++){
       float actual = roundf( argos::Distance(b.getBoxLine(i).Geta(), b.getVCorner(i)) * 100) / 100;
-      float expected = roundf( sqrt(pow(offset,2)+ pow(offset,2)) * 100) / 100;
+      float expected = roundf( sqrt(pow(offset_for_obstacles,2)+ pow(offset_for_obstacles,2)) * 100) / 100;
       REQUIRE( actual==expected);
       REQUIRE(b.getVCorner(i).getType() == Type::via);
       REQUIRE(b.getBoxLine(i).Getb().getType() == Type::realCorner);
@@ -105,7 +107,7 @@ TEST_CASE("intilization of objects", "[map init]"){
   }
   SECTION( "correct amount of jobs parsed" ) {
     sMap.initializeJobs(path);
-    REQUIRE(Map_Structure::get_instance().jobs.size() == 20);
+    REQUIRE(Map_Structure::get_instance().jobs.size() == 0);
   }
   SECTION( "collects correct amount of waypoints" ) {
     sMap.collectAllWayPoints();
@@ -142,7 +144,7 @@ TEST_CASE("intilization of objects", "[map init]"){
     REQUIRE(sMap.lines.size() == 529);
     REQUIRE(sMap.hardLines.size() == 8);
     REQUIRE(sMap.Robots.size() == 3);
-    REQUIRE(sMap.jobs.size() == 20);
+    REQUIRE(sMap.jobs.size() == 0);
     REQUIRE(sMap.stationIDs.size() == 10);
     REQUIRE(sMap.endStationIDs.size() == 2);
   /*Map_Structure &sMap = Map_Structure::get_instance();

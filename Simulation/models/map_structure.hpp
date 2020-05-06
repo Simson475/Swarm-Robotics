@@ -2,8 +2,10 @@
 #define MAP_STRUCTURE
 #include "json.hpp"
 
-#include "map_elements.h"
-#include "robot.h"
+#include "box.hpp"
+#include "line.hpp"
+#include "point.hpp"
+#include "robot.hpp"
 #include <argos3/core/simulator/loop_functions.h>
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
 #include <argos3/plugins/simulator/entities/box_entity.h>
@@ -14,6 +16,7 @@ using namespace argos;
 
 class Map_Structure {
 public:
+  //storage of elements in the map
   std::vector<Point> points;
   std::vector<Line> lines;
   std::vector<Box> boxes;
@@ -21,35 +24,59 @@ public:
   std::vector<int> stationIDs;
   std::vector<int> endStationIDs;
   std::vector<Robot> Robots;
-  std::vector<std::vector<int>> shortestPath;
-  std::vector<std::vector<float>> shortestDistances;
   std::vector<std::vector<int>> jobs;
+  //shortest paths between each point
+  std::vector<std::vector<int>> shortestPath;
+  //shortest distances between each station
+  std::vector<std::vector<float>> shortestDistances;
+  //counters to figure how often uppaal was too slow
   int timesUppaalFailed = 0;
   int totalTries = 0;
+
+  //ensurance that the class is created only once
   static Map_Structure &get_instance() {
     static Map_Structure instance;
     return instance;
   }
-  //Map_Structure(Map_Structure const &) = delete;
-  //Map_Structure(Map_Structure &&) = delete;
-  int getRobotById(string id);
+  
+  // finds a robot by an ID
+  int getRobotById(std::string id);
+
+  //collects all waypoints from the map including station/ end point/ via/ start locations
   void collectAllWayPoints();
+
+  //creates a static_config.json file with all the relevant data
   void createStaticJSON(std::string path);
+
+  //usage of Floyd-Warshall Algorithm for shortest paths between each via
   vector<vector<float>> floydShortest(int amountOfStations);
-  // Combines from all the points all possibleStaticMap::lines
+
+  // function which sets all possible lines between all the points
   void setAllPossibleLines();
-  // Functions eliminates all theStaticMap::lines which have intersection
+
+  // functions eliminates all lines which have intersection with any of the hard lines
   void eliminateBadLines();
+
   Point& getPointByID(int id);
   Point* getPointPointer(int id);
+
+  //finds the shortest path of vias from startId to destinationId
   std::vector<Point> findPath(int startId, int destinationId);
+
+  //collects all the stations from experiment/scene2/points.json
   void initializeStations(std::string path);
+
+  //collects all the stations from experiment/scene2/points.json
   void initializeJobs(std::string path);
+
+  //creates for each simulated robot a folder, where one stores it's config files
   void createFolderForEachRobot(std::string path);
-  vector<vector<float>> createCopyList(); //function used for shortest path, duplication of data
-  //void print(std::vector<std::vector<int>> next, int start, int end);
+
+  //function used for shortest path, copies the relevant data to copy list
+  vector<vector<float>> createCopyList(); 
 
 private:
+//private constructor ensuring that only one instance is being created of the class
   Map_Structure() {}
 };
 #endif

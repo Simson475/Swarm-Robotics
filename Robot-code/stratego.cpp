@@ -1,6 +1,5 @@
 #include "stratego.h"
 #include "map_structure.h"
-#include "Exception.hpp"
 
 //Helper function for extractCoordinatesFromTrace in order to check if via 
 //was already added.
@@ -42,7 +41,7 @@ std::string stratego::getSingleTrace(queryType type, std::string path) {
   try{
      parsed = parseStr(uppaalFormulaResults, FORMULA_NUMBER);
   }
-  catch(Exception& e){
+  catch(std::runtime_error &e){
     throw e;
   }
   Map_Structure &sMap = Map_Structure::get_instance();
@@ -90,8 +89,8 @@ std::vector<Simulation> stratego::parseStr(std::string result,
                      1)); // Equal to std::string::npos if not found.
   std::string formula;
   if(startIndex == std::string::npos){
-    
-    throw Exception("Failed interecting with Uppaal, check Uppaal path");
+    std::cout<< "throwing" <<std::endl;
+    throw std::runtime_error("Failed interecting with Uppaal, check Uppaal path");
 
   }
   if (stopIndex == std::string::npos) {
@@ -200,7 +199,7 @@ std::vector<int> getAllWaypoints() {
     fetchData(result, "vias", j);
   }
   catch(...){
-    throw Exception("Static analyzes does not contain end_stations or vias or stations");
+    throw std::runtime_error("Static analyzes does not contain end_stations or vias or stations");
   }
   return result;
 }
@@ -210,7 +209,7 @@ std::vector<int> getEveryRobotID() {
   
   try {
     std::ifstream i("../config/dynamic_config.json");
-    if(i.fail()) throw Exception("Failed opening /config/dynamic_config.json");
+    if(i.fail()) throw std::runtime_error("Failed opening /config/dynamic_config.json");
     nlohmann::json j = nlohmann::json::parse(i);
     auto &uuid = j.at("robot_info_map");
     if (uuid.is_object()) {
@@ -221,7 +220,7 @@ std::vector<int> getEveryRobotID() {
     }
     else std::cout << "robot_info_map not found, no other robots?"<<std::endl;
   }
-  catch (Exception& e) {
+  catch (std::exception& e) {
     throw e;
   }
   return result;

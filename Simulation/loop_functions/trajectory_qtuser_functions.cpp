@@ -9,7 +9,7 @@
 // performs all the actions only once, upon start of the program.
 #define newJobs true
 
-
+/* method used for testing the shortest paths between points
 void print(std::vector<std::vector<Line>> next) {
   std::cout << "(pair, path)" << std::endl;
   const auto size = next.size();
@@ -30,9 +30,7 @@ void print(std::vector<std::vector<Line>> next) {
       }
     }
   }
-}
-
-
+}*/
 
 CTrajectoryQTUserFunctions::CTrajectoryQTUserFunctions()
     : m_cTrajLF(dynamic_cast<CTrajectoryLoopFunctions &>(

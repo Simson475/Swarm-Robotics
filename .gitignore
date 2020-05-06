@@ -18,4 +18,6 @@
 /Robot-code/config/static_config.json
 /Robot-code/config/station_strategy.json
 /Robot-code/config/waypoint_strategy.json
+/Robot-code/cmake-build-debug/
+/Simulation/cmake-build-debug/
 **/.idea/*

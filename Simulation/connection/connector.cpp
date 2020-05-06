@@ -1,4 +1,4 @@
-#include "connector.h"
+#include "connector.hpp"
 
 #define SERVER_ADDRESS "localhost"
 #define PORT 20009

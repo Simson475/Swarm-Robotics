@@ -10,7 +10,7 @@
 #include <QKeyEvent>
 #include <json.hpp>
 
-#include "map_structure.h"
+#include "../models/map_structure.hpp"
 
 using namespace argos;
 
@@ -20,22 +20,15 @@ class CTrajectoryQTUserFunctions : public CQTOpenGLUserFunctions {
 
 public:
   CTrajectoryQTUserFunctions();
-
   virtual ~CTrajectoryQTUserFunctions() {}
 
+  // method which is responsible of displaying everything in GUI
   virtual void DrawInWorld();
 
-  argos::Real velocity;
-
-  vector<vector<float>> floydShortest(int amountOfStations);
-  void initializeStations(std::string path);
-  void createFolderForEachRobot(std::string path);
-  void collectAllWayPoints();
-  void setAllPossibleLines();
-  void eliminateBadLines();
-  void createStaticJSON();
+  //using random seeds generates new jobs in experiments/scene2/jobs.json
   void generateJobs();
-  void initializeJobs(std::string path);
+
+  //captures key presses during the simulation
   virtual void KeyPressed(QKeyEvent* pc_event);
 
 private:

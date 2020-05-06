@@ -9,9 +9,10 @@
 #include "json.hpp"
 #include <sys/stat.h>
 #include <bits/stdc++.h>
-#include "stratego.cpp"
+#include "stratego.hpp"
+
 void readFile(int socket, std::string robotName, std::string fileName);
-void perform(int socket, char* robotName, bool stations);
+void perform(int socket, char* robotName, stratego::queryType type);
 void createFolder(char* robotName);
 void error(const char *msg) {
   perror(msg);
@@ -54,7 +55,9 @@ int main(int argc, char *argv[]) {
       char name[nameSize];
       int k = read(newsockfd, &name, nameSize);
       name[k] = '\0'; // clip the entry
-      perform(newsockfd, name, objective);
+      if(objective) perform(newsockfd, name, stratego::queryType::stations);
+      else perform(newsockfd, name, stratego::queryType::waypoints);
+      
       std::cout << "Robot "<< name << " has received plan, socket closes"<<std::endl;
       exit(0);
     } else
@@ -64,9 +67,9 @@ int main(int argc, char *argv[]) {
   close(sockfd);
   return 0;
 }
-void perform(int socket, char* robotName, bool stations) {
+void perform(int socket, char* robotName, stratego::queryType type) {
   createFolder(robotName);
-  if(stations){
+  if(type == stratego::queryType::stations){
       std::cout << "Robot "<< std::string(robotName) << " requests for Stations plan"<<std::endl;
       readFile(socket, std::string(robotName), "/stations/static_config.json");
       readFile(socket, std::string(robotName), "/stations/dynamic_config.json");   
@@ -76,7 +79,7 @@ void perform(int socket, char* robotName, bool stations) {
     readFile(socket, std::string(robotName), "/waypoints/static_config.json");
     readFile(socket, std::string(robotName), "/waypoints/dynamic_config.json");
   }
-  std::string result = getSingleTrace(robotName, stations);
+  std::string result = stratego::getSingleTrace(robotName, type);
   int size = result.length();
   int n ;
       n= write(socket,&size ,sizeof(int));

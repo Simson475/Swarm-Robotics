@@ -1,7 +1,8 @@
 #ifndef ROBOT
 #define ROBOT
+
 #include "json.hpp"
-#include "map_elements.h"
+#include "point.hpp"
 #include <math.h> 
 #include <argos3/core/simulator/loop_functions.h>
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>

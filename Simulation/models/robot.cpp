@@ -1,5 +1,5 @@
-#include "robot.h"
-#include "map_structure.h"
+#include "robot.hpp"
+#include "map_structure.hpp"
 
 Robot::Robot(CFootBotEntity *footBot, Point *initialLoc) {
   initialLocation = initialLoc;

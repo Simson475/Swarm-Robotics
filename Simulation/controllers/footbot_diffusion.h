@@ -17,8 +17,8 @@
 #include <argos3/core/simulator/loop_functions.h>
 //  ???, this was added in order to get  GetID() robot
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
-#include "connector.h"
-#include "loop_functions/map_structure.h"
+#include "connection/connector.hpp"
+#include "models/map_structure.hpp"
 
 using namespace argos;
 

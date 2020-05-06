@@ -1,4 +1,4 @@
-#include "map_structure.h"
+#include "map_structure.hpp"
 
 void Map_Structure::collectAllWayPoints() {
   

@@ -1,7 +1,7 @@
 #include "gnuplot.h"
 #include "map_structure.h"
 #include "stratego.h"
-#include "Exception.hpp"
+
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -64,7 +64,7 @@ int main() {
         try {
           initializeMap();
         }
-        catch (Exception& e) {
+        catch (std::exception& e) {
           std::cout << "error: " << e.what() << std::endl;
         }
         initializedMap = true;
@@ -76,7 +76,7 @@ int main() {
                                                   custom_UPPAAL_PATH.empty() ? DEFAULT_UPPAAL_PATH : custom_MAP_PATH)
                       << std::endl;
           }
-          catch (Exception& e) {
+          catch (std::runtime_error &e) {
             std::cout << "error: " << e.what() << std::endl;
           }
         }
@@ -90,7 +90,7 @@ int main() {
                                                   custom_UPPAAL_PATH.empty() ? DEFAULT_UPPAAL_PATH : custom_MAP_PATH)
                       << std::endl;
           }
-          catch (Exception& e) {
+          catch (std::exception& e) {
             std::cout << "error: " << e.what() << std::endl;
           }
         }
@@ -198,7 +198,7 @@ void initializeMap() {
     //Invokes the creation of static_config file
     sMap.createStaticJSON("../config");
   }
-  catch(Exception& e){
+  catch(std::exception& e){
     throw e;
   }
   return;
@@ -207,7 +207,7 @@ void initializeMap() {
 void cleanResultFilesHelper(std::string path){
   std::ofstream ofs;
   ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-  if(ofs.fail()) throw Exception("Failed opening file: " + path);
+  if(ofs.fail()) throw std::runtime_error("Failed opening file: " + path);
   ofs.close();
   return;
 }
@@ -218,7 +218,7 @@ void cleanResultFiles() {
     if (mkdir("../Plotting", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == -1)
     {
       if( errno != EEXIST ) {
-        throw Exception("cannot create Plotting folder");//std::runtime_exception( strerror(errno) );
+        throw std::runtime_error("cannot create Plotting folder");
       }
     }
     cleanResultFilesHelper("../Plotting/offset.dat");
@@ -226,7 +226,7 @@ void cleanResultFiles() {
     cleanResultFilesHelper("../Plotting/stations.dat");
     cleanResultFilesHelper("../Plotting/lines.dat");
   }
-  catch(Exception& e){
+  catch(std::exception& e){
     throw e;
   }
   return;
@@ -250,7 +250,7 @@ void harvestData(std::vector<std::vector<pair<int, bool>>> &result,
   ofstream myfile;
   myfile.open("../Plotting/figures.dat", std::ios_base::app);
   if(myfile.fail())
-    throw Exception("Failed opening file: /Plotting/figures.dat");
+    throw std::runtime_error("Failed opening file: /Plotting/figures.dat");
   myfile << result[0].size() << " " << 0 << "\n";
   myfile << 0 << " " << result.size() << "\n";
   myfile << 0 << " " << 0 << "\n";
@@ -264,7 +264,7 @@ std::string readFromFile(std::string fileName, int &width, int &height) {
   std::size_t pos;
   std::string fileLoc = fileName+"data.txt";
   std::ifstream myfile(fileLoc);
-  if(myfile.fail()) throw Exception("Failed opening file: " + fileLoc);
+  if(myfile.fail()) throw std::runtime_error("Failed opening file: " + fileLoc);
   // read from file
   while (getline(myfile, line)) {
     // if line consist of width of height harvest the values
@@ -279,7 +279,7 @@ std::string readFromFile(std::string fileName, int &width, int &height) {
     full += line;
   }
   myfile.close();
-  if(width == -1 || width == -1) throw Exception("Map file does not consist of width or height");
+  if(width == -1 || width == -1) throw std::runtime_error("Map file does not consist of width or height");
   // clean up data
   pos = full.find("data: [") + 7;
   full = full.substr(pos, full.size());

@@ -6,14 +6,21 @@
 
 
 add_library(trajectory_loop_functions MODULE 
-	map_structure.h
-	map_structure.cpp
 
-	robot.h
-	robot.cpp
-	
-	map_elements.h
-	map_elements.cpp
+../models/box.cpp
+../models/box.hpp
+
+../models/point.cpp
+../models/point.hpp
+
+../models/line.cpp
+../models/line.hpp
+
+../models/map_structure.hpp
+../models/map_structure.cpp
+
+../models/robot.hpp
+../models/robot.cpp
 
 	trajectory_loop_functions.h
 	trajectory_qtuser_functions.h

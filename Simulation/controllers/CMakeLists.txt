@@ -1,4 +1,4 @@
-add_library(footbot_diffusion MODULE footbot_diffusion.h footbot_diffusion.cpp connector.h connector.cpp)
+add_library(footbot_diffusion MODULE footbot_diffusion.h footbot_diffusion.cpp ../connection/connector.hpp ../connection/connector.cpp)
 
 
 target_link_libraries(footbot_diffusion
