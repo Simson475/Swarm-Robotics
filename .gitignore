@@ -20,4 +20,5 @@
 /Robot-code/config/waypoint_strategy.json
 /Robot-code/cmake-build-debug/
 /Simulation/cmake-build-debug/
+**/config/libconfig.log
 **/.idea/*

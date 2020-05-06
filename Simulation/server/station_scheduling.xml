@@ -22,7 +22,7 @@
 
 hybrid clock total;
 
-import "libconfig.so" {
+import "/home/martin/Desktop/test/swarmrobotics/mapConversion/Library/libconfig.so" {
     int number_of_stations();
     int number_of_end_stations();
     int number_of_robots();
@@ -44,7 +44,7 @@ const int STATION_PASSING_TIME = station_passing_time();
 const double UNCERTAINTY = uncertainty();
 const int OTHER_ROBOT_MAX = MAX_ROBOTS == 1 ? 2 : MAX_ROBOTS;
 
-import "libconfig.so" {
+import "/home/martin/Desktop/test/swarmrobotics/mapConversion/Library/libconfig.so" {
     int[1, NUM_STATIONS] next_station();
     void station_visited(int num_stations, bool&amp; arr[int[1, NUM_STATIONS]]);
 };
