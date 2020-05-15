@@ -17,7 +17,7 @@
 #include <argos3/core/simulator/loop_functions.h>
 //  ???, this was added in order to get  GetID() robot
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
-#include "connection/connector.hpp"
+#include "../connection/connector.hpp"
 #include "models/map_structure.hpp"
 
 using namespace argos;
@@ -70,8 +70,8 @@ public:
   virtual void Destroy() {}
 
 private:
-  void createUppaalTask(int n, string choice, int threadNr, bool stations);
-  void extractUppaalTask(int n, string choice, int threadNr);
+  void createUppaalTask(int n, std::string choice, int threadNr, bool stations);
+  void extractUppaalTask(int n, std::string choice, int threadNr);
   void movementLogic(int n);
   void controlStep(double per, double dotProd, float velocity);
   bool lookForJob(int n);

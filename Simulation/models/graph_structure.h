@@ -6,7 +6,7 @@
 #include "GL/glut.h"
 #include <utility>
 
-using namespace std;
+//using namespace std;
 
 namespace DS
 {

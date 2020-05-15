@@ -3,7 +3,7 @@
 #include "nlohmann/json.hpp"
 #include "Models/Figure.hpp"
 
-using namespace std;
+//using namespace std;
 
 class Map_Structure {
 public:

@@ -21,7 +21,7 @@ void Map_Structure::collectAllWayPoints() {
     CBoxEntity *pcBox = any_cast<CBoxEntity *>(it->second);
     CVector3 pos = pcBox->GetEmbodiedEntity().GetOriginAnchor().Position;
     CVector3 size = pcBox->GetSize();
-    string id = it->first;
+    std::string id = it->first;
     Box b;
     switch (id[0]) {
     case 'w': // break; allow break in order to stop considering boundries of
@@ -45,27 +45,27 @@ void Map_Structure::collectAllWayPoints() {
   for (auto i = 0; i < Map_Structure::boxes.size(); i++) {
     Map_Structure::boxes[i].setBoxCorner();
     for (auto j = 0; j < 4; j++) {
-      Map_Structure::points.push_back(move(Map_Structure::boxes[i].getVCorner(j)));
+      Map_Structure::points.push_back(std::move(Map_Structure::boxes[i].getVCorner(j)));
       
-      Map_Structure::hardLines.push_back(move(Map_Structure::boxes[i].getBoxLine(j)));
+      Map_Structure::hardLines.push_back(std::move(Map_Structure::boxes[i].getBoxLine(j)));
     }
   }
 }
-int Map_Structure::getRobotById(string id) {
+int Map_Structure::getRobotById(std::string id) {
   for (auto i = 0; i < Robots.size(); i++) {
     if (Robots[i].getfootBot()->GetId() == id) {
       return i;
     }
   }
 }
-vector<vector<float>> Map_Structure::createCopyList(){
+std::vector<std::vector<float>> Map_Structure::createCopyList(){
   auto size = sqrt(Map_Structure::lines.size());
-  vector<vector<float>> copyList(size, vector<float>(size));
+  std::vector<std::vector<float>> copyList(size, std::vector<float>(size));
   for(auto& line: Map_Structure::lines){
     copyList[line.Geta().getId()][line.Getb().getId()] = line.GetFloydDistance();
   }
   shortestPath.clear();
-  shortestPath.resize(size, vector<int>(size));
+  shortestPath.resize(size, std::vector<int>(size));
   for (auto i = 0; i < size; ++i) {
     for (auto j = 0; j < size; ++j) {
       shortestPath[i][j] = 0;
@@ -78,14 +78,14 @@ vector<vector<float>> Map_Structure::createCopyList(){
   }
   return copyList;
 }
-vector<vector<float>> Map_Structure::floydShortest(int amountOfStations) {
+std::vector<std::vector<float>> Map_Structure::floydShortest(int amountOfStations) {
     auto size = sqrt(Map_Structure::lines.size());
-  vector<vector<float>> copyList(size, vector<float>(size));
+  std::vector<std::vector<float>> copyList(size, std::vector<float>(size));
   for(auto& line: Map_Structure::lines){
     copyList[line.Geta().getId()][line.Getb().getId()] = line.GetFloydDistance();
   }
   shortestPath.clear();
-  shortestPath.resize(size, vector<int>(size));
+  shortestPath.resize(size, std::vector<int>(size));
   for (auto i = 0; i < size; ++i) {
     for (auto j = 0; j < size; ++j) {
       shortestPath[i][j] = 0;
@@ -108,8 +108,8 @@ vector<vector<float>> Map_Structure::floydShortest(int amountOfStations) {
       }
     }
   }
-  vector<vector<float>> shortestDistance(amountOfStations, vector<float>());
-  shortestDistances.resize(copyList.size(), vector<float>());
+  std::vector<std::vector<float>> shortestDistance(amountOfStations, std::vector<float>());
+  shortestDistances.resize(copyList.size(), std::vector<float>());
   for (auto i = 0; i < copyList.size(); i++) {
       for (auto j = 0; j < copyList.size(); j++) {
           if(i <amountOfStations && j < amountOfStations)
@@ -140,8 +140,8 @@ void Map_Structure::createStaticJSON(std::string path) {
   jsonObj["station_delay"] = 6;
   jsonObj["waypoint_delay"] = 3;
   jsonObj["uncertainty"] = 1.1;
-  vector<int> dropIds;
-  vector<int> contIds;
+  std::vector<int> dropIds;
+  std::vector<int> contIds;
   for (Point p : Map_Structure::points) {
     if (p.getType() == Type::endpoint) {
       dropIds.push_back(p.getId());
@@ -156,14 +156,14 @@ void Map_Structure::createStaticJSON(std::string path) {
       floydShortest(contIds.size() + dropIds.size());
 
   jsonObj["stations"] = contIds;
-  vector<int> vias;
+  std::vector<int> vias;
   for (auto i = 0; i < Map_Structure::points.size(); i++)
     if (Map_Structure::points[i].getType() == 0)
       vias.push_back(Map_Structure::points[i].getId());
   jsonObj["vias"] = vias;
   // collect all the wayPoints in 2 dimensions
   int sizeLines = sqrt(Map_Structure::lines.size());
-  vector<vector<float>> waypointsDistances(sizeLines, vector<float>());
+  std::vector<std::vector<float>> waypointsDistances(sizeLines, std::vector<float>());
   int k = -1;
   for (auto i = 0; i < Map_Structure::lines.size(); i++) {
     if (i % sizeLines == 0)
@@ -187,7 +187,7 @@ void Map_Structure::createStaticJSON(std::string path) {
         break;
     }
   }
-  vector<nlohmann::json> waypoints;
+  std::vector<nlohmann::json> waypoints;
   for (auto i = 0; i < Map_Structure::points.size(); i++) {
     nlohmann::json wayPoint;
     wayPoint["adjList"] = Map_Structure::points[i].getAdjIDs();
@@ -210,7 +210,7 @@ void Map_Structure::createStaticJSON(std::string path) {
   jsonObj["waypoints"] = waypoints;
   // create static_config for each robot
   for (auto i = 0; i < Map_Structure::Robots.size(); i++) {
-    string tmp = path +
+    std::string tmp = path +
                  Map_Structure::Robots[i].getfootBot()->GetId() + "/";
     std::ofstream out(tmp + "static_config.json");
    // out << std::setw(4) << jsonObj;
@@ -284,8 +284,8 @@ void Map_Structure::eliminateBadLines() {
 
 }
 
-vector<Point> Map_Structure::findPath(int startId, int destinationId) {
-    vector<Point> pts;
+std::vector<Point> Map_Structure::findPath(int startId, int destinationId) {
+    std::vector<Point> pts;
   if(startId == destinationId){
     return pts;
   }
@@ -326,7 +326,7 @@ void Map_Structure::initializeJobs(std::string path) {
 }
 void Map_Structure::createFolderForEachRobot(std::string path) {
   for (auto i = 0; i < Robots.size(); i++) {
-    string temp = path + Robots[i].getfootBot()->GetId();
+    std::string temp = path + Robots[i].getfootBot()->GetId();
 
     if (mkdir(temp.c_str(), 0777) == -1) {
     }

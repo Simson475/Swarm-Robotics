@@ -1,6 +1,6 @@
 #ifndef MAP_STRUCTURE
 #define MAP_STRUCTURE
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include "box.hpp"
 #include "line.hpp"
@@ -11,7 +11,7 @@
 #include <argos3/plugins/simulator/entities/box_entity.h>
 #include <argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h>
 
-using namespace std;
+//using namespace std;
 using namespace argos;
 
 class Map_Structure {
@@ -49,7 +49,7 @@ public:
   void createStaticJSON(std::string path);
 
   //usage of Floyd-Warshall Algorithm for shortest paths between each via
-  vector<vector<float>> floydShortest(int amountOfStations);
+  std::vector<std::vector<float>> floydShortest(int amountOfStations);
 
   // function which sets all possible lines between all the points
   void setAllPossibleLines();
@@ -73,7 +73,7 @@ public:
   void createFolderForEachRobot(std::string path);
 
   //function used for shortest path, copies the relevant data to copy list
-  vector<vector<float>> createCopyList(); 
+  std::vector<std::vector<float>> createCopyList();
 
 private:
 //private constructor ensuring that only one instance is being created of the class

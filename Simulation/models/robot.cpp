@@ -30,7 +30,7 @@ Point Robot::getNextStation() {
 
 void Robot::increment(int i) { stopWatch = i; }
 void Robot::setEta(double time) { etaNextStation = time; }
-void Robot::setJob(vector<Point> &jobs) {
+void Robot::setJob(std::vector<Point> &jobs) {
   for (auto i = 0u; i < jobs.size(); i++) {
     job.push_back(jobs[i]);
   }
@@ -228,14 +228,14 @@ Point *Robot::getNextWayPoint() {
     return nullptr;
 }
 void Robot::changeStatus(Status stat) { status = stat; }
-bool Robot::contains(int id, vector<Point>& points) {
+bool Robot::contains(int id, std::vector<Point>& points) {
   for (auto& point: points) {
     if (point.getId() == id)
       return true;
   }return false;
 }
 
-vector<Point> Robot::setRemainingStations(vector<Point> allPoints) {
+std::vector<Point> Robot::setRemainingStations(std::vector<Point> allPoints) {
   remainingStations.clear();
   for (auto i = 0; i < stationPath[2].runs[0].values.size(); i++) {
     for (auto j = 0; j < allPoints.size(); j++) {
@@ -250,9 +250,9 @@ vector<Point> Robot::setRemainingStations(vector<Point> allPoints) {
   }
   return remainingStations;
 }
-void Robot::addWaypoints(vector<Point> path) {
+void Robot::addWaypoints(std::vector<Point> path) {
   for(auto& p: path){
-    remainingWaypoints.push_back(move(p));
+    remainingWaypoints.push_back(std::move(p));
   }
   
     
@@ -260,7 +260,7 @@ void Robot::addWaypoints(vector<Point> path) {
 void Robot::updateCurrent(Point *target){
    currentPositionId = target;
  }
-vector<Point> Robot::setRemainingWaypoints(vector<Point> &allPoints) {
+std::vector<Point> Robot::setRemainingWaypoints(std::vector<Point> &allPoints) {
   remainingWaypoints.clear();
   for (auto i = 0; i < waypointPath[1].runs[0].values.size(); i++) {
     for (auto j = 0; j < allPoints.size(); j++) {
@@ -279,8 +279,8 @@ vector<Point> Robot::setRemainingWaypoints(vector<Point> &allPoints) {
 
   return remainingWaypoints;
 }
-void Robot::converJSONStation(string robotId, string choice) {
-  string path;
+void Robot::converJSONStation(std::string robotId, std::string choice) {
+  std::string path;
   if (choice == "Stations") {
     stationPath.clear();
     path = "experiment/scene2/" + robotId + "/" + robotId + "Stations.json";
@@ -312,7 +312,7 @@ void Robot::converJSONStation(string robotId, string choice) {
       waypointPath.push_back(se);
   }
 }
-std::string Robot::createDynamicJson(vector<Robot> &robots, int n, bool stations) {
+std::string Robot::createDynamicJson(std::vector<Robot> &robots, int n, bool stations) {
   nlohmann::json jsonObj;
   if(stations){
     jsonObj["next_station"] = remainingStations[1].getId();
@@ -330,9 +330,9 @@ std::string Robot::createDynamicJson(vector<Robot> &robots, int n, bool stations
     //else jsonObj["next_station"] = 1;
     
   }
-  vector<nlohmann::json> visitedWayPoints;
+  std::vector<nlohmann::json> visitedWayPoints;
   jsonObj["visited_waypoints"] = visitedWayPoints;
-  vector<nlohmann::json> stationsToVisit;
+  std::vector<nlohmann::json> stationsToVisit;
     for (auto i = 1; i < remainingStations.size();i++) {
       stationsToVisit.push_back(remainingStations[i].getId());
     }
@@ -341,7 +341,7 @@ std::string Robot::createDynamicJson(vector<Robot> &robots, int n, bool stations
   otherRobotsInf.clear();
   for (auto i = 0; i < robots.size(); i++) {
     if (robots[i].getStatus() != Status::available && i != n) {
-      vector<Point> p;
+      std::vector<Point> p;
       argos::Real dist = argos::Distance(getRemainingWaypoints().front(), 
                           getfootBot()->GetEmbodiedEntity().GetOriginAnchor().Position);
       dist = dist / VELOCITY *100;
@@ -357,12 +357,12 @@ std::string Robot::createDynamicJson(vector<Robot> &robots, int n, bool stations
       loc["x"] = otherRobot->currPosition.GetX();
       loc["y"] = otherRobot->currPosition.GetY();
       infMap["location"] = loc;
-      vector<int> ids;
+      std::vector<int> ids;
       for (auto j = otherRobot->stationsPassed; j < robots[i].getRemainingStations().size(); j++) {
         ids.push_back(robots[i].getRemainingStations()[j].getId());
       }
       infMap["station_plan"] = ids;
-      vector<nlohmann::json> wayPointL;
+      std::vector<nlohmann::json> wayPointL;
       for (auto j = 0; j < otherRobot->waypointsToPass.size(); j++) {
         nlohmann::json waypoint;
         waypoint["type"] = "Waypoint";
@@ -380,7 +380,7 @@ std::string Robot::createDynamicJson(vector<Robot> &robots, int n, bool stations
   out << std::setw(4) << jsonObj;
   return jsonObj.dump();
 }
-void Robot::sortJob(vector<vector<float>> shortestDistances)
+void Robot::sortJob(std::vector<std::vector<float>> shortestDistances)
 {
     for(auto i=0;i<job.size()-1;i++)
 	  {	

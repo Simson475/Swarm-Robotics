@@ -1,13 +1,13 @@
 #ifndef LINE
 #define LINE
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 #include "point.hpp"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h>
 
-using namespace std;
+//using namespace std;
 using namespace argos;
 
 #define VELOCITY 100.0f

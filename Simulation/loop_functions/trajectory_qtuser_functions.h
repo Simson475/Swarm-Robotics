@@ -8,7 +8,7 @@
 #include <argos3/plugins/simulator/entities/box_entity.h>
 #include <argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h>
 #include <QKeyEvent>
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 
 #include "../models/map_structure.hpp"
 

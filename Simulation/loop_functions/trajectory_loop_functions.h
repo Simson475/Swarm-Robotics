@@ -6,7 +6,7 @@
 #include <argos3/plugins/simulator/entities/box_entity.h>
 
 using namespace argos;
-using namespace std;
+//using namespace std;
 
 class CTrajectoryLoopFunctions : public CLoopFunctions {
 

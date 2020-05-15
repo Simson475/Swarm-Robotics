@@ -1,7 +1,7 @@
 #ifndef BOX
 #define BOX
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 #include "point.hpp"
 #include "line.hpp"
 #include <sys/stat.h>
@@ -11,7 +11,7 @@
 #include <argos3/plugins/simulator/entities/box_entity.h>
 #include <argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h>
 
-using namespace std;
+//using namespace std;
 using namespace argos;
 
 #define robotDiameter 0.2f
@@ -22,9 +22,9 @@ private:
   float x, y, h, w;
   CVector3 size, center;
   std::string id;
-  vector<Point> corners;
-  vector<Point> virtualCorners;
-  vector<Line> boxLines;
+  std::vector<Point> corners;
+  std::vector<Point> virtualCorners;
+  std::vector<Line> boxLines;
 
 public:
   Box() {}
@@ -32,7 +32,7 @@ public:
   //draws virtual corners of the box
   void draw();
   //returns the box id
-  string getID() { return id; }
+  std::string getID() { return id; }
   //returns virtual corner of the figure
   Point &getVCorner(int n) { return virtualCorners[n]; }
   //returns the actual line of the figure

@@ -1,79 +1,57 @@
-cmake_minimum_required(VERSION 2.8.12)
-project(extra)
+cmake_minimum_required(VERSION 3.7)
+include(ExternalProject)
 
+set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Set the path where CMake will find additional scripts
-set(CMAKE_MODULE_PATH $ENV{CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
-# Find the ARGoS package, make sure to save the ARGoS prefix
-find_package(PkgConfig)
-pkg_check_modules(ARGOS REQUIRED argos3_simulator)
-set(ARGOS_PREFIX ${ARGOS_PREFIX} CACHE INTERNAL "")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ARGOS_PREFIX}/share/argos3/cmake)
+option(GetDependencies "Fetch external dependencies from web." ON)
+if (GetDependencies)
+    ExternalProject_add(json-ext
+            URL https://github.com/nlohmann/json/archive/v3.7.3.zip
+            URL_HASH SHA512=b47a07de9a071cce645a173d084df5dd31f7669154fc00f6c99e0506474d30e8376acaee1d3c79a50def4f25a36042951bfa4fca9a704687e59c368d05053158
+            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DJSON_BuildTests=OFF
+            )
 
-# Check whether all the necessary libs have been installed to compile the
-# code that depends on Qt and OpenGL
-include(ARGoSCheckQTOpenGL)
+    ExternalProject_add(argos-ext
+            URL https://github.com/ilpincy/argos3/archive/3.0.0-beta56.zip
+            URL_HASH SHA512=516864a641cd3222e4260bc3c6dd09939ec9e26a19eb05b874d7ba3dd972ab91d1518d1a735de9265c88d508e3a6177d9978980df05aadcd3602181e19a87ab7
+            SOURCE_SUBDIR = ../argos-ext/src
+            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+            )
 
-# Look for the (optional) galib library
-#find_package(GALIB)
-#if(GALIB_FOUND)
-#  include_directories(${GALIB_INCLUDE_DIRS})
-#endif(GALIB_FOUND)
+    ExternalProject_Add_Step(argos-ext softLinking
+            COMMAND ln -s <SOURCE_DIR>/doc <SOURCE_DIR>/../doc
+            DEPENDEES build
+            ALWAYS 0)
 
+    ExternalProject_Add_Step(argos-ext makeDocs
+            COMMAND cd <BINARY_DIR> && make doc
+            DEPENDEES softLinking
+            DEPENDERS install
+            ALWAYS 1)
 
-# Find the Lua package
+    include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
+    link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
+  endif (GetDependencies)
+  
+project(SwarmSimulator)
+set(CMAKE_CXX_STANDARD 17)
 
-find_package(Lua52 REQUIRED)
-
-# Imgui part
-find_package(OpenGL REQUIRED)
-find_package(GLUT REQUIRED)
-
-
-
-# Find Java
-#find_package(Java REQUIRED)
-
-# Find JNI
-#find_package(JNI REQUIRED)
-
+include_directories(${CMAKE_SOURCE_DIR})
 
 # Emit all warning messages
 add_definitions(-Wall)
 
-# Set up C++ include directories
-# include_directories(${ARGOS_INCLUDE_DIRS} ${JNI_INCLUDE_DIRS} ${LUA_INCLUDE_DIR})
 
-#include_directories(${ARGOS_INCLUDE_DIRS})
-include_directories(${CMAKE_SOURCE_DIR} ${ARGOS_INCLUDE_DIRS} ${LUA_INCLUDE_DIR})
+# Set up C++ link directoriesemacs 
 
-# Set up C++ link directories
+#link_directories(${ARGOS_LIBRARY_DIRS})
 
-link_directories(${ARGOS_LIBRARY_DIRS})
+#message( ${CMAKE_CURRENT_SOURCE_DIR} )
+#message( ${ARGOS_LIBRARY_DIRS} ) 
 
-message( ${CMAKE_CURRENT_SOURCE_DIR} )
-message( ${ARGOS_LIBRARY_DIRS} ) 
-
-
-#add_library(mylib MODULE  test.cpp)
-#target_link_libraries(test
-#  argos3core_simulator
-#  argos3plugin_simulator_footbot
-#  argos3plugin_simulator_genericrobot)
 
 add_subdirectory(controllers)
 
-# Descend into the loop_functions directory
 add_subdirectory(loop_functions)
 
-#add_subdirectory(imgui)
-
-
-
-#add_executable(test test.cpp query_plugins.cpp SHARED ${ARGOS3_MULTIVESTA_WRAPPER_SOURCES})
-
-#add_executable(foo test.cpp query_plugins.cpp)
-
-#target_link_libraries(testa ${ARGOS_LIBRARY_DIRS})
-
-#target_link_libraries(foo argos3core_simulator)

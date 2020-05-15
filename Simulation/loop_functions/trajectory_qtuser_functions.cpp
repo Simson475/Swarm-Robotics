@@ -55,7 +55,7 @@ nlohmann::json mainJsonObj;
   for (auto i = 0; i < 100; i++){
     nlohmann::json jsonObj;
     jsonObj["job_id"] = i;
-    vector<nlohmann::json> stationsToVisit;
+    std::vector<nlohmann::json> stationsToVisit;
     int amountPickups = distrEnd(eng);
     for (auto j = 0; j < amountPickups ;j++) {
       int temp = distr(eng);

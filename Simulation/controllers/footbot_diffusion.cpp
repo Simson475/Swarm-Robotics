@@ -4,7 +4,7 @@
 #include <string>
 #include <pthread.h>
 
-using namespace std;
+//using namespace std;
 /* Include the controller definition */
 #include <footbot_diffusion.h>
 /* Function definitions for XML parsing */
@@ -181,7 +181,7 @@ void CFootBotDiffusion::Reset(){
 
 static void* callStratego(void *arguments){ 
    struct arg_struct *args = (struct arg_struct *) arguments;
-   string mystring=string("./uppaalStratego/callStratego.exe ")+args -> id+" "+ args->choice;
+   std::string mystring=std::string("./uppaalStratego/callStratego.exe ")+args -> id+" "+ args->choice;
    connectStratego(args->choice, args->id, args->dynamic);
    /*string action;
    FILE* stream;
@@ -209,7 +209,7 @@ void printJob(std::vector<Robot> robots){
       }
    }
 }
-void CFootBotDiffusion::createUppaalTask(int n, string choice, int threadNr, bool stations){
+void CFootBotDiffusion::createUppaalTask(int n, std::string choice, int threadNr, bool stations){
    std::string dynamic= sMap.Robots[n].createDynamicJson(sMap.Robots, n, stations);
    args[threadNr].id = m_id;
    args[threadNr].choice = choice;
@@ -218,7 +218,7 @@ void CFootBotDiffusion::createUppaalTask(int n, string choice, int threadNr, boo
    //std::cout <<args[threadNr].id<<" Calls UPPAAL "<<choice<<endl;
    paused = true;
 }
-void CFootBotDiffusion::extractUppaalTask(int n, string choice, int threadNr){
+void CFootBotDiffusion::extractUppaalTask(int n, std::string choice, int threadNr){
    //std::cout <<m_id<<" has received plan"<<endl;
    sMap.Robots[n].converJSONStation(m_id, choice);
    if(choice == "Stations"){
@@ -294,7 +294,7 @@ void CFootBotDiffusion::movementLogic(int n){
       sMap.getPointByID(sMap.Robots[n].getCurrentTarget()->getId()).setOccupied(false);
       std::cout <<"------------------"<< sMap.Robots[n].getCurrentTarget()->getId() << "set to false "<<std::endl;
          sMap.Robots[n].setCurrStationTarget();
-         cout<<sMap.Robots[n].getfootBot()->GetId()<<": finished loading items" << endl;
+         std::cout<<sMap.Robots[n].getfootBot()->GetId()<<": finished loading items" << std::endl;
          sMap.Robots[n].increment(-1);
    }
 }
