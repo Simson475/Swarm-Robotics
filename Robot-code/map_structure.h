@@ -53,6 +53,8 @@ public:
 
   //sorts all the lines in order
   void sortLines();
+  
+  
 
 private:
   Map_Structure() {}

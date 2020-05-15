@@ -1,57 +1,23 @@
 #include "stratego.h"
-#include "map_structure.h"
-
-//Helper function for extractCoordinatesFromTrace in order to check if via 
-//was already added.
-bool containsHelper(int id, std::vector<shared_ptr<Point>> points) {
-  for (auto &point : points) {
-    if (point->getId() == id)
-      return true;
-  }
-  return false;
-}
-
-std::string extractCoordinatesFromTrace(std::vector<Simulation> &stationPath,
-                                 std::vector<shared_ptr<Point>>& vias, traceType traceType ) {
-  std::vector<shared_ptr<Point>> remainingVias;
-  std::string viasPath = "";
-  for (auto &value: stationPath[traceType].traces[0].values) {
-    for (auto &via: vias) {
-      if (via->getId() == value.second) {
-        if ((value.first == 0 && value.second == 0) || value.first == -1) {
-            continue;
-        } else if (!containsHelper(via->getId(), remainingVias)) {
-          remainingVias.push_back(via);
-          viasPath += "(" + std::to_string(int(via->getX())) +
-                    ";" + std::to_string(int(via->getY())) + ") ";
-        }
-      }
-    }
-  }
-  return viasPath;
-}
 
 std::string stratego::getSingleTrace(queryType type, std::string path) {
   std::string uppaalFormulaResults = createModel(type, path);
-
-  //Stores each trace of result in std::vector<SimulationExpression> parsed
-  //such as:: Robot.initial_station
-  //Robot.converted_cur()
-  //Robot.converted_dest()
-  std::vector<Simulation> parsed;
+  //Used for storing the full trace
+  Simulation parsed;
   try{
-     parsed = parseStr(uppaalFormulaResults, FORMULA_NUMBER);
+     parsed = parseStr(uppaalFormulaResults, FORMULA_NUMBER, type);
   }
   catch(std::runtime_error &e){
     throw e;
   }
-  Map_Structure &sMap = Map_Structure::get_instance();
-  if (type == queryType::stations)
-    // Run 2 is used for stations to extract data
-    return extractCoordinatesFromTrace(parsed, sMap.stations, traceType::converted_dest);
-  else
-    // Run 1 is used for waypoints to extract data
-    return extractCoordinatesFromTrace(parsed, sMap.points, traceType::converted_cur);
+  for(auto& p :parsed.trace){
+    std::cout<< p.first << " time: " << p.second.timeStamp << " location: " <<p.second.via->getId()<<std::endl;
+  }
+  std::string viasPath = "";
+  for(auto& p :parsed.points){
+      viasPath += "(" + std::to_string(int(p->getX())) +";" + std::to_string(int(p->getY())) + ") ";
+  }
+  return viasPath;
 }
 
 std::string stratego::createModel(queryType type, std::string path) {
@@ -80,8 +46,42 @@ std::string stratego::createModel(queryType type, std::string path) {
   return result;
 }
 
-std::vector<Simulation> stratego::parseStr(std::string result,
-                                                     int formula_number) {
+Simulation combineTraces(std::vector<std::vector<Data>> traces, stratego::queryType type){
+    std::vector<shared_ptr<Point>> points;
+    std::vector<std::pair<std::string, Data>> mergedTraces(traces[0].size() +  traces[1].size());
+    if(type == stratego::queryType::waypoints){
+        int arrivalId = 1, delayId = 0;
+        mergedTraces.at(0) = std::make_pair("Arrives at",traces[0][0]);
+        points.push_back(traces[0][0].via);
+        for(auto i = 1; i < mergedTraces.size(); i ++){
+            if(i % 2 == 1){
+                points.push_back(traces[0][arrivalId].via);
+                mergedTraces.at(i) = std::make_pair("Arrives at",traces[0][arrivalId++]);
+            }
+            else{
+                mergedTraces.at(i) = std::make_pair("Delays till",traces[1][delayId++]);
+            }
+        }
+    }
+    if(type == stratego::queryType::stations){
+        int arrivalId = 0, delayId = 1;
+        mergedTraces.at(0) = std::make_pair("Arrives at",traces[1][0]);
+        points.push_back(traces[0][0].via);
+        for(auto i = 1; i < mergedTraces.size(); i ++){
+            if(i % 2 == 1){
+                mergedTraces.at(i) = std::make_pair("Delays till",traces[1][delayId++]);
+            }
+            else{
+                points.push_back(traces[0][arrivalId].via);
+                mergedTraces.at(i) = std::make_pair("Arrives at",traces[0][arrivalId++]);
+            }
+        }
+    }
+    return Simulation{points, mergedTraces};
+}
+
+Simulation stratego::parseStr(std::string result, int formula_number, queryType type) {
+  int run_number = 0;
   const size_t startIndex =
       result.find("Verifying formula " + std::to_string(formula_number));
   const size_t stopIndex = result.find(
@@ -90,7 +90,6 @@ std::vector<Simulation> stratego::parseStr(std::string result,
                      1)); // Equal to std::string::npos if not found.
   std::string formula;
   if(startIndex == std::string::npos){
-    std::cout<< "throwing" <<std::endl;
     throw std::runtime_error("Failed interecting with Uppaal, check Uppaal path");
 
   }
@@ -102,29 +101,61 @@ std::vector<Simulation> stratego::parseStr(std::string result,
 
   std::stringstream ss{formula};
   std::vector<Simulation> values;
-
+  std::vector<std::vector<Data>> runs;
   std::string line;
   std::getline(ss, line); // Verifying formula \d+ at <file:line>
   std::getline(ss, line); // -- Formula is (not)? satisfied.
 
   if (ss.eof()) {
-    return values;
+    return combineTraces(runs, type);
   }
 
   std::getline(ss, line);
   while (line.size() > 0) {
-    values.push_back(parseValue(ss, line));
+    std::vector<Data> e = parseValue(ss, line, run_number, type);
+    if (e.size() != 0) {
+      runs.push_back(e);
+    }
     if (ss.eof()) {
       break;
     }
   }
-  return values;
+  return combineTraces(runs, type);
 }
+//method to determine if value is worth storing
+bool storeValue(int run_number, int id_of_value, bool& even, double time, stratego::queryType type){
+  //ensures that only valuable information is stored while checking for stations
+  if(type == stratego::queryType::stations){
+      if(run_number == 1 && (id_of_value < 3 || id_of_value % 2 == 0)){
+        return false;
+      }
+      if(run_number == 2 && id_of_value == 0){
+        return false;
+      }
+      if(run_number == 2 && id_of_value == 1 && time != 0){
+        even = false;
+        return false;
+      }
+      if(run_number == 2 && id_of_value > 2-even && id_of_value % 2 == even){
+        return false;
+      }
+      return true;
+  }
+  //ensures that only valuable information is stored while checking for waypoints
+  else {
+    if(run_number == 1 && (id_of_value == 0 || id_of_value % 2 == 0)){
+        return false;
+    }
+    if(run_number == 2 && (id_of_value < 3 || id_of_value % 2 == 0)){
+        return false;
+    }
+    return true;
+  }
 
-Simulation stratego::parseValue(std::istream &ss, std::string &line) {
+}
+std::vector<Data> stratego::parseValue(std::istream &ss, std::string &line, int &run_number, queryType type) {
+  Map_Structure &sMap = Map_Structure::get_instance();
   std::string name = line.substr(0, line.length() - 1);
-  std::vector<SimulationTrace> runs;
-
   // Read run
   std::getline(ss, line);
 
@@ -139,31 +170,45 @@ Simulation stratego::parseValue(std::istream &ss, std::string &line) {
   // matches single (time,value) pair.
   // group 1 == time, group 2 == value.
   static const std::regex pair_pattern{R"( \((-?\d+(?:\.\d+)?),(-?\d+)\))"};
-
+  std::vector<Data> values;
   std::smatch line_match;
   std::smatch pair_match;
+
   while (std::regex_match(line, line_match, line_pattern)) {
-    std::vector<std::pair<double, int>> values;
-    int run_number = std::stoi(line_match[1]);
     std::string pairs = line_match[2];
-
-    // parse the list of value pairs
-    while (std::regex_search(pairs, pair_match, pair_pattern)) {
-      double time = std::stod(pair_match[1]);
-      int value = std::stoi(pair_match[2]);
-      values.push_back(std::make_pair(time, value));
-      pairs = pair_match.suffix();
+    //if the run_number is equal to zero it means that it contains
+    //only the first arrival point, thus it can be ignored
+    if(run_number != 0) { 
+        int id_of_value = 0;
+        //if station_eta == 0 we use uneven numbers from list
+        //if we have more then 0 estimated time to station we use even numbers
+        bool even = true;
+            // parse the list of value pairs
+            while (std::regex_search(pairs, pair_match, pair_pattern)) {
+                double time = std::stod(pair_match[1]);
+                int value = std::stoi(pair_match[2]);
+                //determines if one shall store the value or ignore it
+                bool store = storeValue(run_number, id_of_value, even, time, type);
+                pairs = pair_match.suffix();
+                id_of_value++;
+                if(store){
+                    auto i = std::find_if(sMap.points.begin(), sMap.points.end(),
+                        [&](shared_ptr<Point>& i){return i->getId()==value;});
+                    if(i == sMap.points.end()){
+                        i = std::find_if(sMap.stations.begin(), sMap.stations.end(),
+                         [&](shared_ptr<Point>& i){return i->getId()==value;});
+                    }
+                    values.push_back(Data{time, (*i)});
+                }
+            }
+        if (ss.eof()) {
+            break;
+        }
     }
-
-    runs.push_back(SimulationTrace{run_number, values});
-    if (ss.eof()) {
-      break;
-    }
-
+    run_number++;
     std::getline(ss, line);
   }
-
-  return Simulation{name, runs};
+  return values;
 }
 
 std::string stratego::GetStdoutFromCommand(std::string cmd) {
@@ -221,7 +266,7 @@ std::vector<int> getEveryRobotID() {
     }
     else std::cout << "robot_info_map not found, no other robots?"<<std::endl;
   }
-  catch (std::exception& e) {
+  catch (std::runtime_error &e) {
     throw e;
   }
   return result;
@@ -265,8 +310,8 @@ void stratego::createWaypointQ() {
           << std::endl;
   }
   query << "	Robot.x} : <> Robot.Done" << std::endl;
-  query << "simulate 1 [<= "+ STRATEGY_UNDER+"] {Robot.cur_waypoint, Robot.dest_waypoint, "
-           "Robot.Holding} under realistic"
+  query << "simulate 1 [<= "+ STRATEGY_UNDER+"] {Robot.Holding, Robot.cur_waypoint, "
+  "Robot.dest_waypoint} under realistic"
         << std::endl;
   query << "saveStrategy(\"waypoint_strategy.json\", realistic)" << std::endl;
   query.close();

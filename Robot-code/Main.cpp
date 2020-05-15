@@ -72,7 +72,7 @@ int main() {
       case 3:
         if (initializedMap) {
           try {
-            std::cout << stratego::getSingleTrace(queryType::stations,
+            std::cout << stratego::getSingleTrace(stratego::queryType::stations,
                                                   custom_UPPAAL_PATH.empty() ? DEFAULT_UPPAAL_PATH : custom_MAP_PATH)
                       << std::endl;
           }
@@ -86,7 +86,7 @@ int main() {
       case 4:
         if (initializedMap) {
           try {
-            std::cout << stratego::getSingleTrace(queryType::waypoints,
+            std::cout << stratego::getSingleTrace(stratego::queryType::waypoints,
                                                   custom_UPPAAL_PATH.empty() ? DEFAULT_UPPAAL_PATH : custom_MAP_PATH)
                       << std::endl;
           }
