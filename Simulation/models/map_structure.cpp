@@ -163,7 +163,7 @@ void Map_Structure::createStaticJSON(std::string path) {
   jsonObj["vias"] = vias;
   // collect all the wayPoints in 2 dimensions
   int sizeLines = sqrt(Map_Structure::lines.size());
-  vector<vector<float>> waypointsDistances(sizeLines, vector<float>());
+  vector<vector<int>> waypointsDistances(sizeLines, vector<int>());
   int k = -1;
   for (auto i = 0; i < Map_Structure::lines.size(); i++) {
     if (i % sizeLines == 0)
@@ -213,9 +213,9 @@ void Map_Structure::createStaticJSON(std::string path) {
     string tmp = path +
                  Map_Structure::Robots[i].getfootBot()->GetId() + "/";
     std::ofstream out(tmp + "static_config.json");
-   // out << std::setw(4) << jsonObj;
+    out << std::setw(4) << jsonObj;
            
-    out << jsonObj;
+    //out << jsonObj;
   }
 }
 // Combines from all the points all possibleMap_Structure::lines

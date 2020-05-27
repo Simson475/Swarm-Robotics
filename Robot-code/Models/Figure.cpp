@@ -1,16 +1,18 @@
 #include "Figure.hpp"
 
+#include <memory>
+
 // To find orientation of ordered triplet (p, q, r).
 // The function returns following values
-// 0 --> p, q and r are colinear
+// 0 --> p, q and r are collinear
 // 1 --> Clockwise
 // 2 --> Counterclockwise
 int orientation(Point &p, Point &q, Point &r) {
   int val = (q.getY() - p.getY()) * (r.getX() - q.getX()) -
             (q.getX() - p.getX()) * (r.getY() - q.getY());
   if (val == 0)
-    return 0;               // colinear
-  return (val > 0) ? 1 : 2; // clock or counterclock wise
+    return 0;               // collinear
+  return (val > 0) ? 1 : 2; // clock or counter clock wise
 }
 void Figure::cleanConvex(std::vector<Point> &hull) {
   std::vector<int> idToDelete;
@@ -61,8 +63,8 @@ void Figure::findAvrgCenter(std::vector<Point> &hull) {
   }
   avrg_X = avrg_X / hull.size();
   avrg_Y = avrg_Y / hull.size();
-  std::shared_ptr<Point> savrgCenter = std::shared_ptr<Point>(
-      new Point(avrg_X, avrg_Y, 0, Type::center, "", shared_from_this()));
+  std::shared_ptr<Point> savrgCenter = std::make_shared<Point>(
+      avrg_X, avrg_Y, 0, Type::center, "", shared_from_this());
   avrgCenter.reset(
       new Point(avrg_X, avrg_Y, 0, Type::center, "", shared_from_this()));
 }
@@ -85,7 +87,7 @@ void Figure::cleanUp(std::vector<Point> &hull) {
   }
 }
 // First = Slope, Second = Y-Intercept
-std::pair<float, float> findsLineFunction(Point p1, Point p2) {
+std::pair<float, float> findsLineFunction(const Point& p1, const Point& p2) {
   float m; // slope of the line
   if (p2.getX() != p1.getX()) {
     m = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
@@ -104,23 +106,23 @@ std::shared_ptr<Point> Figure::findIntersection(std::pair<Point, Point> &pair1,
   if (func1.first == -99999) {
     x = pair1.first.getX();
     y = func2.first * x + func2.second;
-    std::shared_ptr<Point> p = std::shared_ptr<Point>(new Point(
-        x, y, 0, Type::via, "", std::shared_ptr<Figure>(shared_from_this())));
+    std::shared_ptr<Point> p = std::make_shared<Point>(
+        x, y, 0, Type::via, "", std::shared_ptr<Figure>(shared_from_this()));
     p->incrementId();
     return p;
   }
   if (func2.first == -99999) {
     x = pair2.first.getX();
     y = func1.first * x + func1.second;
-    std::shared_ptr<Point> p = std::shared_ptr<Point>(new Point(
-        x, y, 0, Type::via, "", std::shared_ptr<Figure>(shared_from_this())));
+    std::shared_ptr<Point> p = std::make_shared<Point>(
+        x, y, 0, Type::via, "", std::shared_ptr<Figure>(shared_from_this()));
     p->incrementId();
     return p;
   }
   x = (func2.second - func1.second) / (func1.first - func2.first);
   y = func1.first * x + func1.second;
-  std::shared_ptr<Point> p = std::shared_ptr<Point>(new Point(
-      x, y, 0, Type::via, "", std::shared_ptr<Figure>(shared_from_this())));
+  std::shared_ptr<Point> p = std::make_shared<Point>(
+      x, y, 0, Type::via, "", std::shared_ptr<Figure>(shared_from_this()));
   p->incrementId();
   return p;
 }
@@ -152,8 +154,8 @@ void Figure::convexHull() {
 
     // Search for a point 'q' such that orientation(p, x,
     // q) is counterclockwise for all points 'x'. The idea
-    // is to keep track of last visited most counterclock-
-    // wise point in q. If any point 'i' is more counterclock-
+    // is to keep track of last visited most counter clock-
+    // wise point in q. If any point 'i' is more counter clock-
     // wise than q, then update q.
     q = (p + 1) % n;
     for (int i = 0; i < n; i++) {
@@ -212,7 +214,7 @@ void Figure::convexHull() {
 
   myfile2.close();
 }
-std::pair<Point, Point> Figure::moveLine(Point p1, Point p2, float d) {
+std::pair<Point, Point> Figure::moveLine(const Point& p1, const Point& p2, float d) {
   float r = sqrt(pow(p2.getX() - p1.getX(), 2) + pow(p2.getY() - p1.getY(), 2));
   float delta_X = d / r * (p1.getY() - p2.getY());
   float delta_Y = d / r * (p2.getX() - p1.getX());
@@ -226,22 +228,20 @@ void Figure::connectLines() {
   for (int i = 0; i < offsetPoints.size(); i++) {
     if (i != offsetPoints.size() - 1)
       offSetLines.push_back(
-          std::shared_ptr<Line>(new Line(offsetPoints[i], offsetPoints[i + 1])));
+          std::make_shared<Line>(offsetPoints[i], offsetPoints[i + 1]));
     else
       offSetLines.push_back(
-          std::shared_ptr<Line>(new Line(offsetPoints[i], offsetPoints[0])));
+          std::make_shared<Line>(offsetPoints[i], offsetPoints[0]));
   }
 }
 
-// Given three colinear points p, q, r, the function checks if
+// Given three collinear points p, q, r, the function checks if
 // point q lies on line segment 'pr'
 bool onSegment(Point &p, Point &q, Point &r) {
-  if (q.getX() <= std::max(p.getX(), r.getX()) &&
-      q.getX() >= std::min(p.getX(), r.getX()) &&
-      q.getY() <= std::max(p.getY(), r.getY()) &&
-      q.getY() >= std::min(p.getY(), r.getY()))
-    return true;
-  return false;
+    return q.getX() <= std::max(p.getX(), r.getX()) &&
+           q.getX() >= std::min(p.getX(), r.getX()) &&
+           q.getY() <= std::max(p.getY(), r.getY()) &&
+           q.getY() >= std::min(p.getY(), r.getY());
 }
 
 // The function that returns true if line segment 'p1q1'
@@ -259,19 +259,19 @@ bool doIntersect(Point &p1, Point &q1, Point &p2, Point &q2) {
     return true;
 
   // Special Cases
-  // p1, q1 and p2 are colinear and p2 lies on segment p1q1
+  // p1, q1 and p2 are collinear and p2 lies on segment p1q1
   if (o1 == 0 && onSegment(p1, p2, q1))
     return true;
 
-  // p1, q1 and p2 are colinear and q2 lies on segment p1q1
+  // p1, q1 and p2 are collinear and q2 lies on segment p1q1
   if (o2 == 0 && onSegment(p1, q2, q1))
     return true;
 
-  // p2, q2 and p1 are colinear and p1 lies on segment p2q2
+  // p2, q2 and p1 are collinear and p1 lies on segment p2q2
   if (o3 == 0 && onSegment(p2, p1, q2))
     return true;
 
-  // p2, q2 and q1 are colinear and q1 lies on segment p2q2
+  // p2, q2 and q1 are collinear and q1 lies on segment p2q2
   if (o4 == 0 && onSegment(p2, q1, q2))
     return true;
 
@@ -296,7 +296,7 @@ bool Figure::isInside(Point p) {
     // Check if the line segment from 'p' to 'extreme' intersects
     // with the line segment from 'polygon[i]' to 'polygon[next]'
     if (doIntersect(*offsetPoints[i], *offsetPoints[next], p, extreme)) {
-      // If the point 'p' is colinear with line segment 'i-next',
+      // If the point 'p' is collinear with line segment 'i-next',
       // then check if it lies on segment. If it lies, return true,
       // otherwise false
       if (orientation(*offsetPoints[i], p, *offsetPoints[next]) == 0)

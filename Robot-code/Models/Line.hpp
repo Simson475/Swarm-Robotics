@@ -16,24 +16,23 @@
 #define offset robotDiameter * 3
 
 class Line {
-  int id;
   std::shared_ptr<Point> a, b;
-  float distance;
-  double time;
+  float distance{};
+  double time{};
 
 public:
 
-  Line(){};
-  Line(std::shared_ptr<Point> a, std::shared_ptr<Point> b);
+  Line()= default;;
+  Line(const std::shared_ptr<Point>& a, const std::shared_ptr<Point>& b);
   //sets line to be -1, this applies to lines which cross hard objects
   void setFailureline();
   //checks if a given points belongs to this line, not 100% result
-  bool ContainsPoint(Point point, double SELECTION_FUZZINESS);
-  float GetDistance() { return distance; }
-  double getTime() { return time; }
+  bool ContainsPoint(const Point& point, double SELECTION_FUZZINESS);
+  [[nodiscard]] float GetDistance() const { return distance; }
+  [[nodiscard]] double getTime() const { return time; }
   void setTime(double time);
-  float getFloydTime();
-  float GetFloydDistance();
+  [[nodiscard]] float getFloydTime() const;
+  [[nodiscard]] float GetFloydDistance() const;
   void SetDistance(float newDis);
   //checks if a given points belongs to this line  without fuzziness, thus it's more precise
   bool pointBelongsToLine(Point& p);

@@ -15,7 +15,7 @@
 #include "map_structure.h"
 
 #define FORMULA_NUMBER 2
-#define STRATEGY_UNDER std::string("500")
+#define STRATEGY_UNDER std::string("2000")
 #define LIBRARY_PATH std::string("export LD_LIBRARY_PATH=$(pwd)/external/lib")
 #define DEFAULT_UPPAAL_PATH std::string("~/Desktop/uppaalStratego/")
 #define VERIFYTA std::string("bin-Linux/verifyta.bin")
@@ -37,7 +37,7 @@ struct Simulation{
 };
 
 namespace stratego{
-//Used for chosing between two different calls of Uppaal
+//Used for choosing between two different calls of Uppaal
 //Big planning a.k.a. Station planning
 //And the small one a.k.a. Waypoint (between stations) planning
 enum queryType { stations, waypoints };
@@ -48,21 +48,21 @@ enum traceType {initial_station, converted_cur, converted_dest};
 
 //Depending if it's stations or waypoints call Uppaal and returns
 //points which has to be taken in order to get to the destination
-std::string getSingleTrace(queryType type, std::string path);
+std::string getSingleTrace(queryType type, const std::string& path);
 
 //Creates waypoint query file depending on all vias and other robots 
 void createWaypointQ();
 
 //Opens terminal and calls Uppaal with given data
-std::string createModel(queryType type, std::string path);
+std::string createModel(queryType type, const std::string& path);
 
-//Retreives data from terminal, returned by Uppaal
+//Retrieves data from terminal, returned by Uppaal
 std::string GetStdoutFromCommand(std::string cmd);
 
 //Helper method forparseStr
 std::vector<Data> parseValue(std::istream &ss,std::string &line, int &run_number, queryType type);
 
 //Parses data from GetStdoutFromCommand
-Simulation parseStr(std::string result, int formula_number, queryType type);
+Simulation parseStr(const std::string& result, int formula_number, queryType type);
 };
 #endif

@@ -1,6 +1,6 @@
 #include "Line.hpp"
 
-Line::Line(std::shared_ptr<Point> a, std::shared_ptr<Point> b) {
+Line::Line(const std::shared_ptr<Point>& a, const std::shared_ptr<Point>& b) {
   this->a = a;
   this->b = b;
   // distance between two points
@@ -17,7 +17,7 @@ void Line::setFailureline() {
   } else
     this->distance = 0;
 }
-float Line::getFloydTime() {
+float Line::getFloydTime() const {
   if (time != -1)
     return time;
   else
@@ -33,14 +33,14 @@ void Line::setTime(double time) {
     time = time;
   }
 }
-float Line::GetFloydDistance() {
+float Line::GetFloydDistance() const {
   if (distance != -1)
     return distance;
   else
     return INF;
 }
 // First = Slope, Second = Y-Intercept
-std::pair<float, float> findLineFunction(Point p1, Point p2) {
+std::pair<float, float> findLineFunction(const Point& p1, const Point& p2) {
   float m; // slope of the line
   if (p2.getX() != p1.getX()) {
     m = (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
@@ -53,7 +53,7 @@ std::pair<float, float> findLineFunction(Point p1, Point p2) {
 }
 // const double SELECTION_FUZZINESS = 7  ;
 
-bool Line::ContainsPoint(Point point, double SELECTION_FUZZINESS) {
+bool Line::ContainsPoint(const Point& point, double SELECTION_FUZZINESS) {
 
   // LineGeometry lineGeo = geometry as LineGeometry;
   Point leftPoint;
@@ -77,8 +77,7 @@ bool Line::ContainsPoint(Point point, double SELECTION_FUZZINESS) {
 
   // return false;
   // If point is out of bounds, no need to do further checks.
-  if (point.getX() + SELECTION_FUZZINESS < leftPoint.getX() ||
-      rightPoint.getX() < point.getX() - SELECTION_FUZZINESS)
+  if (point.getX() + SELECTION_FUZZINESS < leftPoint.getX() || rightPoint.getX() < point.getX() - SELECTION_FUZZINESS)
     return false;
   else if (point.getY() + SELECTION_FUZZINESS <
                std::min(leftPoint.getY(), rightPoint.getY()) ||
@@ -109,14 +108,8 @@ bool Line::pointBelongsToLine(Point &p) {
   float x, y;
   if (lineFunc.first != -99999) {
     float decider = (lineFunc.first * p.getX() + lineFunc.second) - p.getY();
-    if (decider == 0) {
-      return true;
-    } else
-      return false;
+      return decider == 0;
   } else {
-    if (p.getX() == a->getX() || p.getY() == a->getY()) {
-      return true;
-    } else
-      return false;
+      return p.getX() == a->getX() || p.getY() == a->getY();
   }
 }

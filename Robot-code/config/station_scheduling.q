@@ -22,12 +22,12 @@
 /*
 
 */
-strategy plan = minE (total) [<=1000] : <> Robot.Done
+strategy plan = minE (total) [<=2000] : <> Robot.Done
 
 /*
 
 */
-simulate 1 [<= 1000] {\
+simulate 1 [<= 2000] {\
     Robot.initial_station, Robot.converted_cur(), Robot.converted_dest()\
 } under plan
 

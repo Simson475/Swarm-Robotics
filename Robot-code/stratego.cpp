@@ -1,6 +1,8 @@
 #include "stratego.h"
 
-std::string stratego::getSingleTrace(queryType type, std::string path) {
+#include <utility>
+
+std::string stratego::getSingleTrace(queryType type, const std::string& path) {
   std::string uppaalFormulaResults = createModel(type, path);
   //Used for storing the full trace
   Simulation parsed;
@@ -13,14 +15,14 @@ std::string stratego::getSingleTrace(queryType type, std::string path) {
   for(auto& p :parsed.trace){
     std::cout<< p.first << " time: " << p.second.timeStamp << " location: " <<p.second.via->getId()<<std::endl;
   }
-  std::string viasPath = "";
+  std::string viasPath;
   for(auto& p :parsed.points){
       viasPath += "(" + std::to_string(int(p->getX())) +";" + std::to_string(int(p->getY())) + ") ";
   }
   return viasPath;
 }
 
-std::string stratego::createModel(queryType type, std::string path) {
+std::string stratego::createModel(queryType type, const std::string& path) {
   std::string terminalCommand = LIBRARY_PATH;
   if (type == queryType::stations) {
     terminalCommand += " && cd ../config/ && " + path + VERIFYTA + " " +
@@ -38,7 +40,7 @@ std::string stratego::createModel(queryType type, std::string path) {
   stream = popen(terminalCommand.c_str(), "r");
   if (stream) {
     while (!feof(stream)){
-      if (fgets(buffer, max_buffer, stream) != NULL){
+      if (fgets(buffer, max_buffer, stream) != nullptr){
         result.append(buffer);
       }
     }
@@ -80,7 +82,7 @@ Simulation combineTraces(std::vector<std::vector<Data>> traces, stratego::queryT
     return Simulation{points, mergedTraces};
 }
 
-Simulation stratego::parseStr(std::string result, int formula_number, queryType type) {
+Simulation stratego::parseStr(const std::string& result, int formula_number, queryType type) {
   int run_number = 0;
   const size_t startIndex =
       result.find("Verifying formula " + std::to_string(formula_number));
@@ -111,9 +113,9 @@ Simulation stratego::parseStr(std::string result, int formula_number, queryType 
   }
 
   std::getline(ss, line);
-  while (line.size() > 0) {
+  while (!line.empty()) {
     std::vector<Data> e = parseValue(ss, line, run_number, type);
-    if (e.size() != 0) {
+    if (!e.empty()) {
       runs.push_back(e);
     }
     if (ss.eof()) {
@@ -159,8 +161,7 @@ std::vector<Data> stratego::parseValue(std::istream &ss, std::string &line, int 
   // Read run
   std::getline(ss, line);
 
-  std::string time;
-  std::string value;
+
 
   // Matches full row of simulation results on the form: [run_number]:
   // (time,value) (time,value)... group 1 == run_number, group 2 == all
@@ -221,17 +222,17 @@ std::string stratego::GetStdoutFromCommand(std::string cmd) {
   stream = popen(cmd.c_str(), "r");
   if (stream) {
     while (!feof(stream))
-      if (fgets(buffer, max_buffer, stream) != NULL)
+      if (fgets(buffer, max_buffer, stream) != nullptr)
         data.append(buffer);
     pclose(stream);
   }
   return data;
 }
 
-void fetchData(std::vector<int> &result, std::string from, nlohmann::json &j) {
+void fetchData(std::vector<int> &result, const std::string& from, nlohmann::json &j) {
   auto &array = j.at(from);
   for (auto &&val : array) {
-    result.push_back(stoi(val.dump().c_str()));
+    result.push_back(stoi(val.dump()));
   }
 }
 
@@ -297,15 +298,15 @@ void stratego::createWaypointQ() {
           << std::endl;
     k++;
   }
-  for (auto i = 0; i < waypoints.size(); i++) {
+  for (int waypoint : waypoints) {
     query << std::string("Robot") + std::string(".visited[") +
-                 std::to_string(waypoints[i]) + "],\\"
+                 std::to_string(waypoint) + "],\\"
           << std::endl;
   }
   query << "Robot.dest, Robot.cur_waypoint, Robot.dest_waypoint } -> {\\"
         << std::endl;
-  for (auto i = 0; i < waypoints.size(); i++) {
-    query << std::string("Waypoint(") + std::to_string(waypoints[i]) +
+  for (int waypoint : waypoints) {
+    query << std::string("Waypoint(") + std::to_string(waypoint) +
                  std::string(").num_in_queue,\\")
           << std::endl;
   }
