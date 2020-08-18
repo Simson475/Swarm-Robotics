@@ -16,19 +16,8 @@ if (GetDependencies)
             URL https://github.com/ilpincy/argos3/archive/3.0.0-beta56.zip
             URL_HASH SHA512=516864a641cd3222e4260bc3c6dd09939ec9e26a19eb05b874d7ba3dd972ab91d1518d1a735de9265c88d508e3a6177d9978980df05aadcd3602181e19a87ab7
             SOURCE_SUBDIR = ../argos-ext/src
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DARGOS_INSTALL_LDSOCONF=OFF -DARGOS_DOCUMENTATION=OFF
             )
-
-    ExternalProject_Add_Step(argos-ext softLinking
-            COMMAND ln -s <SOURCE_DIR>/doc <SOURCE_DIR>/../doc
-            DEPENDEES build
-            ALWAYS 0)
-
-    ExternalProject_Add_Step(argos-ext makeDocs
-            COMMAND cd <BINARY_DIR> && make doc
-            DEPENDEES softLinking
-            DEPENDERS install
-            ALWAYS 1)
 
     include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
     link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
@@ -43,15 +32,9 @@ include_directories(${CMAKE_SOURCE_DIR})
 add_definitions(-Wall)
 
 
-# Set up C++ link directoriesemacs 
-
-#link_directories(${ARGOS_LIBRARY_DIRS})
-
-#message( ${CMAKE_CURRENT_SOURCE_DIR} )
-#message( ${ARGOS_LIBRARY_DIRS} ) 
-
-
 add_subdirectory(controllers)
 
 add_subdirectory(loop_functions)
+
+add_subdirectory(server)
 

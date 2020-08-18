@@ -37,12 +37,12 @@ CTrajectoryQTUserFunctions::CTrajectoryQTUserFunctions()
           CSimulator::GetInstance().GetLoopFunctions())) {
   if(newJobs)
     generateJobs(); // call this for generating new list of jobs
-  sMap.initializeStations("experiment/scene2/"); 
-  sMap.initializeJobs("experiment/scene2/");
+  sMap.initializeStations("../../../experiment/scene2/");
+  sMap.initializeJobs("../../../experiment/scene2/");
   sMap.collectAllWayPoints();
-  sMap.createFolderForEachRobot("experiment/scene2/");
+  sMap.createFolderForEachRobot("../../../experiment/scene2/");
   sMap.setAllPossibleLines();
-  sMap.createStaticJSON("experiment/scene2/");
+  sMap.createStaticJSON("../../../experiment/scene2/");
 }
 void CTrajectoryQTUserFunctions::generateJobs() {
   //************creates random jobs in json file************
@@ -68,7 +68,7 @@ nlohmann::json mainJsonObj;
     jsonObj["job"] = stationsToVisit;
       mainJsonObj.push_back(jsonObj);
   }
-  std::ofstream out("experiment/scene2/jobs.json");
+  std::ofstream out("../../../experiment/scene2/jobs.json");
   out << std::setw(4) << mainJsonObj;
 }
 void CTrajectoryQTUserFunctions::KeyPressed(QKeyEvent* pc_event) {

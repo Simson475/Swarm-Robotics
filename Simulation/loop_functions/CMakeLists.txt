@@ -47,3 +47,4 @@ target_link_libraries(trajectory_loop_functions
 	argos3plugin_simulator_genericrobot
 ${ARGOS_QTOPENGL_LIBRARIES})
 
+add_dependencies(trajectory_loop_functions json-ext)

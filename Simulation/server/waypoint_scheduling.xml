@@ -22,7 +22,7 @@
 
 hybrid clock total;
 
-import "libconfig.so" {
+import "./Library/libconfig.so" {
     int number_of_stations();
     int number_of_robots();
     int number_of_waypoints();
@@ -44,7 +44,7 @@ const int NON_STATION_PASSING = waypoint_passing_time();
 const int STATION_PASSING = station_passing_time();
 const int OTHER_ROBOT_MAX = MAX_ROBOTS == 1 ? 2 : MAX_ROBOTS;
 
-import "libconfig.so" {
+import "./Library/libconfig.so" {
     void waypoint_visited(int num_waypoints, bool&amp; arr[int[0, NUM_WAYPOINTS - 1]]);
     void station_list(int num_stations, int[0, NUM_WAYPOINTS - 1]&amp; arr[int[1, NUM_STATIONS]]);
 };

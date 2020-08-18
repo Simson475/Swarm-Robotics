@@ -283,11 +283,11 @@ void Robot::converJSONStation(std::string robotId, std::string choice) {
   std::string path;
   if (choice == "Stations") {
     stationPath.clear();
-    path = "experiment/scene2/" + robotId + "/" + robotId + "Stations.json";
+    path = "../../../experiment/scene2/" + robotId + "/" + robotId + "Stations.json";
   }
   if (choice == "Waypoints") {
     waypointPath.clear();
-    path = "experiment/scene2/" + robotId + "/" + robotId + "Waypoints.json";
+    path = "../../../experiment/scene2/" + robotId + "/" + robotId + "Waypoints.json";
   }
   std::ifstream i(path);
 
@@ -375,7 +375,7 @@ std::string Robot::createDynamicJson(std::vector<Robot> &robots, int n, bool sta
       }
     }
   }
-  std::ofstream out("experiment/scene2/" + footBot->GetId() + "/" +
+  std::ofstream out("../../../experiment/scene2/" + footBot->GetId() + "/" +
                     "dynamic_config.json");
   out << std::setw(4) << jsonObj;
   return jsonObj.dump();

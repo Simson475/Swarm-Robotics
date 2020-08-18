@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <ctype.h>
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 #include <sys/stat.h>
 #include <bits/stdc++.h>
 #include "stratego.hpp"
