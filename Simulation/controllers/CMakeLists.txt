@@ -21,3 +21,8 @@ target_link_libraries(footbot_diffusion
 		argos3plugin_simulator_qtopengl
 )
 
+add_custom_command(TARGET footbot_diffusion POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ./libfootbot_diffusion.so
+        ../external/bin/libfootbot_diffusion.so
+        )

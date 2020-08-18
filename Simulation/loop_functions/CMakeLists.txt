@@ -48,3 +48,9 @@ target_link_libraries(trajectory_loop_functions
 ${ARGOS_QTOPENGL_LIBRARIES})
 
 add_dependencies(trajectory_loop_functions json-ext)
+
+add_custom_command(TARGET trajectory_loop_functions POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ./libtrajectory_loop_functions.so
+        ../external/bin/libtrajectory_loop_functions.so
+        )
