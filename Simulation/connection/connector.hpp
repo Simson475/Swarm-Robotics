@@ -11,8 +11,9 @@
 #include <ctype.h>
 #include <bits/stdc++.h>
 
+
 void error(const char *msg);
-std::string connectStratego(std::string station, std::string robotName, std::string dynamic);
+std::string connectStratego(std::string station, std::string robotName, std::string dynamic, std::string folderpath);
 void sendFile(int sockfd, std::string fileName, std::string dynamic);
 void sendFile1(int sockfd, std::string fileName);
 #endif

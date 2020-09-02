@@ -195,7 +195,8 @@ std::vector<int> getEveryRobotID(std::string robotName){
             result.push_back(atoi(id.first.c_str()));
     }
   }catch(std::exception const& e){
-      throw std::runtime_error("Failed robot_info_map of robot: " + robotName);
+      std::cout << "Failed robot_info_map of robot: " + robotName << '\n';
+      //throw std::runtime_error("Failed robot_info_map of robot: " + robotName);
   }
   return result;
 }

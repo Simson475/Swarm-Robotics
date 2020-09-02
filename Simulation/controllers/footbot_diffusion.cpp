@@ -182,7 +182,7 @@ void CFootBotDiffusion::Reset(){
 static void* callStratego(void *arguments){ 
    struct arg_struct *args = (struct arg_struct *) arguments;
    string mystring=string("./uppaalStratego/callStratego.exe ")+args -> id+" "+ args->choice;
-   connectStratego(args->choice, args->id, args->dynamic);
+   connectStratego(args->choice, args->id, args->dynamic, args->path);
    /*string action;
    FILE* stream;
    const int max_buffer = 256;
@@ -214,6 +214,7 @@ void CFootBotDiffusion::createUppaalTask(int n, string choice, int threadNr, boo
    args[threadNr].id = m_id;
    args[threadNr].choice = choice;
    args[threadNr].dynamic = dynamic;
+    args[threadNr].path = sMap.folderPath;
    pthread_create(&threads[threadNr], NULL, callStratego, &args[threadNr]);
    //std::cout <<args[threadNr].id<<" Calls UPPAAL "<<choice<<endl;
    paused = true;

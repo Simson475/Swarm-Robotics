@@ -104,13 +104,18 @@
       <cylinder id="c" height ="0.5" radius = "0.15" movable="false" >
     </entity>
     -->
-
+    <box id="obstacle0"size="2,8,0.4" movable="false" >
+      <body position="5,3,0" orientation="0,0,0" />
+    </box>
     <box id="obstacle1"size="4,6,0.4" movable="false" >
       <body position="-3,3,0" orientation="0,0,0" />
     </box>
     <box id="obstacle2"size="8,2,0.4" movable="false" >
       <body position="-3,-6,0" orientation="0,0,0" />
     </box>
+        <box id="obstacle4"size="4,4,0.4" movable="false" >
+          <body position="5,-5,0" orientation="0,0,0" />
+        </box>
 
  
 

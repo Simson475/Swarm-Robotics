@@ -135,19 +135,31 @@ Point& Map_Structure::getPointByID(int id){
     return NULL;
   }
 
-void Map_Structure::createStaticJSON(std::string path) {
+void Map_Structure::createStaticJSON() {
   nlohmann::json jsonObj;
+
+
   jsonObj["station_delay"] = 6;
   jsonObj["waypoint_delay"] = 3;
   jsonObj["uncertainty"] = 1.1;
+  //std::vector<std::pair<float,float>> xypoints;
+    std::vector<std::vector<float>> xypoints;
   vector<int> dropIds;
   vector<int> contIds;
   for (Point p : Map_Structure::points) {
     if (p.getType() == Type::endpoint) {
       dropIds.push_back(p.getId());
+      std::vector<float> xy;
+      xy.push_back(p.getCVector().GetX());
+        xy.push_back(p.getCVector().GetY());
+      xypoints.push_back(xy);
     }
     if (p.getType() == Type::station) {
       contIds.push_back(p.getId());
+        std::vector<float> xy;
+        xy.push_back(p.getCVector().GetX());
+        xy.push_back(p.getCVector().GetY());
+        xypoints.push_back(xy);
     }
   }
   jsonObj["end_stations"] = dropIds;
@@ -156,11 +168,31 @@ void Map_Structure::createStaticJSON(std::string path) {
       floydShortest(contIds.size() + dropIds.size());
 
   jsonObj["stations"] = contIds;
+    std::vector<std::vector<int>> shortestp;
+    for (auto i = 0; i < points.size(); i ++) {
+        std::vector<int> tmp;
+        for (auto j = 0; j < points.size(); j ++) {
+            if(i != j)
+                tmp.push_back(findPath(points[i].getId(), points[j].getId())[0].getId());
+            else
+                tmp.push_back(points[i].getId());
+        }
+        shortestp.push_back(tmp);
+    }
+    jsonObj["shortest_paths"] = shortestp;
   vector<int> vias;
-  for (auto i = 0; i < Map_Structure::points.size(); i++)
-    if (Map_Structure::points[i].getType() == 0)
-      vias.push_back(Map_Structure::points[i].getId());
+  for (auto & point : Map_Structure::points) {
+      if (point.getType() == 0) {
+          vias.push_back(point.getId());
+          std::vector<float> xy;
+          xy.push_back(point.getCVector().GetX());
+          xy.push_back(point.getCVector().GetY());
+          xypoints.push_back(xy);
+
+      }
+  }
   jsonObj["vias"] = vias;
+  jsonObj["coordinates"] = xypoints;
   // collect all the wayPoints in 2 dimensions
   int sizeLines = sqrt(Map_Structure::lines.size());
   vector<vector<int>> waypointsDistances(sizeLines, vector<int>());
@@ -210,8 +242,9 @@ void Map_Structure::createStaticJSON(std::string path) {
   jsonObj["waypoints"] = waypoints;
   // create static_config for each robot
   for (auto i = 0; i < Map_Structure::Robots.size(); i++) {
-    string tmp = path +
+    string tmp = folderPath +
                  Map_Structure::Robots[i].getfootBot()->GetId() + "/";
+    std::cout << tmp <<std::endl;
     std::ofstream out(tmp + "static_config.json");
     out << std::setw(4) << jsonObj;
            
@@ -297,9 +330,11 @@ vector<Point> Map_Structure::findPath(int startId, int destinationId) {
         } while (u != v);
         return pts;
 }
-void Map_Structure::initializeStations(std::string path) {
+void Map_Structure::initializeStations() {
   // get all the points defined in JSON file
-  std::ifstream i(path +"points.json");
+    std::cout << folderPath +"points.json" <<std::endl;
+  std::ifstream i(folderPath +"points.json");
+
   nlohmann::json j = nlohmann::json::parse(i);
   for (auto i = 0; i < j.size(); i++) {
     if(j[i].value("x", 0.0)!= 0.0){
@@ -316,19 +351,31 @@ void Map_Structure::initializeStations(std::string path) {
       endStationIDs.push_back(points[i].getId());
   }
 }
-void Map_Structure::initializeJobs(std::string path) {
+void Map_Structure::initializeJobs() {
   // get all the points defined in JSON file
-  std::ifstream i(path +"jobs.json");
+    std::cout << folderPath +"jobs.json" <<std::endl;
+  std::ifstream i(folderPath +"jobs.json");
   nlohmann::json j = nlohmann::json::parse(i);
   for (auto i = 0; i < j.size(); i++) {
     jobs.push_back(j[i].value("job", std::vector<int>(0)));
   }
 }
-void Map_Structure::createFolderForEachRobot(std::string path) {
+void Map_Structure::createFolderForEachRobot() {
   for (auto i = 0; i < Robots.size(); i++) {
-    string temp = path + Robots[i].getfootBot()->GetId();
+    string temp = folderPath + Robots[i].getfootBot()->GetId();
 
     if (mkdir(temp.c_str(), 0777) == -1) {
     }
   }
+}
+void Map_Structure::setFolderPath() {
+    std::string fileLoc = argos::CSimulator::GetInstance().GetExperimentFileName();
+    if(fileLoc.find("/") != std::string::npos) {
+        auto pos = fileLoc.find_last_of("/");
+        folderPath = fileLoc.substr(0 , pos + 1);
+    }
+    else {
+        folderPath = "/";
+    }
+    std::cout << folderPath <<std::endl;
 }
