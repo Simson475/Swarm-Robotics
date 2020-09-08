@@ -16,6 +16,7 @@ using namespace argos;
 
 class Map_Structure {
 public:
+    std::string folderPath;
   //storage of elements in the map
   std::vector<Point> points;
   std::vector<Line> lines;
@@ -33,12 +34,16 @@ public:
   int timesUppaalFailed = 0;
   int totalTries = 0;
 
+
   //ensurance that the class is created only once
   static Map_Structure &get_instance() {
     static Map_Structure instance;
     return instance;
   }
-  
+
+  //sets path of the folder where one can find trajectory and points
+  void setFolderPath();
+
   // finds a robot by an ID
   int getRobotById(std::string id);
 
@@ -46,7 +51,7 @@ public:
   void collectAllWayPoints();
 
   //creates a static_config.json file with all the relevant data
-  void createStaticJSON(std::string path);
+  void createStaticJSON();
 
   //usage of Floyd-Warshall Algorithm for shortest paths between each via
   std::vector<std::vector<float>> floydShortest(int amountOfStations);
@@ -64,13 +69,13 @@ public:
   std::vector<Point> findPath(int startId, int destinationId);
 
   //collects all the stations from experiment/scene2/points.json
-  void initializeStations(std::string path);
+  void initializeStations();
 
   //collects all the stations from experiment/scene2/points.json
-  void initializeJobs(std::string path);
+  void initializeJobs();
 
   //creates for each simulated robot a folder, where one stores it's config files
-  void createFolderForEachRobot(std::string path);
+  void createFolderForEachRobot();
 
   //function used for shortest path, copies the relevant data to copy list
   std::vector<std::vector<float>> createCopyList();

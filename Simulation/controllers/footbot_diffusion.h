@@ -118,6 +118,7 @@ struct arg_struct {
   std::string choice;
   std::string result;
   std::string dynamic;
+  std::string path;
 };
 
 #endif

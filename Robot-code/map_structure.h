@@ -21,7 +21,7 @@ public:
   //Storage of shortest distances between all stations
   std::vector<std::vector<float>> shortestDistances;
 
-  //singletone of map_structure
+  //singleton of map_structure
   static Map_Structure &get_instance() {
     static Map_Structure instance;
     return instance;
@@ -30,14 +30,14 @@ public:
   void collectAllWayPoints();
 
   // creates static_config json file for Uppaal
-  void createStaticJSON(std::string path);
+  void createStaticJSON(const std::string& path);
 
   //calculates and returns shortest distances between all stations as well as 
   //stores all shortest paths between all vias
   vector<vector<float>> floydShortest(int amountOfStations);
 
   // Combines from all the points all possibleStaticMap::lines
-  void setAllPossibleLines();
+  void setAllPossibleLines(float mapSize);
 
   // Functions eliminates all theStaticMap::lines which have intersection
   void eliminateBadLines(std::vector<shared_ptr<Line>>& hardLines, vector<Line>& lines);
@@ -46,15 +46,17 @@ public:
   std::vector<Point> findPath(int startId, int destinationId);
 
   // reads Data/points.json file and initializes the stations
-  void initializeStations(std::string path);
+  void initializeStations(const std::string& path);
 
   //Assistant function for floyd shortest path
   vector<vector<float>> createCopyList();
 
   //sorts all the lines in order
   void sortLines();
+  
+  
 
 private:
-  Map_Structure() {}
+  Map_Structure() = default;
 };
 #endif

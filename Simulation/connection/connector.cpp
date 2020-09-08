@@ -9,7 +9,7 @@ void error(const char *msg)
     exit(0);
 }
 
-std::string connectStratego(std::string station, std::string robotName, std::string dynamic)
+std::string connectStratego(std::string station, std::string robotName, std::string dynamic, std::string folderpath)
 {
     int stations;
     if(station == "Stations") stations = 1;
@@ -41,8 +41,8 @@ std::string connectStratego(std::string station, std::string robotName, std::str
     write(sockfd, &stations, sizeof(int)); // inform server if it's waypoints or stations
     write(sockfd, &nameSize, sizeof(int)); // inform server the size of the robotname
     write(sockfd, robotName.c_str(), robotName.size());//robot name
-        sendFile1(sockfd, "../../../experiment/scene2/"+robotName+"/static_config.json");
-    sendFile(sockfd, "../../../experiment/scene2/"+robotName+"/dynamic_config.json",dynamic);
+    sendFile1(sockfd, folderpath+robotName+"/static_config.json");
+    sendFile(sockfd, folderpath+robotName+"/dynamic_config.json",dynamic);
 
     
     
@@ -54,11 +54,10 @@ std::string connectStratego(std::string station, std::string robotName, std::str
       buff[n] = '\0';
     std::string path;
       if (stations) {
-    
-    path = "../../../experiment/scene2/" + robotName + "/" + robotName + "Stations.json";
+    path = folderpath + robotName + "/" + robotName + "Stations.json";
   }
   else {
-    path ="../../../experiment/scene2/" + robotName + "/" + robotName + "Waypoints.json";
+    path =folderpath + robotName + "/" + robotName + "Waypoints.json";
   }
       std::ofstream out(path);
     out << std::setw(4) << buff;

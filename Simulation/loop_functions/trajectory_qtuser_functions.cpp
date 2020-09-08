@@ -35,14 +35,16 @@ void print(std::vector<std::vector<Line>> next) {
 CTrajectoryQTUserFunctions::CTrajectoryQTUserFunctions()
     : m_cTrajLF(dynamic_cast<CTrajectoryLoopFunctions &>(
           CSimulator::GetInstance().GetLoopFunctions())) {
+
+    sMap.setFolderPath();
   if(newJobs)
     generateJobs(); // call this for generating new list of jobs
-  sMap.initializeStations("../../../experiment/scene2/");
-  sMap.initializeJobs("../../../experiment/scene2/");
+  sMap.initializeStations();
+  sMap.initializeJobs();
   sMap.collectAllWayPoints();
-  sMap.createFolderForEachRobot("../../../experiment/scene2/");
+  sMap.createFolderForEachRobot();
   sMap.setAllPossibleLines();
-  sMap.createStaticJSON("../../../experiment/scene2/");
+  sMap.createStaticJSON();
 }
 void CTrajectoryQTUserFunctions::generateJobs() {
   //************creates random jobs in json file************

@@ -32,7 +32,9 @@ vector<vector<float>> Map_Structure::createCopyList() {
 
 vector<vector<float>> Map_Structure::floydShortest(int amountOfStations) {
   auto size = sqrt(Map_Structure::lines.size());
-  vector<vector<float>> copyList(size, vector<float>(size));
+
+  vector<vector<float>> copyList(size, vector<float>(size, 0));
+
   for (auto &line : Map_Structure::lines) {
     copyList[line.Geta()->getId()][line.Getb()->getId()] =
         line.GetFloydDistance();
@@ -77,7 +79,7 @@ vector<vector<float>> Map_Structure::floydShortest(int amountOfStations) {
   return shortestDistance;
 }
 
-void Map_Structure::createStaticJSON(std::string path) {
+void Map_Structure::createStaticJSON(const std::string& path) {
   nlohmann::json jsonObj;
   jsonObj["station_delay"] = 6;
   jsonObj["waypoint_delay"] = 3;
@@ -99,9 +101,9 @@ void Map_Structure::createStaticJSON(std::string path) {
 
   jsonObj["stations"] = contIds;
   vector<int> vias;
-  for (auto i = 0; i < Map_Structure::points.size(); i++)
-    if (Map_Structure::points[i]->getType() == 0)
-      vias.push_back(Map_Structure::points[i]->getId());
+  for (auto & point : Map_Structure::points)
+    if (point->getType() == 0)
+      vias.push_back(point->getId());
   jsonObj["vias"] = vias;
   // collect all the wayPoints in 2 dimensions
   int sizeLines = sqrt(Map_Structure::lines.size());
@@ -120,23 +122,23 @@ void Map_Structure::createStaticJSON(std::string path) {
 
   // creation of waypoints json Object
   int j = 0;
-  for (auto i = 0; i < Map_Structure::points.size(); i++) {
+  for (auto & point : Map_Structure::points) {
     for (j; j < Map_Structure::lines.size(); j++) {
-      if (Map_Structure::points[i]->getId() ==
+      if (point->getId() ==
           Map_Structure::lines[j].Geta()->getId()) {
         if (Map_Structure::lines[j].GetDistance() != -1)
-          Map_Structure::points[i]->pushAdjID(
+          point->pushAdjID(
               Map_Structure::lines[j].Getb()->getId());
       } else
         break;
     }
   }
   vector<nlohmann::json> waypoints;
-  for (auto i = 0; i < Map_Structure::points.size(); i++) {
+  for (auto & point : Map_Structure::points) {
     nlohmann::json wayPoint;
-    wayPoint["adjList"] = Map_Structure::points[i]->getAdjIDs();
-    wayPoint["id"] = Map_Structure::points[i]->getId();
-    switch (Map_Structure::points[i]->getType()) {
+    wayPoint["adjList"] = point->getAdjIDs();
+    wayPoint["id"] = point->getId();
+    switch (point->getType()) {
     case 0:
       wayPoint["type"] = "vias";
       break;
@@ -147,8 +149,8 @@ void Map_Structure::createStaticJSON(std::string path) {
       wayPoint["type"] = "station";
       break;
     }
-    wayPoint["x"] = Map_Structure::points[i]->getX();
-    wayPoint["y"] = Map_Structure::points[i]->getY();
+    wayPoint["x"] = point->getX();
+    wayPoint["y"] = point->getY();
     waypoints.push_back(wayPoint);
   }
   jsonObj["waypoints"] = waypoints;
@@ -157,17 +159,17 @@ void Map_Structure::createStaticJSON(std::string path) {
   out << std::setw(4) << jsonObj;
   out.close();
 }
+
 // Combines from all the points all possibleMap_Structure::lines
-void Map_Structure::setAllPossibleLines() {
+void Map_Structure::setAllPossibleLines(float mapSize) {
   // collect all possible lines between off set points
   for (auto i = 0; i < figures.size(); i++) {
     for (auto e = 0; e < figures[i]->getOffSet().size(); e++) {
       for (auto j = 0; j < figures.size(); j++) {
         if (j != i) {
           for (auto k = 0; k < figures[j]->getOffSet().size(); k++) {
-            Map_Structure::lines.push_back(
-                Line(Map_Structure::figures[i]->getOffSet()[e],
-                     Map_Structure::figures[j]->getOffSet()[k]));
+            Map_Structure::lines.emplace_back(Map_Structure::figures[i]->getOffSet()[e],
+                     Map_Structure::figures[j]->getOffSet()[k]);
           }
         }
       }
@@ -176,7 +178,7 @@ void Map_Structure::setAllPossibleLines() {
       hardLines.push_back(line);
     }
   }
-
+std::cout << "// check if stations belongs to any of the figures"<<std::endl;
   // check if stations belongs to any of the figures
   for (auto &fig : figures) {
     for (auto &station : stations) {
@@ -186,9 +188,9 @@ void Map_Structure::setAllPossibleLines() {
       }
     }
   }
+  std::cout<< "// collect all the possible lines between stations and off set points"<<std::endl;
   // collect all the possible lines between stations and off set points
   std::vector<std::vector<Line>> stationLines(stations.size(), vector<Line>());
-  ;
   int k = 0;
   for (auto &station : stations) {
     if (station->getFigure() != nullptr) {
@@ -198,9 +200,10 @@ void Map_Structure::setAllPossibleLines() {
           stationLines[k].push_back(Line(point, station));
         }
       }
+      //used for stations which are inside a figures convex hull
       for (auto &line : stationLines[k]) {
         for (auto &point : station->getFigure()->getPoints()) {
-          if (line.ContainsPoint(point, 7)) {
+          if (line.ContainsPoint(point, mapSize/ 2860)) {
             line.setFailureline();
             line.SetDistance(-1);
             line.setTime(-1);
@@ -221,34 +224,36 @@ void Map_Structure::setAllPossibleLines() {
     } else {
       // if station does not belong to figure we simply add them
       for (auto &point : points) {
-        Map_Structure::lines.push_back(Line(station, point));
-        Map_Structure::lines.push_back(Line(point, station));
+        Map_Structure::lines.emplace_back(station, point);
+        Map_Structure::lines.emplace_back(point, station);
       }
     }
   }
   // elimination of lines which intersect with a rough surface
-  for (auto i = 0; i < stations.size(); i++) {
-    for (auto j = 0; j < stations.size(); j++) {
-      lines.push_back(Line(stations[i], stations[j]));
+  std::cout<< "// elimination of lines which intersect with a rough surface" << std::endl;
+  for (auto & station : stations) {
+    for (auto & j : stations) {
+      lines.emplace_back(station, j);
     }
   }
   eliminateBadLines(hardLines, lines);
   for (auto &sLines : stationLines) {
     for (auto &sLine : sLines) {
-      lines.push_back(std::move(sLine));
+      lines.push_back(sLine);
     }
   }
   // collect all the possible lines from each figure
+    std::cout<< "// collect all the possible lines from each figure" << std::endl;
   for (auto &fig : figures) {
     for (auto i = 0; i < fig->getOffSet().size(); i++) {
       for (auto j = 0; j < fig->getOffSet().size(); j++) {
         if (j == fig->getOffSet().size() - 1 && i == 0 ||
             i == fig->getOffSet().size() - 1 && j == 0) {
-          lines.push_back(Line(fig->getOffSet()[i], fig->getOffSet()[j]));
+          lines.emplace_back(fig->getOffSet()[i], fig->getOffSet()[j]);
         } else {
 
           if (i == j + 1 || i == j - 1) {
-            lines.push_back(Line(fig->getOffSet()[i], fig->getOffSet()[j]));
+            lines.emplace_back(fig->getOffSet()[i], fig->getOffSet()[j]);
           } else {
             Line line = Line(fig->getOffSet()[i], fig->getOffSet()[j]);
 
@@ -261,6 +266,7 @@ void Map_Structure::setAllPossibleLines() {
       }
     }
   }
+    std::cout<< "// PLOT" << std::endl;
   ofstream myfile;
   myfile.open("../Plotting/lines.dat", std::ios_base::app);
   for (auto &line : lines) {
@@ -273,17 +279,18 @@ void Map_Structure::setAllPossibleLines() {
     }
   }
   myfile.close();
+    std::cout<< "END" << std::endl;
 }
 
-float cross(Point a, Point b) {
+float cross(const Point& a, const Point& b) {
   return a.getX() * b.getY() - a.getY() * b.getX();
 }
 
-float dot(Point a, Point b) {
+float dot(const Point& a, const Point& b) {
   return a.getX() * b.getX() + a.getY() * b.getY();
 }
 
-bool intersectionInterest(Point m1, Point m2, Point n1, Point n2) {
+bool intersectionInterest(const Point& m1, const Point& m2, const Point& n1, const Point& n2) {
   if (cross((n1 - n2), (m1 - n2)) * cross((n1 - n2), (m2 - n2)) < 0 &&
       cross((m1 - m2), (n1 - m2)) * cross((m1 - m2), (n2 - m2)) < 0) {
     return true;
@@ -292,21 +299,18 @@ bool intersectionInterest(Point m1, Point m2, Point n1, Point n2) {
       cross(m1 - m2, n1 - n2) == 0) {
     return true;
   }
-  if (cross(n1 - n2, m1 - n2) * cross(n1 - n2, m2 - n2) < 0 &&
-      cross(m2 - m1, n1 - m1) * cross(m2 - m1, n2 - m1) == 0) {
-    return true;
-  }
-  return false;
+    return cross(n1 - n2, m1 - n2) * cross(n1 - n2, m2 - n2) < 0 &&
+           cross(m2 - m1, n1 - m1) * cross(m2 - m1, n2 - m1) == 0;
 }
 // Functions eliminates all theMap_Structure::lines which have intersection
 void Map_Structure::eliminateBadLines(std::vector<shared_ptr<Line>> &hardLines,
                                       vector<Line> &lines) {
   std::vector<int> adjIDs;
   for (int i = 0; i < lines.size(); i++) {
-    for (auto j = 0; j < hardLines.size(); j++) {
+    for (auto & hardLine : hardLines) {
       if (intersectionInterest(*lines[i].Geta(), *lines[i].Getb(),
-                               *hardLines[j]->Geta(),
-                               *hardLines[j]->Getb())) {
+                               *hardLine->Geta(),
+                               *hardLine->Getb())) {
         Map_Structure::lines[i].setFailureline();
         lines[i].SetDistance(-1);
         lines[i].setTime(-1);
@@ -344,32 +348,37 @@ vector<Point> Map_Structure::findPath(int startId, int destinationId) {
   return pts;
 }
 
-void Map_Structure::initializeStations(std::string path) {
-  // Resets the coutner of points id
+void Map_Structure::initializeStations(const std::string& path) {
+  // Resets the counter of points id
   // get all the points defined in JSON file
-  std::ifstream i(path + "points.json");
-  Point().resetIdCount();
-  nlohmann::json j = nlohmann::json::parse(i);
-  for (auto i = 0; i < j.size(); i++) {
-    if (j[i].value("x", 0.0) != 0.0) {
-      std::shared_ptr<Point> p(new Point(
-          j[i].value("x", 0.0), j[i].value("y", 0.0), j[i].value("z", 0.0),
-          static_cast<Type>(j[i].value("type", 0)), j[i].value("name", ""),
-          nullptr));
-      p->incrementId();
-      stations.push_back(std::move(p));
-    }
-    if (static_cast<Type>(j[i].value("type", 0)) == Type::station)
-      stationIDs.push_back(stations[i]->getId());
-    if (static_cast<Type>(j[i].value("type", 0)) == Type::endpoint)
-      endStationIDs.push_back(stations[i]->getId());
+  try {
+      std::ifstream i(path + "points.json");
+      Point().resetIdCount();
+      nlohmann::json j = nlohmann::json::parse(i);
+      for (auto i = 0; i < j.size(); i++) {
+          if (j[i].value("x", 0.0) != 0.0) {
+              std::shared_ptr<Point> p(new Point(
+                      j[i].value("x", 0.0), j[i].value("y", 0.0), j[i].value("z", 0.0),
+                      static_cast<Type>(j[i].value("type", 0)), j[i].value("name", ""),
+                      nullptr));
+              p->incrementId();
+              stations.push_back(p);
+          }
+          if (static_cast<Type>(j[i].value("type", 0)) == Type::station)
+              stationIDs.push_back(stations[i]->getId());
+          if (static_cast<Type>(j[i].value("type", 0)) == Type::endpoint)
+              endStationIDs.push_back(stations[i]->getId());
+      }
+      ofstream myfile;
+      myfile.open("../Plotting/stations.dat", std::ios_base::app);
+      for (auto &point : stations) {
+          myfile << point->getY() << " " << point->getX() << std::endl;
+      }
+      myfile.close();
   }
-  ofstream myfile;
-  myfile.open("../Plotting/stations.dat", std::ios_base::app);
-  for (auto &point : stations) {
-    myfile << point->getY() << " " << point->getX() << std::endl;
+  catch(...){
+
   }
-  myfile.close();
 }
     void Figure::removeOffPoint(shared_ptr<Point>& p){
       for (auto it = offsetPoints.begin(); it != offsetPoints.end(); ++it){
