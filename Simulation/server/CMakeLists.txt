@@ -28,11 +28,11 @@ add_custom_command(TARGET Server POST_BUILD
 
 add_custom_command(TARGET Server POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory
-        .Library
+        Library
         )
 
 add_custom_command(TARGET Server POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-        ../../server/Library/libconfig.so
+        ../external/lib/libconfig.so
         ${CMAKE_CURRENT_BINARY_DIR}/Library/libconfig.so
         )
