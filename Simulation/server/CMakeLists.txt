@@ -36,3 +36,9 @@ add_custom_command(TARGET Server POST_BUILD
         ../external/lib/libconfig.so
         ${CMAKE_CURRENT_BINARY_DIR}/Library/libconfig.so
         )
+
+add_custom_command(TARGET Server POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ../../experiment/runtime_scripts/run_a_scene.sh
+        ${CMAKE_BINARY_DIR}/external/bin/run_a_scene.sh
+        )
