@@ -220,7 +220,7 @@ void CFootBotDiffusion::createUppaalTask(int n, std::string choice, int threadNr
     args[threadNr].dynamic = dynamic;
     args[threadNr].path = sMap.folderPath;
     pthread_create(&threads[threadNr], NULL, callStratego, &args[threadNr]);
-    //std::cout <<args[threadNr].id<<" Calls UPPAAL "<<choice<<endl;
+    std::cout <<args[threadNr].id<<" Calls UPPAAL "<<choice<<std::endl;
     paused = true;
 }
 

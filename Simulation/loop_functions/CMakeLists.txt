@@ -1,7 +1,7 @@
 #include_directories(${CMAKE_SOURCE_DIR})
 
 #if(ARGOS_COMPILE_QTOPENGL)
-#    add_subdirectory(trajectory_loop_functions)
+#    add_subdirectory(CTrajectoryLoopFunctions)
 #endif(ARGOS_COMPILE_QTOPENGL)
 
 find_package(Qt5Widgets)
@@ -9,7 +9,7 @@ find_package(Lua)
 
 include_directories(${LUA_INCLUDE_DIR})
 
-add_library(trajectory_loop_functions MODULE 
+add_library(CTrajectoryLoopFunctions MODULE
 
 ../models/box.cpp
 ../models/box.hpp
@@ -26,18 +26,18 @@ add_library(trajectory_loop_functions MODULE
 ../models/robot.hpp
 ../models/robot.cpp
 
-	trajectory_loop_functions.h
-	trajectory_qtuser_functions.h
-	
-	trajectory_loop_functions.cpp
-	trajectory_qtuser_functions.cpp
+	CTrajectoryLoopFunctions.h
+	CTrajectoryQTUserFunctions.h
+
+	CTrajectoryLoopFunctions.cpp
+	CTrajectoryQTUserFunctions.cpp
 )
 
 
 #Because argos3 installation puts in its own folder.
-target_link_directories(trajectory_loop_functions PRIVATE ${EXTERNAL_INSTALL_LOCATION}/lib/argos3)
+target_link_directories(CTrajectoryLoopFunctions PRIVATE ${EXTERNAL_INSTALL_LOCATION}/lib/argos3)
 
-target_link_libraries(trajectory_loop_functions
+target_link_libraries(CTrajectoryLoopFunctions
 	Qt5::Widgets
 	argos3core_simulator
 	argos3plugin_simulator_entities
@@ -47,10 +47,10 @@ target_link_libraries(trajectory_loop_functions
 	argos3plugin_simulator_genericrobot
 ${ARGOS_QTOPENGL_LIBRARIES})
 
-add_dependencies(trajectory_loop_functions json-ext)
+add_dependencies(CTrajectoryLoopFunctions json-ext)
 
-add_custom_command(TARGET trajectory_loop_functions POST_BUILD
+add_custom_command(TARGET CTrajectoryLoopFunctions POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-        ./libtrajectory_loop_functions.so
-        ../external/bin/libtrajectory_loop_functions.so
+        ./libCTrajectoryLoopFunctions.so
+        ../external/bin/libCTrajectoryLoopFunctions.so
         )

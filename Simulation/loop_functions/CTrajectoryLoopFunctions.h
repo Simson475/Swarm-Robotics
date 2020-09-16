@@ -1,5 +1,5 @@
-#ifndef TRAJECTORY_LOOP_FUNCTIONS_H
-#define TRAJECTORY_LOOP_FUNCTIONS_H
+#ifndef CTrajectoryLoopFunctions_H
+#define CTrajectoryLoopFunctions_H
 
 #include <argos3/core/simulator/loop_functions.h>
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>

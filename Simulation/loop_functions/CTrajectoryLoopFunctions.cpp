@@ -1,4 +1,4 @@
-#include "trajectory_loop_functions.h"
+#include "CTrajectoryLoopFunctions.h"
 
 /****************************************/
 /****************************************/
@@ -81,4 +81,4 @@ void CTrajectoryLoopFunctions::PostStep() {
 }
 /****************************************/
 /****************************************/
-REGISTER_LOOP_FUNCTIONS(CTrajectoryLoopFunctions, "trajectory_loop_functions")
+REGISTER_LOOP_FUNCTIONS(CTrajectoryLoopFunctions, "CTrajectoryLoopFunctions")

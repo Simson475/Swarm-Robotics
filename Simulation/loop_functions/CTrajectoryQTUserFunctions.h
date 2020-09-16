@@ -1,5 +1,5 @@
-#ifndef TRAJECTORY_QTUSER_FUNCTIONS_H
-#define TRAJECTORY_QTUSER_FUNCTIONS_H
+#ifndef CTrajectoryQTUserFunctions_H
+#define CTrajectoryQTUserFunctions_H
 
 #include <argos3/core/control_interface/ci_controller.h>
 #include <argos3/core/simulator/loop_functions.h>

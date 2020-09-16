@@ -54,8 +54,8 @@
                   label="id_qtuser_functions" /> -->
 
 
-  <loop_functions library="./libtrajectory_loop_functions"
-                  label="trajectory_loop_functions" />
+  <loop_functions library="./libCTrajectoryLoopFunctions"
+                  label="CTrajectoryLoopFunctions" />
 
   <!-- *********************** -->
   <!-- * Arena configuration * -->
@@ -150,11 +150,11 @@
     <qt-opengl autoplay=true>  <!--<qt-opengl autoplay=true>-->
 
       
-      <!-- <user_functions library="build/loop_functions/trajectory_loop_functions/libtrajectory_loop_functions"
-                      label="trajectory_qtuser_functions" />   -->
+      <!-- <user_functions library="build/loop_functions/CTrajectoryLoopFunctions/libCTrajectoryLoopFunctions"
+                      label="CTrajectoryQTUserFunctions" />   -->
 
-      <user_functions library="./libtrajectory_loop_functions"
-                      label="trajectory_qtuser_functions" />
+      <user_functions library="./libCTrajectoryLoopFunctions"
+                      label="CTrajectoryQTUserFunctions" />
 
       <!-- <user_functions library="build/loop_functions/id_loop_functions/libid_loop_functions"
                       label="id_qtuser_functions" /> -->

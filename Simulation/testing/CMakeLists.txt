@@ -35,9 +35,9 @@ message( ${ARGOS_LIBRARY_DIRS} )
 
 
 
-#add_executable(out ALIAS ../../build/loop_functions/libtrajectory_loop_functions.so )
+#add_executable(out ALIAS ../../build/loop_functions/libCTrajectoryLoopFunctions.so )
 add_executable(testMain testMain.cpp )
-#set_property(TARGET foo PROPERTY IMPORTED_LOCATION "../../build/loop_functions/libtrajectory_loop_functions.so")
+#set_property(TARGET foo PROPERTY IMPORTED_LOCATION "../../build/loop_functions/libCTrajectoryLoopFunctions.so")
 
 target_link_libraries(
 	testMain
@@ -45,7 +45,7 @@ target_link_libraries(
 	argos3plugin_simulator_entities
 	argos3plugin_simulator_footbot
 	argos3plugin_simulator_qtopengl
-	/home/widok/Desktop/Swarmrobotic/swarmrobotics/extra/build/loop_functions/libtrajectory_loop_functions.so
+	/home/widok/Desktop/Swarmrobotic/swarmrobotics/extra/build/loop_functions/libCTrajectoryLoopFunctions.so
 	/home/widok/Desktop/Swarmrobotic/swarmrobotics/extra/build/controllers/libCFootBotDiffusion.so
 	/usr/include/nlohmann/json.hpp
 	# this lib was added, cause Get Sensor, doesnt works!.

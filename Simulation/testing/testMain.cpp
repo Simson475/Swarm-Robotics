@@ -11,7 +11,7 @@
 #include "../models/box.hpp"
 #include "../models/robot.hpp"
 #include "../models/map_structure.hpp"
-#include "../loop_functions/trajectory_qtuser_functions.h"
+#include "../loop_functions/CTrajectoryQTUserFunctions.h"
 #include <argos3/core/utility/configuration/argos_configuration.h>
 
 using namespace std;
