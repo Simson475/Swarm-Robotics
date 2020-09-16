@@ -1,5 +1,5 @@
-#ifndef FOOTBOT_DIFFUSION_H
-#define FOOTBOT_DIFFUSION_H
+#ifndef CFootBotDiffusion_H
+#define CFootBotDiffusion_H
 
 #include <argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h>
 /*
@@ -41,7 +41,7 @@ public:
   /*
    * This function initializes the controller.
    * The 't_node' variable points to the <parameters> section in the XML
-   * file in the <controllers><footbot_diffusion_controller> section.
+   * file in the <controllers><CFootBotDiffusion_controller> section.
    */
   virtual void Init(TConfigurationNode &t_node);
 
@@ -89,7 +89,7 @@ private:
    * The following variables are used as parameters for the
    * algorithm. You can set their value in the <parameters> section
    * of the XML configuration file, under the
-   * <controllers><footbot_diffusion_controller> section.
+   * <controllers><CFootBotDiffusion_controller> section.
    */
 
   /* Maximum tolerance for the angle between

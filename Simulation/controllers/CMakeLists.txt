@@ -6,13 +6,13 @@ find_package(Lua)
 
 include_directories(${LUA_INCLUDE_DIR})
 
-add_library(footbot_diffusion MODULE footbot_diffusion.h footbot_diffusion.cpp ../connection/connector.hpp ../connection/connector.cpp)
-add_dependencies(footbot_diffusion argos-ext)
+add_library(CFootBotDiffusion MODULE CFootBotDiffusion.h CFootBotDiffusion.cpp ../connection/connector.hpp ../connection/connector.cpp)
+add_dependencies(CFootBotDiffusion argos-ext)
 
 #Because argos3 installation puts in its own folder.
-target_link_directories(footbot_diffusion PRIVATE ${EXTERNAL_INSTALL_LOCATION}/lib/argos3)
+target_link_directories(CFootBotDiffusion PRIVATE ${EXTERNAL_INSTALL_LOCATION}/lib/argos3)
 
-target_link_libraries(footbot_diffusion
+target_link_libraries(CFootBotDiffusion
 		Qt5::Widgets
 		argos3core_simulator
 		argos3plugin_simulator_entities
@@ -21,8 +21,8 @@ target_link_libraries(footbot_diffusion
 		argos3plugin_simulator_qtopengl
 )
 
-add_custom_command(TARGET footbot_diffusion POST_BUILD
+add_custom_command(TARGET CFootBotDiffusion POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-        ./libfootbot_diffusion.so
-        ../external/bin/libfootbot_diffusion.so
+        ./libCFootBotDiffusion.so
+        ../external/bin/libCFootBotDiffusion.so
         )

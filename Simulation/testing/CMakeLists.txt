@@ -46,7 +46,7 @@ target_link_libraries(
 	argos3plugin_simulator_footbot
 	argos3plugin_simulator_qtopengl
 	/home/widok/Desktop/Swarmrobotic/swarmrobotics/extra/build/loop_functions/libtrajectory_loop_functions.so
-	/home/widok/Desktop/Swarmrobotic/swarmrobotics/extra/build/controllers/libfootbot_diffusion.so
+	/home/widok/Desktop/Swarmrobotic/swarmrobotics/extra/build/controllers/libCFootBotDiffusion.so
 	/usr/include/nlohmann/json.hpp
 	# this lib was added, cause Get Sensor, doesnt works!.
 	argos3plugin_simulator_genericrobot

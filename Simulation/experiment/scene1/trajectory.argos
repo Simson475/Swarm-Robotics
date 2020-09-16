@@ -23,8 +23,8 @@
   <!-- * Controllers * -->
   <!-- *************** -->
   <controllers>
-    <footbot_diffusion_controller id="fdc"
-                                  library="build/controllers/libfootbot_diffusion">
+    <CFootBotDiffusion_controller id="fdc"
+                                  library="build/controllers/libCFootBotDiffusion">
       <actuators>
         <differential_steering implementation="default" />
       </actuators>
@@ -34,7 +34,7 @@
       </sensors>
 
       <params alpha="7.5" delta="0.1" velocity="20" />   <!--  velocity=5 -->
-    </footbot_diffusion_controller>
+    </CFootBotDiffusion_controller>
 
   </controllers>
 

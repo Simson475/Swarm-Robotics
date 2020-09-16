@@ -6,7 +6,7 @@
 
 //using namespace std;
 /* Include the controller definition */
-#include <footbot_diffusion.h>
+#include <CFootBotDiffusion.h>
 /* Function definitions for XML parsing */
 #include <argos3/core/utility/configuration/argos_configuration.h>
 /* 2D vector definition */
@@ -66,8 +66,8 @@ void CFootBotDiffusion::Init(TConfigurationNode& t_node) {
      *
      * NOTE: ARGoS creates and initializes actuators and sensors
      * internally, on the basis of the lists provided the configuration
-     * file at the <controllers><footbot_diffusion><actuators> and
-     * <controllers><footbot_diffusion><sensors> sections. If you forgot to
+     * file at the <controllers><CFootBotDiffusion><actuators> and
+     * <controllers><CFootBotDiffusion><sensors> sections. If you forgot to
      * list a device in the XML and then you request it here, an error
      * occurs.
      */
@@ -381,4 +381,4 @@ void CFootBotDiffusion::plotData(){
 
 }
 
-REGISTER_CONTROLLER(CFootBotDiffusion, "footbot_diffusion_controller")
+REGISTER_CONTROLLER(CFootBotDiffusion, "CFootBotDiffusion_controller")
