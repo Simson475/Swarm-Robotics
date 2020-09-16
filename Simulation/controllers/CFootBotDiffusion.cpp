@@ -128,49 +128,61 @@ void CFootBotDiffusion::ControlStep() {
     }
     outfile<< " CONTROL STEPS " <<std::endl;
     outfile.close();
-    switch(sMap.Robots[n].getStatus()){
-        case Status::available : if(!lookForJob(n)){ // if out of jobs
-                if(Distance(sMap.Robots[n].getfootBot()->GetEmbodiedEntity().GetOriginAnchor().Position
-                    ,sMap.Robots[n].getInitialLoc()) >= 0.20){movementLogic(n);} // move back to initial
+
+    Robot &robot = sMap.Robots[n];
+    switch(robot.getStatus()){
+        case Status::available:
+            if(!lookForJob(robot)){ // if out of jobs
+                if(Distance(robot.getfootBot()->GetEmbodiedEntity().GetOriginAnchor().Position
+                    ,robot.getInitialLoc()) >= 0.20){movementLogic(n);} // move back to initial
                 else {m_pcWheels->SetLinearVelocity(0.0f, 0.0f);}} // if we are in initial and out of jobs we stand still
-
             break;
-        case Status::requestStations : if( sMap.Robots[n].getRemainingStations().size()>2){
-                createUppaalTask(n, "Stations",n, true);
-
+        case Status::requestStations:
+            if (robot.getRemainingStations().size()>2){
+                createUppaalTask(robot, "Stations",n, true);
             }
-            createUppaalTask(n, "Waypoints", n+10,true); // whenever we request for stations we also need to request for waypoints
+            createUppaalTask(robot, "Waypoints", n+10,true); // whenever we request for stations we also need to request for waypoints
             sMap.Robots[n].changeStatus(Status::occupied);
             break;
-        case Status::waitStations :    sMap.totalTries++;
+        case Status::waitStations :
+            sMap.totalTries++;
             if(0 == pthread_tryjoin_np(threads[n], &status)){//(void**)0)){
                 extractUppaalTask(n, "Stations",n);
                 m_pcWheels->SetLinearVelocity(0.0f, 0.0f);
-                sMap.Robots[n].changeStatus(Status::waitWaypoints);}
-            else{ sMap.timesUppaalFailed++;
+                sMap.Robots[n].changeStatus(Status::waitWaypoints);
+            }
+            else {
+                sMap.timesUppaalFailed++;
                 argos::LOGERR<<m_id<<" (Stations)Uppaal was too slow from "
-                             <<sMap.getPointByID(sMap.Robots[n].getPreviousLoc()).getName()<<" to "
-                             <<sMap.getPointByID(sMap.Robots[n].getCurrentID().getId()).getName()
+                             <<sMap.getPointByID(robot.getPreviousLoc()).getName()<<" to "
+                             <<sMap.getPointByID(robot.getCurrentID().getId()).getName()
                              <<std::endl<<"Uppaal fail ratio"<<sMap.timesUppaalFailed<<"/"<<sMap.totalTries<<std::endl;
-                getShortestPath(n, true);}
+                getShortestPath(n, true);
+            }
             break;
-        case Status::requestWaypoints : createUppaalTask(n, "Waypoints", n+10,false);
-            sMap.Robots[n].changeStatus(Status::occupied);
+        case Status::requestWaypoints:
+            createUppaalTask(robot, "Waypoints", n+10,false);
+            robot.changeStatus(Status::occupied);
             break;
-        case Status::waitWaypoints :sMap.totalTries++;
+        case Status::waitWaypoints:
+            sMap.totalTries++;
             if(0 == pthread_tryjoin_np(threads[n+10],&status)){ //(void**)0)){
                 extractUppaalTask(n, "Waypoints", n+10);
-                if(sMap.Robots[n].getRemainingWaypoints().size()<=1 ){
-                    sMap.Robots[n].changeStatus(Status::requestStations);
-                }else sMap.Robots[n].changeStatus(Status::requestWaypoints);}
-            else{sMap.timesUppaalFailed++;
+                if(robot.getRemainingWaypoints().size()<=1 ){
+                    robot.changeStatus(Status::requestStations);
+                }
+                else robot.changeStatus(Status::requestWaypoints);
+            }
+            else{
+                sMap.timesUppaalFailed++;
                 argos::LOGERR<<m_id<<" (Waypoints)Uppaal was too slow from "
                              <<sMap.getPointByID(sMap.Robots[n].getPreviousLoc()).getName()<<" to "
                              <<sMap.getPointByID(sMap.Robots[n].getCurrentID().getId()).getName()
                              <<std::endl<<"Uppaal fail ratio: "<<sMap.timesUppaalFailed<<"/"<<sMap.totalTries<<std::endl;
                 getShortestPath(n, false);}
             break;
-        case Status::occupied : movementLogic(n);
+        case Status::occupied:
+            movementLogic(n);
             break;
     }
     //}else{m_pcWheels->SetLinearVelocity(0.0f, 0.0f);}
@@ -213,14 +225,14 @@ void printJob(std::vector<Robot> robots){
     }
 }
 
-void CFootBotDiffusion::createUppaalTask(int n, std::string choice, int threadNr, bool stations){
-    std::string dynamic= sMap.Robots[n].createDynamicJson(sMap.Robots, n, stations);
+void CFootBotDiffusion::createUppaalTask(Robot &robot, std::string choice, int threadNr, bool stations){
+    std::string dynamic= robot.createDynamicJson(sMap.Robots, robot, stations);
     args[threadNr].id = m_id;
     args[threadNr].choice = choice;
     args[threadNr].dynamic = dynamic;
     args[threadNr].path = sMap.folderPath;
     pthread_create(&threads[threadNr], NULL, callStratego, &args[threadNr]);
-    std::cout <<args[threadNr].id<<" Calls UPPAAL "<<choice<<std::endl;
+    //std::cout <<args[threadNr].id<<" Calls UPPAAL "<<choice<<std::endl;
     paused = true;
 }
 
@@ -351,6 +363,11 @@ void CFootBotDiffusion::controlStep(double per, double dotProd, float velocity){
 
 /****************************************/
 /****************************************/
+
+bool CFootBotDiffusion::lookForJob(Robot &robot){
+    return lookForJob(sMap.getRobotById(m_id));
+}
+
 bool CFootBotDiffusion::lookForJob(int n){
     if(sMap.jobs.empty()){return false;}
     plotData();

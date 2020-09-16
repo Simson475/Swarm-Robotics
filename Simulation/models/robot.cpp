@@ -313,6 +313,23 @@ void Robot::converJSONStation(std::string robotId, std::string choice) {
             waypointPath.push_back(se);
     }
 }
+
+std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, bool stations){
+    // What we need from the other robots are:
+    // - Their plan
+    // - Current location: either point or edge including time spend on the edge.
+    std::vector<std::vector<int>> plans{};
+
+
+
+    //Get other robots plans.
+
+
+    return "";
+}
+
+
+/*
 std::string Robot::createDynamicJson(std::vector<Robot> &robots, int n, bool stations) {
     nlohmann::json jsonObj;
     if(stations){
@@ -320,26 +337,22 @@ std::string Robot::createDynamicJson(std::vector<Robot> &robots, int n, bool sta
         jsonObj["next_waypoint"] = remainingStations[0].getId();
     }
     else {
-        if(remainingStations.size() == 2){
-            jsonObj["next_station"] = remainingStations[0].getId();
-            jsonObj["next_waypoint"] = remainingWaypoints[0].getId();
-        }
-        else {
-            jsonObj["next_station"] = remainingStations[0].getId();
-            jsonObj["next_waypoint"] = remainingWaypoints[0].getId();
-        }
-        //else jsonObj["next_station"] = 1;
-
+        jsonObj["next_station"] = remainingStations[0].getId();
+        jsonObj["next_waypoint"] = remainingWaypoints[0].getId();
     }
+
     std::vector<nlohmann::json> visitedWayPoints;
     jsonObj["visited_waypoints"] = visitedWayPoints;
     std::vector<nlohmann::json> stationsToVisit;
+
     for (auto i = 1; i < remainingStations.size();i++) {
         stationsToVisit.push_back(remainingStations[i].getId());
     }
+
     jsonObj["station_eta"] = getEta();
     jsonObj["stations_to_visit"] = stationsToVisit;
     otherRobotsInf.clear();
+
     for (auto i = 0; i < robots.size(); i++) {
         if (robots[i].getStatus() != Status::available && i != n) {
             std::vector<Point> p;
@@ -382,6 +395,8 @@ std::string Robot::createDynamicJson(std::vector<Robot> &robots, int n, bool sta
     out << std::setw(4) << jsonObj;
     return jsonObj.dump();
 }
+*/
+
 void Robot::sortJob(std::vector<std::vector<float>> shortestDistances)
 {
     for(auto i=0;i<job.size()-1;i++)
