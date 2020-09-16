@@ -113,6 +113,7 @@ private:
   static int counter;
   Map_Structure &sMap = Map_Structure::get_instance();
 };
+
 struct arg_struct {
   std::string id;
   std::string choice;
