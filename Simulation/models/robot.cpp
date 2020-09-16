@@ -281,13 +281,14 @@ std::vector<Point> Robot::setRemainingWaypoints(std::vector<Point> &allPoints) {
 }
 void Robot::converJSONStation(std::string robotId, std::string choice) {
     std::string path;
+    Map_Structure sMap = Map_Structure::get_instance();
     if (choice == "Stations") {
         stationPath.clear();
-        path = "../../../experiment/scene2/" + robotId + "/" + robotId + "Stations.json";
+        path = sMap.folderPath + "/" + robotId + "/" + robotId + "Stations.json";
     }
     if (choice == "Waypoints") {
         waypointPath.clear();
-        path = "../../../experiment/scene2/" + robotId + "/" + robotId + "Waypoints.json";
+        path = sMap.folderPath + "/" + robotId + "/" + robotId + "Waypoints.json";
     }
     std::ifstream i(path);
 
@@ -375,7 +376,8 @@ std::string Robot::createDynamicJson(std::vector<Robot> &robots, int n, bool sta
             }
         }
     }
-    std::ofstream out("../../../experiment/scene2/" + footBot->GetId() + "/" +
+    Map_Structure sMap = Map_Structure::get_instance();
+    std::ofstream out(sMap.folderPath + "/" + footBot->GetId() + "/" +
                       "dynamic_config.json");
     out << std::setw(4) << jsonObj;
     return jsonObj.dump();

@@ -48,7 +48,8 @@ void CTrajectoryQTUserFunctions::generateJobs() {
         jsonObj["job"] = stationsToVisit;
         mainJsonObj.push_back(jsonObj);
     }
-    std::ofstream out("../../../experiment/scene2/jobs.json");
+    Map_Structure sMap = Map_Structure::get_instance();
+    std::ofstream out(sMap.folderPath + "/jobs.json");
     out << std::setw(4) << mainJsonObj;
 }
 
