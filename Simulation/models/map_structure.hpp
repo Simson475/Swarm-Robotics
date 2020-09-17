@@ -82,6 +82,6 @@ public:
 
 private:
 //private constructor ensuring that only one instance is being created of the class
-    Map_Structure() {}
+    Map_Structure() = default;
 };
 #endif
