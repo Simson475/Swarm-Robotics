@@ -4,7 +4,6 @@ void Map_Structure::collectAllWayPoints() {
 
     CSpace::TMapPerType &tBotMap =
         CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
-    int i = 0;
     for (CSpace::TMapPerType::iterator it = tBotMap.begin(); it != tBotMap.end();
          ++it) {
         argos::CFootBotEntity *pcBot = any_cast<CFootBotEntity *>(it->second);
@@ -57,6 +56,8 @@ int Map_Structure::getRobotById(std::string id) {
             return i;
         }
     }
+
+    throw std::invalid_argument("Robot not found by ID");
 }
 std::vector<std::vector<float>> Map_Structure::createCopyList(){
     auto size = sqrt(Map_Structure::lines.size());
@@ -126,15 +127,7 @@ Point& Map_Structure::getPointByID(int id){
             return p;
         }
     }
-}
-
-Point* Map_Structure::getPointPointer(int id){
-    for (auto& p : points) {
-        if ((p.getId()) == id)
-            return &p;
-    }
-
-    return nullptr;
+    throw std::invalid_argument("Point not found");
 }
 
 void Map_Structure::createStaticJSON() {
@@ -213,9 +206,8 @@ void Map_Structure::createStaticJSON() {
     jsonObj["waypoint_distance_matrix"] = waypointsDistances;
 
     // creation of waypoints json Object
-    int j = 0;
     for (auto i = 0; i < Map_Structure::points.size(); i++) {
-        for (j; j < Map_Structure::lines.size(); j++) {
+        for (auto j = 0; j < Map_Structure::lines.size(); j++) {
             if (Map_Structure::points[i].getId() ==
                 Map_Structure::lines[j].Geta().getId()) {
                 if (Map_Structure::lines[j].GetDistance() != -1)

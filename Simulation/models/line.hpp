@@ -14,7 +14,6 @@ using namespace argos;
 #define INF 999999
 
 class Line {
-  int id;
   Point *a, *b;
   float distance;
   double time;

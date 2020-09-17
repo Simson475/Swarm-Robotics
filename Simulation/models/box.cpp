@@ -37,9 +37,5 @@ void Box::setBoxCorner() {
   boxLines.push_back(Line(&corners[1], &corners[2]));
   boxLines.push_back(Line(&corners[2], &corners[3]));
   boxLines.push_back(Line(&corners[3], &corners[0]));
-  int i = 0 ;
-    for(auto& line : boxLines){
-    //std::cout<<"From a: " << line.Geta().getName()<<" to b: "<<line.Getb().getName()<<" distance: "<< line.GetDistance()<< " ITERATION: "<<i++<<std::endl;
-  }
   //std::cout << "--------------------------------------------------------------------------------------------------------"<<std::endl;
 }

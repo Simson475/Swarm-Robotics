@@ -34,7 +34,6 @@ public:
 private:
   CTrajectoryLoopFunctions &m_cTrajLF;
   Map_Structure &sMap = Map_Structure::get_instance();
-  CCI_PositioningSensor *m_pcPosition;
   bool drawExpected = false;
 };
 

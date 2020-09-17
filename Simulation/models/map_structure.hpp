@@ -63,7 +63,6 @@ public:
     void eliminateBadLines();
 
     Point& getPointByID(int id);
-    Point* getPointPointer(int id);
 
     //finds the shortest path of vias from startId to destinationId
     std::vector<Point> findPath(int startId, int destinationId);

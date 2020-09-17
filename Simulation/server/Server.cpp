@@ -22,9 +22,7 @@ void error(const char *msg) {
 int main(int argc, char *argv[]) {
   int sockfd, newsockfd, portno, pid;
   socklen_t clilen;
-  char buffer[512];
   struct sockaddr_in serv_addr, cli_addr;
-  int n;
   if (argc < 2) {
     fprintf(stderr, "ERROR, no port provided\n");
     exit(1);

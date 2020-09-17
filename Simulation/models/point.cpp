@@ -19,12 +19,12 @@ Point::Point() : CVector3() {
   id = id_counter++;
   this->pType = via;
 }
- Point::Point(Point && p) : 
-              name(std::move(p.name)),
-              id(std::move(p.id)),
-              adjIDs(std::move(p.adjIDs)),
+ Point::Point(Point && p) :
               argos::CVector3(p.GetX(), p.GetY(), p.GetZ()),
-              pType(std::move(p.pType)){
+              id(std::move(p.id)),
+              pType(std::move(p.pType)),
+              adjIDs(std::move(p.adjIDs)),
+              name(std::move(p.name)){
     }
 Point::Point( const Point &obj):
 argos::CVector3(obj.GetX(), obj.GetY(), obj.GetZ()){
@@ -43,8 +43,10 @@ Point& Point::operator=(const Point &obj){
   SetX(obj.GetX());
   SetY(obj.GetY());
   SetZ(obj.GetZ());
-  
+
+  return *this;
 }
+
 Point::~Point(){}
 void Point::setAdjIDs(std::vector<int> adjID) {
   for (auto i = 0; i < adjID.size(); i++) {

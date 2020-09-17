@@ -70,10 +70,7 @@ std::string connectStratego(std::string station, std::string robotName, std::str
 
 
 void sendFile1(int sockfd, std::string fileName){
-    char buffer[512];
-    FILE *f;
     int words = 1;
-    char c;
 
 std::ifstream     file(fileName);
 std::stringstream buff;
@@ -100,12 +97,7 @@ std::string content( buff.str() );
 }
 void sendFile(int sockfd, std::string fileName, std::string dynamic){
     dynamic.erase(std::remove_if(dynamic.begin(), dynamic.end(), isspace), dynamic.end());
-    int words = 1;
-    for(auto& c: dynamic){
-      //if(isspace(c)||c=='\t')
-		    words++;	
-    }
-    words = dynamic.length();
+    int words = dynamic.length();
 	  write(sockfd, &words, sizeof(int));
     write(sockfd,dynamic.c_str(),dynamic.length());
 }

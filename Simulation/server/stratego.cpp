@@ -189,7 +189,6 @@ std::vector<int> getEveryRobotID(std::string robotName){
     auto& uuid = j.at("robot_info_map");
     if (uuid.is_object())
     {
-        int k = 0;
         auto obj = uuid.get<nlohmann::json::object_t>();
         for (auto& id : obj)
             result.push_back(atoi(id.first.c_str()));

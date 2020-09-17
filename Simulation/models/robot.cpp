@@ -37,7 +37,7 @@ void Robot::setJob(std::vector<Point> &jobs) {
 }
 void Robot::setCurrStationTarget(){
     Map_Structure &sMap = Map_Structure::get_instance();
-    currTarget = sMap.getPointPointer(remainingStations.front().getId());
+    currTarget = &sMap.getPointByID(remainingStations.front().getId());
 
 
 }
@@ -101,17 +101,6 @@ bool checkDelayMatch(double timeToDelay, bool once, double temp){
 }
 timeResult* Robot::getEtaHelper(std::string id, std::vector<Point> waypoints, argos::CVector3 currPosition, double timeToDelay,
                                 double temp, std::vector<Point>& allWaypoints) {
-    if(footBot->GetId() == "fb2"&&id == "fb1"){
-        //std::cout<< "-------------------------"<< std::endl;
-        //std::cout<< "Current position: "<<currPosition << std::endl;
-        //std::cout<< "Time to delay: "<<timeToDelay << std::endl;
-        //std::cout<< "temp: "<<temp << std::endl;
-        for(auto& way:waypoints){
-            //std::cout<<"waypoint: "<<way.getName()<<std::endl;
-
-        }
-
-    }
     bool once = true;
     struct added{bool added = false;
         bool station;};
@@ -176,36 +165,18 @@ timeResult* Robot::getEtaNextRobot(Robot r, double timeToDelay) {
     if(r.remainingStations.size() == 1){
         return nullptr;
     }
-    //std::cout<<"ONE: "<<std::endl;
-    for(auto& p : allPassedPoints){
-        //std::cout<<"AllPassed: "<<p.getName()<<std::endl;
-    }
-    //std::cout<<"ONE END"<<std::endl;
 
-    /*for (int i = 0; i < result->waypointsToPass.size(); i++ ){
-                  if(!result->found && i != result->waypointsToPass.size())
-                    allPassedPoints.push_back(result->waypointsToPass[i]);
-                }*/
+
     if(result->found){
         for(auto i = 1; i < r.getRemainingStations().size();i++){
             std::vector<Point> path = sMap.findPath(r.getRemainingStations()[i-1].getId(),r.getRemainingStations()[i].getId());
             result = getEtaHelper(r.getfootBot()->GetId(), path, r.getRemainingStations()[i-1],timeToDelay,result->distance, allPassedPoints);
-            /*for (int i = 0; i < result->waypointsToPass.size(); i++ ){
-              if(!result->found && i != result->waypointsToPass.size())
-                allPassedPoints.push_back(result->waypointsToPass[i]);
-            }*/
-            //std::cout<<"TWO: "<<std::endl;
-            for(auto& p : allPassedPoints){
-                //std::cout<<"AllPassed: "<<p.getName()<<std::endl;
-            }
-            //std::cout<<"TWO END"<<std::endl;
 
             if(!result->found) break;
         }
     }
     if(result->found) return nullptr;
-    ////std::cout<< "OtherRobot time " <<result->distance <<std::endl;
-    //result->allPassedPoints = allPassedPoints;
+
     return result;
 }
 
@@ -265,8 +236,8 @@ std::vector<Point> Robot::setRemainingWaypoints(std::vector<Point> &allPoints) {
     for (auto i = 0; i < waypointPath[1].runs[0].values.size(); i++) {
         for (auto j = 0; j < allPoints.size(); j++) {
             if (allPoints[j].getId() == waypointPath[1].runs[0].values[i].value) {
-                if (waypointPath[1].runs[0].values[i].time == 0 &&
-                    waypointPath[1].runs[0].values[i].value == 0 ||
+                if ((waypointPath[1].runs[0].values[i].time == 0 &&
+                    waypointPath[1].runs[0].values[i].value == 0) ||
                     waypointPath[1].runs[0].values[i].value == -1) {
                 } else if (!contains(allPoints[j].getId(), remainingWaypoints)) {
                     remainingWaypoints.push_back(allPoints[j]);
