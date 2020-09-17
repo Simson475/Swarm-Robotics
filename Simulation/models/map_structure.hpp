@@ -54,7 +54,7 @@ public:
     void createStaticJSON();
 
     //usage of Floyd-Warshall Algorithm for shortest paths between each via
-    std::vector<std::vector<float>> floydShortest(int amountOfStations);
+    std::vector<std::vector<float>> floydShortest(unsigned long amountOfStations);
 
     // function which sets all possible lines between all the points
     void setAllPossibleLines();

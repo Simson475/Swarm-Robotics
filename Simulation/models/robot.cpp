@@ -45,14 +45,14 @@ double Robot::getEta() {
     Map_Structure &sMap = Map_Structure::get_instance();
     etaNextStation= 0;
     argos::CVector3 curr = footBot->GetEmbodiedEntity().GetOriginAnchor().Position;
-    for(auto i = 0; i < getRemainingWaypoints().size(); i++){
+    for(long unsigned i = 0; i < getRemainingWaypoints().size(); i++){
         if(i == 0) etaNextStation = argos::Distance(remainingWaypoints.front(),curr);
         else etaNextStation += (remainingWaypoints[i-1] - remainingWaypoints[i]).Length();
     }
     if(getRemainingWaypoints().size() == 1){ // meaning that the next waypoint is already station
         std::vector<Point> path = sMap.findPath(remainingStations.front().getId(),remainingStations[1].getId() );
         ////std::cout<< "Path for <ETA"<< std::endl;
-        for(auto i =0; i < path.size(); i++){
+        for(long unsigned i =0; i < path.size(); i++){
             if(i == 0 ) etaNextStation = argos::Distance(remainingStations.front(), path.front());
             else etaNextStation += argos::Distance(remainingStations[i-1],remainingStations[i]);
         }
@@ -108,7 +108,7 @@ timeResult* Robot::getEtaHelper(std::string id, std::vector<Point> waypoints, ar
     argos::CVector3 position;
     int passedStations =0;
     std::vector<Point> passedWaypoints;
-    for(auto i = 0; i < waypoints.size(); i++){
+    for(long unsigned i = 0; i < waypoints.size(); i++){
         if(i == 0 && temp == 0) temp = argos::Distance(currPosition,waypoints.front());
         else if(i == 0 && temp !=0) temp += argos::Distance(currPosition,waypoints.front());
         else temp += argos::Distance(waypoints[i-1], waypoints[i]);
@@ -168,7 +168,7 @@ timeResult* Robot::getEtaNextRobot(Robot r, double timeToDelay) {
 
 
     if(result->found){
-        for(auto i = 1; i < r.getRemainingStations().size();i++){
+        for(long unsigned i = 1; i < r.getRemainingStations().size();i++){
             std::vector<Point> path = sMap.findPath(r.getRemainingStations()[i-1].getId(),r.getRemainingStations()[i].getId());
             result = getEtaHelper(r.getfootBot()->GetId(), path, r.getRemainingStations()[i-1],timeToDelay,result->distance, allPassedPoints);
 
@@ -208,8 +208,8 @@ bool Robot::contains(int id, std::vector<Point>& points) {
 
 std::vector<Point> Robot::setRemainingStations(std::vector<Point> allPoints) {
     remainingStations.clear();
-    for (auto i = 0; i < stationPath[2].runs[0].values.size(); i++) {
-        for (auto j = 0; j < allPoints.size(); j++) {
+    for (long unsigned i = 0; i < stationPath[2].runs[0].values.size(); i++) {
+        for (long unsigned j = 0; j < allPoints.size(); j++) {
             if (allPoints[j].getId() == stationPath[2].runs[0].values[i].value) {
                 if (stationPath[2].runs[0].values[i].time == 0 &&
                     stationPath[2].runs[0].values[i].value == 0) {
@@ -233,8 +233,8 @@ void Robot::updateCurrent(Point *target){
 }
 std::vector<Point> Robot::setRemainingWaypoints(std::vector<Point> &allPoints) {
     remainingWaypoints.clear();
-    for (auto i = 0; i < waypointPath[1].runs[0].values.size(); i++) {
-        for (auto j = 0; j < allPoints.size(); j++) {
+    for (long unsigned i = 0; i < waypointPath[1].runs[0].values.size(); i++) {
+        for (long unsigned j = 0; j < allPoints.size(); j++) {
             if (allPoints[j].getId() == waypointPath[1].runs[0].values[i].value) {
                 if ((waypointPath[1].runs[0].values[i].time == 0 &&
                     waypointPath[1].runs[0].values[i].value == 0) ||
@@ -264,13 +264,13 @@ void Robot::converJSONStation(std::string robotId, std::string choice) {
     std::ifstream i(path);
 
     nlohmann::json js = nlohmann::json::parse(i);
-    for (auto i = 0; i < js.size(); i++) {
+    for (long unsigned i = 0; i < js.size(); i++) {
         SimulationExpression se;
         se.name = js[i].value("name", "");
         SimulationTrace smt;
-        for (auto j = 0; j < js[i]["run"].size(); j++) {
+        for (long unsigned j = 0; j < js[i]["run"].size(); j++) {
             smt.number = js[i]["run"][j].value("number", 0);
-            for (auto k = 0; k < js[i]["run"][j]["values"].size(); k++) {
+            for (long unsigned k = 0; k < js[i]["run"][j]["values"].size(); k++) {
                 TimeValuePair tvp;
                 tvp.time = js[i]["run"][j]["values"][k].value("time", 0.0);
                 tvp.value = js[i]["run"][j]["values"][k].value("value", 0);
@@ -316,7 +316,7 @@ std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, b
     jsonObj["visited_waypoints"] = visitedWayPoints;
     std::vector<nlohmann::json> stationsToVisit;
 
-    for (auto i = 1; i < remainingStations.size();i++) {
+    for (long unsigned i = 1; i < remainingStations.size();i++) {
         stationsToVisit.push_back(remainingStations[i].getId());
     }
 
@@ -343,12 +343,12 @@ std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, b
                 loc["y"] = time_result->currPosition.GetY();
                 infMap["location"] = loc;
                 std::vector<int> ids;
-                for (auto j = time_result->stationsPassed; j < other_robot.getRemainingStations().size(); j++) {
+                for (long unsigned j = time_result->stationsPassed; j < other_robot.getRemainingStations().size(); j++) {
                     ids.push_back(other_robot.getRemainingStations()[j].getId());
                 }
                 infMap["station_plan"] = ids;
                 std::vector<nlohmann::json> wayPointL;
-                for (auto j = 0; j < time_result->waypointsToPass.size(); j++) {
+                for (long unsigned j = 0; j < time_result->waypointsToPass.size(); j++) {
                     nlohmann::json waypoint;
                     waypoint["type"] = "Waypoint";
                     waypoint["value"] = time_result->waypointsToPass[j].getId();
@@ -370,11 +370,11 @@ std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, b
 
 void Robot::sortJob(std::vector<std::vector<float>> shortestDistances)
 {
-    for(auto i=0;i<job.size()-1;i++)
+    for(long unsigned i=0;i<job.size()-1;i++)
     {
         int k=i;
         float min = INF;
-        for(auto j=i;j<job.size()-1;j++)
+        for(long unsigned j=i;j<job.size()-1;j++)
         {
             float temp;
             if(i == 0){

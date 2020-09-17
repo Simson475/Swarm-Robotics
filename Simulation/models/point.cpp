@@ -49,9 +49,9 @@ Point& Point::operator=(const Point &obj){
 
 Point::~Point(){}
 void Point::setAdjIDs(std::vector<int> adjID) {
-  for (auto i = 0; i < adjID.size(); i++) {
+  for (auto& id : adjID) {
 
-    adjIDs.push_back(adjID[i]);
+    adjIDs.push_back(id);
   }
 }
 void Point::pushAdjID(int adjID) { adjIDs.push_back(adjID); }

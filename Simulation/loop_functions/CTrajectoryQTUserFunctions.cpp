@@ -106,7 +106,7 @@ void CTrajectoryQTUserFunctions::DrawInWorld() {
             argos::CVector3 position = robot->currPosition;
             position.SetZ(0.1);
             Robot otherRobot= sMap.Robots[sMap.getRobotById(robot->id)];
-            for(int i = 0; i < robot->allPassedPoints.size(); i++){
+            for(long unsigned i = 0; i < robot->allPassedPoints.size(); i++){
                 if(i+1 != robot->allPassedPoints.size())DrawRay(CRay3(robot->allPassedPoints[i],robot->allPassedPoints[i+1]),CColor::RED, 3);
                 if(i+1 == robot->allPassedPoints.size()) DrawRay(CRay3(robot->allPassedPoints[i],position),CColor::RED, 3);
             }

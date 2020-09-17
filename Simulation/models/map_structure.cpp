@@ -41,7 +41,7 @@ void Map_Structure::collectAllWayPoints() {
                 break;
         }
     }
-    for (auto i = 0; i < Map_Structure::boxes.size(); i++) {
+    for (long unsigned i = 0; i < Map_Structure::boxes.size(); i++) {
         Map_Structure::boxes[i].setBoxCorner();
         for (auto j = 0; j < 4; j++) {
             Map_Structure::points.push_back(std::move(Map_Structure::boxes[i].getVCorner(j)));
@@ -51,7 +51,7 @@ void Map_Structure::collectAllWayPoints() {
     }
 }
 int Map_Structure::getRobotById(std::string id) {
-    for (auto i = 0; i < Robots.size(); i++) {
+    for (long unsigned i = 0; i < Robots.size(); i++) {
         if (Robots[i].getfootBot()->GetId() == id) {
             return i;
         }
@@ -79,7 +79,7 @@ std::vector<std::vector<float>> Map_Structure::createCopyList(){
     }
     return copyList;
 }
-std::vector<std::vector<float>> Map_Structure::floydShortest(int amountOfStations) {
+std::vector<std::vector<float>> Map_Structure::floydShortest(unsigned long amountOfStations) {
     auto size = sqrt(Map_Structure::lines.size());
     std::vector<std::vector<float>> copyList(size, std::vector<float>(size));
     for(auto& line: Map_Structure::lines){
@@ -97,9 +97,9 @@ std::vector<std::vector<float>> Map_Structure::floydShortest(int amountOfStation
             }
         }
     }
-    for (auto k = 0; k < copyList.size(); k++) {
-        for (auto i = 0; i < copyList.size(); i++){
-            for (auto j = 0; j < copyList.size(); j++){
+    for (long unsigned k = 0; k < copyList.size(); k++) {
+        for (long unsigned i = 0; i < copyList.size(); i++){
+            for (long unsigned j = 0; j < copyList.size(); j++){
                 float temp = copyList[i][k] + copyList[k][j];
                 if(copyList[i][k]==INF || copyList[k][j]== INF)temp = INF;
                 if (copyList[i][k] != INF && copyList[k][j]!= INF && temp < copyList[i][j]){
@@ -111,8 +111,8 @@ std::vector<std::vector<float>> Map_Structure::floydShortest(int amountOfStation
     }
     std::vector<std::vector<float>> shortestDistance(amountOfStations, std::vector<float>());
     shortestDistances.resize(copyList.size(), std::vector<float>());
-    for (auto i = 0; i < copyList.size(); i++) {
-        for (auto j = 0; j < copyList.size(); j++) {
+    for (long unsigned i = 0; i < copyList.size(); i++) {
+        for (long unsigned j = 0; j < copyList.size(); j++) {
             if(i <amountOfStations && j < amountOfStations)
                 shortestDistance[i].push_back(copyList[i][j]/(double)VELOCITY*100);
             shortestDistances[i].push_back(copyList[i][j]);
@@ -166,9 +166,9 @@ void Map_Structure::createStaticJSON() {
 
     jsonObj["stations"] = contIds;
     std::vector<std::vector<int>> shortestp;
-    for (auto i = 0; i < points.size(); i ++) {
+    for (long unsigned i = 0; i < points.size(); i ++) {
         std::vector<int> tmp;
-        for (auto j = 0; j < points.size(); j ++) {
+        for (long unsigned j = 0; j < points.size(); j ++) {
             if(i != j)
                 tmp.push_back(findPath(points[i].getId(), points[j].getId())[0].getId());
             else
@@ -196,7 +196,7 @@ void Map_Structure::createStaticJSON() {
     std::vector<std::vector<int>> waypointsDistances(sizeLines, std::vector<int>());
 
     int k = -1;
-    for (auto i = 0; i < Map_Structure::lines.size(); i++) {
+    for (long unsigned i = 0; i < Map_Structure::lines.size(); i++) {
         if (i % sizeLines == 0)
             k++;
         if(Map_Structure::lines[i].GetDistance()==-1){
@@ -206,8 +206,8 @@ void Map_Structure::createStaticJSON() {
     jsonObj["waypoint_distance_matrix"] = waypointsDistances;
 
     // creation of waypoints json Object
-    for (auto i = 0; i < Map_Structure::points.size(); i++) {
-        for (auto j = 0; j < Map_Structure::lines.size(); j++) {
+    for (long unsigned i = 0; i < Map_Structure::points.size(); i++) {
+        for (long unsigned j = 0; j < Map_Structure::lines.size(); j++) {
             if (Map_Structure::points[i].getId() ==
                 Map_Structure::lines[j].Geta().getId()) {
                 if (Map_Structure::lines[j].GetDistance() != -1)
@@ -218,7 +218,7 @@ void Map_Structure::createStaticJSON() {
         }
     }
     std::vector<nlohmann::json> waypoints;
-    for (auto i = 0; i < Map_Structure::points.size(); i++) {
+    for (long unsigned i = 0; i < Map_Structure::points.size(); i++) {
         nlohmann::json wayPoint;
         wayPoint["adjList"] = Map_Structure::points[i].getAdjIDs();
         wayPoint["id"] = Map_Structure::points[i].getId();
@@ -239,7 +239,7 @@ void Map_Structure::createStaticJSON() {
     }
     jsonObj["waypoints"] = waypoints;
     // create static_config for each robot
-    for (auto i = 0; i < Map_Structure::Robots.size(); i++) {
+    for (long unsigned i = 0; i < Map_Structure::Robots.size(); i++) {
 
         std::string tmp = folderPath +
                           Map_Structure::Robots[i].getfootBot()->GetId() + "/";
@@ -252,8 +252,8 @@ void Map_Structure::createStaticJSON() {
 }
 // Combines from all the points all possibleMap_Structure::lines
 void Map_Structure::setAllPossibleLines() {
-    for (auto i = 0; i < Map_Structure::points.size(); i++) {
-        for (auto j = 0; j < Map_Structure::points.size(); j++) {
+    for (long unsigned i = 0; i < Map_Structure::points.size(); i++) {
+        for (long unsigned j = 0; j < Map_Structure::points.size(); j++) {
             Map_Structure::lines.push_back(
                 Line(&Map_Structure::points[i], &Map_Structure::points[j]));
         }
@@ -287,8 +287,8 @@ bool intersectionInterest(CVector3 m1, CVector3 m2, CVector3 n1, CVector3 n2) {
 // Functions eliminates all theMap_Structure::lines which have intersection
 void Map_Structure::eliminateBadLines() {
     std::vector<int> adjIDs;
-    for (int i = 0; i < Map_Structure::lines.size(); i++) {
-        for (auto j = 0; j < Map_Structure::hardLines.size(); j++) {
+    for (long unsigned i = 0; i < Map_Structure::lines.size(); i++) {
+        for (long unsigned j = 0; j < Map_Structure::hardLines.size(); j++) {
             if (intersectionInterest(Map_Structure::lines[i].Geta(),
                                      Map_Structure::lines[i].Getb(),
                                      Map_Structure::hardLines[j].Geta(),
@@ -335,7 +335,7 @@ void Map_Structure::initializeStations() {
     std::ifstream i(folderPath +"points.json");
 
     nlohmann::json j = nlohmann::json::parse(i);
-    for (auto i = 0; i < j.size(); i++) {
+    for (long unsigned i = 0; i < j.size(); i++) {
         if(j[i].value("x", 0.0)!= 0.0){
             Point p = Point(
                 CVector3(j[i].value("x", 0.0), j[i].value("y", 0.0),
@@ -355,12 +355,12 @@ void Map_Structure::initializeJobs() {
     std::cout << folderPath +"jobs.json" <<std::endl;
     std::ifstream i(folderPath +"jobs.json");
     nlohmann::json j = nlohmann::json::parse(i);
-    for (auto i = 0; i < j.size(); i++) {
+    for (long unsigned i = 0; i < j.size(); i++) {
         jobs.push_back(j[i].value("job", std::vector<int>(0)));
     }
 }
 void Map_Structure::createFolderForEachRobot() {
-    for (auto i = 0; i < Robots.size(); i++) {
+    for (long unsigned i = 0; i < Robots.size(); i++) {
 
         std::string temp = folderPath + Robots[i].getfootBot()->GetId();
 

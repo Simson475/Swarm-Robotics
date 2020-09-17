@@ -34,7 +34,7 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(${CMAKE_SOURCE_DIR})
 
 # Emit all warning messages
-add_definitions(-Wall)
+add_definitions(-Wall -Werror)
 
 
 add_subdirectory(controllers)

@@ -15,7 +15,7 @@ std::string stratego::getSingleTrace(std::string robotName, queryType type) {
   }
     nlohmann::json mainObj;
     std::string singleTrace = "";
-    for (int i = 0; i <parsed.size(); i++){
+    for (long unsigned i = 0; i <parsed.size(); i++){
         if (!(parsed[i].name[0] >= 65 && parsed[i].name[0] <= 90) 
         || (parsed[i].name[0] >= 97 && parsed[i].name[0] <= 122)){
             break;
@@ -23,11 +23,11 @@ std::string stratego::getSingleTrace(std::string robotName, queryType type) {
         nlohmann::json jsonObj;
         jsonObj["name"] = parsed[i].name;
         std::vector<nlohmann::json> subObjs;
-        for (int j = 0; j <parsed[i].traces.size(); j++){
+        for (long unsigned j = 0; j <parsed[i].traces.size(); j++){
             nlohmann::json subObj;
             subObj["number"] = parsed[i].traces[j].berth;
             std::vector<nlohmann::json> subSubObjs;
-            for (int k= 0; k <parsed[i].traces[j].values.size(); k++){
+            for (long unsigned k= 0; k <parsed[i].traces[j].values.size(); k++){
                 nlohmann::json subSubObj;
                 subSubObj["time"] = parsed[i].traces[j].values[k].first;
                 subSubObj["value"] = parsed[i].traces[j].values[k].second;
@@ -210,7 +210,7 @@ void stratego::createWaypointQ(std::string robotName) {
   query << "Robot.location,Robot.dest,Robot.cur_waypoint,Robot.dest_waypoint,\\"
         << std::endl;
   int k = 2; // since we always have at least one robot;
-  for (auto i = 0; i < robots.size(); i++) {
+  for (long unsigned i = 0; i < robots.size(); i++) {
       query << std::string("OtherRobot(") + std::to_string(k) +
                    std::string(").location,\\")
             << std::endl;
@@ -224,14 +224,14 @@ void stratego::createWaypointQ(std::string robotName) {
             << std::endl;
       k++;
   }
-  for (auto i = 0; i < waypoints.size(); i++) {
+  for (long unsigned i = 0; i < waypoints.size(); i++) {
     query << std::string("Robot") + std::string(".visited[") +
                  std::to_string(waypoints[i]) + "],\\"
           << std::endl;
   }
   query << "Robot.dest, Robot.cur_waypoint, Robot.dest_waypoint } -> {\\"
         << std::endl;
-  for (auto i = 0; i < waypoints.size(); i++) {
+  for (long unsigned i = 0; i < waypoints.size(); i++) {
     query << std::string("Waypoint(") + std::to_string(waypoints[i]) +
                  std::string(").num_in_queue,\\")
           << std::endl;
