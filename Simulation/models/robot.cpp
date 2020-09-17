@@ -284,7 +284,7 @@ void Robot::converJSONStation(std::string robotId, std::string choice) {
             waypointPath.push_back(se);
     }
 }
-
+/*
 std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, bool stations){
     // What we need from the other robots are:
     // - Their plan
@@ -298,10 +298,10 @@ std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, b
 
     return "";
 }
+*/
 
 
-/*
-std::string Robot::createDynamicJson(std::vector<Robot> &robots, int n, bool stations) {
+std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, bool stations) {
     nlohmann::json jsonObj;
     if(stations){
         jsonObj["next_station"] = remainingStations[1].getId();
@@ -324,39 +324,39 @@ std::string Robot::createDynamicJson(std::vector<Robot> &robots, int n, bool sta
     jsonObj["stations_to_visit"] = stationsToVisit;
     otherRobotsInf.clear();
 
-    for (auto i = 0; i < robots.size(); i++) {
-        if (robots[i].getStatus() != Status::available && i != n) {
+    for (auto& other_robot : robots) {
+        if (other_robot.getStatus() != Status::available && other_robot != robot) {
             std::vector<Point> p;
             argos::Real dist = argos::Distance(getRemainingWaypoints().front(),
                                                getfootBot()->GetEmbodiedEntity().GetOriginAnchor().Position);
             dist = dist / VELOCITY *100;
             if(stopWatch != -1) dist = dist + ((stationDelay-stopWatch)/10* VELOCITY /100);
-            auto otherRobot = getEtaNextRobot(robots[i], dist);
-            if(otherRobot != nullptr){
-                otherRobotsInf.push_back(otherRobot);
+            auto time_result = getEtaNextRobot(other_robot, dist);
+            if(time_result != nullptr){
+                otherRobotsInf.push_back(time_result);
                 nlohmann::json outerInfMap;
                 nlohmann::json infMap;
-                infMap["eta"] = otherRobot->distance/ VELOCITY *100;// convert from distance to time
-                infMap["id"] = i;
+                infMap["eta"] = time_result->distance/ VELOCITY *100;// convert from distance to time
+                infMap["id"] = other_robot.getfootBot()->GetId();
                 nlohmann::json loc;
-                loc["x"] = otherRobot->currPosition.GetX();
-                loc["y"] = otherRobot->currPosition.GetY();
+                loc["x"] = time_result->currPosition.GetX();
+                loc["y"] = time_result->currPosition.GetY();
                 infMap["location"] = loc;
                 std::vector<int> ids;
-                for (auto j = otherRobot->stationsPassed; j < robots[i].getRemainingStations().size(); j++) {
-                    ids.push_back(robots[i].getRemainingStations()[j].getId());
+                for (auto j = time_result->stationsPassed; j < other_robot.getRemainingStations().size(); j++) {
+                    ids.push_back(other_robot.getRemainingStations()[j].getId());
                 }
                 infMap["station_plan"] = ids;
                 std::vector<nlohmann::json> wayPointL;
-                for (auto j = 0; j < otherRobot->waypointsToPass.size(); j++) {
+                for (auto j = 0; j < time_result->waypointsToPass.size(); j++) {
                     nlohmann::json waypoint;
                     waypoint["type"] = "Waypoint";
-                    waypoint["value"] = otherRobot->waypointsToPass[j].getId();
+                    waypoint["value"] = time_result->waypointsToPass[j].getId();
                     wayPointL.push_back(waypoint);
                 }
 
                 infMap["waypoint_plan"] = wayPointL;
-                jsonObj["robot_info_map"][std::to_string(i)] = infMap;
+                jsonObj["robot_info_map"][other_robot.getfootBot()->GetId()] = infMap;
             }
         }
     }
@@ -366,7 +366,7 @@ std::string Robot::createDynamicJson(std::vector<Robot> &robots, int n, bool sta
     out << std::setw(4) << jsonObj;
     return jsonObj.dump();
 }
-*/
+
 
 void Robot::sortJob(std::vector<std::vector<float>> shortestDistances)
 {

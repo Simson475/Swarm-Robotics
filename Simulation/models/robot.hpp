@@ -105,5 +105,8 @@ public:
         return getfootBot() == r.getfootBot();
     }
 
+    bool operator!=(const Robot &r) const {
+        return !(getfootBot() == r.getfootBot());
+    }
 };
 #endif
