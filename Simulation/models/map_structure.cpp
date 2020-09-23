@@ -8,7 +8,7 @@ void Map_Structure::collectAllWayPoints() {
          ++it) {
         argos::CFootBotEntity *pcBot = any_cast<CFootBotEntity *>(it->second);
         argos::CVector3 pos = pcBot->GetEmbodiedEntity().GetOriginAnchor().Position;
-        Point *p = new Point(pos, Type::via, "S." + pcBot->GetId());
+        Point *p = new Point(pos, pointType::via, "S." + pcBot->GetId());
         points.push_back(*p);
         Robots.push_back(Robot(pcBot, p));
     }
@@ -144,14 +144,14 @@ void Map_Structure::createStaticJSON() {
     std::vector<int> contIds;
 
     for (Point p : Map_Structure::points) {
-        if (p.getType() == Type::endpoint) {
+        if (p.getType() == pointType::endpoint) {
             dropIds.push_back(p.getId());
             std::vector<float> xy;
             xy.push_back(p.getCVector().GetX());
             xy.push_back(p.getCVector().GetY());
             xypoints.push_back(xy);
         }
-        if (p.getType() == Type::station) {
+        if (p.getType() == pointType::station) {
             contIds.push_back(p.getId());
             std::vector<float> xy;
             xy.push_back(p.getCVector().GetX());
@@ -340,12 +340,12 @@ void Map_Structure::initializeStations() {
             Point p = Point(
                 CVector3(j[i].value("x", 0.0), j[i].value("y", 0.0),
                          j[i].value("z", 0.0)),
-                static_cast<Type>(j[i].value("type", 0)), j[i].value("name", ""));
+                static_cast<pointType>(j[i].value("type", 0)), j[i].value("name", ""));
             points.push_back(std::move(p));
         }
-        if (static_cast<Type>(j[i].value("type", 0)) == Type::station)
+        if (static_cast<pointType>(j[i].value("type", 0)) == pointType::station)
             stationIDs.push_back(points[i].getId());
-        if (static_cast<Type>(j[i].value("type", 0)) == Type::endpoint)
+        if (static_cast<pointType>(j[i].value("type", 0)) == pointType::endpoint)
 
             endStationIDs.push_back(points[i].getId());
     }

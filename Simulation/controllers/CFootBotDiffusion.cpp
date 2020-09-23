@@ -282,7 +282,7 @@ void CFootBotDiffusion::movementLogic(int n){
                     m_pcWheels->SetLinearVelocity(0.0f, 0.0f); // setting robots speed to 0 when the target is reached
                     switch(currTarget->getType()){
 
-                        case Type::station : sMap.getPointByID(sMap.Robots[n].getCurrentTarget()->getId()).setOccupied(true);
+                        case pointType::station : sMap.getPointByID(sMap.Robots[n].getCurrentTarget()->getId()).setOccupied(true);
                             std::cout <<"------------------"<< sMap.Robots[n].getCurrentTarget()->getId() << "set to true "<<std::endl;
                             sMap.Robots[n].increment(sMap.Robots[n].getWatch()+1);
                             if(sMap.Robots[n].getRemainingStations().size()<3){
@@ -292,7 +292,7 @@ void CFootBotDiffusion::movementLogic(int n){
                             LOG<<m_id <<" is loading items in station: "<<sMap.Robots[n].getRemainingStations().front().getName()<<std::endl;
                             sMap.Robots[n].removeFirstStation();
                             break;
-                        case Type::endpoint : //sMap.getPointByID(sMap.Robots[n].getCurrentTarget()->getId()).setOccupied(true);
+                        case pointType::endpoint : //sMap.getPointByID(sMap.Robots[n].getCurrentTarget()->getId()).setOccupied(true);
                             //std::cout <<"------------------"<< sMap.Robots[n].getCurrentTarget()->getId() << "set to true "<<std::endl;
                             sMap.Robots[n].cleanJob();
                             sMap.Robots[n].changeStatus(Status::available);

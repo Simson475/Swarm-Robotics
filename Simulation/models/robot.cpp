@@ -113,7 +113,7 @@ timeResult* Robot::getEtaHelper(std::string id, std::vector<Point> waypoints, ar
         else if(i == 0 && temp !=0) temp += argos::Distance(currPosition,waypoints.front());
         else temp += argos::Distance(waypoints[i-1], waypoints[i]);
         if(!checkDelayMatch(timeToDelay,once,temp)){
-            if(waypoints[i].getType()==Type::station) {temp+=7.5* VELOCITY /100; // addition of delay + rotation
+            if(waypoints[i].getType()==pointType::station) {temp+=7.5* VELOCITY /100; // addition of delay + rotation
                 check.station= true;
                 check.added= true;
             }//requires to convert 6 times units to distance;
@@ -152,7 +152,7 @@ timeResult* Robot::getEtaNextRobot(Robot r, double timeToDelay) {
     int passedStations = 0;
     std::vector<Point> allPassedPoints;
     currPosition = r.getfootBot()->GetEmbodiedEntity().GetOriginAnchor().Position;
-    allPassedPoints.push_back(Point(currPosition,Type::via,"CurrentPosition"));
+    allPassedPoints.push_back(Point(currPosition,pointType::via,"CurrentPosition"));
     if(timeToDelay < argos::Distance(currPosition,r.getRemainingWaypoints().front())){
         argos::CVector3 position = getPosition(currPosition,r.getRemainingWaypoints().front(),timeToDelay );
         return new timeResult{r.getfootBot()->GetId(),timeToDelay, 0, passedWaypoints, position, false,allPassedPoints   };
@@ -290,16 +290,40 @@ std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, b
     // - Their plan
     // - Current location: either point or edge including time spend on the edge.
     std::vector<std::vector<int>> plans{};
+    std::vector<std::pair<bool,int>> current_locations{};
 
+    // This gets the plans of the robots.
+    for(auto& other_robot: robots){
+        if(other_robot != robot){
+            plans.emplace_back(std::vector<int>{});
+            for(Point& p : other_robot.getRemainingStations()){
+                plans.back().push_back(p.getId());
+            }
+        }
+    }
 
+    //Get the information about the whereabouts of the robot.
+    for(auto& other_robot: robots){
+        if(other_robot.atPoint()){
+            current_locations.push_back(std::make_pair(true, other_robot.getCurrentID().getId()));
+        }
+        else{
+            // Edges does not have a unique ID. (We can give it on instantiation)
+            // Last point through Robot::getCurrentID() and latest through Robot::getCurrentTarget().
+            // Map_Structure has a vector of lines.
+            current_locations.push_back(std::make_pair(false, other_robot.getCurrentID().getId()));
+        }
+    }
+
+    //Get the
 
     //Get other robots plans.
 
 
     return "";
 }
-*/
 
+*/
 
 std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, bool stations) {
     nlohmann::json jsonObj;

@@ -75,6 +75,7 @@ public:
     void changeStatus(Status stat);
     double getEta();
     int getWatch() { return stopWatch; }
+    bool atPoint(){ return stopWatch != -1;}
     std::vector<Point> getJob() { return job; }
     std::vector<Point> getRemainingStations() { return remainingStations; }
     void clearStations(){remainingStations.clear();}
@@ -92,6 +93,7 @@ public:
     void sortJob(std::vector<std::vector<float>> shortestDistances);//Sorts the points according to the shortest distance
     void addWaypoints(std::vector<Point> path);
     void updateCurrent(Point* target);
+    // Returns the most recent point the robot had been at.
     Point& getCurrentID(){return *currentPositionId;}
     timeResult* getEtaNextRobot(Robot r, double timeToDelay);
     timeResult* getEtaHelper(std::string id, std::vector<Point> waypoints, argos::CVector3 currPosition, double timeToDelay, double temp, std::vector<Point>& allWaypoints);

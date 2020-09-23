@@ -9,11 +9,11 @@
 //using namespace std;
 using namespace argos;
 
-enum Type { via, endpoint, station, realCorner, cStation };
+enum pointType { via, endpoint, station, realCorner, cStation };
 
 class Point : public CVector3 {
   unsigned int id;
-  Type pType;
+  pointType pType;
   static unsigned int id_counter;
   std::vector<int> adjIDs;
   std::string name;
@@ -21,14 +21,14 @@ class Point : public CVector3 {
   bool occupied = false;
 
 public:
-  Point(float x, float y, float z, Type type, std::string name);
-  Point(CVector3 c, Type type, std::string name);
+  Point(float x, float y, float z, pointType type, std::string name);
+  Point(CVector3 c, pointType type, std::string name);
   ~Point();
   Point(Point && p);
   Point& operator=(Point const& obj);
   Point( const Point &obj);
   Point();
-  //returns the type of a point, for more info check enum Type
+  //returns the type of a point, for more info check enum pointType
   int getType() const { return pType; }
   std::string getName() const { return name; }
   int getId() const { return id; }
