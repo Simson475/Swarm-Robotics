@@ -47,7 +47,7 @@ target_link_libraries(CTrajectoryLoopFunctions
 	argos3plugin_simulator_genericrobot
 ${ARGOS_QTOPENGL_LIBRARIES})
 
-add_dependencies(CTrajectoryLoopFunctions json-ext)
+add_dependencies(CTrajectoryLoopFunctions json-ext argos-ext)
 
 add_custom_command(TARGET CTrajectoryLoopFunctions POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
