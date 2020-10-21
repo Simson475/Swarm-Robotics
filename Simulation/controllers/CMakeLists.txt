@@ -6,7 +6,19 @@ find_package(Lua)
 
 include_directories(${LUA_INCLUDE_DIR})
 
-add_library(CFootBotDiffusion MODULE CFootBotDiffusion.h CFootBotDiffusion.cpp ../connection/connector.hpp ../connection/connector.cpp)
+#option(ARGOS_WITH_LUA "ARGOS_WITH_LUA" OFF)
+#set(ARGOS_WITH_LUA "OFF")
+
+#set(ARGOS_WITH_LUA OFF)
+#add_definitions(-DARGOS_WITH_LUA=0)
+unset(ARGOS_WITH_LUA CACHE)
+
+add_library(CFootBotDiffusion MODULE
+        CFootBotDiffusion.h
+        CFootBotDiffusion.cpp
+        ../connection/connector.hpp
+        ../connection/connector.cpp)
+
 add_dependencies(CFootBotDiffusion argos-ext)
 
 #Because argos3 installation puts in its own folder.

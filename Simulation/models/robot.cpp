@@ -1,5 +1,6 @@
 #include "robot.hpp"
 #include "map_structure.hpp"
+#include "parsing/uppaal_model_parsing.h"
 
 Robot::Robot(CFootBotEntity *footBot, Point *initialLoc) {
     initialLocation = initialLoc;
@@ -284,46 +285,12 @@ void Robot::converJSONStation(std::string robotId, std::string choice) {
             waypointPath.push_back(se);
     }
 }
-/*
-std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, bool stations){
-    // What we need from the other robots are:
-    // - Their plan
-    // - Current location: either point or edge including time spend on the edge.
-    std::vector<std::vector<int>> plans{};
-    std::vector<std::pair<bool,int>> current_locations{};
 
-    // This gets the plans of the robots.
-    for(auto& other_robot: robots){
-        if(other_robot != robot){
-            plans.emplace_back(std::vector<int>{});
-            for(Point& p : other_robot.getRemainingStations()){
-                plans.back().push_back(p.getId());
-            }
-        }
-    }
+std::string Robot::createDynamicJson2(std::vector<Robot> &robots, Robot &currentRobot, bool stations){
 
-    //Get the information about the whereabouts of the robot.
-    for(auto& other_robot: robots){
-        if(other_robot.atPoint()){
-            current_locations.push_back(std::make_pair(true, other_robot.getCurrentID().getId()));
-        }
-        else{
-            // Edges does not have a unique ID. (We can give it on instantiation)
-            // Last point through Robot::getCurrentID() and latest through Robot::getCurrentTarget().
-            // Map_Structure has a vector of lines.
-            current_locations.push_back(std::make_pair(false, other_robot.getCurrentID().getId()));
-        }
-    }
-
-    //Get the
-
-    //Get other robots plans.
-
-
-    return "";
+    return constructUppaalModel(robots, currentRobot, stations);
 }
 
-*/
 
 std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, bool stations) {
     nlohmann::json jsonObj;

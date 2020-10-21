@@ -89,6 +89,7 @@ public:
     void converJSONStation(std::string robotId, std::string choice);
     void addEndPoint();
     std::string createDynamicJson(std::vector<Robot> &robots, Robot &robot, bool stations);
+    std::string createDynamicJson2(std::vector<Robot> &robots, Robot &currentRobot, bool stations);
     void createWaypointQ(std::vector<Robot> &robots, std::vector<Point> &points, int n);
     void sortJob(std::vector<std::vector<float>> shortestDistances);//Sorts the points according to the shortest distance
     void addWaypoints(std::vector<Point> path);

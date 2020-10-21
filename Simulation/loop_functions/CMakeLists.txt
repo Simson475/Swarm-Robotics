@@ -8,23 +8,31 @@ find_package(Qt5Widgets)
 find_package(Lua)
 
 include_directories(${LUA_INCLUDE_DIR})
+#option(ARGOS_WITH_LUA "ARGOS_WITH_LUA" OFF)
+#set(-DARGOS_WITH_LUA "OFF")
+
+#set(ARGOS_WITH_LUA OFF)
+unset(ARGOS_WITH_LUA CACHE)
 
 add_library(CTrajectoryLoopFunctions MODULE
 
-../models/box.cpp
-../models/box.hpp
+    ../models/box.cpp
+    ../models/box.hpp
 
-../models/point.cpp
-../models/point.hpp
+    ../models/point.cpp
+    ../models/point.hpp
 
-../models/line.cpp
-../models/line.hpp
+    ../models/line.cpp
+    ../models/line.hpp
 
-../models/map_structure.hpp
-../models/map_structure.cpp
+    ../models/map_structure.hpp
+    ../models/map_structure.cpp
 
-../models/robot.hpp
-../models/robot.cpp
+    ../models/robot.hpp
+    ../models/robot.cpp
+
+    ../models/parsing/uppaal_model_parsing.cpp
+    ../models/parsing/uppaal_model_parsing.cpp
 
 	CTrajectoryLoopFunctions.h
 	CTrajectoryQTUserFunctions.h
@@ -47,7 +55,7 @@ target_link_libraries(CTrajectoryLoopFunctions
 	argos3plugin_simulator_genericrobot
 ${ARGOS_QTOPENGL_LIBRARIES})
 
-add_dependencies(CTrajectoryLoopFunctions json-ext)
+add_dependencies(CTrajectoryLoopFunctions json-ext argos-ext)
 
 add_custom_command(TARGET CTrajectoryLoopFunctions POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
