@@ -42,7 +42,7 @@
                   exponent="2" />
       </params>
 
-      <params alpha="7.5" delta="0.1" />   <!--  velocity=5 -->
+      <params alpha="7.5" delta="0.1" />
     </CFootBotDiffusion_controller>
 
   </controllers>
@@ -79,31 +79,15 @@
     <distribute>
       <position method="grid"
                 center="6,9,0"
-                distances="1,0.5,0"
-                layout="5,1,1" />
+                distances="1,1,0"
+                layout="5,2,1" />
       <orientation method="constant" values="-45,0,0" />
-      <entity quantity="5" max_trials="1">
+      <entity quantity="7" max_trials="1">
         <foot-bot id="fb">
           <controller config="fdc" />
         </foot-bot>
       </entity>
     </distribute>
-
-      
-      
-
-
-    
-
-
-    
-
-    <!--
-    <entity> 
-      <body position="2,0,0">
-      <cylinder id="c" height ="0.5" radius = "0.15" movable="false" >
-    </entity>
-    -->
 
     <box id="obstacle1"size="4,6,0.4" movable="false" >
       <body position="-3,3,0" orientation="0,0,0" />
@@ -131,30 +115,17 @@
   </media>
 
 
-  <!-- <media /> -->
-
   <!-- ****************** -->
   <!-- * Visualization * -->
   <!-- ****************** -->
   <visualization>
-    <!--
-        This shows how to add customized drawing in the world
-        using the qt user functions.
-        Check 'argos3 -q qt-opengl' for more help.
-    -->
-    <qt-opengl autoplay="false">  <!--<qt-opengl autoplay=true>-->
 
-      
-      <!-- <user_functions library="./libCTrajectoryLoopFunctions"
-                      label="CTrajectoryQTUserFunctions" />   -->
-
+    <qt-opengl autoplay="false">
       <user_functions library="./libCTrajectoryLoopFunctions"
                       label="CTrajectoryQTUserFunctions" />
 
-      <!-- <user_functions library="build/loop_functions/id_loop_functions/libid_loop_functions"
-                      label="id_qtuser_functions" /> -->
       <camera>
-        <placement idx="0" position="0,0,13.0" look_at="0.1,0,0" />
+        <placement idx="0" position="0,0,16.0" look_at="0.1,0,0" />
         <placement idx="1" position="4,0,7" look_at="4,0.1,0.1" />        
         <placement idx="2" position="3,3,4" look_at="1,6,0" />
         <placement idx="3" position="2,3,2" look_at="0,1,0" />

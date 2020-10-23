@@ -29,7 +29,7 @@ void CTrajectoryQTUserFunctions::generateJobs() {
     std::random_device rd;  // obtain a random number from hardware
     std::mt19937 eng(rd()); // seed the generator
     std::uniform_int_distribution<> distr(2, 11);   // define the range of stations ids
-    std::uniform_int_distribution<> distrEnd(3, 4); // define the range of how many stations to visit
+    std::uniform_int_distribution<> distrEnd(2, 10); // define the range of how many stations to visit
     std::uniform_int_distribution<> endPoints(0, 1);//define end points ids
     nlohmann::json mainJsonObj;
     for (auto i = 0; i < 100; i++){
