@@ -10,7 +10,7 @@
 #include <QKeyEvent>
 #include <nlohmann/json.hpp>
 
-#include "../models/map_structure.hpp"
+#include "models/map/map_structure.hpp"
 
 using namespace argos;
 

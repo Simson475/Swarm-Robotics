@@ -6,11 +6,11 @@
 #include <dirent.h>
 #include <sys/types.h>
 #include <experimental/filesystem>
-#include "../models/line.hpp"
-#include "../models/point.hpp"
-#include "../models/box.hpp"
-#include "../models/robot.hpp"
-#include "../models/map_structure.hpp"
+#include "models/map/line.hpp"
+#include "models/map/point.hpp"
+#include "models/map/box.hpp"
+#include "models/robot/robot.hpp"
+#include "models/map/map_structure.hpp"
 #include "../loop_functions/CTrajectoryQTUserFunctions.h"
 #include <argos3/core/utility/configuration/argos_configuration.h>
 

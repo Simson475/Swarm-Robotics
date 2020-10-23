@@ -18,7 +18,7 @@
 //  ???, this was added in order to get  GetID() robot
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
 #include "../connection/connector.hpp"
-#include "models/map_structure.hpp"
+#include "models/map/map_structure.hpp"
 
 using namespace argos;
 

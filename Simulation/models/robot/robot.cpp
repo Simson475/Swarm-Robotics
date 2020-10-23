@@ -7,7 +7,7 @@ Robot::Robot(CFootBotEntity *footBot, Point *initialLoc) {
     this->footBot = footBot;
     status = Status::available;
     etaNextStation = 0.0;
-    currentPositionId = initialLoc;
+    latestPoint = initialLoc;
 
 }
 Robot &Robot::operator=(const Robot &that) {
@@ -15,7 +15,7 @@ Robot &Robot::operator=(const Robot &that) {
     initialLocation = that.initialLocation;
     status = Status::available;
     etaNextStation = 0.0;
-    currentPositionId = initialLocation;
+    latestPoint = initialLocation;
     return *this;
 }
 Point& Robot::getInitialLoc() {
@@ -188,7 +188,7 @@ void Robot::removeFirstStation() {
 }
 void Robot::removeFirstWaypoint() {
 
-    currentPositionId = &Map_Structure::get_instance().getPointByID(remainingWaypoints[0].getId());
+    latestPoint = &Map_Structure::get_instance().getPointByID(remainingWaypoints[0].getId());
     remainingWaypoints.erase(remainingWaypoints.begin());
 }
 void Robot::cleanJob() { job.clear(); }
@@ -230,7 +230,7 @@ void Robot::addWaypoints(std::vector<Point> path) {
 
 }
 void Robot::updateCurrent(Point *target){
-    currentPositionId = target;
+    latestPoint = target;
 }
 std::vector<Point> Robot::setRemainingWaypoints(std::vector<Point> &allPoints) {
     remainingWaypoints.clear();
@@ -369,7 +369,7 @@ void Robot::sortJob(std::vector<std::vector<float>> shortestDistances)
         {
             float temp;
             if(i == 0){
-                temp =shortestDistances[currentPositionId->getId()][job[j].getId()];
+                temp =shortestDistances[latestPoint->getId()][job[j].getId()];
             }else temp=shortestDistances[job[i-1].getId()][job[j].getId()];
 
             if(temp<min){

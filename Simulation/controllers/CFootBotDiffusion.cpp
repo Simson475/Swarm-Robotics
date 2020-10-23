@@ -96,7 +96,7 @@ void CFootBotDiffusion::getShortestPath(int n, bool stations){
 
     if(!stations){
         sMap.Robots[n].clearWaypoints();
-        sMap.Robots[n].addWaypoints(sMap.findPath(sMap.Robots[n].getCurrentID().getId(),sMap.Robots[n].getRemainingStations().front().getId()));
+        sMap.Robots[n].addWaypoints(sMap.findPath(sMap.Robots[n].getLatestPoint().getId(),sMap.Robots[n].getRemainingStations().front().getId()));
         //pthread_detach(threads[n+10]);
         pthread_cancel(threads[n+10]);
     }else { pthread_detach(threads[n]);
@@ -155,7 +155,7 @@ void CFootBotDiffusion::ControlStep() {
                 sMap.timesUppaalFailed++;
                 argos::LOGERR<<m_id<<" (Stations)Uppaal was too slow from "
                              <<sMap.getPointByID(robot.getPreviousLoc()).getName()<<" to "
-                             <<sMap.getPointByID(robot.getCurrentID().getId()).getName()
+                             <<sMap.getPointByID(robot.getLatestPoint().getId()).getName()
                              <<std::endl<<"Uppaal fail ratio"<<sMap.timesUppaalFailed<<"/"<<sMap.totalTries<<std::endl;
                 getShortestPath(n, true);
             }
@@ -177,7 +177,7 @@ void CFootBotDiffusion::ControlStep() {
                 sMap.timesUppaalFailed++;
                 argos::LOGERR<<m_id<<" (Waypoints)Uppaal was too slow from "
                              <<sMap.getPointByID(sMap.Robots[n].getPreviousLoc()).getName()<<" to "
-                             <<sMap.getPointByID(sMap.Robots[n].getCurrentID().getId()).getName()
+                             <<sMap.getPointByID(sMap.Robots[n].getLatestPoint().getId()).getName()
                              <<std::endl<<"Uppaal fail ratio: "<<sMap.timesUppaalFailed<<"/"<<sMap.totalTries<<std::endl;
                 getShortestPath(n, false);}
             break;
@@ -274,10 +274,10 @@ void CFootBotDiffusion::movementLogic(int n){
         double per = newOri.GetX()*Ori.GetY() - newOri.GetY()*Ori.GetX() ;
         double dotProd = newOri.GetX()*Ori.GetX() + newOri.GetY()*Ori.GetY();
 //std::cout<< m_id << " my destination"<<currTarget->getName()<<" "<< Distance(tPosReads.Position,*currTarget)<<std::endl;
-        if(Distance(tPosReads.Position,*currTarget) <= 1.5 ){//&& currTarget->getId() != sMap.Robots[n].getCurrentID().getId()){ // acceptance radius between point and robot
+        if(Distance(tPosReads.Position,*currTarget) <= 1.5 ){//&& currTarget->getId() != sMap.Robots[n].getLatestPoint().getId()){ // acceptance radius between point and robot
             if(!sMap.getPointByID(sMap.Robots[n].getCurrentTarget()->getId()).isOccupied()){
                 if(Distance(tPosReads.Position,*currTarget) <= 0.15){
-                    sMap.Robots[n].setPreviousLoc(sMap.Robots[n].getCurrentID().getId());
+                    sMap.Robots[n].setPreviousLoc(sMap.Robots[n].getLatestPoint().getId());
                     sMap.Robots[n].updateCurrent(&sMap.getPointByID(currTarget->getId()));
                     m_pcWheels->SetLinearVelocity(0.0f, 0.0f); // setting robots speed to 0 when the target is reached
                     switch(currTarget->getType()){
@@ -379,8 +379,8 @@ bool CFootBotDiffusion::lookForJob(int n){
     }
     sMap.jobs.erase(sMap.jobs.begin());
     sMap.Robots[n].sortJob(sMap.shortestDistances);
-    std::cout << sMap.Robots[n].getCurrentID().getId() << "            " << sMap.Robots[n].getJob().front().getId() <<std::endl;
-    sMap.Robots[n].addWaypoints(sMap.findPath(sMap.Robots[n].getCurrentID().getId(),sMap.Robots[n].getJob().front().getId()));
+    std::cout << sMap.Robots[n].getLatestPoint().getId() << "            " << sMap.Robots[n].getJob().front().getId() <<std::endl;
+    sMap.Robots[n].addWaypoints(sMap.findPath(sMap.Robots[n].getLatestPoint().getId(),sMap.Robots[n].getJob().front().getId()));
     sMap.Robots[n].setCurrStationTarget();
     if(sMap.Robots[n].getRemainingWaypoints().size()<=1){
         sMap.Robots[n].changeStatus(Status::requestStations);

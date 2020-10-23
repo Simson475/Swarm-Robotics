@@ -51,7 +51,7 @@ private:
     Status status;
     double etaNextStation;
     int stopWatch = -1;
-    Point* currentPositionId;
+    Point* latestPoint;
     Point* currTarget;
     int previousLoc;
     std::vector<timeResult*> otherRobotsInf;
@@ -59,7 +59,7 @@ private:
 public:
     Robot(CFootBotEntity *footBot, Point *initialLoc);
     Robot& operator=(const Robot& that);
-    ~Robot(){}
+    ~Robot() = default;
     Point& getInitialLoc();
     Point getNextStation();
     void increment(int i);
@@ -95,7 +95,7 @@ public:
     void addWaypoints(std::vector<Point> path);
     void updateCurrent(Point* target);
     // Returns the most recent point the robot had been at.
-    Point& getCurrentID(){return *currentPositionId;}
+    Point& getLatestPoint(){return *latestPoint;}
     timeResult* getEtaNextRobot(Robot r, double timeToDelay);
     timeResult* getEtaHelper(std::string id, std::vector<Point> waypoints, argos::CVector3 currPosition, double timeToDelay, double temp, std::vector<Point>& allWaypoints);
     int getPreviousLoc(){return previousLoc;}

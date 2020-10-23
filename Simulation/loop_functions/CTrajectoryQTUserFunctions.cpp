@@ -59,7 +59,7 @@ void CTrajectoryQTUserFunctions::KeyPressed(QKeyEvent* pc_event) {
 
             for(auto& robot: Map_Structure::get_instance().Robots){
                 argos::LOG<<"Robot ID: "<< robot.getfootBot()->GetId() <<std::endl;
-                argos::LOG<<"Current Location: "<< robot.getCurrentID().getName() <<std::endl;
+                argos::LOG<<"Current Location: "<< robot.getLatestPoint().getName() <<std::endl;
                 if(!robot.getRemainingWaypoints().empty()){
                     argos::LOG<<"My current Location: "<< robot.getRemainingWaypoints().front().getName() <<std::endl;
                     argos::LOG<<"My remaining stations: " <<std::endl;

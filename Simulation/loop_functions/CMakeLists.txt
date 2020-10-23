@@ -16,23 +16,23 @@ unset(ARGOS_WITH_LUA CACHE)
 
 add_library(CTrajectoryLoopFunctions MODULE
 
-    ../models/box.cpp
-    ../models/box.hpp
+        ../models/map/box.cpp
+        ../models/map/box.hpp
 
-    ../models/point.cpp
-    ../models/point.hpp
+        ../models/map/point.cpp
+        ../models/map/point.hpp
 
-    ../models/line.cpp
-    ../models/line.hpp
+        ../models/map/line.cpp
+        ../models/map/line.hpp
 
-    ../models/map_structure.hpp
-    ../models/map_structure.cpp
+        ../models/map/map_structure.hpp
+        ../models/map/map_structure.cpp
 
-    ../models/robot.hpp
-    ../models/robot.cpp
+        ../models/robot/robot.hpp
+        ../models/robot/robot.cpp
 
-    ../models/parsing/uppaal_model_parsing.cpp
-    ../models/parsing/uppaal_model_parsing.cpp
+        ../models/robot/parsing/uppaal_model_parsing.cpp
+        ../models/robot/parsing/uppaal_model_parsing.cpp
 
 	CTrajectoryLoopFunctions.h
 	CTrajectoryQTUserFunctions.h
