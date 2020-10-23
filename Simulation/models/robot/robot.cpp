@@ -1,5 +1,5 @@
 #include "robot.hpp"
-#include "map_structure.hpp"
+#include "models/map/map_structure.hpp"
 #include "parsing/uppaal_model_parsing.h"
 
 Robot::Robot(CFootBotEntity *footBot, Point *initialLoc) {
