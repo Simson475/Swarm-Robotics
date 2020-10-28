@@ -364,7 +364,7 @@ void CFootBotDiffusion::controlStep(double per, double dotProd, float velocity){
 /****************************************/
 /****************************************/
 
-bool CFootBotDiffusion::lookForJob(Robot &robot){
+bool CFootBotDiffusion::lookForJob(Robot &){
     return lookForJob(sMap.getRobotById(m_id));
 }
 

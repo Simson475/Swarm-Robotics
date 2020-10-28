@@ -33,8 +33,10 @@ enum Status {
     waitWaypoints,
     occupied
 };
+
 struct timeResult {std::string id;double distance; int stationsPassed; std::vector<Point> waypointsToPass;
     argos::CVector3 currPosition; bool found; std::vector<Point> allPassedPoints;};
+
 class Robot {
 private:
     std::vector<Point> job;
