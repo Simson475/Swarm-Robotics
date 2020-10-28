@@ -265,24 +265,24 @@ void Robot::converJSONStation(std::string robotId, std::string choice) {
     std::ifstream i(path);
 
     nlohmann::json js = nlohmann::json::parse(i);
-    for (long unsigned i = 0; i < js.size(); i++) {
-        SimulationExpression se;
-        se.name = js[i].value("name", "");
+    for (auto& entry : js) {
+        SimulationExpression simExpression;
+        simExpression.name = entry.value("name", "");
         SimulationTrace smt;
-        for (long unsigned j = 0; j < js[i]["run"].size(); j++) {
-            smt.number = js[i]["run"][j].value("number", 0);
-            for (long unsigned k = 0; k < js[i]["run"][j]["values"].size(); k++) {
-                TimeValuePair tvp;
-                tvp.time = js[i]["run"][j]["values"][k].value("time", 0.0);
-                tvp.value = js[i]["run"][j]["values"][k].value("value", 0);
+        for (auto& run : entry["run"]) {
+            smt.number = run.value("number", 0);
+            for (auto& values :  run["values"]) {
+                TimeValuePair tvp{};
+                tvp.time = values.value("time", 0.0);
+                tvp.value = values.value("value", 0);
                 smt.values.push_back(tvp);
             }
-            se.runs.push_back(smt);
+            simExpression.runs.push_back(smt);
         }
         if (choice == "Stations")
-            stationPath.push_back(se);
+            stationPath.push_back(simExpression);
         if (choice == "Waypoints")
-            waypointPath.push_back(se);
+            waypointPath.push_back(simExpression);
     }
 }
 
