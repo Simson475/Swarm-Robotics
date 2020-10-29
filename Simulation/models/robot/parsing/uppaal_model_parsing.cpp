@@ -3,7 +3,7 @@
 //
 
 #include "uppaal_model_parsing.h"
-#include "argos3/core/utility/math/vector3.h"
+#include "argos_wrapper/argos_wrapper.hpp"
 
 
 std::vector<abs_robot_info> get_robot_plans_and_positions(std::vector<Robot> &robots, Robot &currentRobot){
@@ -35,8 +35,7 @@ std::vector<abs_robot_info> get_robot_plans_and_positions(std::vector<Robot> &ro
             int current_target = robot.getCurrentTarget()->getId();
 
             //Get time spend on edge:
-            argos::CVector3 current_position = robot.getfootBot()->GetEmbodiedEntity().GetOriginAnchor().Position;
-            int time_traveled = (int)std::round(argos::Distance(current_position, robot.getLatestPoint()));
+            int time_traveled = (int)get_distance_to_latest_point(robot);
 
             std::string robot_name = robot.getfootBot()->GetId();
             current_plans_and_locations.push_back(robot_moving{robot_name, plans.at(robot_name),
