@@ -42,6 +42,8 @@ struct robot_moving : abs_robot_info {
         {}
 };
 
+
+std::vector<abs_robot_info> get_robot_plans_and_positions(std::vector<Robot> &robots, Robot &currentRobot);
 std::string constructUppaalModel(std::vector<Robot> &robots, Robot &currentRobot, bool stations);
 
 #endif //SWARMSIMULATOR_UPPAAL_MODEL_PARSING_H

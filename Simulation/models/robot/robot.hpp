@@ -111,7 +111,7 @@ public:
     }
 
     bool operator!=(const Robot &r) const {
-        return !(getfootBot() == r.getfootBot());
+        return getfootBot() != r.getfootBot();
     }
 };
 #endif
