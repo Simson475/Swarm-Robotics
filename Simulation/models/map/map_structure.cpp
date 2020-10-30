@@ -9,7 +9,8 @@ void Map_Structure::collectAllWayPoints() {
         argos::CFootBotEntity *pcBot = any_cast<CFootBotEntity *>(it->second);
         argos::CVector3 pos = pcBot->GetEmbodiedEntity().GetOriginAnchor().Position;
 
-        points.push_back(Point(pos, pointType::via, "S." + pcBot->GetId()));
+        Point *p = new Point(pos, pointType::via, "S." + pcBot->GetId());
+        points.push_back(*p);
         waypointsIDs.push_back(points.end()->getId());
         Robots.push_back(Robot(pcBot, p));
     }
@@ -140,23 +141,23 @@ void Map_Structure::createStaticJSON() {
     jsonObj["uncertainty"] = 1.1;
 
     //std::vector<std::pair<float,float>> xypoints;
-    std::vector<std::vector<float>> xypoints;
+    std::vector<std::vector<double>> xypoints;
     std::vector<int> dropIds;
     std::vector<int> contIds;
 
     for (Point p : Map_Structure::points) {
         if (p.getType() == pointType::endpoint) {
             dropIds.push_back(p.getId());
-            std::vector<float> xy;
-            xy.push_back(p.getCVector().GetX());
-            xy.push_back(p.getCVector().GetY());
+            std::vector<double> xy;
+            xy.push_back(p.getX());
+            xy.push_back(p.getY());
             xypoints.push_back(xy);
         }
         if (p.getType() == pointType::station) {
             contIds.push_back(p.getId());
-            std::vector<float> xy;
-            xy.push_back(p.getCVector().GetX());
-            xy.push_back(p.getCVector().GetY());
+            std::vector<double> xy;
+            xy.push_back(p.getX());
+            xy.push_back(p.getY());
             xypoints.push_back(xy);
         }
     }
@@ -182,9 +183,9 @@ void Map_Structure::createStaticJSON() {
     for (auto & point : Map_Structure::points) {
         if (point.getType() == pointType::via) {
             vias.push_back(point.getId());
-            std::vector<float> xy;
-            xy.push_back(point.getCVector().GetX());
-            xy.push_back(point.getCVector().GetY());
+            std::vector<double> xy;
+            xy.push_back(point.getX());
+            xy.push_back(point.getY());
             xypoints.push_back(xy);
 
         }
@@ -192,7 +193,7 @@ void Map_Structure::createStaticJSON() {
     jsonObj["vias"] = vias;
     jsonObj["coordinates"] = xypoints;
     // collect all the wayPoints in 2 dimensions
-    int sizeLines = sqrt(Map_Structure::lines.size());
+    int sizeLines = sqrt(Map_Structure::lines.size()); //@todo: Make 2-dimentional to begin with.
 
     std::vector<std::vector<int>> waypointsDistances(sizeLines, std::vector<int>());
 
@@ -253,10 +254,10 @@ void Map_Structure::createStaticJSON() {
 }
 // Combines from all the points all possibleMap_Structure::lines
 void Map_Structure::setAllPossibleLines() {
-    for (long unsigned i = 0; i < Map_Structure::points.size(); i++) {
+    for (auto& point_a : Map_Structure::points) {
         for (long unsigned j = 0; j < Map_Structure::points.size(); j++) {
             Map_Structure::lines.push_back(
-                Line(&Map_Structure::points[i], &Map_Structure::points[j]));
+                Line(&point_a, &Map_Structure::points[j]));
         }
     }
     eliminateBadLines();

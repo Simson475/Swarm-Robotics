@@ -45,11 +45,11 @@ struct robot_moving : abs_robot_info {
 };
 
 
-std::vector<abs_robot_info> get_robot_plans_and_positions(std::vector<Robot> &robots, Robot &currentRobot);
 std::string constructUppaalModel(std::vector<Robot> &robots, Robot &currentRobot, bool stations);
 
 
 // Functions for getting the information to the Uppaal XML
+std::vector<abs_robot_info> get_robot_plans_and_positions(std::vector<Robot> &robots, Robot &currentRobot);
 int number_of_stations(Map_Structure &map_structure);
 int number_of_waypoints(Map_Structure &map_structure);
 std::vector<int> get_end_stations(Map_Structure &map_structure);
