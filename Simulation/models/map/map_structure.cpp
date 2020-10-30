@@ -8,8 +8,9 @@ void Map_Structure::collectAllWayPoints() {
          ++it) {
         argos::CFootBotEntity *pcBot = any_cast<CFootBotEntity *>(it->second);
         argos::CVector3 pos = pcBot->GetEmbodiedEntity().GetOriginAnchor().Position;
-        Point *p = new Point(pos, pointType::via, "S." + pcBot->GetId());
-        points.push_back(*p);
+
+        points.push_back(Point(pos, pointType::via, "S." + pcBot->GetId()));
+        waypointsIDs.push_back(points.end()->getId());
         Robots.push_back(Robot(pcBot, p));
     }
     std::vector<Box> walls;
@@ -329,7 +330,7 @@ std::vector<Point> Map_Structure::findPath(int startId, int destinationId) {
     } while (u != v);
     return pts;
 }
-void Map_Structure::initializeStationsAndWaypoints() {
+void Map_Structure::initializeStations() {
     // get all the points defined in JSON file
     std::cout << folderPath +"points.json" <<std::endl;
     std::ifstream i(folderPath +"points.json");
@@ -347,8 +348,6 @@ void Map_Structure::initializeStationsAndWaypoints() {
             stationIDs.push_back(points[i].getId());
         if (static_cast<pointType>(j[i].value("type", 0)) == pointType::endpoint)
             endStationIDs.push_back(points[i].getId());
-        if (static_cast<pointType>(j[i].value("type", 0)) == pointType::via)
-            waypointsIDs.push_back(points[i].getId());
     }
 }
 void Map_Structure::initializeJobs() {

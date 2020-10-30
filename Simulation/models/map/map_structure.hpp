@@ -69,7 +69,7 @@ public:
     std::vector<Point> findPath(int startId, int destinationId);
 
     //collects all the stations from experiment/scene2/points.json
-    void initializeStationsAndWaypoints();
+    void initializeStations();
 
     //collects all the stations from experiment/scene2/points.json
     void initializeJobs();
