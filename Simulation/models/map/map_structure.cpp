@@ -44,9 +44,9 @@ void Map_Structure::collectAllWayPoints() {
     for (long unsigned i = 0; i < Map_Structure::boxes.size(); i++) {
         Map_Structure::boxes[i].setBoxCorner();
         for (auto j = 0; j < 4; j++) {
-            Map_Structure::points.push_back(std::move(Map_Structure::boxes[i].getVCorner(j)));
+            Map_Structure::points.push_back(Map_Structure::boxes[i].getVCorner(j));
 
-            Map_Structure::hardLines.push_back(std::move(Map_Structure::boxes[i].getBoxLine(j)));
+            Map_Structure::hardLines.push_back(Map_Structure::boxes[i].getBoxLine(j));
         }
     }
 }
@@ -340,7 +340,8 @@ void Map_Structure::initializeStationsAndWaypoints() {
             Point p = Point(
                 CVector3(j[i].value("x", 0.0), j[i].value("y", 0.0), j[i].value("z", 0.0)),
                 static_cast<pointType>(j[i].value("type", 0)), j[i].value("name", ""));
-            points.push_back(std::move(p));
+
+            points.push_back(p);
         }
         if (static_cast<pointType>(j[i].value("type", 0)) == pointType::station)
             stationIDs.push_back(points[i].getId());

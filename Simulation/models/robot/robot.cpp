@@ -224,7 +224,7 @@ std::vector<Point> Robot::setRemainingStations(std::vector<Point> allPoints) {
 }
 void Robot::addWaypoints(std::vector<Point> path) {
     for(auto& p: path){
-        remainingWaypoints.push_back(std::move(p));
+        remainingWaypoints.push_back(p);
     }
 
 

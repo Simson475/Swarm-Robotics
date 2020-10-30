@@ -21,8 +21,8 @@ Point::Point() : CVector3() {
 }
  Point::Point(Point && p) :
               argos::CVector3(p.GetX(), p.GetY(), p.GetZ()),
-              id(std::move(p.id)),
-              pType(std::move(p.pType)),
+              id(p.id),
+              pType(p.pType),
               adjIDs(std::move(p.adjIDs)),
               name(std::move(p.name)){
     }
