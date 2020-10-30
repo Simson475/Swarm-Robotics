@@ -24,6 +24,7 @@ public:
     std::vector<Line> hardLines;
     std::vector<int> stationIDs;
     std::vector<int> endStationIDs;
+    std::vector<int> waypointsIDs;
     std::vector<Robot> Robots;
     std::vector<std::vector<int>> jobs;
     //shortest paths between each point
@@ -68,7 +69,7 @@ public:
     std::vector<Point> findPath(int startId, int destinationId);
 
     //collects all the stations from experiment/scene2/points.json
-    void initializeStations();
+    void initializeStationsAndWaypoints();
 
     //collects all the stations from experiment/scene2/points.json
     void initializeJobs();

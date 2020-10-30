@@ -179,7 +179,7 @@ void Map_Structure::createStaticJSON() {
     jsonObj["shortest_paths"] = shortestp;
     std::vector<int> vias;
     for (auto & point : Map_Structure::points) {
-        if (point.getType() == 0) {
+        if (point.getType() == pointType::via) {
             vias.push_back(point.getId());
             std::vector<float> xy;
             xy.push_back(point.getCVector().GetX());
@@ -329,7 +329,7 @@ std::vector<Point> Map_Structure::findPath(int startId, int destinationId) {
     } while (u != v);
     return pts;
 }
-void Map_Structure::initializeStations() {
+void Map_Structure::initializeStationsAndWaypoints() {
     // get all the points defined in JSON file
     std::cout << folderPath +"points.json" <<std::endl;
     std::ifstream i(folderPath +"points.json");
@@ -338,16 +338,16 @@ void Map_Structure::initializeStations() {
     for (long unsigned i = 0; i < j.size(); i++) {
         if(j[i].value("x", 0.0)!= 0.0){
             Point p = Point(
-                CVector3(j[i].value("x", 0.0), j[i].value("y", 0.0),
-                         j[i].value("z", 0.0)),
+                CVector3(j[i].value("x", 0.0), j[i].value("y", 0.0), j[i].value("z", 0.0)),
                 static_cast<pointType>(j[i].value("type", 0)), j[i].value("name", ""));
             points.push_back(std::move(p));
         }
         if (static_cast<pointType>(j[i].value("type", 0)) == pointType::station)
             stationIDs.push_back(points[i].getId());
         if (static_cast<pointType>(j[i].value("type", 0)) == pointType::endpoint)
-
             endStationIDs.push_back(points[i].getId());
+        if (static_cast<pointType>(j[i].value("type", 0)) == pointType::via)
+            waypointsIDs.push_back(points[i].getId());
     }
 }
 void Map_Structure::initializeJobs() {

@@ -53,3 +53,15 @@ std::string constructUppaalModel(std::vector<Robot> &robots, Robot &currentRobot
 
     return "";
 }
+
+int number_of_stations(Map_Structure &map_structure){
+    return (int)map_structure.stationIDs.size();
+}
+
+int number_of_waypoints(Map_Structure &map_structure){
+    return (int)map_structure.waypointsIDs.size();
+}
+
+std::vector<int> get_end_stations(Map_Structure &map_structure){
+    return map_structure.endStationIDs;
+}

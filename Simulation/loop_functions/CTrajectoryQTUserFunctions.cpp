@@ -16,7 +16,7 @@ CTrajectoryQTUserFunctions::CTrajectoryQTUserFunctions()
     sMap.setFolderPath();
     if(newJobs)
         generateJobs(); // call this for generating new list of jobs
-    sMap.initializeStations();
+    sMap.initializeStationsAndWaypoints();
     sMap.initializeJobs();
     sMap.collectAllWayPoints();
     sMap.createFolderForEachRobot();
