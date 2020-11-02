@@ -48,12 +48,16 @@ struct robot_moving : abs_robot_info {
 std::string constructUppaalModel(std::vector<Robot> &robots, Robot &currentRobot, bool stations);
 
 
-// Functions for getting the information to the Uppaal XML
+// Functions for getting the information to the Uppaal XML from map_structure
 std::vector<abs_robot_info> get_robot_plans_and_positions(std::vector<Robot> &robots, Robot &currentRobot);
-int number_of_stations(const Map_Structure &map_structure);
+std::string number_of_stations(const Map_Structure &map_structure);
 int number_of_waypoints(const Map_Structure &map_structure);
+int number_of_robots(const Map_Structure& map_structure);
 std::vector<int> get_end_stations(const Map_Structure &map_structure);
 std::vector<std::vector<int>> get_distances(const Map_Structure& map_structure);
 
+
+// Functions for getting the strings needed for the placeholders in the Uppaal XML
+void configure_static_settings_of_Uppaal_model(const Map_Structure& map_structure);
 
 #endif //SWARMSIMULATOR_UPPAAL_MODEL_PARSING_H

@@ -6,6 +6,9 @@
 #include "argos_wrapper/argos_wrapper.hpp"
 #include "models/map/line.hpp"
 
+#include <iostream>
+#include <fstream>
+#include <filesystem>
 
 std::vector<abs_robot_info> get_robot_plans_and_positions(std::vector<Robot> &robots, Robot &currentRobot){
     // What we need from the other robots are:
@@ -55,12 +58,16 @@ std::string constructUppaalModel(std::vector<Robot> &robots, Robot &currentRobot
     return "";
 }
 
-int number_of_stations(const Map_Structure &map_structure){
-    return (int)map_structure.stationIDs.size();
+std::string number_of_stations(const Map_Structure &map_structure){
+    return std::to_string(map_structure.stationIDs.size());
 }
 
 int number_of_waypoints(const Map_Structure &map_structure){
     return (int)map_structure.waypointsIDs.size();
+}
+
+int number_of_robots(const Map_Structure& map_structure){
+    return (int)map_structure.Robots.size();
 }
 
 std::vector<int> get_end_stations(const Map_Structure &map_structure){
@@ -85,3 +92,28 @@ std::vector<std::vector<int>> get_distances(const Map_Structure& map_structure){
 
     return waypointsDistances;
 }
+
+void configure_static_settings_of_Uppaal_model(const Map_Structure& map_structure){
+    std::ifstream blueprint{std::string{std::filesystem::current_path()} + "/single_robot_blueprint.xml"};
+    std::ofstream partial_blueprint{std::string{std::filesystem::current_path()} + "/partial_blueprint.xml"};
+
+
+    std::string line;
+    while(std::getline(blueprint, line)){
+        auto pos = line.find("#MAX_STATIONS#");
+        if(pos != std::string::npos){
+            std::cout << "found on line:" << std::endl;
+            std::cout << line << std::endl << std::endl;
+
+            std::cout << "It now becomes:" << std::endl;
+            std::cout << line.replace(pos, std::string{"#MAX_STATIONS#"}.size(), number_of_stations(map_structure)) << std::endl;
+        }
+
+        partial_blueprint << line << std::endl;
+
+    }
+
+    exit(0);
+
+    return;
+};
