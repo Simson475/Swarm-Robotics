@@ -4,6 +4,7 @@
 
 #include "uppaal_model_parsing.h"
 #include "argos_wrapper/argos_wrapper.hpp"
+#include "models/map/line.hpp"
 
 
 std::vector<abs_robot_info> get_robot_plans_and_positions(std::vector<Robot> &robots, Robot &currentRobot){
@@ -54,14 +55,33 @@ std::string constructUppaalModel(std::vector<Robot> &robots, Robot &currentRobot
     return "";
 }
 
-int number_of_stations(Map_Structure &map_structure){
+int number_of_stations(const Map_Structure &map_structure){
     return (int)map_structure.stationIDs.size();
 }
 
-int number_of_waypoints(Map_Structure &map_structure){
+int number_of_waypoints(const Map_Structure &map_structure){
     return (int)map_structure.waypointsIDs.size();
 }
 
-std::vector<int> get_end_stations(Map_Structure &map_structure){
+std::vector<int> get_end_stations(const Map_Structure &map_structure){
     return map_structure.endStationIDs;
+}
+
+// @todo: is it on purpose that the float is made into an int in the distance matrix?
+std::vector<std::vector<int>> get_distances(const Map_Structure& map_structure){
+    auto sizeLines = (unsigned)sqrt(map_structure.lines.size()); //@todo: Make 2-dimentional to begin with.
+
+    std::vector<std::vector<int>> waypointsDistances{sizeLines, std::vector<int>()};
+
+    const std::vector<Line>& lines = map_structure.get_lines();
+
+    int k = -1;
+    for (long unsigned i = 0; i < lines.size(); i++) {
+        if (i % sizeLines == 0)
+            k++;
+        else
+            waypointsDistances[k].push_back((int)lines[i].GetDistance());
+    }
+
+    return waypointsDistances;
 }

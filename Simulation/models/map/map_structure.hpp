@@ -36,6 +36,10 @@ public:
     int totalTries = 0;
 
 
+    const std::vector<Line>& get_lines() const {
+        return lines;
+    }
+
     //ensurance that the class is created only once
     static Map_Structure &get_instance() {
         static Map_Structure instance;

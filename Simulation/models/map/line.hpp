@@ -29,7 +29,7 @@ public:
   //sets that such line should not exist (distance -1)
   void setFailureline();
   //getters
-  float GetDistance() { return distance; }
+  float GetDistance() const { return distance; }
   float getFloydTime();
   float GetFloydDistance();
   Point& Geta() { return *a; }

@@ -50,9 +50,10 @@ std::string constructUppaalModel(std::vector<Robot> &robots, Robot &currentRobot
 
 // Functions for getting the information to the Uppaal XML
 std::vector<abs_robot_info> get_robot_plans_and_positions(std::vector<Robot> &robots, Robot &currentRobot);
-int number_of_stations(Map_Structure &map_structure);
-int number_of_waypoints(Map_Structure &map_structure);
-std::vector<int> get_end_stations(Map_Structure &map_structure);
+int number_of_stations(const Map_Structure &map_structure);
+int number_of_waypoints(const Map_Structure &map_structure);
+std::vector<int> get_end_stations(const Map_Structure &map_structure);
+std::vector<std::vector<int>> get_distances(const Map_Structure& map_structure);
 
 
 #endif //SWARMSIMULATOR_UPPAAL_MODEL_PARSING_H
