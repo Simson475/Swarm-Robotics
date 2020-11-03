@@ -364,7 +364,7 @@ void Robot::sortJob(std::vector<std::vector<float>> shortestDistances)
     for(long unsigned i=0;i<job.size()-1;i++)
     {
         int k=i;
-        float min = INF;
+        float min = std::numeric_limits<float>::infinity();
         for(long unsigned j=i;j<job.size()-1;j++)
         {
             float temp;

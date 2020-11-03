@@ -1,17 +1,18 @@
 #ifndef LINE
 #define LINE
 
-#include "nlohmann/json.hpp"
 #include "point.hpp"
+
+#include "nlohmann/json.hpp"
+#include "argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h"
+
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h>
+#include <limits>
 
-//using namespace std;
 using namespace argos;
 
 #define VELOCITY 100.0f
-#define INF 999999
 
 class Line {
   Point *a, *b;

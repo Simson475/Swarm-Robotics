@@ -19,7 +19,7 @@ float Line::getFloydTime() {
   if (time != -1)
     return time;
   else
-    return INF;
+    return std::numeric_limits<float>::infinity();
 }
 void Line::SetDistance(float newDis) { distance = newDis; }
 void Line::setTime(double time) {this->time = time; }
@@ -33,5 +33,5 @@ float Line::GetFloydDistance(){
   if (distance != -1)
     return distance;
   else
-    return INF;
+    return std::numeric_limits<float>::infinity();
 }

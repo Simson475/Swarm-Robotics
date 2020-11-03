@@ -1,6 +1,7 @@
 #include "map_structure.hpp"
 #include "models/robot/parsing/uppaal_model_parsing.h"
 
+#include <limits>
 
 
 void Map_Structure::collectAllWayPoints() {
@@ -85,7 +86,7 @@ std::vector<std::vector<float>> Map_Structure::createCopyList(){
     return copyList;
 }
 std::vector<std::vector<float>> Map_Structure::floydShortest(unsigned long amountOfStations) {
-    auto size = sqrt(Map_Structure::lines.size());
+    auto size = (unsigned)sqrt(Map_Structure::lines.size());
     std::vector<std::vector<float>> copyList(size, std::vector<float>(size));
     for(auto& line: Map_Structure::lines){
         copyList[line.Geta().getId()][line.Getb().getId()] = line.GetFloydDistance();
@@ -102,12 +103,15 @@ std::vector<std::vector<float>> Map_Structure::floydShortest(unsigned long amoun
             }
         }
     }
+
+    float inf = std::numeric_limits<float>::infinity();
+
     for (long unsigned k = 0; k < copyList.size(); k++) {
         for (long unsigned i = 0; i < copyList.size(); i++){
             for (long unsigned j = 0; j < copyList.size(); j++){
                 float temp = copyList[i][k] + copyList[k][j];
-                if(copyList[i][k]==INF || copyList[k][j]== INF)temp = INF;
-                if (copyList[i][k] != INF && copyList[k][j]!= INF && temp < copyList[i][j]){
+                if(copyList[i][k]==inf || copyList[k][j]== inf)temp = inf;
+                if (copyList[i][k] != inf && copyList[k][j]!= inf && temp < copyList[i][j]){
                     copyList[i][j] = (copyList[i][k] + copyList[k][j]);
                     shortestPath[i][j] = shortestPath[i][k];
                 }
