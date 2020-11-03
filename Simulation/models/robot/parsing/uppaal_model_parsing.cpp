@@ -59,7 +59,7 @@ std::string constructUppaalModel(std::vector<Robot> &robots, Robot &currentRobot
 }
 
 std::string number_of_stations(const Map_Structure &map_structure){
-    return std::to_string(map_structure.stationIDs.size());
+    return std::to_string(map_structure.stationIDs.size() + map_structure.endStationIDs.size());
 }
 
 int number_of_waypoints(const Map_Structure &map_structure){
@@ -117,3 +117,9 @@ void configure_static_settings_of_Uppaal_model(const Map_Structure& map_structur
 
     return;
 };
+
+std::string get_distance_matrix(Map_Structure& map_structure){
+    std::vector<std::vector<float>> distance_matrix = map_structure.floydShortestOfStations();
+
+    return "";
+}

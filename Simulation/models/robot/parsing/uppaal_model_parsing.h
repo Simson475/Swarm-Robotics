@@ -55,6 +55,7 @@ int number_of_waypoints(const Map_Structure &map_structure);
 int number_of_robots(const Map_Structure& map_structure);
 std::vector<int> get_end_stations(const Map_Structure &map_structure);
 std::vector<std::vector<int>> get_distances(const Map_Structure& map_structure);
+std::string get_distance_matrix(Map_Structure& map_structure);
 
 
 // Functions for getting the strings needed for the placeholders in the Uppaal XML

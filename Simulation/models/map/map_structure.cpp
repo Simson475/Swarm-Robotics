@@ -89,7 +89,8 @@ std::vector<std::vector<float>> Map_Structure::createCopyList(){
 
 // @Todo: Could use a refactor as this code is much more complex than the pseudo-code for
 // the Floyd-Warshall Algorithm.
-std::vector<std::vector<float>> Map_Structure::floydShortest(unsigned long amountOfStations) {
+std::vector<std::vector<float>> Map_Structure::floydShortestOfStations() {
+    unsigned long amountOfStations = Map_Structure::stationIDs.size() + Map_Structure::endStationIDs.size();
     auto size = (unsigned)sqrt(Map_Structure::lines.size());
     std::vector<std::vector<float>> copyList(size, std::vector<float>(size));
     for(auto& line: Map_Structure::lines){
@@ -181,7 +182,7 @@ void Map_Structure::createStaticJSON() {
     jsonObj["end_stations"] = dropIds;
 
     jsonObj["station_distance_matrix"] =
-        floydShortest(contIds.size() + dropIds.size());
+        floydShortestOfStations();
 
     jsonObj["stations"] = contIds;
     std::vector<std::vector<int>> shortestp;
