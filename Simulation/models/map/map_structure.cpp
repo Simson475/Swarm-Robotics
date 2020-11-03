@@ -85,6 +85,10 @@ std::vector<std::vector<float>> Map_Structure::createCopyList(){
     }
     return copyList;
 }
+
+
+// @Todo: Could use a refactor as this code is much more complex than the pseudo-code for
+// the Floyd-Warshall Algorithm.
 std::vector<std::vector<float>> Map_Structure::floydShortest(unsigned long amountOfStations) {
     auto size = (unsigned)sqrt(Map_Structure::lines.size());
     std::vector<std::vector<float>> copyList(size, std::vector<float>(size));
@@ -110,7 +114,8 @@ std::vector<std::vector<float>> Map_Structure::floydShortest(unsigned long amoun
         for (long unsigned i = 0; i < copyList.size(); i++){
             for (long unsigned j = 0; j < copyList.size(); j++){
                 float temp = copyList[i][k] + copyList[k][j];
-                if(copyList[i][k]==inf || copyList[k][j]== inf)temp = inf;
+                if (copyList[i][k]==inf || copyList[k][j]== inf)
+                    temp = inf;
                 if (copyList[i][k] != inf && copyList[k][j]!= inf && temp < copyList[i][j]){
                     copyList[i][j] = (copyList[i][k] + copyList[k][j]);
                     shortestPath[i][j] = shortestPath[i][k];
@@ -118,6 +123,7 @@ std::vector<std::vector<float>> Map_Structure::floydShortest(unsigned long amoun
             }
         }
     }
+
     std::vector<std::vector<float>> shortestDistance(amountOfStations, std::vector<float>());
     shortestDistances.resize(copyList.size(), std::vector<float>());
     for (long unsigned i = 0; i < copyList.size(); i++) {
@@ -127,6 +133,7 @@ std::vector<std::vector<float>> Map_Structure::floydShortest(unsigned long amoun
             shortestDistances[i].push_back(copyList[i][j]);
         }
     }
+
     return shortestDistance;
 }
 
