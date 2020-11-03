@@ -1,6 +1,6 @@
 #include "box.hpp"
 
-Box::Box(std::string id, CVector3 center, CVector3 size) {
+Box::Box(std::string id, argos::CVector3 center, argos::CVector3 size) {
   this->center = center;
   this->id = id;
   this->size = size;

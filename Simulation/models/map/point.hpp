@@ -2,16 +2,15 @@
 #define POINT
 
 #include "nlohmann/json.hpp"
+#include "argos3/core/utility/math/vector3.h"
+
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <argos3/core/utility/math/vector3.h>
 
-//using namespace std;
-using namespace argos;
 
 enum pointType { via, endpoint, station, realCorner, cStation };
 
-class Point : public CVector3 {
+class Point : public argos::CVector3 {
     unsigned int id;
     pointType pType;
     static unsigned int id_counter;

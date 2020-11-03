@@ -1,17 +1,18 @@
 #ifndef ROBOT
 #define ROBOT
 
-#include "nlohmann/json.hpp"
 #include "models/map/point.hpp"
-#include <math.h>
-#include <argos3/core/simulator/loop_functions.h>
-#include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
-#include <argos3/plugins/simulator/entities/box_entity.h>
-#include <argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h>
 
-//using namespace std;
-using namespace argos;
+#include "nlohmann/json.hpp"
+#include "argos3/core/simulator/loop_functions.h"
+#include "argos3/plugins/robots/foot-bot/simulator/footbot_entity.h"
+#include "argos3/plugins/simulator/entities/box_entity.h"
+#include "argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h"
+
+#include <math.h>
+
 #define stationDelay 60
+
 struct TimeValuePair {
     double time;
     int value;
@@ -44,7 +45,7 @@ private:
     std::vector<SimulationExpression> waypointPath;
     std::vector<Point> visitedStations;
     std::vector<Point> visitedWaypoints;
-    CFootBotEntity *footBot;
+    argos::CFootBotEntity *footBot;
     // Point nextWaypoint;
     Point* initialLocation;
     double etaNextWayPoint;
@@ -59,7 +60,7 @@ private:
     std::vector<timeResult*> otherRobotsInf;
 
 public:
-    Robot(CFootBotEntity *footBot, Point *initialLoc);
+    Robot(argos::CFootBotEntity *footBot, Point *initialLoc);
     Robot& operator=(const Robot& that);
     ~Robot() = default;
     Point& getInitialLoc();
@@ -83,7 +84,7 @@ public:
     void clearStations(){remainingStations.clear();}
     void clearWaypoints(){remainingWaypoints.clear();}
     std::vector<Point> getRemainingWaypoints() { return remainingWaypoints; }
-    CFootBotEntity *getfootBot() const { return footBot; }
+    argos::CFootBotEntity *getfootBot() const { return footBot; }
     Status getStatus() { return status; }
     bool contains(int id, std::vector<Point>& points);
     std::vector<Point> setRemainingStations(std::vector<Point> allPoints);
@@ -103,7 +104,7 @@ public:
     int getPreviousLoc(){return previousLoc;}
     void setPreviousLoc(int p){previousLoc = p;}
     std::vector<timeResult*> getOtherRobotsEstimates(){return otherRobotsInf;}
-    argos::CVector3 getPosition(CVector3 start, CVector3 end, double distance);
+    argos::CVector3 getPosition(argos::CVector3 start, argos::CVector3 end, double distance);
     //friend bool operator== (const Robot &r1, const Robot &r2);
 
     bool operator==(const Robot &r) const {

@@ -1,31 +1,26 @@
 #ifndef CFootBotDiffusion_H
 #define CFootBotDiffusion_H
 
-#include <argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h>
-/*
- * Include some necessary headers.
- */
-/* Definition of the CCI_Controller class. */
-#include <argos3/core/control_interface/ci_controller.h>
-/* Definition of the differential steering actuator */
-#include <argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h>
-/* Definition of the foot-bot proximity sensor */
-#include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h>
-
-#include <argos3/plugins/robots/generic/control_interface/ci_positioning_sensor.h>
-
-#include <argos3/core/simulator/loop_functions.h>
-//  ???, this was added in order to get  GetID() robot
-#include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
 #include "../connection/connector.hpp"
 #include "models/map/map_structure.hpp"
 
-using namespace argos;
+
+#include "argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h"
+/* Definition of the CCI_Controller class. */
+#include "argos3/core/control_interface/ci_controller.h"
+/* Definition of the differential steering actuator */
+#include "argos3/plugins/robots/generic/control_interface/ci_differential_steering_actuator.h"
+/* Definition of the foot-bot proximity sensor */
+#include "argos3/plugins/robots/foot-bot/control_interface/ci_footbot_proximity_sensor.h"
+#include "argos3/plugins/robots/generic/control_interface/ci_positioning_sensor.h"
+#include "argos3/core/simulator/loop_functions.h"
+//  ???, this was added in order to get  GetID() robot
+#include "argos3/plugins/robots/foot-bot/simulator/footbot_entity.h"
 
 /*
  * A controller is simply an implementation of the CCI_Controller class.
  */
-class CFootBotDiffusion : public CCI_Controller {
+class CFootBotDiffusion : public argos::CCI_Controller {
 
 public:
     static std::vector<SimulationExpression> parseStr(const std::string &result);
@@ -43,7 +38,7 @@ public:
      * The 't_node' variable points to the <parameters> section in the XML
      * file in the <controllers><CFootBotDiffusion_controller> section.
      */
-    virtual void Init(TConfigurationNode &t_node);
+    virtual void Init(argos::TConfigurationNode &t_node);
 
     /*
      * This function is called once every time step.
@@ -80,11 +75,11 @@ private:
     void plotData();
     std::string m_id;
     /* Pointer to the differential steering actuator */
-    CCI_DifferentialSteeringActuator *m_pcWheels;
+    argos::CCI_DifferentialSteeringActuator *m_pcWheels;
     /* Pointer to the foot-bot proximity sensor */
-    CCI_FootBotProximitySensor *m_pcProximity;
+    argos::CCI_FootBotProximitySensor *m_pcProximity;
 
-    CCI_PositioningSensor *m_pcPosition;
+    argos::CCI_PositioningSensor *m_pcPosition;
 
     /*
      * The following variables are used as parameters for the
@@ -96,19 +91,19 @@ private:
     /* Maximum tolerance for the angle between
      * the robot heading direction and
      * the closest obstacle detected. */
-    CDegrees m_cAlpha;
+    argos::CDegrees m_cAlpha;
     /* Maximum tolerance for the proximity reading between
      * the robot and the closest obstacle.
      * The proximity reading is 0 when nothing is detected
      * and grows exponentially to 1 when the obstacle is
      * touching the robot.
      */
-    Real m_fDelta;
+    argos::Real m_fDelta;
     /* Wheel speed. */
-    Real m_fWheelVelocity;
+    argos::Real m_fWheelVelocity;
     /* Angle tolerance range to go straight.
      * It is set to [-alpha,alpha]. */
-    CRange<CRadians> m_cGoStraightAngleRange;
+    argos::CRange<argos::CRadians> m_cGoStraightAngleRange;
 
     int iter;
     static int counter;

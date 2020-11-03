@@ -1,18 +1,16 @@
 #ifndef BOX
 #define BOX
 
-#include "nlohmann/json.hpp"
 #include "point.hpp"
 #include "line.hpp"
+
+#include "nlohmann/json.hpp"
+#include "argos3/plugins/robots/foot-bot/simulator/footbot_entity.h"
+#include "argos3/plugins/simulator/entities/box_entity.h"
+#include "argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h"
+
 #include <sys/stat.h>
 #include <sys/types.h>
-
-#include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
-#include <argos3/plugins/simulator/entities/box_entity.h>
-#include <argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h>
-
-//using namespace std;
-using namespace argos;
 
 #define robotDiameter 0.2f
 #define offset_for_obstacles robotDiameter * 1.5
@@ -20,7 +18,7 @@ using namespace argos;
 class Box {
 private:
   float x, y, h, w;
-  CVector3 size, center;
+  argos::CVector3 size, center;
   std::string id;
   std::vector<Point> corners;
   std::vector<Point> virtualCorners;
@@ -28,7 +26,7 @@ private:
 
 public:
   Box() {}
-  Box(std::string id, CVector3 center, CVector3 size);
+  Box(std::string id, argos::CVector3 center, argos::CVector3 size);
   //draws virtual corners of the box
   void draw();
   //returns the box id

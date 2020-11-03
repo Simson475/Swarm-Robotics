@@ -2,7 +2,7 @@
 #include "models/map/map_structure.hpp"
 #include "parsing/uppaal_model_parsing.h"
 
-Robot::Robot(CFootBotEntity *footBot, Point *initialLoc) {
+Robot::Robot(argos::CFootBotEntity *footBot, Point *initialLoc) {
     initialLocation = initialLoc;
     this->footBot = footBot;
     status = Status::available;
@@ -60,7 +60,7 @@ double Robot::getEta() {
     }
     ////std::cout <<etaNextStation<<std::endl;
     return etaNextStation = etaNextStation/ VELOCITY *100; }
-argos::CVector3 getPositionHelper(CVector3 start, CVector3 end, argos::Real x, argos::Real y){
+argos::CVector3 getPositionHelper(argos::CVector3 start, argos::CVector3 end, argos::Real x, argos::Real y){
     argos::Real result_X, result_Y;
     result_X = start.GetX() + x;
     result_Y = start.GetY() + y;
@@ -84,7 +84,7 @@ argos::CVector3 getPositionHelper(CVector3 start, CVector3 end, argos::Real x, a
     result_Y = start.GetY() - y;
     return argos::CVector3(result_X, result_Y, 0);
 }
-argos::CVector3 Robot::getPosition(CVector3 start, CVector3 end, double distance){
+argos::CVector3 Robot::getPosition(argos::CVector3 start, argos::CVector3 end, double distance){
     double x, y, teta;
     y = start.GetY() - end.GetY();
     x = start.GetX() - end.GetX();

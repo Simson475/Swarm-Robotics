@@ -6,11 +6,11 @@
 
 void Map_Structure::collectAllWayPoints() {
 
-    CSpace::TMapPerType &tBotMap =
-        CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
-    for (CSpace::TMapPerType::iterator it = tBotMap.begin(); it != tBotMap.end();
+    argos::CSpace::TMapPerType &tBotMap =
+        argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
+    for (auto it = tBotMap.begin(); it != tBotMap.end();
          ++it) {
-        argos::CFootBotEntity *pcBot = any_cast<CFootBotEntity *>(it->second);
+        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(it->second);
         argos::CVector3 pos = pcBot->GetEmbodiedEntity().GetOriginAnchor().Position;
 
         Point *p = new Point(pos, pointType::via, "S." + pcBot->GetId());
@@ -19,13 +19,13 @@ void Map_Structure::collectAllWayPoints() {
         Robots.push_back(Robot(pcBot, p));
     }
     std::vector<Box> walls;
-    CSpace::TMapPerType &tBoxMap =
-        CLoopFunctions().GetSpace().GetEntitiesByType("box");
-    for (CSpace::TMapPerType::iterator it = tBoxMap.begin(); it != tBoxMap.end();
+    argos::CSpace::TMapPerType &tBoxMap =
+        argos::CLoopFunctions().GetSpace().GetEntitiesByType("box");
+    for (auto it = tBoxMap.begin(); it != tBoxMap.end();
          ++it) {
-        CBoxEntity *pcBox = any_cast<CBoxEntity *>(it->second);
-        CVector3 pos = pcBox->GetEmbodiedEntity().GetOriginAnchor().Position;
-        CVector3 size = pcBox->GetSize();
+        argos::CBoxEntity *pcBox = argos::any_cast<argos::CBoxEntity *>(it->second);
+        argos::CVector3 pos = pcBox->GetEmbodiedEntity().GetOriginAnchor().Position;
+        argos::CVector3 size = pcBox->GetSize();
         std::string id = it->first;
         Box b;
         switch (id[0]) {
@@ -281,15 +281,15 @@ void Map_Structure::setAllPossibleLines() {
     eliminateBadLines();
 }
 
-float cross(CVector3 a, CVector3 b) {
+float cross(argos::CVector3 a, argos::CVector3 b) {
     return a.GetX() * b.GetY() - a.GetY() * b.GetX();
 }
 
-float dot(CVector3 a, CVector3 b) {
+float dot(argos::CVector3 a, argos::CVector3 b) {
     return a.GetX() * b.GetX() + a.GetY() * b.GetY();
 }
 
-bool intersectionInterest(CVector3 m1, CVector3 m2, CVector3 n1, CVector3 n2) {
+bool intersectionInterest(argos::CVector3 m1, argos::CVector3 m2, argos::CVector3 n1, argos::CVector3 n2) {
     if (cross((n1 - n2), (m1 - n2)) * cross((n1 - n2), (m2 - n2)) < 0 &&
         cross((m1 - m2), (n1 - m2)) * cross((m1 - m2), (n2 - m2)) < 0) {
         return true;
@@ -358,7 +358,7 @@ void Map_Structure::initializeStations() {
     for (long unsigned i = 0; i < j.size(); i++) {
         if(j[i].value("x", 0.0)!= 0.0){
             Point p = Point(
-                CVector3(j[i].value("x", 0.0), j[i].value("y", 0.0), j[i].value("z", 0.0)),
+                argos::CVector3(j[i].value("x", 0.0), j[i].value("y", 0.0), j[i].value("z", 0.0)),
                 static_cast<pointType>(j[i].value("type", 0)), j[i].value("name", ""));
 
             points.push_back(p);

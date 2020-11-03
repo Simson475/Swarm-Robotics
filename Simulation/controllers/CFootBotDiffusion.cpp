@@ -36,7 +36,7 @@ CFootBotDiffusion::CFootBotDiffusion():
 /****************************************/
 /****************************************/
 
-void CFootBotDiffusion::Init(TConfigurationNode& t_node) {
+void CFootBotDiffusion::Init(argos::TConfigurationNode& t_node) {
     std::ofstream outfile;
     outfile.open("test.txt", std::ios_base::app); // append instead of overwrite
     outfile<<Map_Structure::get_instance().Robots.size()<<"SIZE"<<std::endl;
@@ -72,9 +72,9 @@ void CFootBotDiffusion::Init(TConfigurationNode& t_node) {
      * occurs.
      */
     m_id          = GetId();
-    m_pcWheels    = GetActuator<CCI_DifferentialSteeringActuator>("differential_steering");
-    m_pcProximity = GetSensor  <CCI_FootBotProximitySensor      >("footbot_proximity"    );
-    m_pcPosition  = GetSensor  <CCI_PositioningSensor>("positioning");
+    m_pcWheels    = GetActuator<argos::CCI_DifferentialSteeringActuator>("differential_steering");
+    m_pcProximity = GetSensor  <argos::CCI_FootBotProximitySensor      >("footbot_proximity"    );
+    m_pcPosition  = GetSensor  <argos::CCI_PositioningSensor>("positioning");
     /*
      * Parse the configuration file
      *
@@ -82,10 +82,10 @@ void CFootBotDiffusion::Init(TConfigurationNode& t_node) {
      * parameters and it's nice to put them in the config file so we don't
      * have to recompile if we want to try other settings.
      */
-    GetNodeAttributeOrDefault(t_node, "alpha", m_cAlpha, m_cAlpha);
+    argos::GetNodeAttributeOrDefault(t_node, "alpha", m_cAlpha, m_cAlpha);
     m_cGoStraightAngleRange.Set(-ToRadians(m_cAlpha), ToRadians(m_cAlpha));
-    GetNodeAttributeOrDefault(t_node, "delta", m_fDelta, m_fDelta);
-    GetNodeAttributeOrDefault(t_node, "velocity", m_fWheelVelocity, m_fWheelVelocity);
+    argos::GetNodeAttributeOrDefault(t_node, "delta", m_fDelta, m_fDelta);
+    argos::GetNodeAttributeOrDefault(t_node, "velocity", m_fWheelVelocity, m_fWheelVelocity);
 
     //CQTOpenGLUserFunctions().GetQTOpenGLWidget().PauseExperiment(); function to pause experiment
 }
@@ -251,7 +251,7 @@ void CFootBotDiffusion::extractUppaalTask(int n, std::string choice, int threadN
 }
 
 void CFootBotDiffusion::movementLogic(int n){
-    const CCI_PositioningSensor::SReading&       tPosReads  = m_pcPosition->GetReading();
+    const argos::CCI_PositioningSensor::SReading& tPosReads  = m_pcPosition->GetReading();
     if (sMap.Robots[n].getWatch() == -1){ //check if the robot is suppose to stay still
         Point* currTarget;
         if(sMap.Robots[n].getStatus() == Status::available){
@@ -262,18 +262,18 @@ void CFootBotDiffusion::movementLogic(int n){
         //std::cout<<currTarget.getName()<<std::endl;
         //if(sMap.Robots[n].getStatus() == Status::occupied && sMap.Robots[n].getWatch() == -1)
 
-        CRadians a,c,b;
+        argos::CRadians a,c,b;
         tPosReads.Orientation.ToEulerAngles(a,b,c);
 
         float oy = sin(a.GetValue());
         float ox = cos(a.GetValue());
-        CVector3 Ori(ox,oy,0);
-        CVector3 newOri = *currTarget - tPosReads.Position;
+        argos::CVector3 Ori(ox,oy,0);
+        argos::CVector3 newOri = *currTarget - tPosReads.Position;
         newOri.Normalize();
 
         double per = newOri.GetX()*Ori.GetY() - newOri.GetY()*Ori.GetX() ;
         double dotProd = newOri.GetX()*Ori.GetX() + newOri.GetY()*Ori.GetY();
-//std::cout<< m_id << " my destination"<<currTarget->getName()<<" "<< Distance(tPosReads.Position,*currTarget)<<std::endl;
+
         if(Distance(tPosReads.Position,*currTarget) <= 1.5 ){//&& currTarget->getId() != sMap.Robots[n].getLatestPoint().getId()){ // acceptance radius between point and robot
             if(!sMap.getPointByID(sMap.Robots[n].getCurrentTarget()->getId()).isOccupied()){
                 if(Distance(tPosReads.Position,*currTarget) <= 0.15){
@@ -281,15 +281,15 @@ void CFootBotDiffusion::movementLogic(int n){
                     sMap.Robots[n].updateCurrent(&sMap.getPointByID(currTarget->getId()));
                     m_pcWheels->SetLinearVelocity(0.0f, 0.0f); // setting robots speed to 0 when the target is reached
                     switch(currTarget->getType()){
-
                         case pointType::station : sMap.getPointByID(sMap.Robots[n].getCurrentTarget()->getId()).setOccupied(true);
                             std::cout <<"------------------"<< sMap.Robots[n].getCurrentTarget()->getId() << "set to true "<<std::endl;
                             sMap.Robots[n].increment(sMap.Robots[n].getWatch()+1);
                             if(sMap.Robots[n].getRemainingStations().size()<3){
                                 sMap.Robots[n].changeStatus(Status::waitWaypoints);
-                            }else
+                            }
+                            else
                                 sMap.Robots[n].changeStatus(Status::waitStations);
-                            LOG<<m_id <<" is loading items in station: "<<sMap.Robots[n].getRemainingStations().front().getName()<<std::endl;
+                            argos::LOG<<m_id <<" is loading items in station: "<<sMap.Robots[n].getRemainingStations().front().getName()<<std::endl;
                             sMap.Robots[n].removeFirstStation();
                             break;
                         case pointType::endpoint : //sMap.getPointByID(sMap.Robots[n].getCurrentTarget()->getId()).setOccupied(true);
@@ -302,12 +302,27 @@ void CFootBotDiffusion::movementLogic(int n){
                             //case for the charging station *Future work*
                         default : sMap.Robots[n].changeStatus(Status::waitWaypoints);
                     }
-                }else {if(m_id == "fzb1")LOGERR<<Distance(tPosReads.Position,*currTarget)*60<<std::endl; controlStep(per,dotProd,  Distance(tPosReads.Position,*currTarget)*60);}
-            }else {LOGERR<<sMap.Robots[n].getCurrentTarget()->getId()<<"OCCUPIED WAITING"<<std::endl;m_pcWheels->SetLinearVelocity(0, 0);}
+                }
+                else {
+                    if(m_id == "fzb1")
+                        argos::LOGERR<<Distance(tPosReads.Position,*currTarget)*60<<std::endl;
+                    controlStep(per,dotProd,  Distance(tPosReads.Position,*currTarget)*60);
+                }
+            }
+            else {
+                argos::LOGERR<<sMap.Robots[n].getCurrentTarget()->getId()<<"OCCUPIED WAITING"<<std::endl;
+                m_pcWheels->SetLinearVelocity(0, 0);
+            }
 
-        }else{ controlStep(per,dotProd, m_fWheelVelocity);}
+        }
+        else{ controlStep(per,dotProd, m_fWheelVelocity);}
 
-    }else {sMap.Robots[n].increment(sMap.Robots[n].getWatch()+1);m_pcWheels->SetLinearVelocity(0, 0);}
+    }
+    else {
+        sMap.Robots[n].increment(sMap.Robots[n].getWatch()+1);
+        m_pcWheels->SetLinearVelocity(0, 0);
+    }
+
     if (sMap.Robots[n].getWatch() == stationDelay){
         sMap.getPointByID(sMap.Robots[n].getCurrentTarget()->getId()).setOccupied(false);
         std::cout <<"------------------"<< sMap.Robots[n].getCurrentTarget()->getId() << "set to false "<<std::endl;
@@ -318,10 +333,10 @@ void CFootBotDiffusion::movementLogic(int n){
 }
 
 void CFootBotDiffusion::controlStep(double per, double dotProd, float velocity){
-    const CCI_FootBotProximitySensor::TReadings& tProxReads = m_pcProximity->GetReadings();
-    CVector2 cAccumulator;
+    const argos::CCI_FootBotProximitySensor::TReadings& tProxReads = m_pcProximity->GetReadings();
+    argos::CVector2 cAccumulator;
     for(size_t i = 0; i < tProxReads.size(); ++i){
-        cAccumulator += CVector2(tProxReads[i].Value, tProxReads[i].Angle);
+        cAccumulator += argos::CVector2(tProxReads[i].Value, tProxReads[i].Angle);
     }
     cAccumulator /= tProxReads.size();
     /* If the angle of the vector is small enough and the closest obstacle
@@ -330,7 +345,7 @@ void CFootBotDiffusion::controlStep(double per, double dotProd, float velocity){
     argos::Real turnRate;
     if(per>0.5 || per<-0.5) {turnRate = 10.0f;} else {turnRate = 3.0f;}// while the angle is big our turn rate is fast
     if(per<0.1 && per>-0.1) {turnRate = 1.0f;} //if the angle is small then our turn rate is reduced to 1
-    CRadians cAngle = cAccumulator.Angle();
+    argos::CRadians cAngle = cAccumulator.Angle();
     if(m_cGoStraightAngleRange.WithinMinBoundIncludedMaxBoundIncluded(cAngle) &&
        cAccumulator.Length() < m_fDelta ){
         if( per > 0.1 ){

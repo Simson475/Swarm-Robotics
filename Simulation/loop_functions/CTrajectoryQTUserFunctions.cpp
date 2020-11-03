@@ -11,7 +11,7 @@
 
 CTrajectoryQTUserFunctions::CTrajectoryQTUserFunctions()
     : m_cTrajLF(dynamic_cast<CTrajectoryLoopFunctions &>(
-                    CSimulator::GetInstance().GetLoopFunctions())) {
+                    argos::CSimulator::GetInstance().GetLoopFunctions())) {
 
     sMap.setFolderPath();
     if(newJobs)
@@ -81,14 +81,14 @@ void CTrajectoryQTUserFunctions::KeyPressed(QKeyEvent* pc_event) {
 }
 
 void CTrajectoryQTUserFunctions::DrawInWorld() {
-    DrawText(CVector3(1,0,1), "X=1", CColor::ORANGE);
-    DrawText(CVector3(-1,0,1), "X=-1", CColor::ORANGE);
-    DrawText(CVector3(0,1,1), "Y=1", CColor::ORANGE);
-    DrawText(CVector3(0,-1,1), "Y=-1", CColor::ORANGE);
+    DrawText(argos::CVector3(1,0,1), "X=1", argos::CColor::ORANGE);
+    DrawText(argos::CVector3(-1,0,1), "X=-1", argos::CColor::ORANGE);
+    DrawText(argos::CVector3(0,1,1), "Y=1", argos::CColor::ORANGE);
+    DrawText(argos::CVector3(0,-1,1), "Y=-1", argos::CColor::ORANGE);
     for (auto element : sMap.points) {
         DrawText(element, element.getName());
         element.SetZ(0.1);
-        DrawPoint(element,CColor::BLACK, 5);
+        DrawPoint(element, argos::CColor::BLACK, 5);
     }
     for (auto &element : sMap.boxes) {
         element.draw();
@@ -100,18 +100,18 @@ void CTrajectoryQTUserFunctions::DrawInWorld() {
     for (auto &robot : sMap.Robots) {
         DrawText(robot.getfootBot()->GetEmbodiedEntity().GetOriginAnchor().Position, robot.getfootBot()->GetId());
     }
-    DrawText(CVector3(0.0, 0.0, 0.3), "0");
+    DrawText(argos::CVector3(0.0, 0.0, 0.3), "0");
     if(drawExpected){
         for(auto& robot: Map_Structure::get_instance().Robots.back().getOtherRobotsEstimates()){
             argos::CVector3 position = robot->currPosition;
             position.SetZ(0.1);
             Robot otherRobot= sMap.Robots[sMap.getRobotById(robot->id)];
             for(long unsigned i = 0; i < robot->allPassedPoints.size(); i++){
-                if(i+1 != robot->allPassedPoints.size())DrawRay(CRay3(robot->allPassedPoints[i],robot->allPassedPoints[i+1]),CColor::RED, 3);
-                if(i+1 == robot->allPassedPoints.size()) DrawRay(CRay3(robot->allPassedPoints[i],position),CColor::RED, 3);
+                if(i+1 != robot->allPassedPoints.size())DrawRay(argos::CRay3(robot->allPassedPoints[i],robot->allPassedPoints[i+1]), argos::CColor::RED, 3);
+                if(i+1 == robot->allPassedPoints.size()) DrawRay(argos::CRay3(robot->allPassedPoints[i],position), argos::CColor::RED, 3);
             }
-            DrawPoint(position,CColor::RED, 10);
-            DrawText(position, robot->id,CColor::ORANGE);
+            DrawPoint(position, argos::CColor::RED, 10);
+            DrawText(position, robot->id, argos::CColor::ORANGE);
         }
     }
 
