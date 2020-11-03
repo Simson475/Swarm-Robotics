@@ -93,8 +93,8 @@ std::vector<std::vector<int>> get_distances(const Map_Structure& map_structure){
     return waypointsDistances;
 }
 
-void configure_static_settings_of_Uppaal_model(const Map_Structure& map_structure){
-    std::ifstream blueprint{std::string{std::filesystem::current_path()} + "/single_robot_blueprint.xml"};
+void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure){
+    std::ifstream blueprint{std::string{std::filesystem::current_path()} + "/station_planning_blueprint.xml"};
     std::ofstream partial_blueprint{std::string{std::filesystem::current_path()} + "/partial_blueprint.xml"};
 
 
@@ -102,11 +102,17 @@ void configure_static_settings_of_Uppaal_model(const Map_Structure& map_structur
     while(std::getline(blueprint, line)){
         auto pos = line.find("#MAX_STATIONS#");
         if(pos != std::string::npos){
-            std::cout << "found on line:" << std::endl;
-            std::cout << line << std::endl << std::endl;
+            line.replace(pos, std::string{"#MAX_STATIONS#"}.size(), number_of_stations(map_structure));
+        }
 
-            std::cout << "It now becomes:" << std::endl;
-            std::cout << line.replace(pos, std::string{"#MAX_STATIONS#"}.size(), number_of_stations(map_structure)) << std::endl;
+        pos = line.find("#OTHER ROBOTS#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#OTHER ROBOTS#"}.size(), std::to_string(number_of_robots(map_structure) - 1));
+        }
+
+        pos = line.find("#DISTANCE_MATRIX#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#DISTANCE_MATRIX#"}.size(), get_distance_matrix(map_structure));
         }
 
         partial_blueprint << line << std::endl;
@@ -121,6 +127,7 @@ void configure_static_settings_of_Uppaal_model(const Map_Structure& map_structur
 std::string get_distance_matrix(Map_Structure& map_structure){
     // Map_structure calculates all the fastests paths between all the stations.
     std::vector<std::vector<float>> distance_matrix = map_structure.floydShortestOfStations();
+    // @todo: use std::transform and std::to_string(float) to have a matrix with numbers of correct format.
 
     // Temperary results of the lines in the matrix on string-form.
     std::vector<std::string> waited_matrix{};
@@ -147,3 +154,4 @@ std::string get_distance_matrix(Map_Structure& map_structure){
 
     return final_matrix.str();
 }
+

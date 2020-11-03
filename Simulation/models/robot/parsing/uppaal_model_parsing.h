@@ -58,8 +58,7 @@ std::vector<int> get_end_stations(const Map_Structure &map_structure);
 std::vector<std::vector<int>> get_distances(const Map_Structure& map_structure);
 std::string get_distance_matrix(Map_Structure& map_structure);
 
-
 // Functions for getting the strings needed for the placeholders in the Uppaal XML
-void configure_static_settings_of_Uppaal_model(const Map_Structure& map_structure);
+void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure);
 
 #endif //SWARMSIMULATOR_UPPAAL_MODEL_PARSING_H
