@@ -1,18 +1,17 @@
 #ifndef MAP_STRUCTURE
 #define MAP_STRUCTURE
-#include "nlohmann/json.hpp"
 
 #include "box.hpp"
 #include "line.hpp"
 #include "point.hpp"
 #include "models/robot/robot.hpp"
-#include <argos3/core/simulator/loop_functions.h>
-#include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
-#include <argos3/plugins/simulator/entities/box_entity.h>
-#include <argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h>
 
-//using namespace std;
-using namespace argos;
+#include "nlohmann/json.hpp"
+#include "argos3/core/simulator/loop_functions.h"
+#include "argos3/plugins/robots/foot-bot/simulator/footbot_entity.h"
+#include "argos3/plugins/simulator/entities/box_entity.h"
+#include "argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h"
+
 
 class Map_Structure {
 public:

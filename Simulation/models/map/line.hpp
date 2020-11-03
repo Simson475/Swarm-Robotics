@@ -10,8 +10,6 @@
 #include <sys/types.h>
 #include <limits>
 
-using namespace argos;
-
 #define VELOCITY 100.0f
 
 class Line {
