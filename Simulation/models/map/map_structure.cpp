@@ -149,6 +149,7 @@ Point& Map_Structure::getPointByID(int id){
 
 void Map_Structure::createStaticJSON() {
 
+    get_distance_matrix(Map_Structure::get_instance());
     configure_static_settings_of_Uppaal_model(Map_Structure::get_instance());
 
     nlohmann::json jsonObj;

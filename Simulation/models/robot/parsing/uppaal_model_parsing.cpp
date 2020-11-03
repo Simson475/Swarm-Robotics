@@ -119,7 +119,31 @@ void configure_static_settings_of_Uppaal_model(const Map_Structure& map_structur
 };
 
 std::string get_distance_matrix(Map_Structure& map_structure){
+    // Map_structure calculates all the fastests paths between all the stations.
     std::vector<std::vector<float>> distance_matrix = map_structure.floydShortestOfStations();
 
-    return "";
+    // Temperary results of the lines in the matrix on string-form.
+    std::vector<std::string> waited_matrix{};
+
+    // Gets all the line with correct post-/prefix and delimitor.
+    for(auto& dist_line : distance_matrix){
+        std::stringstream line{};
+        line << "{";
+        std::copy(dist_line.begin(),
+                  dist_line.end(),
+                  std::experimental::make_ostream_joiner(line, ", "));
+        line << "}";
+        waited_matrix.emplace_back(line.str());
+    }
+
+    // Connects all the line with correct post-/prefix and delimitor.
+    std::stringstream final_matrix{};
+    final_matrix << "{\n";
+    std::copy(waited_matrix.begin(),
+              waited_matrix.end(),
+              std::experimental::make_ostream_joiner(final_matrix, ",\n"));
+
+    final_matrix << "\n}";
+
+    return final_matrix.str();
 }

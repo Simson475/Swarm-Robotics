@@ -12,6 +12,7 @@
 #include <vector>
 #include <map>
 #include <cmath>
+#include <experimental/iterator>
 
 struct abs_robot_info {
     std::string name;
