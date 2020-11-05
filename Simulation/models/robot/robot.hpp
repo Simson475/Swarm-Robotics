@@ -105,7 +105,7 @@ public:
     void setPreviousLoc(int p){previousLoc = p;}
     std::vector<timeResult*> getOtherRobotsEstimates(){return otherRobotsInf;}
     argos::CVector3 getPosition(argos::CVector3 start, argos::CVector3 end, double distance);
-    //friend bool operator== (const Robot &r1, const Robot &r2);
+    std::string getName();
 
     bool operator==(const Robot &r) const {
         return getfootBot() == r.getfootBot();

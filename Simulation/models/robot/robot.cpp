@@ -29,6 +29,10 @@ Point Robot::getNextStation() {
         return getInitialLoc();
 }
 
+std::string Robot::getName(){
+    return getfootBot()->GetId();
+}
+
 void Robot::increment(int i) { stopWatch = i; }
 void Robot::setEta(double time) { etaNextStation = time; }
 void Robot::setJob(std::vector<Point> &jobs) {
