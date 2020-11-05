@@ -127,13 +127,32 @@ void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure){
 std::string get_distance_matrix(Map_Structure& map_structure){
     // Map_structure calculates all the fastests paths between all the stations.
     std::vector<std::vector<float>> distance_matrix = map_structure.floydShortestOfStations();
-    // @todo: use std::transform and std::to_string(float) to have a matrix with numbers of correct format.
 
-    // Temperary results of the lines in the matrix on string-form.
+    std::vector<std::vector<std::string>> distance_values_str = format_distance_values(distance_matrix);
+
+    return format_distance_matrix(distance_values_str);
+}
+
+std::vector<std::vector<std::string>> format_distance_values(const std::vector<std::vector<float>>& dist_matrix){
+    std::vector<std::vector<std::string>> distance_matrix_str{};
+
+    for(auto& line : dist_matrix){
+        std::vector<std::string> formatted_numbers{};
+        for(auto& number : line) {
+            formatted_numbers.push_back(std::to_string(number));
+        }
+        distance_matrix_str.push_back(formatted_numbers);
+    }
+
+    return distance_matrix_str;
+}
+
+std::string format_distance_matrix(const std::vector<std::vector<std::string>>& distance_values){
+    // Temporary results of the lines in the matrix on string-form.
     std::vector<std::string> waited_matrix{};
 
     // Gets all the line with correct post-/prefix and delimitor.
-    for(auto& dist_line : distance_matrix){
+    for(auto& dist_line : distance_values){
         std::stringstream line{};
         line << "{";
         std::copy(dist_line.begin(),
@@ -149,9 +168,7 @@ std::string get_distance_matrix(Map_Structure& map_structure){
     std::copy(waited_matrix.begin(),
               waited_matrix.end(),
               std::experimental::make_ostream_joiner(final_matrix, ",\n"));
-
     final_matrix << "\n}";
 
     return final_matrix.str();
 }
-

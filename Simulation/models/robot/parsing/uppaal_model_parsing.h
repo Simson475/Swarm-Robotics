@@ -61,4 +61,9 @@ std::string get_distance_matrix(Map_Structure& map_structure);
 // Functions for getting the strings needed for the placeholders in the Uppaal XML
 void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure);
 
+
+// Helper_functions
+std::vector<std::vector<std::string>> format_distance_values(const std::vector<std::vector<float>>& dist_matrix);
+std::string format_distance_matrix(const std::vector<std::vector<std::string>>& distance_values);
+
 #endif //SWARMSIMULATOR_UPPAAL_MODEL_PARSING_H
