@@ -10,7 +10,7 @@
 #include <fstream>
 #include <filesystem>
 
-std::vector<abs_robot_info> get_robot_plans_and_positions(std::vector<Robot> &robots, Robot &currentRobot){
+std::vector<abs_robot_info> get_robot_plans_and_positions(const std::vector<Robot> &robots, const Robot &currentRobot){
     // What we need from the other robots are:
     // - Their plan
     // - Current location: either point or edge including time spend on the edge.
@@ -21,7 +21,7 @@ std::vector<abs_robot_info> get_robot_plans_and_positions(std::vector<Robot> &ro
     for(auto& robot: robots){
         plans.insert({robot.getName(), std::vector<int>{}});
         for (Point &p : robot.getRemainingStations()) {
-            plans.at(robot.getfootBot()->GetId()).emplace_back(p.getId());
+            plans.at(robot.getName()).emplace_back(p.getId());
         }
     }
 
@@ -47,7 +47,7 @@ std::vector<abs_robot_info> get_robot_plans_and_positions(std::vector<Robot> &ro
     return current_plans_and_locations;
 }
 
-std::string constructUppaalModel(std::vector<Robot> &robots, Robot &currentRobot, bool stations){
+std::string constructUppaalModel(const std::vector<Robot> &robots, Robot &currentRobot, bool stations){
 
     std::vector<abs_robot_info> current_plans_and_locations = get_robot_plans_and_positions(robots, currentRobot);
 

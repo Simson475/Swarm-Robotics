@@ -29,7 +29,7 @@ Point Robot::getNextStation() {
         return getInitialLoc();
 }
 
-std::string Robot::getName(){
+std::string Robot::getName() const {
     return getfootBot()->GetId();
 }
 

@@ -10,6 +10,6 @@
 #include "models/robot/robot.hpp"
 #include "argos3/core/utility/math/vector3.h"
 
-double get_distance_to_latest_point(Robot& robot);
+double get_distance_to_latest_point(const Robot& robot);
 
 #endif //SWARMSIMULATOR_ARGOS_WRAPPER_H

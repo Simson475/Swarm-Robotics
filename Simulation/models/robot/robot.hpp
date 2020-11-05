@@ -68,7 +68,7 @@ public:
     void increment(int i);
     void setEta(double time);
     void setCurrStationTarget();
-    Point* getCurrentTarget(){return currTarget;}
+    Point* getCurrentTarget() const {return currTarget;}
     void setJob(std::vector<Point> &jobs);
     void addSinglePickUp(Point pickup);
     void removeFirstStation();
@@ -80,7 +80,7 @@ public:
     int getWatch() { return stopWatch; }
     bool atPoint() const { return stopWatch != -1;}
     std::vector<Point> getJob() { return job; }
-    std::vector<Point> getRemainingStations() { return remainingStations; }
+    std::vector<Point> getRemainingStations() const { return remainingStations; }
     void clearStations(){remainingStations.clear();}
     void clearWaypoints(){remainingWaypoints.clear();}
     std::vector<Point> getRemainingWaypoints() { return remainingWaypoints; }
@@ -105,7 +105,7 @@ public:
     void setPreviousLoc(int p){previousLoc = p;}
     std::vector<timeResult*> getOtherRobotsEstimates(){return otherRobotsInf;}
     argos::CVector3 getPosition(argos::CVector3 start, argos::CVector3 end, double distance);
-    std::string getName();
+    std::string getName() const;
 
     bool operator==(const Robot &r) const {
         return getfootBot() == r.getfootBot();

@@ -46,11 +46,11 @@ struct robot_moving : abs_robot_info {
 };
 
 
-std::string constructUppaalModel(std::vector<Robot> &robots, Robot &currentRobot, bool stations);
+std::string constructUppaalModel(const std::vector<Robot> &robots, Robot &currentRobot, bool stations);
 
 
 // Functions for getting the information to the Uppaal XML from map_structure
-std::vector<abs_robot_info> get_robot_plans_and_positions(std::vector<Robot> &robots, Robot &currentRobot);
+std::vector<abs_robot_info> get_robot_plans_and_positions(const std::vector<Robot> &robots, const Robot &currentRobot);
 std::string number_of_stations(const Map_Structure &map_structure);
 int number_of_waypoints(const Map_Structure &map_structure);
 int number_of_robots(const Map_Structure& map_structure);
@@ -60,7 +60,7 @@ std::string get_distance_matrix(Map_Structure& map_structure);
 
 // Functions for getting the strings needed for the placeholders in the Uppaal XML
 void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure);
-
+//std::string current_robots_loc(const std::vector<abs_robot_info>&, const Robot&);
 
 // Helper_functions
 std::vector<std::vector<std::string>> format_distance_values(const std::vector<std::vector<float>>& dist_matrix);
