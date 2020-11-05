@@ -281,7 +281,8 @@ void CFootBotDiffusion::movementLogic(int n){
                     sMap.Robots[n].updateCurrent(&sMap.getPointByID(currTarget->getId()));
                     m_pcWheels->SetLinearVelocity(0.0f, 0.0f); // setting robots speed to 0 when the target is reached
                     switch(currTarget->getType()){
-                        case pointType::station : sMap.getPointByID(sMap.Robots[n].getCurrentTarget()->getId()).setOccupied(true);
+                        case pointType::station :
+                            sMap.getPointByID(sMap.Robots[n].getCurrentTarget()->getId()).setOccupied(true);
                             std::cout <<"------------------"<< sMap.Robots[n].getCurrentTarget()->getId() << "set to true "<<std::endl;
                             sMap.Robots[n].increment(sMap.Robots[n].getWatch()+1);
                             if(sMap.Robots[n].getRemainingStations().size()<3){
@@ -300,7 +301,8 @@ void CFootBotDiffusion::movementLogic(int n){
                             sMap.Robots[n].increment(sMap.Robots[n].getWatch()+1);
                             break;
                             //case for the charging station *Future work*
-                        default : sMap.Robots[n].changeStatus(Status::waitWaypoints);
+                        default :
+                            sMap.Robots[n].changeStatus(Status::waitWaypoints);
                     }
                 }
                 else {
