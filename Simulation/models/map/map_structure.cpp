@@ -106,7 +106,7 @@ std::vector<std::vector<float>> Map_Structure::floydShortestOfStations() {
     }
 
     std::vector<std::vector<float>> shortestDistance(amountOfStations, std::vector<float>());
-    shortestDistances.resize(copyList.size(), std::vector<float>());
+    //shortestDistances.resize(copyList.size(), std::vector<float>());
     for (long unsigned i = 0; i < copyList.size(); i++) {
         for (long unsigned j = 0; j < copyList.size(); j++) {
             if(i <amountOfStations && j < amountOfStations)
@@ -378,4 +378,33 @@ void Map_Structure::setFolderPath() {
         folderPath = "/";
     }
     std::cout << folderPath <<std::endl;
+}
+
+void Map_Structure::generateJobs() {
+    //************creates random jobs in json file************
+    std::random_device rd;  // obtain a random number from hardware
+    std::mt19937 eng(rd()); // seed the generator
+    std::uniform_int_distribution<> distr(2, 11);   // define the range of stations ids
+    std::uniform_int_distribution<> distrEnd(2, 10); // define the range of how many stations to visit
+    std::uniform_int_distribution<> endPoints(0, 1);//define end points ids
+    nlohmann::json mainJsonObj;
+    for (auto i = 0; i < 100; i++){
+        nlohmann::json jsonObj;
+        jsonObj["job_id"] = i;
+        std::vector<nlohmann::json> stationsToVisit;
+        int amountPickups = distrEnd(eng);
+        for (auto j = 0; j < amountPickups ;j++) {
+            int temp = distr(eng);
+            bool check = true;
+            for(auto& station: stationsToVisit){
+                if(station == temp){ check = false;break;}}
+            if(check)stationsToVisit.push_back(temp);
+        }
+        stationsToVisit.push_back(endPoints(eng));
+        jsonObj["job"] = stationsToVisit;
+        mainJsonObj.push_back(jsonObj);
+    }
+    Map_Structure sMap = Map_Structure::get_instance();
+    std::ofstream out(sMap.folderPath + "/jobs.json");
+    out << std::setw(4) << mainJsonObj;
 }

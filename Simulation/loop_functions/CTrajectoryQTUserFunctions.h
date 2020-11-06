@@ -3,6 +3,7 @@
 
 
 #include "models/map/map_structure.hpp"
+#include "CTrajectoryLoopFunctions.h"
 
 
 #include "argos3/core/control_interface/ci_controller.h"
@@ -15,8 +16,6 @@
 #include "nlohmann/json.hpp"
 
 
-class CTrajectoryLoopFunctions;
-
 class CTrajectoryQTUserFunctions : public argos::CQTOpenGLUserFunctions {
 
 public:
@@ -25,9 +24,6 @@ public:
 
     // method which is responsible of displaying everything in GUI
     virtual void DrawInWorld();
-
-    //using random seeds generates new jobs in experiments/scene2/jobs.json
-    void generateJobs();
 
     //captures key presses during the simulation
     virtual void KeyPressed(QKeyEvent* pc_event);

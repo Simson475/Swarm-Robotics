@@ -12,6 +12,11 @@
 #include "argos3/plugins/simulator/entities/box_entity.h"
 #include "argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h"
 
+#include <random>
+
+
+// performs all the actions only once, upon start of the program.
+#define newJobs true
 
 class Map_Structure {
 public:
@@ -80,8 +85,21 @@ public:
     //creates for each simulated robot a folder, where one stores it's config files
     void createFolderForEachRobot();
 
+    // Generates the jobs
+    void generateJobs();
+
 private:
 //private constructor ensuring that only one instance is being created of the class
-    Map_Structure() = default;
+    Map_Structure() {
+        setFolderPath();
+        if(newJobs)
+            generateJobs(); // call this for generating new list of jobs
+        initializeStations();
+        initializeJobs();
+        collectAllWayPoints();
+        createFolderForEachRobot();
+        setAllPossibleLines();
+        createStaticJSON();
+    };
 };
 #endif

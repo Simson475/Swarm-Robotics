@@ -1,57 +1,10 @@
 #include "CTrajectoryQTUserFunctions.h"
-#include "CTrajectoryLoopFunctions.h"
-#include <bits/stdc++.h>
-#include <cctype>
-#include <iostream>
-#include <sys/stat.h>
-#include <sys/types.h>
-
-// performs all the actions only once, upon start of the program.
-#define newJobs true
 
 CTrajectoryQTUserFunctions::CTrajectoryQTUserFunctions()
     : m_cTrajLF(dynamic_cast<CTrajectoryLoopFunctions &>(
-                    argos::CSimulator::GetInstance().GetLoopFunctions())) {
+                    argos::CSimulator::GetInstance().GetLoopFunctions())) {}
 
-    sMap.setFolderPath();
-    if(newJobs)
-        generateJobs(); // call this for generating new list of jobs
-    sMap.initializeStations();
-    sMap.initializeJobs();
-    sMap.collectAllWayPoints();
-    sMap.createFolderForEachRobot();
-    sMap.setAllPossibleLines();
-    sMap.createStaticJSON();
-}
 
-void CTrajectoryQTUserFunctions::generateJobs() {
-    //************creates random jobs in json file************
-    std::random_device rd;  // obtain a random number from hardware
-    std::mt19937 eng(rd()); // seed the generator
-    std::uniform_int_distribution<> distr(2, 11);   // define the range of stations ids
-    std::uniform_int_distribution<> distrEnd(2, 10); // define the range of how many stations to visit
-    std::uniform_int_distribution<> endPoints(0, 1);//define end points ids
-    nlohmann::json mainJsonObj;
-    for (auto i = 0; i < 100; i++){
-        nlohmann::json jsonObj;
-        jsonObj["job_id"] = i;
-        std::vector<nlohmann::json> stationsToVisit;
-        int amountPickups = distrEnd(eng);
-        for (auto j = 0; j < amountPickups ;j++) {
-            int temp = distr(eng);
-            bool check = true;
-            for(auto& station: stationsToVisit){
-                if(station == temp){ check = false;break;}}
-            if(check)stationsToVisit.push_back(temp);
-        }
-        stationsToVisit.push_back(endPoints(eng));
-        jsonObj["job"] = stationsToVisit;
-        mainJsonObj.push_back(jsonObj);
-    }
-    Map_Structure sMap = Map_Structure::get_instance();
-    std::ofstream out(sMap.folderPath + "/jobs.json");
-    out << std::setw(4) << mainJsonObj;
-}
 
 void CTrajectoryQTUserFunctions::KeyPressed(QKeyEvent* pc_event) {
     switch(pc_event->key()) {
