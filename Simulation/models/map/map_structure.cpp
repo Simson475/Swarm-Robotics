@@ -65,26 +65,6 @@ int Map_Structure::getRobotById(std::string id) {
 
     throw std::invalid_argument("Robot not found by ID");
 }
-std::vector<std::vector<float>> Map_Structure::createCopyList(){
-    auto size = sqrt(Map_Structure::lines.size());
-    std::vector<std::vector<float>> copyList(size, std::vector<float>(size));
-    for(auto& line: Map_Structure::lines){
-        copyList[line.Geta().getId()][line.Getb().getId()] = line.GetFloydDistance();
-    }
-    shortestPath.clear();
-    shortestPath.resize(size, std::vector<int>(size));
-    for (auto i = 0; i < size; ++i) {
-        for (auto j = 0; j < size; ++j) {
-            shortestPath[i][j] = 0;
-        }
-        for (auto j = 0; j < size; ++j) {
-            if (i != j) {
-                shortestPath[i][j] = j + 1;
-            }
-        }
-    }
-    return copyList;
-}
 
 
 // @Todo: Could use a refactor as this code is much more complex than the pseudo-code for

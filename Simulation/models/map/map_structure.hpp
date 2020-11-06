@@ -80,9 +80,6 @@ public:
     //creates for each simulated robot a folder, where one stores it's config files
     void createFolderForEachRobot();
 
-    //function used for shortest path, copies the relevant data to copy list
-    std::vector<std::vector<float>> createCopyList();
-
 private:
 //private constructor ensuring that only one instance is being created of the class
     Map_Structure() = default;
