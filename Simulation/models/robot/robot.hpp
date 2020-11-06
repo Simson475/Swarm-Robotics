@@ -80,7 +80,7 @@ public:
     void clearWaypoints(){remainingWaypoints.clear();}
     std::vector<Point> getRemainingWaypoints() { return remainingWaypoints; }
     argos::CFootBotEntity *getfootBot() const { return footBot; }
-    Status getStatus() { return status; }
+    Status getStatus() const { return status; }
     bool contains(int id, std::vector<Point>& points);
     std::vector<Point> setRemainingStations(std::vector<Point> allPoints);
     std::vector<Point> setRemainingWaypoints(std::vector<Point> &allPoints);

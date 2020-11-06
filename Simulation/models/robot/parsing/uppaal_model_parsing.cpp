@@ -169,3 +169,15 @@ std::string format_distance_matrix(const std::vector<std::vector<std::string>>& 
 
     return final_matrix.str();
 }
+
+std::size_t num_of_other_robots_with_jobs(const std::vector<Robot> &robots, const Robot &currentRobot){
+    std::size_t robots_with_jobs = 0;
+
+    for(auto& robot : robots){
+        if (robot.getName() != currentRobot.getName() && robot.getStatus() == Status::available){
+            robots_with_jobs++;
+        }
+    }
+
+    return robots_with_jobs;
+}

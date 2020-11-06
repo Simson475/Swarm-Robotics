@@ -65,5 +65,6 @@ void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure);
 // Helper_functions
 std::vector<std::vector<std::string>> format_distance_values(const std::vector<std::vector<float>>& dist_matrix);
 std::string format_distance_matrix(const std::vector<std::vector<std::string>>& distance_values);
+std::size_t num_of_other_robots_with_jobs(const std::vector<Robot> &robots, const Robot &currentRobot);
 
 #endif //SWARMSIMULATOR_UPPAAL_MODEL_PARSING_H
