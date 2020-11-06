@@ -106,7 +106,7 @@ std::vector<std::vector<float>> Map_Structure::floydShortestOfStations() {
     }
 
     std::vector<std::vector<float>> shortestDistance(amountOfStations, std::vector<float>());
-    //shortestDistances.resize(copyList.size(), std::vector<float>());
+    shortestDistances.resize(copyList.size(), std::vector<float>());
     for (long unsigned i = 0; i < copyList.size(); i++) {
         for (long unsigned j = 0; j < copyList.size(); j++) {
             if(i <amountOfStations && j < amountOfStations)
@@ -129,8 +129,8 @@ Point& Map_Structure::getPointByID(int id){
 
 void Map_Structure::createStaticJSON() {
 
-    get_distance_matrix(Map_Structure::get_instance());
-    configure_static_settings_of_Uppaal_model(Map_Structure::get_instance());
+    //get_distance_matrix(Map_Structure::get_instance());
+    //configure_static_settings_of_Uppaal_model(Map_Structure::get_instance());
 
     nlohmann::json jsonObj;
 
@@ -240,6 +240,7 @@ void Map_Structure::createStaticJSON() {
     }
     jsonObj["waypoints"] = waypoints;
     // create static_config for each robot
+    std::cout << "Set static for robot" << std::endl;
     for (long unsigned i = 0; i < Map_Structure::Robots.size(); i++) {
 
         std::string tmp = folderPath +

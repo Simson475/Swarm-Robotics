@@ -1,6 +1,8 @@
 #ifndef CTrajectoryLoopFunctions_H
 #define CTrajectoryLoopFunctions_H
 
+#include "models/map/map_structure.hpp"
+
 #include "argos3/core/simulator/loop_functions.h"
 #include "argos3/plugins/robots/foot-bot/simulator/footbot_entity.h"
 #include "argos3/plugins/simulator/entities/box_entity.h"

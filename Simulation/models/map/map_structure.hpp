@@ -90,16 +90,6 @@ public:
 
 private:
 //private constructor ensuring that only one instance is being created of the class
-    Map_Structure() {
-        setFolderPath();
-        if(newJobs)
-            generateJobs(); // call this for generating new list of jobs
-        initializeStations();
-        initializeJobs();
-        collectAllWayPoints();
-        createFolderForEachRobot();
-        setAllPossibleLines();
-        createStaticJSON();
-    };
+    Map_Structure() = default;
 };
 #endif
