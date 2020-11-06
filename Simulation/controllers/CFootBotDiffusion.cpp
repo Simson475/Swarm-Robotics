@@ -37,18 +37,6 @@ CFootBotDiffusion::CFootBotDiffusion():
 /****************************************/
 
 void CFootBotDiffusion::Init(argos::TConfigurationNode& t_node) {
-    std::ofstream outfile;
-    outfile.open("test.txt", std::ios_base::app); // append instead of overwrite
-    outfile<<Map_Structure::get_instance().Robots.size()<<"SIZE"<<std::endl;
-    for (auto& robots: sMap.Robots){
-        outfile<<robots.getInitialLoc().getId()<<std::endl;
-    }
-    outfile<<"POINTS"<<std::endl;
-    for (auto& point: Map_Structure::get_instance().points){
-
-        outfile<<point.getId()<<std::endl;
-    }
-    outfile.close();
     /*
      * Get sensor/actuator handles
      *
@@ -112,22 +100,6 @@ void CFootBotDiffusion::getShortestPath(int n, bool stations){
 void CFootBotDiffusion::ControlStep() {
     Map_Structure &sMap = Map_Structure::get_instance();
     int n = sMap.getRobotById(m_id);
-    //if(!paused || sMap.Robots[n].getStatus() == Status::waitStations  ||sMap.Robots[n].getStatus() == Status::waitWaypoints){
-
-    std::ofstream outfile;
-    outfile.open("test.txt", std::ios_base::app); // append instead of overwrite
-    outfile<< " CONTROL STEPS " <<std::endl;
-    outfile<<Map_Structure::get_instance().Robots.size()<<"SIZE"<<std::endl;
-    for (auto& robots: sMap.Robots){
-        outfile<<robots.getInitialLoc().getId()<<std::endl;
-    }
-    outfile<<"POINTS"<<std::endl;
-    for (auto& point: Map_Structure::get_instance().points){
-
-        outfile<<point.getId()<<std::endl;
-    }
-    outfile<< " CONTROL STEPS " <<std::endl;
-    outfile.close();
 
     Robot &robot = sMap.Robots[n];
     switch(robot.getStatus()){
