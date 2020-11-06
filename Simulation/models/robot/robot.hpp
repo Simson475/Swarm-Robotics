@@ -26,8 +26,8 @@ struct SimulationExpression {
     std::string name;
     std::vector<SimulationTrace> runs;
 };
-enum Status {
-    available,
+enum class Status {
+    available, // if the robot does not have a job.
     requestStations,
     waitStations,
     requestWaypoints,
