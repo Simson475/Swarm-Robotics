@@ -22,24 +22,13 @@ Point& Robot::getInitialLoc() {
     return *initialLocation;
 }
 
-Point Robot::getNextStation() {
-    if (!remainingStations.empty()) {
-        return remainingStations[0];
-    } else
-        return getInitialLoc();
-}
 
 std::string Robot::getName() const {
     return getfootBot()->GetId();
 }
 
 void Robot::increment(int i) { stopWatch = i; }
-void Robot::setEta(double time) { etaNextStation = time; }
-void Robot::setJob(std::vector<Point> &jobs) {
-    for (auto i = 0u; i < jobs.size(); i++) {
-        job.push_back(jobs[i]);
-    }
-}
+
 void Robot::setCurrStationTarget(){
     Map_Structure &sMap = Map_Structure::get_instance();
     currTarget = &sMap.getPointByID(remainingStations.front().getId());
@@ -143,10 +132,7 @@ timeResult* Robot::getEtaHelper(std::string id, std::vector<Point> waypoints, ar
     return new timeResult{id,temp, passedStations, passedWaypoints, position, once,allWaypoints   };
 
 }
-void Robot::addEndPoint(){
-    Map_Structure &sMap = Map_Structure::get_instance();
-    remainingStations.push_back(sMap.getPointByID(1));
-}
+
 timeResult* Robot::getEtaNextRobot(Robot r, double timeToDelay) {
     Map_Structure &sMap = Map_Structure::get_instance();
     timeToDelay = timeToDelay* VELOCITY /100; // back to distance
@@ -190,11 +176,7 @@ void Robot::addSinglePickUp(Point pickup) { job.push_back(pickup); }
 void Robot::removeFirstStation() {
     remainingStations.erase(remainingStations.begin());
 }
-void Robot::removeFirstWaypoint() {
 
-    latestPoint = &Map_Structure::get_instance().getPointByID(remainingWaypoints[0].getId());
-    remainingWaypoints.erase(remainingWaypoints.begin());
-}
 void Robot::cleanJob() { job.clear(); }
 
 Point *Robot::getNextWayPoint() {

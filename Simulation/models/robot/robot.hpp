@@ -63,15 +63,11 @@ public:
     Robot& operator=(const Robot& that);
     ~Robot() = default;
     Point& getInitialLoc();
-    Point getNextStation();
     void increment(int i);
-    void setEta(double time);
     void setCurrStationTarget();
     Point* getCurrentTarget() const {return currTarget;}
-    void setJob(std::vector<Point> &jobs);
     void addSinglePickUp(Point pickup);
     void removeFirstStation();
-    void removeFirstWaypoint();
     void cleanJob();
     Point *getNextWayPoint();
     void changeStatus(Status stat);
@@ -89,7 +85,6 @@ public:
     std::vector<Point> setRemainingStations(std::vector<Point> allPoints);
     std::vector<Point> setRemainingWaypoints(std::vector<Point> &allPoints);
     void converJSONStation(std::string robotId, std::string choice);
-    void addEndPoint();
     std::string createDynamicJson(std::vector<Robot> &robots, Robot &robot, bool stations);
     std::string createDynamicJson2(std::vector<Robot> &robots, Robot &currentRobot, bool stations);
     void sortJob(std::vector<std::vector<float>> shortestDistances);//Sorts the points according to the shortest distance
