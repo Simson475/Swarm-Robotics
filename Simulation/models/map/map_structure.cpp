@@ -18,28 +18,20 @@ void Map_Structure::collectAllWayPoints() {
     std::vector<Box> walls;
     argos::CSpace::TMapPerType &tBoxMap =
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("box");
-    for (auto it = tBoxMap.begin(); it != tBoxMap.end();
-         ++it) {
-        argos::CBoxEntity *pcBox = argos::any_cast<argos::CBoxEntity *>(it->second);
+    for (auto& boxMap : tBoxMap) {
+        argos::CBoxEntity *pcBox = argos::any_cast<argos::CBoxEntity *>(boxMap.second);
         argos::CVector3 pos = pcBox->GetEmbodiedEntity().GetOriginAnchor().Position;
         argos::CVector3 size = pcBox->GetSize();
-        std::string id = it->first;
-        Box b;
+        std::string id = boxMap.first;
+        Box b{id, pos, size};
         switch (id[0]) {
             case 'w': // break; allow break in order to stop considering boundries of
                 // arena
-                walls.push_back(Box(id, pos, size));
+                walls.push_back(b);
                 break;
             case 'c':
-                b = Box(id, pos, size);
-                Map_Structure::boxes.push_back(b);
-                break;
             case 'd':
-                b = Box(id, pos, size);
-                Map_Structure::boxes.push_back(b);
-                break;
             case 'o':
-                b = Box(id, pos, size);
                 Map_Structure::boxes.push_back(b);
                 break;
         }

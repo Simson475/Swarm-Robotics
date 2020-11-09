@@ -25,7 +25,6 @@ private:
   std::vector<Line> boxLines;
 
 public:
-  Box() {}
   Box(std::string id, argos::CVector3 center, argos::CVector3 size);
 
   //returns the box id
