@@ -345,7 +345,7 @@ std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, b
 }
 
 
-void Robot::sortJob(std::vector<std::vector<float>> shortestDistances)
+void Robot::sortJob(const std::vector<std::vector<float>>& shortestDistances)
 {
     for(long unsigned i=0;i<job.size()-1;i++)
     {

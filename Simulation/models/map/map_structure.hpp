@@ -19,6 +19,10 @@
 #define newJobs true
 
 class Map_Structure {
+private:
+    // Shortest distance betweenm each point
+    std::vector<std::vector<float>> shortestDistanceMatrix{};
+
 public:
     std::string folderPath;
     //storage of elements in the map
@@ -33,8 +37,6 @@ public:
     std::vector<std::vector<int>> jobs;
     //shortest paths between each point
     std::vector<std::vector<int>> shortestPath;
-    //shortest distances between each station
-    std::vector<std::vector<float>> shortestDistances;
     //counters to figure how often uppaal was too slow
     int timesUppaalFailed = 0;
     int totalTries = 0;
@@ -52,6 +54,11 @@ public:
 
     //sets path of the folder where one can find trajectory and points
     void setFolderPath();
+
+    // Get shortest Distances
+    const std::vector<std::vector<float>>& getShortestDistanceMatrix() const {
+        return shortestDistanceMatrix;
+    };
 
     // finds a robot by an ID
     int getRobotById(std::string id);
@@ -87,6 +94,9 @@ public:
 
     // Generates the jobs
     void generateJobs();
+
+    // Sets up the distance matrix for all paths
+    void setDistanceMatrix();
 
 private:
 //private constructor ensuring that only one instance is being created of the class

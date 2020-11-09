@@ -63,15 +63,12 @@ int Map_Structure::getRobotById(std::string id) {
     throw std::invalid_argument("Robot not found by ID");
 }
 
-
-// @Todo: Could use a refactor as this code is much more complex than the pseudo-code for
-// the Floyd-Warshall Algorithm.
-std::vector<std::vector<float>> Map_Structure::floydShortestOfStations() {
-    unsigned long amountOfStations = Map_Structure::stationIDs.size() + Map_Structure::endStationIDs.size();
+void Map_Structure::setDistanceMatrix(){
     auto size = (unsigned)sqrt(Map_Structure::lines.size());
-    std::vector<std::vector<float>> copyList(size, std::vector<float>(size));
+
+    shortestDistanceMatrix.resize(size, std::vector<float>(size));
     for(auto& line: Map_Structure::lines){
-        copyList[line.Geta().getId()][line.Getb().getId()] = line.GetFloydDistance();
+        shortestDistanceMatrix[line.Geta().getId()][line.Getb().getId()] = line.GetFloydDistance();
     }
     shortestPath.clear();
     shortestPath.resize(size, std::vector<int>(size));
@@ -88,27 +85,30 @@ std::vector<std::vector<float>> Map_Structure::floydShortestOfStations() {
 
     float inf = std::numeric_limits<float>::infinity();
 
-    for (long unsigned k = 0; k < copyList.size(); k++) {
-        for (long unsigned i = 0; i < copyList.size(); i++){
-            for (long unsigned j = 0; j < copyList.size(); j++){
-                float temp = copyList[i][k] + copyList[k][j];
-                if (copyList[i][k]==inf || copyList[k][j]== inf)
+    for (long unsigned k = 0; k < shortestDistanceMatrix.size(); k++) {
+        for (long unsigned i = 0; i < shortestDistanceMatrix.size(); i++){
+            for (long unsigned j = 0; j < shortestDistanceMatrix.size(); j++){
+                float temp = shortestDistanceMatrix[i][k] + shortestDistanceMatrix[k][j];
+                if (shortestDistanceMatrix[i][k]==inf || shortestDistanceMatrix[k][j]== inf)
                     temp = inf;
-                if (copyList[i][k] != inf && copyList[k][j]!= inf && temp < copyList[i][j]){
-                    copyList[i][j] = (copyList[i][k] + copyList[k][j]);
+                if (shortestDistanceMatrix[i][k] != inf && shortestDistanceMatrix[k][j]!= inf && temp < shortestDistanceMatrix[i][j]){
+                    shortestDistanceMatrix[i][j] = (shortestDistanceMatrix[i][k] + shortestDistanceMatrix[k][j]);
                     shortestPath[i][j] = shortestPath[i][k];
                 }
             }
         }
     }
+}
+
+// @Todo: Could use a refactor as this code is much more complex than the pseudo-code for
+// the Floyd-Warshall Algorithm.
+std::vector<std::vector<float>> Map_Structure::floydShortestOfStations() {
+    unsigned long amountOfStations = Map_Structure::stationIDs.size() + Map_Structure::endStationIDs.size();
 
     std::vector<std::vector<float>> shortestDistance(amountOfStations, std::vector<float>());
-    shortestDistances.resize(copyList.size(), std::vector<float>());
-    for (long unsigned i = 0; i < copyList.size(); i++) {
-        for (long unsigned j = 0; j < copyList.size(); j++) {
-            if(i <amountOfStations && j < amountOfStations)
-                shortestDistance[i].push_back(copyList[i][j]/(double)VELOCITY*100);
-            shortestDistances[i].push_back(copyList[i][j]);
+    for (long unsigned i = 0; i < amountOfStations; i++) {
+        for (long unsigned j = 0; j < amountOfStations; j++) {
+            shortestDistance[i].push_back(shortestDistanceMatrix[i][j]);
         }
     }
 

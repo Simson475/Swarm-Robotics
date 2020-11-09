@@ -52,6 +52,8 @@ void CTrajectoryLoopFunctions::Init(argos::TConfigurationNode &t_tree) {
     sMap.createFolderForEachRobot();
     std::cout << "Set Lines" << std::endl;
     sMap.setAllPossibleLines();
+    std::cout << "Calculating Distance Matrix" << std::endl;
+    sMap.setDistanceMatrix();
     std::cout << "Create JSON" << std::endl;
     sMap.createStaticJSON();
     std::cout << "Setup complete" << std::endl;
