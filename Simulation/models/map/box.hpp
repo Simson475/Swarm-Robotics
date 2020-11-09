@@ -27,8 +27,7 @@ private:
 public:
   Box() {}
   Box(std::string id, argos::CVector3 center, argos::CVector3 size);
-  //draws virtual corners of the box
-  void draw();
+
   //returns the box id
   std::string getID() { return id; }
   //returns virtual corner of the figure
@@ -37,6 +36,7 @@ public:
   Line &getBoxLine(int n) { return boxLines[n]; }
   //build box coners and extends it's virtual corners
   void setBoxCorner();
+  const std::vector<std::tuple<float, float, float, float>> getCoordinates();
 };
 
 #endif

@@ -33,6 +33,19 @@ void CTrajectoryQTUserFunctions::KeyPressed(QKeyEvent* pc_event) {
     }
 }
 
+void CTrajectoryQTUserFunctions::draw(std::tuple<float, float, float, float> coordinates) {
+    glBegin(GL_LINES);
+    glVertex2f(std::get<0>(coordinates), std::get<1>(coordinates));
+    glVertex2f(std::get<2>(coordinates), std::get<3>(coordinates));
+    glEnd();
+}
+
+void CTrajectoryQTUserFunctions::draw(std::vector<std::tuple<float, float, float, float>> coordinates) {
+    for (auto& c : coordinates) {
+        draw(c);
+    }
+}
+
 void CTrajectoryQTUserFunctions::DrawInWorld() {
     DrawText(argos::CVector3(1,0,1), "X=1", argos::CColor::ORANGE);
     DrawText(argos::CVector3(-1,0,1), "X=-1", argos::CColor::ORANGE);
@@ -43,13 +56,16 @@ void CTrajectoryQTUserFunctions::DrawInWorld() {
         element.SetZ(0.1);
         DrawPoint(element, argos::CColor::BLACK, 5);
     }
+
     for (auto &element : sMap.boxes) {
-        element.draw();
+        draw(element.getCoordinates());
     }
+
     for (auto &element : sMap.lines) {
         if (element.GetDistance() != -1)
-            element.draw();
+            draw(element.getCoordinates());
     }
+
     for (auto &robot : sMap.Robots) {
         DrawText(robot.getfootBot()->GetEmbodiedEntity().GetOriginAnchor().Position, robot.getfootBot()->GetId());
     }
