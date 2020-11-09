@@ -3,12 +3,7 @@
 //
 
 #include "uppaal_model_parsing.h"
-#include "argos_wrapper/argos_wrapper.hpp"
-#include "models/map/line.hpp"
 
-#include <iostream>
-#include <fstream>
-#include <filesystem>
 
 std::vector<abs_robot_info> get_robot_plans_and_positions(const std::vector<Robot> &robots, const Robot &currentRobot){
     // What we need from the other robots are:

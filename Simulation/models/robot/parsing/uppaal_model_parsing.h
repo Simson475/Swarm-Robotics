@@ -7,11 +7,16 @@
 
 #include "models/robot/robot.hpp"
 #include "models/map/map_structure.hpp"
+#include "argos_wrapper/argos_wrapper.hpp"
+#include "models/map/line.hpp"
 
 #include <string>
 #include <vector>
 #include <map>
 #include <cmath>
+#include <iostream>
+#include <fstream>
+#include <filesystem>
 #include <experimental/iterator>
 
 struct abs_robot_info {
