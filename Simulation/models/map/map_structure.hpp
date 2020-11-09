@@ -10,9 +10,9 @@
 #include "argos3/core/simulator/loop_functions.h"
 #include "argos3/plugins/robots/foot-bot/simulator/footbot_entity.h"
 #include "argos3/plugins/simulator/entities/box_entity.h"
-#include "argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h"
 
 #include <random>
+#include <limits>
 
 
 // performs all the actions only once, upon start of the program.

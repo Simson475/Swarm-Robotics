@@ -1,9 +1,6 @@
 #include "map_structure.hpp"
 #include "models/robot/parsing/uppaal_model_parsing.h"
 
-#include <limits>
-
-
 void Map_Structure::collectAllWayPoints() {
 
     argos::CSpace::TMapPerType &tBotMap =
