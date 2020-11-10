@@ -1,5 +1,5 @@
 #include "map_structure.hpp"
-#include "models/robot/parsing/uppaal_model_parsing.h"
+#include "models/robot/parsing/uppaal_model_parsing.hpp"
 
 void Map_Structure::collectAllWayPoints() {
 
@@ -55,6 +55,9 @@ int Map_Structure::getRobotById(std::string id) {
     throw std::invalid_argument("Robot not found by ID");
 }
 
+
+// Set the fields `shortestDistanceMatrix`, which gives the lenght of the shortest path between all points
+// and `shortestPath`, which tells the next Point to go to if one wants the shortest path.
 void Map_Structure::setDistanceMatrix(){
     auto size = (unsigned)sqrt(Map_Structure::lines.size());
 
@@ -119,7 +122,7 @@ Point& Map_Structure::getPointByID(int id){
 void Map_Structure::createStaticJSON() {
 
     //get_distance_matrix(Map_Structure::get_instance());
-    //configure_static_settings_of_Uppaal_model(Map_Structure::get_instance());
+    configure_static_settings_of_Uppaal_model(Map_Structure::get_instance());
 
     nlohmann::json jsonObj;
 

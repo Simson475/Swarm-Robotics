@@ -2,8 +2,12 @@
 // Created by martin on 20/10/20.
 //
 
-#include "uppaal_model_parsing.h"
+#include "uppaal_model_parsing.hpp"
 
+
+std::string format_distance_matrix(const std::vector<std::vector<float>>& distance_matrix){
+    return combine_distance_lines(format_distance_lines(distance_matrix));
+}
 
 std::vector<abs_robot_info> get_robot_plans_and_positions(const std::vector<Robot> &robots, const Robot &currentRobot){
     // What we need from the other robots are:
@@ -99,17 +103,21 @@ void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure){
 
         pos = line.find("#OTHER ROBOTS#");
         if(pos != std::string::npos){
-            line.replace(pos, std::string{"#OTHER ROBOTS#"}.size(), std::to_string(number_of_robots(map_structure) - 1));
+            line.replace(pos, std::string{"#OTHER_ROBOTS#"}.size(), std::to_string(number_of_robots(map_structure) - 1));
         }
+
+        std::string matrix = format_distance_matrix(get_expanded_distance_matrix(map_structure, map_structure.Robots[0].getInitialLoc()));
 
         pos = line.find("#DISTANCE_MATRIX#");
         if(pos != std::string::npos){
-            line.replace(pos, std::string{"#DISTANCE_MATRIX#"}.size(), get_distance_matrix(map_structure));
+            line.replace(pos, std::string{"#DISTANCE_MATRIX#"}.size(), matrix);
         }
 
         partial_blueprint << line << std::endl;
 
     }
+
+
 
     exit(0);
 
@@ -120,12 +128,10 @@ std::string get_distance_matrix(Map_Structure& map_structure){
     // Map_structure calculates all the fastests paths between all the stations.
     std::vector<std::vector<float>> distance_matrix = map_structure.floydShortestOfStations();
 
-    std::vector<std::vector<std::string>> distance_values_str = format_distance_values(distance_matrix);
-
-    return format_distance_matrix(distance_values_str);
+    return format_distance_matrix(distance_matrix);
 }
 
-std::vector<std::vector<std::string>> format_distance_values(const std::vector<std::vector<float>>& dist_matrix){
+std::vector<std::vector<std::string>> format_distance_lines(const std::vector<std::vector<float>>& dist_matrix){
     std::vector<std::vector<std::string>> distance_matrix_str{};
 
     for(auto& line : dist_matrix){
@@ -139,7 +145,7 @@ std::vector<std::vector<std::string>> format_distance_values(const std::vector<s
     return distance_matrix_str;
 }
 
-std::string format_distance_matrix(const std::vector<std::vector<std::string>>& distance_values){
+std::string combine_distance_lines(const std::vector<std::vector<std::string>> &distance_values){
     // Temporary results of the lines in the matrix on string-form.
     std::vector<std::string> waited_matrix{};
 
@@ -175,4 +181,27 @@ std::size_t num_of_other_robots_with_jobs(const std::vector<Robot> &robots, cons
     }
 
     return robots_with_jobs;
+}
+
+// Gets the distances between all stations and the point given as argunent
+std::vector<std::vector<float>> get_expanded_distance_matrix(Map_Structure& map_structure, const Point& point){
+    // Copies the full distance matrix and the short distance between stations.
+    const std::vector<std::vector<float>>& fullDistMatrix = map_structure.getShortestDistanceMatrix();
+    std::vector<std::vector<float>> newDistMatrix = map_structure.floydShortestOfStations();
+
+    int p_id = point.getId();
+
+    // Adds the distance from stations to point.
+    for(std::size_t i = 0; i < newDistMatrix.size(); i++){
+        newDistMatrix[i].push_back(fullDistMatrix[i][p_id]);
+    }
+
+    // Adding distances from point to stations ti the matrix.
+    std::vector<float> pointToStations(newDistMatrix.size() + 1, 0);
+    for(std::size_t i = 0; i < newDistMatrix.size(); i++){
+        pointToStations[i] = fullDistMatrix[p_id][i];
+    }
+    newDistMatrix.push_back(pointToStations);
+
+    return newDistMatrix;
 }

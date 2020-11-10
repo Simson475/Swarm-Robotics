@@ -1,6 +1,6 @@
 #include "robot.hpp"
 #include "models/map/map_structure.hpp"
-#include "parsing/uppaal_model_parsing.h"
+#include "parsing/uppaal_model_parsing.hpp"
 
 Robot::Robot(argos::CFootBotEntity *footBot, Point *initialLoc) {
     initialLocation = initialLoc;

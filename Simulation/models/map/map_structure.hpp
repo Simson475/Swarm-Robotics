@@ -20,7 +20,7 @@
 
 class Map_Structure {
 private:
-    // Shortest distance betweenm each point
+    // Shortest distance between each point
     std::vector<std::vector<float>> shortestDistanceMatrix{};
 
 public:

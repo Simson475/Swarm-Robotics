@@ -61,15 +61,20 @@ int number_of_waypoints(const Map_Structure &map_structure);
 int number_of_robots(const Map_Structure& map_structure);
 std::vector<int> get_end_stations(const Map_Structure &map_structure);
 std::vector<std::vector<int>> get_distances(const Map_Structure& map_structure);
-std::string get_distance_matrix(Map_Structure& map_structure);
 
 // Functions for getting the strings needed for the placeholders in the Uppaal XML
 void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure);
 //std::string current_robots_loc(const std::vector<abs_robot_info>&, const Robot&);
 
 // Helper_functions
-std::vector<std::vector<std::string>> format_distance_values(const std::vector<std::vector<float>>& dist_matrix);
-std::string format_distance_matrix(const std::vector<std::vector<std::string>>& distance_values);
 std::size_t num_of_other_robots_with_jobs(const std::vector<Robot> &robots, const Robot &currentRobot);
+std::vector<std::vector<float>> get_expanded_distance_matrix(Map_Structure& map_structure, const Point& point);
+
+
+// Formatting functions:
+std::string get_distance_matrix(Map_Structure& map_structure);
+std::vector<std::vector<std::string>> format_distance_lines(const std::vector<std::vector<float>>& dist_matrix);
+std::string combine_distance_lines(const std::vector<std::vector<std::string>> &distance_values);
+std::string format_distance_matrix(const std::vector<std::vector<float>>& distance_matrix);
 
 #endif //SWARMSIMULATOR_UPPAAL_MODEL_PARSING_H
