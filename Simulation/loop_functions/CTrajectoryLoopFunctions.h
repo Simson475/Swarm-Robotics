@@ -23,10 +23,6 @@ public:
 
     virtual void Init(argos::TConfigurationNode &t_tree);
 
-    virtual void Reset();
-
-    virtual void PostStep();
-
     inline const TWaypointMap &GetWaypoints() const { return m_tWaypoints; }
 
     inline const BoxMap &GetBoxMap() const { return m_box_map; }
