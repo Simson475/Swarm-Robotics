@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// CONSTANTS and TYPEDEFS
+
+clock global;
+
+const int MAX_STATIONS = #MAX_STATIONS#;
+const int OTHER_ROBOTS = #OTHER_ROBOTS#;
+
+typedef int[0, MAX_STATIONS - 1] stations_t;
+typedef int[1, OTHER_ROBOTS] other_bots_t;
+typedef int[0, OTHER_ROBOTS] bots_t;
+
+
+///// CHANNELS //////////
+urgent broadcast chan arrival[stations_t][bots_t];
+broadcast chan completed[stations_t][bots_t];
+urgent broadcast chan complete;
+
+
+// Cost function variables
+stations_t cur_station = 0; // #### PLACEHOLDER
+bool order[stations_t]  = {0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0}; // #### PLACEHOLDER
+bool visited[stations_t];
+
+/////////// GRAPH
+// Coordinates of all stations and waypoints.
+const double travel_time[MAX_STATIONS][MAX_STATIONS] = #DISTANCE_MATRIX#;  // #### PLACEHOLDER
+
+const bool end_stations[stations_t] = {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0};  // #### PLACEHOLDER
+
+
+
+/*
+double sq_helper(stations_t s){
+    if (order[s] &amp;&amp; !visited[s]) {
+        return pow(coordinates[s][0] - coordinates[cur_station][0], 2) + pow(coordinates[s][1] - coordinates[cur_station][1], 2);
+    }
+    else {
+        return 0;
+    }
+}
+
+double sq_dist(){
+    return sum(s : stations_t) sq_helper(s);
+} 
+
+
+double ln_helper(stations_t s){
+    if (order[s] &amp;&amp; !visited[s]) {
+        double result = 0.0;
+        if (coordinates[s][0] - coordinates[cur_station][0] != 0)
+            result = result + ln(fabs(coordinates[s][0] - coordinates[cur_station][0]));
+        if (coordinates[s][1] - coordinates[cur_station][1] != 0)
+            result = result + ln(fabs(coordinates[s][1] - coordinates[cur_station][1]));
+        return result;
+    }
+    else {
+        return 0;
+    } 
+}
+
+double ln_dist(){
+    double result = sum(s : stations_t) ln_helper(s);    
+    if (result &gt; 0)
+        return result;
+    else
+        return 1e+36; // How to make proper solution?
+}
+*/
+
+
+const int order_lenghts[other_bots_t] = {6, 6, 4};  // #### PLACEHOLDER
+const stations_t start_locs[other_bots_t] = {4, 3, 9};  // #### PLACEHOLDER
+
+ // #### PLACEHOLDER
+const stations_t other_robots_plans[other_bots_t][MAX_STATIONS] = {
+{5, 7, 0, 9, 11, 3, 0, 0, 0, 0, 0, 0},
+{11, 0, 1, 9, 10, 7, 0, 0, 0, 0, 0, 0},
+{7, 2, 10, 3, 0, 0, 0, 0, 0, 0, 0, 0}
+};
+
+ // #### PLACEHOLDER
+const bool other_robots_real_orders[other_bots_t][MAX_STATIONS] = {
+{1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+{1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1},
+{0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0}
+};
+</declaration>
+	<template>
+		<name x="5" y="5">Robot</name>
+		<declaration>// Place local declarations here
+//stations_t cur_station = 0;
+stations_t dest_station = 0;
+
+//double rate_x;
+//double rate_y;
+
+//// POSITION ////
+//clock pcx;
+//clock pcy;
+
+//bool order[stations_t]  = {0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1};
+//bool visited[stations_t];
+
+clock travel;
+int max_travel;
+int min_travel;
+bool finished;
+
+
+bool is_at_desc(stations_t station){
+    return cur_station == station;
+}
+
+bool is_done(){
+    for(s : stations_t) {
+        if(order[s] != visited[s]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool must_visit(stations_t station) {
+    if (order[station] &amp;&amp; !visited[station])
+        return true;
+    if(is_done()){
+        return end_stations[station];
+    }
+    return false;       
+}
+
+void update_order(stations_t s){
+    if(is_done())
+        finished = true;
+    else
+        visited[cur_station] = true;
+}
+
+
+
+void init_position(){
+    return;
+}
+
+
+int get_max_travel_time(){
+    return fint(ceil(travel_time[cur_station][dest_station]));
+}
+
+int get_min_travel_time(){
+    return fint(floor(travel_time[cur_station][dest_station]));
+}
+
+</declaration>
+		<location id="id0" x="212" y="119">
+			<name x="178" y="85">Idle</name>
+			<label kind="invariant" x="229" y="127">travel' == 0</label>
+			<committed/>
+		</location>
+		<location id="id1" x="212" y="-195">
+			<name x="195" y="-228">Acc</name>
+			<committed/>
+		</location>
+		<location id="id2" x="527" y="-195">
+			<name x="510" y="-255">FullSpeed</name>
+			<label kind="invariant" x="561" y="-229">travel &lt;= max_travel</label>
+		</location>
+		<location id="id3" x="527" y="119">
+			<name x="553" y="102">Dec</name>
+			<committed/>
+		</location>
+		<location id="id4" x="-8" y="119">
+			<label kind="invariant" x="-93" y="136">travel' == 0</label>
+		</location>
+		<location id="id5" x="212" y="229">
+			<name x="153" y="221">Done</name>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id5"/>
+			<label kind="guard" x="144" y="161">finished</label>
+			<label kind="synchronisation" x="144" y="178">complete!</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="select" x="221" y="-51">s : stations_t</label>
+			<label kind="guard" x="221" y="-34">s != cur_station &amp;&amp; 
+!finished</label>
+			<label kind="assignment" x="221" y="17">dest_station = s</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id4"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="8" y="119">completed[cur_station][0]?</label>
+			<label kind="assignment" x="8" y="136">update_order(cur_station)</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id4"/>
+			<label kind="select" x="34" y="-34">s : stations_t</label>
+			<label kind="guard" x="34" y="-17">s == cur_station &amp;&amp;
+must_visit(s) &amp;&amp;
+!finished</label>
+			<label kind="synchronisation" x="34" y="34">arrival[s][0]!</label>
+			<nail x="-8" y="68"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id1"/>
+			<target ref="id3"/>
+			<label kind="guard" x="357" y="-85">false</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id3"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="340" y="119">travel = 0,
+cur_station = dest_station,
+dest_station = 0,
+max_travel = 0,
+min_travel = 0</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="guard" x="544" y="-68">travel &gt;= min_travel</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="assignment" x="238" y="-238">max_travel = get_max_travel_time(),
+min_travel = get_min_travel_time()</label>
+		</transition>
+	</template>
+	<template>
+		<name>OtherRobot</name>
+		<parameter>const other_bots_t id, const stations_t end_station</parameter>
+		<declaration>// Place local declarations here
+//stations_t cur_station = 0;
+stations_t cur_station = start_locs[id];
+stations_t dest_station = 0;
+
+bool visited[order_lenghts[id]];
+
+clock travel;
+int max_travel;
+int min_travel;
+bool finished;
+
+stations_t get_next_station(){
+    int i;
+    for(i = 0; i &lt; order_lenghts[id]; i++){
+        if (!visited[i])
+            return other_robots_plans[id][i];
+    }
+    return end_station;
+}
+
+
+bool is_done(){
+    return visited[order_lenghts[id] - 1];
+}
+
+
+void set_visited(){
+    int i;
+
+    if(!is_done()){
+        for(i = 0; i &lt; order_lenghts[id]; i++){
+            if(!visited[i]) {
+                visited[i] = true;
+                return;
+            }
+        }
+    }
+    else
+        finished = true;
+}
+
+bool loc_in_order(){
+    return other_robots_real_orders[id][cur_station];
+}
+
+bool at_next_station(){
+    return cur_station == get_next_station();
+}
+
+int get_max_travel_time(){
+    return fint(ceil(travel_time[cur_station][dest_station]));
+}
+
+int get_min_travel_time(){
+    return fint(floor(travel_time[cur_station][dest_station]));
+}
+
+</declaration>
+		<location id="id6" x="-289" y="-26">
+			<name x="-323" y="-8">Idle</name>
+			<label kind="invariant" x="-272" y="-18">travel' == 0</label>
+			<committed/>
+		</location>
+		<location id="id7" x="-289" y="-340">
+			<name x="-306" y="-373">Acc</name>
+			<committed/>
+		</location>
+		<location id="id8" x="26" y="-340">
+			<name x="9" y="-400">FullSpeed</name>
+			<label kind="invariant" x="60" y="-374">travel &lt;= max_travel</label>
+		</location>
+		<location id="id9" x="26" y="-26">
+			<name x="52" y="-43">Dec</name>
+			<committed/>
+		</location>
+		<location id="id10" x="-493" y="-25">
+			<label kind="invariant" x="-586" y="-25">travel' == 0</label>
+		</location>
+		<location id="id11" x="-289" y="85">
+			<name x="-348" y="77">Done</name>
+		</location>
+		<init ref="id6"/>
+		<transition controllable="false">
+			<source ref="id6"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-518" y="-212">!finished &amp;&amp;
+at_next_station() &amp;&amp;
+!loc_in_order()</label>
+			<label kind="assignment" x="-518" y="-161">set_visited()</label>
+			<nail x="-484" y="-136"/>
+			<nail x="-365" y="-136"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id6"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-280" y="25">finished</label>
+			<label kind="synchronisation" x="-280" y="42">complete!</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-280" y="-178">!finished &amp;&amp;
+!at_next_station()</label>
+			<label kind="assignment" x="-280" y="-145">dest_station = get_next_station()</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id10"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-501" y="-8">completed[cur_station][id]?</label>
+			<label kind="assignment" x="-501" y="8">set_visited()</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id6"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-620" y="-127">!finished &amp;&amp;
+at_next_station() &amp;&amp;
+loc_in_order()</label>
+			<label kind="synchronisation" x="-620" y="-76">arrival[cur_station][id]!</label>
+			<nail x="-561" y="-51"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id7"/>
+			<target ref="id9"/>
+			<label kind="guard" x="-144" y="-230">false</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id9"/>
+			<target ref="id6"/>
+			<label kind="assignment" x="-161" y="-26">travel = 0,
+cur_station = dest_station,
+dest_station = 0,
+max_travel = 0,
+min_travel = 0</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="guard" x="43" y="-213">travel &gt;= min_travel</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="assignment" x="-263" y="-383">max_travel = get_max_travel_time(),
+min_travel = get_min_travel_time()</label>
+		</transition>
+	</template>
+	<template>
+		<name>Station</name>
+		<parameter>const stations_t id</parameter>
+		<declaration>clock work;
+
+bots_t cur_bot = 0;
+
+bots_t queue[bots_t];
+bots_t queue_lenght;
+
+void add_to_queue(bots_t b){
+    queue[queue_lenght] = b;
+    queue_lenght++;
+}
+
+bots_t pop_queue(){
+    bots_t tmp = queue[0];
+    int i;
+
+    for(i = 0; i &lt; (queue_lenght - 1); i++){
+        queue[i] = queue[i + 1];
+    }
+    queue_lenght--;
+    queue[queue_lenght] = 0;
+
+    return tmp;
+}</declaration>
+		<location id="id12" x="-85" y="8">
+			<name x="-136" y="-25">Free</name>
+			<label kind="invariant" x="-153" y="25">work' == 0</label>
+		</location>
+		<location id="id13" x="144" y="8">
+			<name x="127" y="42">Occupied</name>
+			<label kind="invariant" x="134" y="25">work &lt;= 5</label>
+		</location>
+		<init ref="id12"/>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id13"/>
+			<label kind="select" x="238" y="-51">b : bots_t</label>
+			<label kind="synchronisation" x="238" y="-34">arrival[id][b]?</label>
+			<label kind="assignment" x="238" y="-17">add_to_queue(b)</label>
+			<nail x="229" y="-42"/>
+			<nail x="229" y="8"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id13"/>
+			<target ref="id13"/>
+			<label kind="guard" x="76" y="-229">work == 5 &amp;&amp;
+queue_lenght &gt; 0</label>
+			<label kind="synchronisation" x="76" y="-195">completed[id][cur_bot]!</label>
+			<label kind="assignment" x="76" y="-178">work = 0,
+cur_bot = pop_queue()</label>
+			<nail x="59" y="-127"/>
+			<nail x="221" y="-127"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id13"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-8" y="85">work == 5 &amp;&amp;
+queue_lenght == 0</label>
+			<label kind="synchronisation" x="-8" y="119">completed[id][cur_bot]!</label>
+			<label kind="assignment" x="-8" y="136">work = 0,
+cur_bot = 0</label>
+			<nail x="25" y="76"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="select" x="-42" y="-59">b : bots_t</label>
+			<label kind="synchronisation" x="-42" y="-42">arrival[id][b]?</label>
+			<label kind="assignment" x="-42" y="-25">cur_bot = b</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+other_1 = OtherRobot(1, 0);
+other_2 = OtherRobot(2, 0);
+other_3 = OtherRobot(3, 3);
+// List one or more processes to be composed into a system.
+system Robot, other_1, other_2, other_3, Station;
+//system Robot, Station;
+    </system>
+	<queries>
+		<query>
+			<formula>E&lt;&gt; Robot.FullSpeed</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>strategy plan = minE (global) [&lt;=1000]{
+		cur_station,
+		order[0],
+		order[1],
+		order[2],
+		order[3],
+		order[4],
+		order[5],
+		order[6],
+		order[7],
+		order[8],
+		order[9],
+		order[10],
+		order[11],
+		visited[0],
+		visited[1],
+		visited[2],
+		visited[3],
+		visited[4],
+		visited[5],
+		visited[6],
+		visited[7],
+		visited[8],
+		visited[9],
+		visited[10],
+		visited[11]
+} -&gt; {
+	global
+} : &lt;&gt; Robot.Done</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>strategy planSqDist = minE (sq_dist() + 50*global) [&lt;=1000]{
+		cur_station,
+		order[0],
+		order[1],
+		order[2],
+		order[3],
+		order[4],
+		order[5],
+		order[6],
+		order[7],
+		order[8],
+		order[9],
+		order[10],
+		order[11],
+		visited[0],
+		visited[1],
+		visited[2],
+		visited[3],
+		visited[4],
+		visited[5],
+		visited[6],
+		visited[7],
+		visited[8],
+		visited[9],
+		visited[10],
+		visited[11]
+} -&gt; {
+		global
+} : &lt;&gt; Robot.Done</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>strategy planLnInverse = minE (1/ln_dist() + global) [&lt;=1000]{
+		cur_station,
+		order[0],
+		order[1],
+		order[2],
+		order[3],
+		order[4],
+		order[5],
+		order[6],
+		order[7],
+		order[8],
+		order[9],
+		order[10],
+		order[11],
+		visited[0],
+		visited[1],
+		visited[2],
+		visited[3],
+		visited[4],
+		visited[5],
+		visited[6],
+		visited[7],
+		visited[8],
+		visited[9],
+		visited[10],
+		visited[11]
+} -&gt; {
+		global
+} : &lt;&gt; Robot.Done</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>saveStrategy("/home/martin/papers/Swarm\ Robotics/Strategies/plan", plan)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>simulate 1 [&lt;=150]{
+	cur_station, Robot.Done
+} under planLnInverse</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>simulate 1 [&lt;=150]{
+	cur_station, Robot.Done
+} under planSqDist</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>simulate 1 [&lt;=150]{
+	cur_station, Robot.Done
+} under plan</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
