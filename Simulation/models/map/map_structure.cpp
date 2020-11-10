@@ -64,11 +64,11 @@ void Map_Structure::setDistanceMatrix(){
     }
     shortestPath.clear();
     shortestPath.resize(size, std::vector<int>(size));
-    for (auto i = 0; i < size; ++i) {
-        for (auto j = 0; j < size; ++j) {
+    for (unsigned i = 0; i < size; ++i) {
+        for (unsigned j = 0; j < size; ++j) {
             shortestPath[i][j] = 0;
         }
-        for (auto j = 0; j < size; ++j) {
+        for (unsigned j = 0; j < size; ++j) {
             if (i != j) {
                 shortestPath[i][j] = j + 1;
             }
