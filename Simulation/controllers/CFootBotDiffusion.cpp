@@ -160,10 +160,6 @@ void CFootBotDiffusion::ControlStep() {
     //}else{m_pcWheels->SetLinearVelocity(0.0f, 0.0f);}
 }
 
-
-void CFootBotDiffusion::Reset(){
-}
-
 static void* callStratego(void *arguments){
     struct arg_struct *args = (struct arg_struct *) arguments;
     std::string mystring=std::string("./uppaalStratego/callStratego.exe ")+args -> id+" "+ args->choice;

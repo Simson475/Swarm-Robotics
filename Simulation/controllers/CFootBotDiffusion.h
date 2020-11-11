@@ -23,10 +23,6 @@
 class CFootBotDiffusion : public argos::CCI_Controller {
 
 public:
-    static std::vector<SimulationExpression> parseStr(const std::string &result);
-
-    SimulationExpression parseValue(std::istream &ss, std::string &line);
-
     /* Class constructor. */
     CFootBotDiffusion();
 
@@ -45,24 +41,6 @@ public:
      * The length of the time step is set in the XML file.
      */
     virtual void ControlStep();
-
-    /*
-     * This function resets the controller to its state right after the
-     * Init().
-     * It is called when you press the reset button in the GUI.
-     * In this example controller there is no need for resetting anything,
-     * so the function could have been omitted. It's here just for
-     * completeness.
-     */
-    virtual void Reset();
-
-    /*
-     * Called to cleanup what done by Init() when the experiment finishes.
-     * In this example controller there is no need for clean anything up,
-     * so the function could have been omitted. It's here just for
-     * completeness.
-     */
-    virtual void Destroy() {}
 
 private:
     void createUppaalTask(Robot &robot, std::string choice, int threadNr, bool stations);
@@ -105,7 +83,6 @@ private:
      * It is set to [-alpha,alpha]. */
     argos::CRange<argos::CRadians> m_cGoStraightAngleRange;
 
-    int iter;
     static int counter;
     Map_Structure &sMap = Map_Structure::get_instance();
 };
