@@ -23,8 +23,8 @@
   <!-- * Controllers * -->
   <!-- *************** -->
   <controllers>
-    <CFootBotDiffusion_controller id="fdc"
-                                  library="./libCFootBotDiffusion">
+    <SingleThreadUppaalBot_controller id="fdc"
+                                  library="./libSingleThreadUppaalBot">
       <actuators>
         <differential_steering implementation="default" />
       </actuators>
@@ -43,7 +43,7 @@
       </params>
 
       <params alpha="7.5" delta="0.1" />
-    </CFootBotDiffusion_controller>
+    </SingleThreadUppaalBot_controller>
 
   </controllers>
 

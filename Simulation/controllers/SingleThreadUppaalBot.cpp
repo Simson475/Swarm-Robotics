@@ -37,7 +37,6 @@ void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
      * list a device in the XML and then you request it here, an error
      * occurs.
      */
-    m_name        = GetId();
     m_pcWheels    = GetActuator<argos::CCI_DifferentialSteeringActuator>("differential_steering");
     m_pcProximity = GetSensor  <argos::CCI_FootBotProximitySensor      >("footbot_proximity"    );
     m_pcPosition  = GetSensor  <argos::CCI_PositioningSensor>("positioning");
@@ -55,17 +54,30 @@ void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
 }
 
 void SingleThreadUppaalBot::ControlStep(){
-
-
-
-
+    constructInitialUppaalModel();
     return;
 }
 
 void SingleThreadUppaalBot::constructInitialUppaalModel(){
-    std::ifstream blueprint{std::string{std::filesystem::current_path()} + "/partial_blueprint.xml"};
-    std::ofstream partial_blueprint{std::string{std::filesystem::current_path()} + "/intial_model.xml"};
+    std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/partial_blueprint.xml"};
+    std::ofstream full_model{std::string{std::filesystem::current_path()} + "/initial_model.xml"};
 
+    Robot self = sMap.getRobotByName(m_strId);
 
+    std::string line;
+    while(std::getline(partial_blueprint, line)){
+        auto pos = line.find("#CUR_STATION#");
+        if(pos != std::string::npos){
+            //@todo: Make proper functions to encapsulate the number written!
+            // The id matches the last index of the expanded DistMatrix.
+            line.replace(pos, std::string{"#CUR_STATION#"}.size(),
+                std::to_string(sMap.stationIDs.size() + sMap.endStationIDs.size()));
+        }
 
+        full_model << line << std::endl;
+
+    }
+    exit(0);
 }
+
+REGISTER_CONTROLLER(SingleThreadUppaalBot, "SingleThreadUppaalBot_controller")

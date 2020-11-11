@@ -41,8 +41,6 @@ public:
     void ControlStep() override;
 
 private:
-    // Id of robot
-    std::string m_name;
     /* Pointer to the differential steering actuator */
     argos::CCI_DifferentialSteeringActuator *m_pcWheels;
     /* Pointer to the foot-bot proximity sensor */

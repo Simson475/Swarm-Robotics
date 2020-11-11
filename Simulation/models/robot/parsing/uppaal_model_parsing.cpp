@@ -119,7 +119,7 @@ void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure){
 
 
 
-    exit(0);
+    //exit(0);
 
     return;
 };
