@@ -28,7 +28,7 @@ bool visited[stations_t];
 // Coordinates of all stations and waypoints.
 const double travel_time[MAX_STATIONS][MAX_STATIONS] = #DISTANCE_MATRIX#;  // #### PLACEHOLDER
 
-const bool end_stations[stations_t] = {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0};  // #### PLACEHOLDER
+const bool end_stations[stations_t] = #END_STATIONS#;  // #### PLACEHOLDER
 
 
 

@@ -67,12 +67,13 @@ void SingleThreadUppaalBot::constructInitialUppaalModel(){
 
     // This is the Uppaal model for the initial strategy.
     std::string line;
+    int numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size() + 1;
     while(std::getline(partial_blueprint, line)){
 
         auto pos = line.find("#MAX_STATIONS#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#MAX_STATIONS#"}.size(),
-                std::to_string(sMap.stationIDs.size() + sMap.endStationIDs.size() + 1));
+                std::to_string(numOfStations));
         }
 
         pos = line.find("#CUR_STATION#");
@@ -80,7 +81,7 @@ void SingleThreadUppaalBot::constructInitialUppaalModel(){
             //@todo: Make proper functions to encapsulate the number written!
             // The id matches the last index of the expanded DistMatrix.
             line.replace(pos, std::string{"#CUR_STATION#"}.size(),
-                std::to_string(sMap.stationIDs.size() + sMap.endStationIDs.size()));
+                std::to_string(numOfStations - 1));
         }
 
         pos = line.find("#OTHER_ROBOTS#");
@@ -93,8 +94,20 @@ void SingleThreadUppaalBot::constructInitialUppaalModel(){
         pos = line.find("#CUR_ORDER#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#CUR_ORDER#"}.size(),
-                         format_order(sMap.stationIDs.size() + sMap.endStationIDs.size() + 1,
-                             job));
+                         format_order(numOfStations, job));
+        }
+
+        std::string matrix = get_expanded_distance_matrix(sMap, self.getInitialLoc());
+
+        pos = line.find("#DISTANCE_MATRIX#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#DISTANCE_MATRIX#"}.size(), matrix);
+        }
+
+        pos = line.find("#END_STATIONS#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#END_STATIONS#"}.size(),
+                format_endstations(numOfStations, sMap.endStationIDs));
         }
 
         full_model << line << std::endl;

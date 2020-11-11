@@ -68,7 +68,7 @@ void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure);
 
 // Helper_functions
 std::size_t numOfOtherActiveRobots(const std::vector<Robot> &robots, const Robot &currentRobot);
-std::vector<std::vector<float>> get_expanded_distance_matrix(Map_Structure& map_structure, const Point& point);
+std::string get_expanded_distance_matrix(Map_Structure &map_structure, const Point &point);
 
 
 //********************************* Formatting functions:
@@ -97,5 +97,9 @@ std::string combine_distance_lines(const std::vector<std::vector<std::string>> &
 std::string format_distance_matrix(const std::vector<std::vector<float>>& distance_matrix);
 // Function for formatting the order array
 std::string format_order(int numOfStations, std::vector<int> order);
+// Function to convert a vector of IDs to a int (0's and 1's) vector where indexes indicate that the ID was present
+std::vector<int> convertIDsToBools(int size, std::vector<int>);
+// Endstations formatting
+std::string format_endstations(int numOfStations, std::vector<int> endstationIDs);
 
 #endif //SWARMSIMULATOR_UPPAAL_MODEL_PARSING_H

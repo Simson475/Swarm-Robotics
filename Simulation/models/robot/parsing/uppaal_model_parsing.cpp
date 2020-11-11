@@ -164,7 +164,7 @@ std::size_t numOfOtherActiveRobots(const std::vector<Robot> &robots, const Robot
     std::size_t robots_with_jobs = 0;
 
     for(auto& robot : robots){
-        if (robot.getName() != currentRobot.getName() && robot.getStatus() == Status::available){
+        if (robot.getName() != currentRobot.getName() && robot.getStatus() != Status::available){
             robots_with_jobs++;
         }
     }
@@ -173,7 +173,7 @@ std::size_t numOfOtherActiveRobots(const std::vector<Robot> &robots, const Robot
 }
 
 // Gets the distances between all stations and the point given as argunent
-std::vector<std::vector<float>> get_expanded_distance_matrix(Map_Structure& map_structure, const Point& point){
+std::string get_expanded_distance_matrix(Map_Structure &map_structure, const Point &point){
     // Copies the full distance matrix and the short distance between stations.
     const std::vector<std::vector<float>>& fullDistMatrix = map_structure.getShortestDistanceMatrix();
     std::vector<std::vector<float>> newDistMatrix = map_structure.floydShortestOfStations();
@@ -192,18 +192,33 @@ std::vector<std::vector<float>> get_expanded_distance_matrix(Map_Structure& map_
     }
     newDistMatrix.push_back(pointToStations);
 
-    return newDistMatrix;
+    return format_distance_matrix(newDistMatrix);
 }
 
 std::string format_order(int numOfStations, std::vector<int> order){
-    std::vector<int> verbatimOrder(numOfStations, 0);
-
-    for(int stationID = 0; stationID < numOfStations; stationID++){
-        if(std::find(order.begin(), order.end(), stationID) != order.end())
-            verbatimOrder[stationID] = 1;
-    }
+    std::vector<int> verbatimOrder = convertIDsToBools(numOfStations, std::move(order));
 
     std::string formatted_order = element_joiner(verbatimOrder, ", ", "{", "}");
 
     return formatted_order;
+}
+
+
+std::vector<int> convertIDsToBools(int size, std::vector<int> ids){
+    std::vector<int> verbatimOrder(size, 0);
+
+    for(int id = 0; id < size; id++){
+        if(std::find(ids.begin(), ids.end(), id) != ids.end())
+            verbatimOrder[id] = 1;
+    }
+
+    return verbatimOrder;
+}
+
+std::string format_endstations(int numOfStations, std::vector<int> endstationIDs){
+    std::vector<int> verbatimOrder = convertIDsToBools(numOfStations, std::move(endstationIDs));
+
+    std::string formatted_endstations = element_joiner(verbatimOrder, ", ", "{", "}");
+
+    return formatted_endstations;
 }
