@@ -414,7 +414,7 @@ void Map_Structure::generateJobs() {
 
 //Check if there are more jobs
 bool Map_Structure::allJobsCompleted(){
-    return !jobs.empty();
+    return jobs.empty();
 };
 
 // Get next job
