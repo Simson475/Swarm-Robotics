@@ -354,15 +354,16 @@ bool CFootBotDiffusion::lookForJob(Robot &){
 }
 
 bool CFootBotDiffusion::lookForJob(int n){
-    if(sMap.jobs.empty()){return false;}
+    if(sMap.allJobsCompleted())
+        return false;
+
     plotData();
     sMap.Robots[n].clearStations();
     sMap.Robots[n].clearWaypoints();
     sMap.Robots[n].cleanJob();
-    for(auto& j: sMap.jobs.front()){
+    for(auto& j: sMap.getNextJob()){
         sMap.Robots[n].addSinglePickUp(sMap.getPointByID(j));
     }
-    sMap.jobs.erase(sMap.jobs.begin());
     sMap.Robots[n].sortJob(sMap.getShortestDistanceMatrix());
     std::cout << sMap.Robots[n].getLatestPoint().getId() << "            " << sMap.Robots[n].getJob().front().getId() <<std::endl;
     sMap.Robots[n].addWaypoints(sMap.findPath(sMap.Robots[n].getLatestPoint().getId(),sMap.Robots[n].getJob().front().getId()));

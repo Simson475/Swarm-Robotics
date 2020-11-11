@@ -411,3 +411,16 @@ void Map_Structure::generateJobs() {
     std::ofstream out(sMap.folderPath + "/jobs.json");
     out << std::setw(4) << mainJsonObj;
 }
+
+//Check if there are more jobs
+bool Map_Structure::allJobsCompleted(){
+    return !jobs.empty();
+};
+
+// Get next job
+std::vector<int> Map_Structure::getNextJob(){
+    std::vector<int> job{jobs.front()};
+    jobs.erase(jobs.begin());
+
+    return job;
+};

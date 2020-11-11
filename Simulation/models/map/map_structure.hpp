@@ -101,6 +101,12 @@ public:
     // Sets up the distance matrix for all paths
     void setDistanceMatrix();
 
+    //Check if there are more jobs
+    bool allJobsCompleted();
+
+    // Get next job
+    std::vector<int> getNextJob();
+
 private:
 //private constructor ensuring that only one instance is being created of the class
     Map_Structure() = default;
