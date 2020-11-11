@@ -74,7 +74,7 @@ void CTrajectoryQTUserFunctions::DrawInWorld() {
         for(auto& robot: Map_Structure::get_instance().Robots.back().getOtherRobotsEstimates()){
             argos::CVector3 position = robot->currPosition;
             position.SetZ(0.1);
-            Robot otherRobot= sMap.Robots[sMap.getRobotById(robot->id)];
+            Robot otherRobot= sMap.Robots[sMap.getRobotIdByName(robot->id)];
             for(long unsigned i = 0; i < robot->allPassedPoints.size(); i++){
                 if(i+1 != robot->allPassedPoints.size())DrawRay(argos::CRay3(robot->allPassedPoints[i],robot->allPassedPoints[i+1]), argos::CColor::RED, 3);
                 if(i+1 == robot->allPassedPoints.size()) DrawRay(argos::CRay3(robot->allPassedPoints[i],position), argos::CColor::RED, 3);

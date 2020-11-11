@@ -61,7 +61,7 @@ public:
     };
 
     // finds a robot by an ID
-    int getRobotById(std::string id);
+    int getRobotIdByName(std::string id);
 
     //collects all waypoints from the map including station/ end point/ via/ start locations
     void collectAllWayPoints();

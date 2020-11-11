@@ -1,11 +1,9 @@
-#ifndef CFootBotDiffusion_H
-#define CFootBotDiffusion_H
+#ifndef SWARMSIMULATOR_SINGLETHREADUPPAALBOT_HPP
+#define SWARMSIMULATOR_SINGLETHREADUPPAALBOT_HPP
 
-#include "../connection/connector.hpp"
 #include "models/map/map_structure.hpp"
+#include "models/robot/parsing/uppaal_model_parsing.hpp"
 
-
-#include "argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h"
 /* Definition of the CCI_Controller class. */
 #include "argos3/core/control_interface/ci_controller.h"
 /* Definition of the differential steering actuator */
@@ -17,40 +15,33 @@
 //  ???, this was added in order to get  GetID() robot
 #include "argos3/plugins/robots/foot-bot/simulator/footbot_entity.h"
 
-/*
- * A controller is simply an implementation of the CCI_Controller class.
- */
-class CFootBotDiffusion : public argos::CCI_Controller {
+#include <fstream>
+
+
+class SingleThreadUppaalBot : public argos::CCI_Controller {
 
 public:
     /* Class constructor. */
-    CFootBotDiffusion();
+    SingleThreadUppaalBot();
 
     /* Class destructor. */
-    virtual ~CFootBotDiffusion() {}
+    ~SingleThreadUppaalBot() override = default;
 
     /*
      * This function initializes the controller.
      * The 't_node' variable points to the <parameters> section in the XML
      * file in the <controllers><CFootBotDiffusion_controller> section.
      */
-    virtual void Init(argos::TConfigurationNode &t_node);
+    void Init(argos::TConfigurationNode &t_node) override;
 
     /*
      * This function is called once every time step.
      * The length of the time step is set in the XML file.
      */
-    virtual void ControlStep();
+    void ControlStep() override;
 
 private:
-    void createUppaalTask(Robot &robot, std::string choice, int threadNr, bool stations);
-    void extractUppaalTask(int n, std::string choice, int threadNr);
-    void movementLogic(int n);
-    void controlStep(double per, double dotProd, float velocity);
-    bool lookForJob(int n);
-    bool lookForJob(Robot &robot);
-    void getShortestPath(int n, bool stations);
-    void plotData();
+    // Id of robot
     std::string m_name;
     /* Pointer to the differential steering actuator */
     argos::CCI_DifferentialSteeringActuator *m_pcWheels;
@@ -85,14 +76,11 @@ private:
 
     static int counter;
     Map_Structure &sMap = Map_Structure::get_instance();
+
+
+    //**************** ControlStep functionality
+    void constructInitialUppaalModel();
 };
 
-struct arg_struct {
-    std::string id;
-    std::string choice;
-    std::string result;
-    std::string dynamic;
-    std::string path;
-};
 
-#endif
+#endif //SWARMSIMULATOR_SINGLETHREADUPPAALBOT_HPP

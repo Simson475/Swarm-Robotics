@@ -45,7 +45,7 @@ void Map_Structure::collectAllWayPoints() {
         }
     }
 }
-int Map_Structure::getRobotById(std::string id) {
+int Map_Structure::getRobotIdByName(std::string id) {
     for (long unsigned i = 0; i < Robots.size(); i++) {
         if (Robots[i].getfootBot()->GetId() == id) {
             return i;
@@ -120,7 +120,7 @@ Point& Map_Structure::getPointByID(int id){
 }
 
 void Map_Structure::createStaticJSON() {
-    
+
     configure_static_settings_of_Uppaal_model(Map_Structure::get_instance());
 
     nlohmann::json jsonObj;

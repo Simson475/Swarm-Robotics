@@ -59,7 +59,7 @@ void CFootBotDiffusion::Init(argos::TConfigurationNode& t_node) {
      * list a device in the XML and then you request it here, an error
      * occurs.
      */
-    m_id          = GetId();
+    m_name        = GetId();
     m_pcWheels    = GetActuator<argos::CCI_DifferentialSteeringActuator>("differential_steering");
     m_pcProximity = GetSensor  <argos::CCI_FootBotProximitySensor      >("footbot_proximity"    );
     m_pcPosition  = GetSensor  <argos::CCI_PositioningSensor>("positioning");
@@ -99,7 +99,7 @@ void CFootBotDiffusion::getShortestPath(int n, bool stations){
 
 void CFootBotDiffusion::ControlStep() {
     Map_Structure &sMap = Map_Structure::get_instance();
-    int n = sMap.getRobotById(m_id);
+    int n = sMap.getRobotIdByName(m_name);
 
     Robot &robot = sMap.Robots[n];
     switch(robot.getStatus()){
@@ -125,7 +125,7 @@ void CFootBotDiffusion::ControlStep() {
             }
             else {
                 sMap.timesUppaalFailed++;
-                argos::LOGERR<<m_id<<" (Stations)Uppaal was too slow from "
+                argos::LOGERR<<m_name<<" (Stations)Uppaal was too slow from "
                              <<sMap.getPointByID(robot.getPreviousLoc()).getName()<<" to "
                              <<sMap.getPointByID(robot.getLatestPoint().getId()).getName()
                              <<std::endl<<"Uppaal fail ratio"<<sMap.timesUppaalFailed<<"/"<<sMap.totalTries<<std::endl;
@@ -147,7 +147,7 @@ void CFootBotDiffusion::ControlStep() {
             }
             else{
                 sMap.timesUppaalFailed++;
-                argos::LOGERR<<m_id<<" (Waypoints)Uppaal was too slow from "
+                argos::LOGERR<<m_name<<" (Waypoints)Uppaal was too slow from "
                              <<sMap.getPointByID(sMap.Robots[n].getPreviousLoc()).getName()<<" to "
                              <<sMap.getPointByID(sMap.Robots[n].getLatestPoint().getId()).getName()
                              <<std::endl<<"Uppaal fail ratio: "<<sMap.timesUppaalFailed<<"/"<<sMap.totalTries<<std::endl;
@@ -195,7 +195,7 @@ void printJob(std::vector<Robot> robots){
 
 void CFootBotDiffusion::createUppaalTask(Robot &robot, std::string choice, int threadNr, bool stations){
     std::string dynamic= robot.createDynamicJson(sMap.Robots, robot, stations);
-    args[threadNr].id = m_id;
+    args[threadNr].id = m_name;
     args[threadNr].choice = choice;
     args[threadNr].dynamic = dynamic;
     args[threadNr].path = sMap.folderPath;
@@ -205,8 +205,8 @@ void CFootBotDiffusion::createUppaalTask(Robot &robot, std::string choice, int t
 }
 
 void CFootBotDiffusion::extractUppaalTask(int n, std::string choice, int threadNr){
-    //std::cout <<m_id<<" has received plan"<<endl;
-    sMap.Robots[n].converJSONStation(m_id, choice);
+    //std::cout <<m_name<<" has received plan"<<endl;
+    sMap.Robots[n].converJSONStation(m_name, choice);
     if(choice == "Stations"){
         sMap.Robots[n].setRemainingStations(sMap.points);
         //sMap.Robots[n].setCurrStationTarget();
@@ -258,7 +258,7 @@ void CFootBotDiffusion::movementLogic(int n){
                             }
                             else
                                 sMap.Robots[n].changeStatus(Status::waitStations);
-                            argos::LOG<<m_id <<" is loading items in station: "<<sMap.Robots[n].getRemainingStations().front().getName()<<std::endl;
+                            argos::LOG<<m_name <<" is loading items in station: "<<sMap.Robots[n].getRemainingStations().front().getName()<<std::endl;
                             sMap.Robots[n].removeFirstStation();
                             break;
                         case pointType::endpoint : //sMap.getPointByID(sMap.Robots[n].getCurrentTarget()->getId()).setOccupied(true);
@@ -274,7 +274,7 @@ void CFootBotDiffusion::movementLogic(int n){
                     }
                 }
                 else {
-                    if(m_id == "fzb1")
+                    if(m_name == "fzb1")
                         argos::LOGERR<<Distance(tPosReads.Position,*currTarget)*60<<std::endl;
                     controlStep(per,dotProd,  Distance(tPosReads.Position,*currTarget)*60);
                 }
@@ -350,7 +350,7 @@ void CFootBotDiffusion::controlStep(double per, double dotProd, float velocity){
 /****************************************/
 
 bool CFootBotDiffusion::lookForJob(Robot &){
-    return lookForJob(sMap.getRobotById(m_id));
+    return lookForJob(sMap.getRobotIdByName(m_name));
 }
 
 bool CFootBotDiffusion::lookForJob(int n){
