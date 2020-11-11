@@ -299,7 +299,7 @@ std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, b
 
     jsonObj["station_eta"] = getEta();
     jsonObj["stations_to_visit"] = stationsToVisit;
-    otherRobotsInf.clear();
+    clearRobotInf();
 
     for (auto& other_robot : robots) {
         if (other_robot.getStatus() != Status::available && other_robot != robot) {
@@ -368,4 +368,10 @@ void Robot::sortJob(const std::vector<std::vector<float>>& shortestDistances)
     for(auto& j : job)
         remainingStations.push_back(j);
 
+}
+
+void Robot::clearRobotInf(){
+    // It should not be necessary to explicitly delete the elements, but they were created with `new`!
+    for(auto& info : otherRobotsInf)
+        delete info;
 }

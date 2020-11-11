@@ -58,6 +58,8 @@ private:
     int previousLoc;
     std::vector<timeResult*> otherRobotsInf;
 
+    void clearRobotInf();
+
 public:
     Robot(argos::CFootBotEntity *footBot, Point *initialLoc);
     Robot& operator=(const Robot& that);
