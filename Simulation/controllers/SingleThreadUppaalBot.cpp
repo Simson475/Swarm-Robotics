@@ -74,6 +74,12 @@ void SingleThreadUppaalBot::constructInitialUppaalModel(){
                 std::to_string(sMap.stationIDs.size() + sMap.endStationIDs.size()));
         }
 
+        pos = line.find("#OTHER_ROBOTS#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#OTHER_ROBOTS#"}.size(),
+                         std::to_string(numOfOtherActiveRobots(sMap.Robots, self)));
+        }
+
         full_model << line << std::endl;
 
     }

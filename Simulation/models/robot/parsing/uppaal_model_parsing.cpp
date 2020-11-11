@@ -151,24 +151,13 @@ std::string combine_distance_lines(const std::vector<std::vector<std::string>> &
 
     // Gets all the line with correct post-/prefix and delimitor.
     for(auto& dist_line : distance_values){
-        std::stringstream line{};
-        line << "{";
-        std::copy(dist_line.begin(),
-                  dist_line.end(),
-                  std::experimental::make_ostream_joiner(line, ", "));
-        line << "}";
-        waited_matrix.emplace_back(line.str());
+        std::string line = element_joiner(dist_line, ", ", "{", "}");
+        waited_matrix.emplace_back(line);
     }
 
-    // Connects all the line with correct post-/prefix and delimitor.
-    std::stringstream final_matrix{};
-    final_matrix << "{\n";
-    std::copy(waited_matrix.begin(),
-              waited_matrix.end(),
-              std::experimental::make_ostream_joiner(final_matrix, ",\n"));
-    final_matrix << "\n}";
+    std::string final_matrix = element_joiner(waited_matrix, ",\n", "{\n", "\n}");
 
-    return final_matrix.str();
+    return final_matrix;
 }
 
 std::size_t numOfOtherActiveRobots(const std::vector<Robot> &robots, const Robot &currentRobot){
@@ -204,4 +193,17 @@ std::vector<std::vector<float>> get_expanded_distance_matrix(Map_Structure& map_
     newDistMatrix.push_back(pointToStations);
 
     return newDistMatrix;
+}
+
+std::string format_order(int numOfStations, std::set<int> order){
+    std::vector<int> verbatimOrder{numOfStations, 0};
+
+    for(int stationID = 0; stationID < numOfStations; stationID++){
+        if(order.find(stationID) != order.end())
+            verbatimOrder[stationID] = 1;
+    }
+
+    std::string formatted_order = element_joiner(verbatimOrder, ", ", "{", "}");
+
+    return formatted_order;
 }

@@ -18,6 +18,7 @@
 #include <fstream>
 #include <filesystem>
 #include <experimental/iterator>
+#include <set>
 
 struct abs_robot_info {
     std::string name;
@@ -72,6 +73,20 @@ std::vector<std::vector<float>> get_expanded_distance_matrix(Map_Structure& map_
 
 
 //********************************* Formatting functions:
+// Help-function for delimiter
+template <typename C>
+std::string element_joiner(std::vector<C> elements, std::string delimiter, std::string prefix, std::string postfix){
+    std::stringstream formatted_elements{prefix};
+
+    std::copy(elements.begin(),
+              elements.end(),
+              std::experimental::make_ostream_joiner(formatted_elements, delimiter));
+    formatted_elements << postfix;
+
+    return formatted_elements.str();
+}
+
+
 // Gets distance Matrix between all stations.
 std::string getStationDistanceMatrix(Map_Structure &map_structure);
 // Formats the single rows of a matrix
@@ -80,5 +95,7 @@ std::vector<std::vector<std::string>> format_distance_lines(const std::vector<st
 std::string combine_distance_lines(const std::vector<std::vector<std::string>> &distance_values);
 // Function for formatting an arbitrary distance matrix.
 std::string format_distance_matrix(const std::vector<std::vector<float>>& distance_matrix);
+// Function for formatting the order array
+std::string format_order(int numOfStations, std::vector<int> order);
 
 #endif //SWARMSIMULATOR_UPPAAL_MODEL_PARSING_H
