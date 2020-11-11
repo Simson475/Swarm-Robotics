@@ -106,7 +106,7 @@ void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure){
             line.replace(pos, std::string{"#OTHER_ROBOTS#"}.size(), std::to_string(number_of_robots(map_structure) - 1));
         }
 
-        std::string matrix = format_distance_matrix(get_expanded_distance_matrix(map_structure, map_structure.Robots[0].getInitialLoc()));
+        std::string matrix = getStationDistanceMatrix(map_structure);
 
         pos = line.find("#DISTANCE_MATRIX#");
         if(pos != std::string::npos){
@@ -124,7 +124,7 @@ void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure){
     return;
 };
 
-std::string get_distance_matrix(Map_Structure& map_structure){
+std::string getStationDistanceMatrix(Map_Structure &map_structure){
     // Map_structure calculates all the fastests paths between all the stations.
     std::vector<std::vector<float>> distance_matrix = map_structure.floydShortestOfStations();
 
@@ -171,7 +171,7 @@ std::string combine_distance_lines(const std::vector<std::vector<std::string>> &
     return final_matrix.str();
 }
 
-std::size_t num_of_other_robots_with_jobs(const std::vector<Robot> &robots, const Robot &currentRobot){
+std::size_t numOfOtherActiveRobots(const std::vector<Robot> &robots, const Robot &currentRobot){
     std::size_t robots_with_jobs = 0;
 
     for(auto& robot : robots){

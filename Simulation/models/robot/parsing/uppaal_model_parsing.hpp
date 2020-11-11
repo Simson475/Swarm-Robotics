@@ -67,14 +67,18 @@ void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure);
 //std::string current_robots_loc(const std::vector<abs_robot_info>&, const Robot&);
 
 // Helper_functions
-std::size_t num_of_other_robots_with_jobs(const std::vector<Robot> &robots, const Robot &currentRobot);
+std::size_t numOfOtherActiveRobots(const std::vector<Robot> &robots, const Robot &currentRobot);
 std::vector<std::vector<float>> get_expanded_distance_matrix(Map_Structure& map_structure, const Point& point);
 
 
-// Formatting functions:
-std::string get_distance_matrix(Map_Structure& map_structure);
+//********************************* Formatting functions:
+// Gets distance Matrix between all stations.
+std::string getStationDistanceMatrix(Map_Structure &map_structure);
+// Formats the single rows of a matrix
 std::vector<std::vector<std::string>> format_distance_lines(const std::vector<std::vector<float>>& dist_matrix);
+// Formats and combine the rows of a matrix into a single formatted string.
 std::string combine_distance_lines(const std::vector<std::vector<std::string>> &distance_values);
+// Function for formatting an arbitrary distance matrix.
 std::string format_distance_matrix(const std::vector<std::vector<float>>& distance_matrix);
 
 #endif //SWARMSIMULATOR_UPPAAL_MODEL_PARSING_H
