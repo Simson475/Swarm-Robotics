@@ -21,7 +21,7 @@ urgent broadcast chan complete;
 
 // Cost function variables
 stations_t cur_station = #CUR_STATION#; // #### PLACEHOLDER
-bool order[stations_t]  = {0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0}; // #### PLACEHOLDER
+bool order[stations_t]  = #CUR_ORDER#; // #### Only the remaining stations are present
 bool visited[stations_t];
 
 /////////// GRAPH

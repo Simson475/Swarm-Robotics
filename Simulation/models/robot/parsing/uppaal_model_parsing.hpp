@@ -18,7 +18,6 @@
 #include <fstream>
 #include <filesystem>
 #include <experimental/iterator>
-#include <set>
 
 struct abs_robot_info {
     std::string name;
@@ -76,8 +75,9 @@ std::vector<std::vector<float>> get_expanded_distance_matrix(Map_Structure& map_
 // Help-function for delimiter
 template <typename C>
 std::string element_joiner(std::vector<C> elements, std::string delimiter, std::string prefix, std::string postfix){
-    std::stringstream formatted_elements{prefix};
+    std::stringstream formatted_elements{};
 
+    formatted_elements << prefix;
     std::copy(elements.begin(),
               elements.end(),
               std::experimental::make_ostream_joiner(formatted_elements, delimiter));

@@ -59,14 +59,23 @@ void SingleThreadUppaalBot::ControlStep(){
 }
 
 void SingleThreadUppaalBot::constructInitialUppaalModel(){
-    std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/partial_blueprint.xml"};
+    std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/station_planning_blueprint.xml"};
     std::ofstream full_model{std::string{std::filesystem::current_path()} + "/initial_model.xml"};
 
     Robot self = sMap.getRobotByName(m_strId);
+    std::vector<int> job = sMap.getNextJob();
 
+    // This is the Uppaal model for the initial strategy.
     std::string line;
     while(std::getline(partial_blueprint, line)){
-        auto pos = line.find("#CUR_STATION#");
+
+        auto pos = line.find("#MAX_STATIONS#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#MAX_STATIONS#"}.size(),
+                std::to_string(sMap.stationIDs.size() + sMap.endStationIDs.size() + 1));
+        }
+
+        pos = line.find("#CUR_STATION#");
         if(pos != std::string::npos){
             //@todo: Make proper functions to encapsulate the number written!
             // The id matches the last index of the expanded DistMatrix.
@@ -78,6 +87,14 @@ void SingleThreadUppaalBot::constructInitialUppaalModel(){
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#OTHER_ROBOTS#"}.size(),
                          std::to_string(numOfOtherActiveRobots(sMap.Robots, self)));
+        }
+
+
+        pos = line.find("#CUR_ORDER#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#CUR_ORDER#"}.size(),
+                         format_order(sMap.stationIDs.size() + sMap.endStationIDs.size() + 1,
+                             job));
         }
 
         full_model << line << std::endl;

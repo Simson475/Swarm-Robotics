@@ -195,11 +195,11 @@ std::vector<std::vector<float>> get_expanded_distance_matrix(Map_Structure& map_
     return newDistMatrix;
 }
 
-std::string format_order(int numOfStations, std::set<int> order){
-    std::vector<int> verbatimOrder{numOfStations, 0};
+std::string format_order(int numOfStations, std::vector<int> order){
+    std::vector<int> verbatimOrder(numOfStations, 0);
 
     for(int stationID = 0; stationID < numOfStations; stationID++){
-        if(order.find(stationID) != order.end())
+        if(std::find(order.begin(), order.end(), stationID) != order.end())
             verbatimOrder[stationID] = 1;
     }
 
