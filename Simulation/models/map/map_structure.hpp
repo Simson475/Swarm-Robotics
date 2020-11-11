@@ -60,8 +60,11 @@ public:
         return shortestDistanceMatrix;
     };
 
-    // finds a robot by an ID
-    int getRobotIdByName(std::string id);
+    // finds a robot's ID by name
+    int getRobotIdByName(std::string name);
+
+    // finds a robot by an name
+    Robot getRobotByName(std::string name);
 
     //collects all waypoints from the map including station/ end point/ via/ start locations
     void collectAllWayPoints();

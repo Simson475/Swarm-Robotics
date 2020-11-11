@@ -45,16 +45,25 @@ void Map_Structure::collectAllWayPoints() {
         }
     }
 }
-int Map_Structure::getRobotIdByName(std::string id) {
+int Map_Structure::getRobotIdByName(std::string name) {
     for (long unsigned i = 0; i < Robots.size(); i++) {
-        if (Robots[i].getfootBot()->GetId() == id) {
+        if (Robots[i].getfootBot()->GetId() == name) {
             return i;
         }
     }
 
-    throw std::invalid_argument("Robot not found by ID");
+    throw std::invalid_argument("Robot not found by NAME");
 }
 
+Robot Map_Structure::getRobotByName(std::string name) {
+    for (auto& robot:  Robots) {
+        if (robot.getfootBot()->GetId() == name) {
+            return robot;
+        }
+    }
+
+    throw std::invalid_argument("Robot not found by NAME");
+}
 
 // Set the fields `shortestDistanceMatrix`, which gives the lenght of the shortest path between all points
 // and `shortestPath`, which tells the next Point to go to if one wants the shortest path.
