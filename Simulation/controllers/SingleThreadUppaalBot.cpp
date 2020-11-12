@@ -4,6 +4,8 @@
 
 #include "SingleThreadUppaalBot.hpp"
 
+#include <exception>
+
 SingleThreadUppaalBot::SingleThreadUppaalBot():
     m_pcWheels(NULL),
     m_pcProximity(NULL),
@@ -140,6 +142,26 @@ void SingleThreadUppaalBot::constructInitialUppaalModel(){
                 line.replace(pos, std::string{"#CODE_COMMENT_END#"}.size(), "*/");
             else
                 line.replace(pos, std::string{"#CODE_COMMENT_END#"}.size(), "");
+        }
+
+        pos = line.find("#OTHER_CREATION#");
+        if(pos != std::string::npos){
+            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+                line.replace(pos, std::string{"#OTHER_CREATION#"}.size(), "");
+            else {
+                throw std::logic_error{"Not implemented yet"};
+                line.replace(pos, std::string{"#OTHER_CREATION#"}.size(), "BLA");
+            }
+        }
+
+        pos = line.find("#OTHER_IN_SYSTEM#");
+        if(pos != std::string::npos){
+            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+                line.replace(pos, std::string{"#OTHER_IN_SYSTEM#"}.size(), "");
+            else {
+                throw std::logic_error{"Not implemented yet"};
+                line.replace(pos, std::string{"#OTHER_IN_SYSTEM#"}.size(), "BLA");
+            }
         }
 
         full_model << line << std::endl;

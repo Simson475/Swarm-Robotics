@@ -456,11 +456,9 @@ cur_bot = 0</label>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
-other_1 = OtherRobot(1, 0);
-other_2 = OtherRobot(2, 0);
-other_3 = OtherRobot(3, 3);
+#OTHER_CREATION#
 // List one or more processes to be composed into a system.
-system Robot, other_1, other_2, other_3, Station;
+system Robot, #OTHER_IN_SYSTEM# Station;
 //system Robot, Station;
     </system>
 	<queries>
