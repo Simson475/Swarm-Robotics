@@ -110,6 +110,38 @@ void SingleThreadUppaalBot::constructInitialUppaalModel(){
                 format_endstations(numOfStations, sMap.endStationIDs));
         }
 
+        pos = line.find("#XML_COMMENT_START#");
+        if(pos != std::string::npos){
+            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+                line.replace(pos, std::string{"#XML_COMMENT_START#"}.size(), "<!--");
+            else
+                line.replace(pos, std::string{"#XML_COMMENT_START#"}.size(), "");
+        }
+
+        pos = line.find("#XML_COMMENT_END#");
+        if(pos != std::string::npos){
+            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+                line.replace(pos, std::string{"#XML_COMMENT_END#"}.size(), "-->");
+            else
+                line.replace(pos, std::string{"#XML_COMMENT_END#"}.size(), "");
+        }
+
+        pos = line.find("#CODE_COMMENT_START#");
+        if(pos != std::string::npos){
+            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+                line.replace(pos, std::string{"#CODE_COMMENT_START#"}.size(), "/*");
+            else
+                line.replace(pos, std::string{"#CODE_COMMENT_START#"}.size(), "");
+        }
+
+        pos = line.find("#CODE_COMMENT_END#");
+        if(pos != std::string::npos){
+            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+                line.replace(pos, std::string{"#CODE_COMMENT_END#"}.size(), "*/");
+            else
+                line.replace(pos, std::string{"#CODE_COMMENT_END#"}.size(), "");
+        }
+
         full_model << line << std::endl;
 
     }

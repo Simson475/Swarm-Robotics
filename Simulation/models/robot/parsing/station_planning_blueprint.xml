@@ -70,23 +70,16 @@ double ln_dist(){
 }
 */
 
-
-const int order_lenghts[other_bots_t] = {6, 6, 4};  // #### PLACEHOLDER
-const stations_t start_locs[other_bots_t] = {4, 3, 9};  // #### PLACEHOLDER
-
- // #### PLACEHOLDER
-const stations_t other_robots_plans[other_bots_t][MAX_STATIONS] = {
-{5, 7, 0, 9, 11, 3, 0, 0, 0, 0, 0, 0},
-{11, 0, 1, 9, 10, 7, 0, 0, 0, 0, 0, 0},
-{7, 2, 10, 3, 0, 0, 0, 0, 0, 0, 0, 0}
-};
+#CODE_COMMENT_START#
+const int order_lenghts[other_bots_t] = #OTHER_ORDER_LENGHT#;  // #### PLACEHOLDER
+const stations_t start_locs[other_bots_t] = #OTHER_START_LOCS#;  // #### PLACEHOLDER
 
  // #### PLACEHOLDER
-const bool other_robots_real_orders[other_bots_t][MAX_STATIONS] = {
-{1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
-{1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1},
-{0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0}
-};
+const stations_t other_robots_plans[other_bots_t][MAX_STATIONS] = #OTHER_PLANS#;
+
+ // #### PLACEHOLDER
+const bool other_robots_real_orders[other_bots_t][MAX_STATIONS] = #OTHER_ORDERS#;
+#CODE_COMMENT_END#
 </declaration>
 	<template>
 		<name x="5" y="5">Robot</name>
@@ -236,6 +229,7 @@ min_travel = 0</label>
 min_travel = get_min_travel_time()</label>
 		</transition>
 	</template>
+    #XML_COMMENT_START#
 	<template>
 		<name>OtherRobot</name>
 		<parameter>const other_bots_t id, const stations_t end_station</parameter>
@@ -386,6 +380,7 @@ min_travel = 0</label>
 min_travel = get_min_travel_time()</label>
 		</transition>
 	</template>
+    #XML_COMMENT_END#
 	<template>
 		<name>Station</name>
 		<parameter>const stations_t id</parameter>
