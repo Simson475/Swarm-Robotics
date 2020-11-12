@@ -374,4 +374,6 @@ void Robot::clearRobotInf(){
     // It should not be necessary to explicitly delete the elements, but they were created with `new`!
     for(auto& info : otherRobotsInf)
         delete info;
+
+    otherRobotsInf.clear();
 }
