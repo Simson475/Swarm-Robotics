@@ -4,13 +4,10 @@
 #include "point.hpp"
 #include "line.hpp"
 
-#include "nlohmann/json.hpp"
-#include "argos3/plugins/robots/foot-bot/simulator/footbot_entity.h"
-#include "argos3/plugins/simulator/entities/box_entity.h"
-#include "argos3/plugins/simulator/visualizations/qt-opengl/qtopengl_user_functions.h"
+#include "argos3/core/utility/math/vector3.h"
 
-#include <sys/stat.h>
-#include <sys/types.h>
+#include <vector>
+#include <tuple>
 
 #define robotDiameter 0.2f
 #define offset_for_obstacles robotDiameter * 1.5
