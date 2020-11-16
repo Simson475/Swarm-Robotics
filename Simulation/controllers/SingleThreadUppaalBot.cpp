@@ -73,7 +73,7 @@ Robot SingleThreadUppaalBot::getSelf(){
 }
 
 void SingleThreadUppaalBot::ControlStep(){
-    constructInitialUppaalModel();
+    constructStationUppaalModel();
     std::vector<int> stationPlan = getStationPlan(runStationModel());
 
     setStationPlan(stationPlan);
@@ -150,7 +150,7 @@ std::string SingleThreadUppaalBot::runStationModel(){
     return result;
 }
 
-void SingleThreadUppaalBot::constructInitialUppaalModel(){
+void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/station_planning_blueprint.xml"};
     std::ofstream full_model{std::string{std::filesystem::current_path()} + "/initial_model.xml"};
 

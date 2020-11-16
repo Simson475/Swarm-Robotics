@@ -78,7 +78,7 @@ private:
 
 
     //**************** ControlStep functionality
-    void constructInitialUppaalModel();
+    void constructStationUppaalModel();
     std::string runStationModel();
     std::vector<int> getStationPlan(std::string modelOutput);
     void setStationPlan(std::vector<int>);
