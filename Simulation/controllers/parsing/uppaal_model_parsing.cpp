@@ -4,6 +4,8 @@
 
 #include "uppaal_model_parsing.hpp"
 
+#include <cmath>
+
 
 std::string format_distance_matrix(const std::vector<std::vector<float>>& distance_matrix){
     return combine_distance_lines(format_distance_lines(distance_matrix));
@@ -54,12 +56,14 @@ std::string constructUppaalModel(const std::vector<Robot> &robots, Robot &curren
     return "";
 }
 
-std::string number_of_stations(const Map_Structure &map_structure){
+std::string numOfStations(const Map_Structure &map_structure){
     return std::to_string(map_structure.stationIDs.size() + map_structure.endStationIDs.size());
 }
 
-int number_of_waypoints(const Map_Structure &map_structure){
-    return (int)map_structure.waypointsIDs.size();
+std::string numOfPoints(const Map_Structure &map_structure){
+    return std::to_string(map_structure.stationIDs.size() +
+                          map_structure.endStationIDs.size() +
+                          map_structure.waypointsIDs.size());
 }
 
 int number_of_robots(const Map_Structure& map_structure){
@@ -98,7 +102,7 @@ void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure){
     while(std::getline(blueprint, line)){
         auto pos = line.find("#MAX_STATIONS#");
         if(pos != std::string::npos){
-            line.replace(pos, std::string{"#MAX_STATIONS#"}.size(), number_of_stations(map_structure));
+            line.replace(pos, std::string{"#MAX_STATIONS#"}.size(), numOfStations(map_structure));
         }
 
         pos = line.find("#OTHER ROBOTS#");
@@ -221,4 +225,21 @@ std::string format_endstations(int numOfStations, std::vector<int> endstationIDs
     std::string formatted_endstations = element_joiner(verbatimOrder, ", ", "{", "}");
 
     return formatted_endstations;
+}
+
+std::vector<std::vector<float>> getDistanceMatrix(Map_Structure &map_structure){
+    int sizeLines = std::sqrt(map_structure.lines.size()); //@todo: Make 2-dimentional to begin with.
+    std::vector<std::vector<float>> waypointsDistances(sizeLines, std::vector<float>());
+
+    int k = -1;
+    for (long unsigned i = 0; i < map_structure.lines.size(); i++) {
+        if (i % sizeLines == 0)
+            k++;
+        if(map_structure.lines[i].GetDistance()==-1)
+            waypointsDistances[k].push_back(0);
+        else
+            waypointsDistances[k].push_back(map_structure.lines[i].GetDistance()/(double)VELOCITY*100);
+    }
+
+    return waypointsDistances;
 }

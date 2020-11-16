@@ -76,12 +76,15 @@ private:
     static int counter;
     Map_Structure &sMap = Map_Structure::get_instance();
 
+    std::vector<int> stationPlan{};
 
     //**************** ControlStep functionality
     void constructStationUppaalModel();
     std::string runStationModel();
     std::vector<int> getStationPlan(std::string modelOutput);
     void setStationPlan(std::vector<int>);
+
+    void constructWaypointUppaalModel();
 
     //*************** Helper functions
     Robot getSelf();

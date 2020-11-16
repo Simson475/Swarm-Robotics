@@ -77,6 +77,8 @@ void SingleThreadUppaalBot::ControlStep(){
     std::vector<int> stationPlan = getStationPlan(runStationModel());
 
     setStationPlan(stationPlan);
+
+    constructWaypointUppaalModel();
     exit(0);
 }
 
@@ -119,13 +121,11 @@ std::vector<int> SingleThreadUppaalBot::getStationPlan(std::string modelOutput) 
 
 
     debug2.close();
-    return std::vector<int>{};
+    return stationPlan;
 }
 
 void SingleThreadUppaalBot::setStationPlan(std::vector<int> stationPlan){
-    Robot self = getSelf();
-
-    self.setStationPlan(stationPlan);
+    this->stationPlan = stationPlan;
 }
 
 std::string SingleThreadUppaalBot::runStationModel(){
@@ -263,6 +263,118 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
     }
 
     full_model.close();
+}
+
+void SingleThreadUppaalBot::constructWaypointUppaalModel(){
+    std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/station_planning_blueprint.xml"};
+    std::ofstream waypoint_model{std::string{std::filesystem::current_path()} + "/waypoint_model.xml"};
+
+    Robot self = sMap.getRobotByName(m_strId);
+
+    // This is the Uppaal model for the initial strategy.
+    std::string line;
+
+    while(std::getline(partial_blueprint, line)){
+
+        auto pos = line.find("#MAX_STATIONS#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#MAX_STATIONS#"}.size(),
+                         numOfPoints(sMap));
+        }
+
+        pos = line.find("#CUR_STATION#");
+        if(pos != std::string::npos){
+            //@todo: Make proper functions to encapsulate the number written!
+            // The id matches the last index of the expanded DistMatrix.
+            line.replace(pos, std::string{"#CUR_STATION#"}.size(),
+                         std::to_string(self.getLatestPoint().getId()));
+        }
+
+        pos = line.find("#OTHER_ROBOTS#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#OTHER_ROBOTS#"}.size(),
+                         std::to_string(numOfOtherActiveRobots(sMap.Robots, self)));
+        }
+
+
+        std::vector<std::vector<float>> matrix = getDistanceMatrix(sMap);
+
+        pos = line.find("#CUR_ORDER#");
+        if (pos != std::string::npos) {
+            std::vector<int> nextStation{};
+            nextStation.push_back(stationPlan.front());
+            line.replace(pos, std::string{"#CUR_ORDER#"}.size(),
+                         format_order(matrix.size(), nextStation));
+        }
+
+        pos = line.find("#DISTANCE_MATRIX#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#DISTANCE_MATRIX#"}.size(), format_distance_matrix(matrix));
+        }
+
+        pos = line.find("#END_STATIONS#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#END_STATIONS#"}.size(),
+                         format_endstations(matrix.size(), sMap.endStationIDs));
+        }
+
+        pos = line.find("#XML_COMMENT_START#");
+        if(pos != std::string::npos){
+            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+                line.replace(pos, std::string{"#XML_COMMENT_START#"}.size(), "<!--");
+            else
+                line.replace(pos, std::string{"#XML_COMMENT_START#"}.size(), "");
+        }
+
+        pos = line.find("#XML_COMMENT_END#");
+        if(pos != std::string::npos){
+            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+                line.replace(pos, std::string{"#XML_COMMENT_END#"}.size(), "-->");
+            else
+                line.replace(pos, std::string{"#XML_COMMENT_END#"}.size(), "");
+        }
+
+        pos = line.find("#CODE_COMMENT_START#");
+        if(pos != std::string::npos){
+            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+                line.replace(pos, std::string{"#CODE_COMMENT_START#"}.size(), "/*");
+            else
+                line.replace(pos, std::string{"#CODE_COMMENT_START#"}.size(), "");
+        }
+
+        pos = line.find("#CODE_COMMENT_END#");
+        if(pos != std::string::npos){
+            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+                line.replace(pos, std::string{"#CODE_COMMENT_END#"}.size(), "*/");
+            else
+                line.replace(pos, std::string{"#CODE_COMMENT_END#"}.size(), "");
+        }
+
+        pos = line.find("#OTHER_CREATION#");
+        if(pos != std::string::npos){
+            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+                line.replace(pos, std::string{"#OTHER_CREATION#"}.size(), "");
+            else {
+                throw std::logic_error{"Not implemented yet"};
+                line.replace(pos, std::string{"#OTHER_CREATION#"}.size(), "BLA");
+            }
+        }
+
+        pos = line.find("#OTHER_IN_SYSTEM#");
+        if(pos != std::string::npos){
+            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+                line.replace(pos, std::string{"#OTHER_IN_SYSTEM#"}.size(), "");
+            else {
+                throw std::logic_error{"Not implemented yet"};
+                line.replace(pos, std::string{"#OTHER_IN_SYSTEM#"}.size(), "BLA");
+            }
+        }
+
+        waypoint_model << line << std::endl;
+
+    }
+
+    waypoint_model.close();
 }
 
 REGISTER_CONTROLLER(SingleThreadUppaalBot, "SingleThreadUppaalBot_controller")

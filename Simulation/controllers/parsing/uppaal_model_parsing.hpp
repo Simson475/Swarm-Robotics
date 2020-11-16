@@ -56,8 +56,8 @@ std::string constructUppaalModel(const std::vector<Robot> &robots, Robot &curren
 
 // Functions for getting the information to the Uppaal XML from map_structure
 std::vector<abs_robot_info> get_robot_plans_and_positions(const std::vector<Robot> &robots, const Robot &currentRobot);
-std::string number_of_stations(const Map_Structure &map_structure);
-int number_of_waypoints(const Map_Structure &map_structure);
+std::string numOfStations(const Map_Structure &map_structure);
+std::string numOfPoints(const Map_Structure &map_structure);
 int number_of_robots(const Map_Structure& map_structure);
 std::vector<int> get_end_stations(const Map_Structure &map_structure);
 std::vector<std::vector<int>> get_distances(const Map_Structure& map_structure);
@@ -69,6 +69,7 @@ void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure);
 // Helper_functions
 std::size_t numOfOtherActiveRobots(const std::vector<Robot> &robots, const Robot &currentRobot);
 std::string get_expanded_distance_matrix(Map_Structure &map_structure, const Point &point);
+std::vector<std::vector<float>> getDistanceMatrix(Map_Structure &map_structure);
 
 
 //********************************* Formatting functions:
