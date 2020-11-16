@@ -107,7 +107,12 @@ std::vector<int> SingleThreadUppaalBot::getStationPlan(std::string modelOutput) 
         m = *it;
         debug2 << m[0] << ": ->  "  << m[3] << std::endl;
 
+        int numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size(); //Needs to be generalized to the current position in the given matrix.
+
         if(m[1] != "0" && stationsVisited.find(std::stoi(m[3])) == stationsVisited.end()){
+            if(stationPlan.empty() && std::stoi(m[3]) == numOfStations) {
+                continue;
+            }
             stationPlan.push_back(std::stoi(m[3]));
             stationsVisited.insert(std::stoi(m[3]));
         }
