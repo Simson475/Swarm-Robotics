@@ -177,6 +177,10 @@ void Robot::removeFirstStation() {
     remainingStations.erase(remainingStations.begin());
 }
 
+bool Robot::hasJob() {
+    return !job.empty();
+}
+
 void Robot::cleanJob() { job.clear(); }
 
 Point *Robot::getNextWayPoint() {
@@ -376,4 +380,20 @@ void Robot::clearRobotInf(){
         delete info;
 
     otherRobotsInf.clear();
+}
+
+std::vector<int> Robot::getJobByIds(){
+    std::vector<int> ids{};
+    for(auto& j : job)
+        ids.push_back(j.getId());
+
+    return ids;
+}
+
+void Robot::setStationPlan(std::vector<int> plan){
+    stationPlan = plan;
+}
+
+std::vector<int> Robot::getStationPlan(){
+    return stationPlan;
 }

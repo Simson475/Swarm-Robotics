@@ -50,6 +50,7 @@ private:
     Point* initialLocation;
     std::vector<Point> remainingStations;
     std::vector<Point> remainingWaypoints;
+    std::vector<int> stationPlan;
     Status status;
     double etaNextStation;
     int stopWatch = -1;
@@ -70,6 +71,7 @@ public:
     Point* getCurrentTarget() const {return currTarget;}
     void addSinglePickUp(Point pickup);
     void removeFirstStation();
+    bool hasJob();
     void cleanJob();
     Point *getNextWayPoint();
     void changeStatus(Status stat);
@@ -77,6 +79,7 @@ public:
     int getWatch() { return stopWatch; }
     bool atPoint() const { return stopWatch != -1;}
     std::vector<Point> getJob() { return job; }
+    std::vector<int> getJobByIds();
     std::vector<Point> getRemainingStations() const { return remainingStations; }
     void clearStations(){remainingStations.clear();}
     void clearWaypoints(){remainingWaypoints.clear();}
@@ -109,5 +112,9 @@ public:
     bool operator!=(const Robot &r) const {
         return getfootBot() != r.getfootBot();
     }
+
+    //************************* Functionality to plan in interface
+    void setStationPlan(std::vector<int>);
+    std::vector<int> getStationPlan();
 };
 #endif
