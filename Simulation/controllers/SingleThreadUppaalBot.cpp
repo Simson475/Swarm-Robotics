@@ -68,30 +68,25 @@ void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
     argos::GetNodeAttributeOrDefault(t_node, "velocity", m_fWheelVelocity, m_fWheelVelocity);
 }
 
+Robot SingleThreadUppaalBot::getSelf(){
+    return sMap.getRobotByName(m_strId);
+}
+
 void SingleThreadUppaalBot::ControlStep(){
-    getStationPlan("");
-
-    exit(0);
-
     constructInitialUppaalModel();
-    runStationModel();
+    std::vector<int> stationPlan = getStationPlan(runStationModel());
+
+    setStationPlan(stationPlan);
+    exit(0);
 }
 
 std::vector<int> SingleThreadUppaalBot::getStationPlan(std::string modelOutput) {
-    std::ifstream debug("./debug.txt");
-
-    std::stringstream buffer{};
-    buffer << debug.rdbuf();
-    debug.close();
-
-    std::string buffer_str = buffer.str();
-
     std::smatch m;
     std::regex queryForm ("cur_station:\n");
-    std::regex_search(buffer_str, m, queryForm);
+    std::regex_search(modelOutput, m, queryForm);
 
 
-    std::string queryResult = buffer_str.substr(m.position());
+    std::string queryResult = modelOutput.substr(m.position());
     std::ofstream debug2{std::string{std::filesystem::current_path()} + "/debug2.txt"};
 
     debug2 << queryResult;
@@ -127,6 +122,12 @@ std::vector<int> SingleThreadUppaalBot::getStationPlan(std::string modelOutput) 
     return std::vector<int>{};
 }
 
+void SingleThreadUppaalBot::setStationPlan(std::vector<int> stationPlan){
+    Robot self = getSelf();
+
+    self.setStationPlan(stationPlan);
+}
+
 std::string SingleThreadUppaalBot::runStationModel(){
     std::string verifyta{"~/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
     //std::string verifyta{"~/phd/Uppaal/uppaal64-4.1.20-stratego-7/bin-Linux/verifyta"};
@@ -154,7 +155,11 @@ void SingleThreadUppaalBot::constructInitialUppaalModel(){
     std::ofstream full_model{std::string{std::filesystem::current_path()} + "/initial_model.xml"};
 
     Robot self = sMap.getRobotByName(m_strId);
-    std::vector<int> job = sMap.getNextJob();
+    if(!self.hasJob()) {
+        std::vector<int> job = sMap.getNextJob();
+        for(int j : job)
+            self.addSinglePickUp(sMap.getPointByID(j));
+    }
 
     // This is the Uppaal model for the initial strategy.
     std::string line;
@@ -185,7 +190,7 @@ void SingleThreadUppaalBot::constructInitialUppaalModel(){
         pos = line.find("#CUR_ORDER#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#CUR_ORDER#"}.size(),
-                         format_order(numOfStations, job));
+                         format_order(numOfStations, self.getJobByIds()));
         }
 
         std::string matrix = get_expanded_distance_matrix(sMap, self.getInitialLoc());
