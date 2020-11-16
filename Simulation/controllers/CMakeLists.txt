@@ -67,6 +67,6 @@ add_custom_command(TARGET SingleThreadUppaalBot POST_BUILD
 
 add_custom_command(TARGET SingleThreadUppaalBot POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-        ../../models/robot/parsing/station_planning_blueprint.xml
+        ../../controllers/parsing/station_planning_blueprint.xml
         ${CMAKE_BINARY_DIR}/external/bin/station_planning_blueprint.xml
         )

@@ -1,5 +1,5 @@
 #include "map_structure.hpp"
-#include "models/robot/parsing/uppaal_model_parsing.hpp"
+#include "controllers/parsing/uppaal_model_parsing.hpp"
 
 void Map_Structure::collectAllWayPoints() {
 

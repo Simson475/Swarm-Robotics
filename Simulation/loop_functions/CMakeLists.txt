@@ -31,8 +31,8 @@ add_library(CTrajectoryLoopFunctions MODULE
         ../models/robot/robot.hpp
         ../models/robot/robot.cpp
 
-        ../models/robot/parsing/uppaal_model_parsing.hpp
-        ../models/robot/parsing/uppaal_model_parsing.cpp
+        ../controllers/parsing/uppaal_model_parsing.hpp
+        ../controllers/parsing/uppaal_model_parsing.cpp
 
         ../argos_wrapper/argos_wrapper.hpp
         ../argos_wrapper/argos_wrapper.cpp

@@ -2,7 +2,7 @@
 #define SWARMSIMULATOR_SINGLETHREADUPPAALBOT_HPP
 
 #include "models/map/map_structure.hpp"
-#include "models/robot/parsing/uppaal_model_parsing.hpp"
+#include "parsing/uppaal_model_parsing.hpp"
 
 /* Definition of the CCI_Controller class. */
 #include "argos3/core/control_interface/ci_controller.h"
