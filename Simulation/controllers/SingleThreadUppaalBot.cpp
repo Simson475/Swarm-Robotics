@@ -6,6 +6,9 @@
 
 #include <exception>
 #include <cstdio>
+#include <regex>
+#include <fstream>
+#include <set>
 
 SingleThreadUppaalBot::SingleThreadUppaalBot():
     m_pcWheels(NULL),
@@ -66,12 +69,60 @@ void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
 }
 
 void SingleThreadUppaalBot::ControlStep(){
+    getStationPlan("");
+
+    exit(0);
+
     constructInitialUppaalModel();
     runStationModel();
-    return;
 }
 
-void SingleThreadUppaalBot::runStationModel(){
+std::vector<int> SingleThreadUppaalBot::getStationPlan(std::string modelOutput) {
+    std::ifstream debug("./debug.txt");
+
+    std::stringstream buffer{};
+    buffer << debug.rdbuf();
+    debug.close();
+
+    std::string buffer_str = buffer.str();
+
+    std::smatch m;
+    std::regex queryForm ("cur_station:\n");
+    std::regex_search(buffer_str, m, queryForm);
+
+
+    std::string queryResult = buffer_str.substr(m.position());
+    std::ofstream debug2{std::string{std::filesystem::current_path()} + "/debug2.txt"};
+
+    debug2 << queryResult;
+
+    std::set<int> stationsVisited{};
+    std::vector<int> stationPlan{};
+
+
+    std::regex queryPart(R"(([0-9]+)([.][0-9])?,([0-9]+))");
+    std::regex_search(queryResult, m, queryPart);
+    for (auto it = std::sregex_iterator(queryResult.begin(), queryResult.end(), queryPart);
+        it != std::sregex_iterator(); it++){
+        m = *it;
+        debug2 << m[0] << ": ->  "  << m[3] << std::endl;
+
+        if(m[1] != "0" && stationsVisited.find(std::stoi(m[3])) == stationsVisited.end()){
+            stationPlan.push_back(std::stoi(m[3]));
+            stationsVisited.insert(std::stoi(m[3]));
+        }
+    }
+
+    debug2 << "Station plan:\n";
+    for(int s : stationPlan)
+        debug2 << s << std::endl;
+
+
+    debug2.close();
+    return std::vector<int>{};
+}
+
+std::string SingleThreadUppaalBot::runStationModel(){
     std::string verifyta{"~/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
     //std::string verifyta{"~/phd/Uppaal/uppaal64-4.1.20-stratego-7/bin-Linux/verifyta"};
     std::string model{"./initial_model.xml"};
@@ -90,7 +141,7 @@ void SingleThreadUppaalBot::runStationModel(){
     }
 
     print_string(result);
-    exit(0);
+    return result;
 }
 
 void SingleThreadUppaalBot::constructInitialUppaalModel(){

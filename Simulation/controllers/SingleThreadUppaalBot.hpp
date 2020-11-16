@@ -15,7 +15,8 @@
 //  ???, this was added in order to get  GetID() robot
 #include "argos3/plugins/robots/foot-bot/simulator/footbot_entity.h"
 
-#include <fstream>
+#include <vector>
+#include <string>
 
 
 class SingleThreadUppaalBot : public argos::CCI_Controller {
@@ -78,7 +79,8 @@ private:
 
     //**************** ControlStep functionality
     void constructInitialUppaalModel();
-    void runStationModel();
+    std::string runStationModel();
+    std::vector<int> getStationPlan(std::string modelOutput);
 };
 
 
