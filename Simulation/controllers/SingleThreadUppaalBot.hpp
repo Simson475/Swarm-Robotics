@@ -78,6 +78,7 @@ private:
 
     //**************** ControlStep functionality
     void constructInitialUppaalModel();
+    void runStationModel();
 };
 
 

@@ -5,6 +5,7 @@
 #include "SingleThreadUppaalBot.hpp"
 
 #include <exception>
+#include <cstdio>
 
 SingleThreadUppaalBot::SingleThreadUppaalBot():
     m_pcWheels(NULL),
@@ -15,6 +16,15 @@ SingleThreadUppaalBot::SingleThreadUppaalBot():
     m_fWheelVelocity(100),
     m_cGoStraightAngleRange(-ToRadians(m_cAlpha),
                             ToRadians(m_cAlpha)) {}
+
+
+void print_string(std::string text){
+    std::ofstream debug{std::string{std::filesystem::current_path()} + "/debug.txt"};
+
+    debug << text;
+
+    debug.close();
+}
 
 void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
     /*
@@ -57,7 +67,30 @@ void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
 
 void SingleThreadUppaalBot::ControlStep(){
     constructInitialUppaalModel();
+    runStationModel();
     return;
+}
+
+void SingleThreadUppaalBot::runStationModel(){
+    std::string verifyta{"~/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
+    //std::string verifyta{"~/phd/Uppaal/uppaal64-4.1.20-stratego-7/bin-Linux/verifyta"};
+    std::string model{"./initial_model.xml"};
+
+    std::string terminalCommand = verifyta + " " + model;
+
+    std::string result;
+    FILE * stream;
+    const int max_buffer = 256;
+    char buffer[max_buffer];
+    stream = popen(terminalCommand.c_str(), "r");
+    if (stream) {
+        while (!feof(stream))
+            if (fgets(buffer, max_buffer, stream) != NULL) result.append(buffer);
+        pclose(stream);
+    }
+
+    print_string(result);
+    exit(0);
 }
 
 void SingleThreadUppaalBot::constructInitialUppaalModel(){
@@ -167,7 +200,8 @@ void SingleThreadUppaalBot::constructInitialUppaalModel(){
         full_model << line << std::endl;
 
     }
-    exit(0);
+
+    full_model.close();
 }
 
 REGISTER_CONTROLLER(SingleThreadUppaalBot, "SingleThreadUppaalBot_controller")

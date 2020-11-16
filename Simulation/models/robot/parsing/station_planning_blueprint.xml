@@ -229,7 +229,7 @@ min_travel = 0</label>
 min_travel = get_min_travel_time()</label>
 		</transition>
 	</template>
-    #XML_COMMENT_START#
+#XML_COMMENT_START#
 	<template>
 		<name>OtherRobot</name>
 		<parameter>const other_bots_t id, const stations_t end_station</parameter>
@@ -380,7 +380,7 @@ min_travel = 0</label>
 min_travel = get_min_travel_time()</label>
 		</transition>
 	</template>
-    #XML_COMMENT_END#
+#XML_COMMENT_END#
 	<template>
 		<name>Station</name>
 		<parameter>const stations_t id</parameter>
@@ -463,7 +463,7 @@ system Robot, #OTHER_IN_SYSTEM# Station;
     </system>
 	<queries>
 		<query>
-			<formula>E&lt;&gt; Robot.FullSpeed</formula>
+			<formula></formula>
 			<comment></comment>
 		</query>
 		<query>
@@ -489,6 +489,7 @@ system Robot, #OTHER_IN_SYSTEM# Station;
 		order[9],
 		order[10],
 		order[11],
+		order[12],
 		visited[0],
 		visited[1],
 		visited[2],
@@ -500,7 +501,8 @@ system Robot, #OTHER_IN_SYSTEM# Station;
 		visited[8],
 		visited[9],
 		visited[10],
-		visited[11]
+		visited[11],
+		visited[12]
 } -&gt; {
 	global
 } : &lt;&gt; Robot.Done</formula>
@@ -515,35 +517,7 @@ system Robot, #OTHER_IN_SYSTEM# Station;
 			<comment></comment>
 		</query>
 		<query>
-			<formula>strategy planSqDist = minE (sq_dist() + 50*global) [&lt;=1000]{
-		cur_station,
-		order[0],
-		order[1],
-		order[2],
-		order[3],
-		order[4],
-		order[5],
-		order[6],
-		order[7],
-		order[8],
-		order[9],
-		order[10],
-		order[11],
-		visited[0],
-		visited[1],
-		visited[2],
-		visited[3],
-		visited[4],
-		visited[5],
-		visited[6],
-		visited[7],
-		visited[8],
-		visited[9],
-		visited[10],
-		visited[11]
-} -&gt; {
-		global
-} : &lt;&gt; Robot.Done</formula>
+			<formula></formula>
 			<comment></comment>
 		</query>
 		<query>
@@ -551,35 +525,7 @@ system Robot, #OTHER_IN_SYSTEM# Station;
 			<comment></comment>
 		</query>
 		<query>
-			<formula>strategy planLnInverse = minE (1/ln_dist() + global) [&lt;=1000]{
-		cur_station,
-		order[0],
-		order[1],
-		order[2],
-		order[3],
-		order[4],
-		order[5],
-		order[6],
-		order[7],
-		order[8],
-		order[9],
-		order[10],
-		order[11],
-		visited[0],
-		visited[1],
-		visited[2],
-		visited[3],
-		visited[4],
-		visited[5],
-		visited[6],
-		visited[7],
-		visited[8],
-		visited[9],
-		visited[10],
-		visited[11]
-} -&gt; {
-		global
-} : &lt;&gt; Robot.Done</formula>
+			<formula></formula>
 			<comment></comment>
 		</query>
 		<query>
@@ -595,7 +541,31 @@ system Robot, #OTHER_IN_SYSTEM# Station;
 			<comment></comment>
 		</query>
 		<query>
-			<formula>saveStrategy("/home/martin/papers/Swarm\ Robotics/Strategies/plan", plan)</formula>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula></formula>
 			<comment></comment>
 		</query>
 		<query>
@@ -608,35 +578,7 @@ system Robot, #OTHER_IN_SYSTEM# Station;
 		</query>
 		<query>
 			<formula>simulate 1 [&lt;=150]{
-	cur_station, Robot.Done
-} under planLnInverse</formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula></formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula></formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula>simulate 1 [&lt;=150]{
-	cur_station, Robot.Done
-} under planSqDist</formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula></formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula></formula>
-			<comment></comment>
-		</query>
-		<query>
-			<formula>simulate 1 [&lt;=150]{
-	cur_station, Robot.Done
+	cur_station
 } under plan</formula>
 			<comment></comment>
 		</query>
