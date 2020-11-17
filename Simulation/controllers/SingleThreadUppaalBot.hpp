@@ -82,6 +82,7 @@ private:
     std::vector<int> stationPlan{};
     std::vector<int> waypointPlan{};
     std::vector<int> job{};
+    int nextLocation;
 
     //**************** ControlStep functionality
     void constructStationUppaalModel();
@@ -96,6 +97,10 @@ private:
     bool hasJob();
     void setJob();
     std::vector<int> getJob();
+
+    void setNextLocation(int);
+    void movementLogic();
+    void controlStep(double per, double dotProd, float velocity);
 
 };
 

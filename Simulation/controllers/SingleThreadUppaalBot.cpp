@@ -92,25 +92,121 @@ void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
 }
 
 void SingleThreadUppaalBot::ControlStep(){
-    test_function();
-    exit(0);
-
-
     if(!hasJob()) {
         setJob();
     }
 
+    if(stationPlan.empty()) //@todo: Have proper boolean function
+    {
+        constructStationUppaalModel();
+        std::vector<int> stationPlan = getStationPlan(runStationModel());
+
+        setStationPlan(stationPlan);
+    }
 
 
-    constructStationUppaalModel();
-    std::vector<int> stationPlan = getStationPlan(runStationModel());
+    if(waypointPlan.empty()) //@todo: Have proper boolean function
+    {
+        constructWaypointUppaalModel();
+        std::vector<int> waypointPlan = getWaypointPlan(runWaypointModel());
+        setWaypointPlan(waypointPlan);
+        setNextLocation(waypointPlan.front());
+    }
 
-    setStationPlan(stationPlan);
+    movementLogic();
+}
 
-    constructWaypointUppaalModel();
-    std::vector<int> waypointPlan = getWaypointPlan(runWaypointModel());
-    setWaypointPlan(waypointPlan);
-    exit(0);
+void SingleThreadUppaalBot::movementLogic(){
+    const argos::CCI_PositioningSensor::SReading& tPosReads  = m_pcPosition->GetReading();
+    //if (sMap.Robots[n].getWatch() == -1){ //check if the robot is suppose to stay still
+    /* This was to obtain the next location
+    Point* currTarget;
+    if(sMap.Robots[n].getStatus() == Status::available){
+        currTarget = &sMap.Robots[n].getInitialLoc();
+    }
+    else currTarget = sMap.Robots[n].getNextWayPoint();  // determine the next target location of the robot
+     */
+
+    Point nextPoint = sMap.getPointByID(nextLocation);
+    argos::CRadians a,c,b;
+    tPosReads.Orientation.ToEulerAngles(a,b,c);
+
+    float oy = sin(a.GetValue());
+    float ox = cos(a.GetValue());
+    argos::CVector3 Ori(ox,oy,0);
+    argos::CVector3 newOri = nextPoint - tPosReads.Position; // Direct Access to Map
+    newOri.Normalize();
+
+    double per = newOri.GetX()*Ori.GetY() - newOri.GetY()*Ori.GetX() ;
+    double dotProd = newOri.GetX()*Ori.GetX() + newOri.GetY()*Ori.GetY();
+
+    if(Distance(tPosReads.Position,nextPoint) <= 1.5 ){ // acceptance radius between point and robot
+        //if(!sMap.getPointByID(sMap.Robots[n].getCurrentTarget()->getId()).isOccupied()){ //Is for checking whether or not a point is occupied by another robot.
+        if(Distance(tPosReads.Position,nextPoint) <= 0.15){
+            m_pcWheels->SetLinearVelocity(0.0f, 0.0f); // setting robots speed to 0 when the target is reached
+
+            argos::LOG<< m_strId <<" has arrived at station: "<< nextLocation <<std::endl;
+        }
+        else {
+            controlStep(per,dotProd, Distance(tPosReads.Position, nextPoint)*60);
+        }
+
+    }
+    else {
+        controlStep(per,dotProd, m_fWheelVelocity);
+    }
+
+    //}
+    /* Was for incrementing value for wait
+    else {
+        sMap.Robots[n].increment(sMap.Robots[n].getWatch()+1);
+        m_pcWheels->SetLinearVelocity(0, 0);
+    }
+    */
+}
+
+void SingleThreadUppaalBot::controlStep(double per, double dotProd, float velocity){
+    const argos::CCI_FootBotProximitySensor::TReadings& tProxReads = m_pcProximity->GetReadings();
+    argos::CVector2 cAccumulator;
+    for(size_t i = 0; i < tProxReads.size(); ++i){
+        cAccumulator += argos::CVector2(tProxReads[i].Value, tProxReads[i].Angle);
+    }
+    cAccumulator /= tProxReads.size();
+    /* If the angle of the vector is small enough and the closest obstacle
+     * is far enough, continue going straight, otherwise curve a little
+    */
+    argos::Real turnRate;
+    if(per>0.5 || per<-0.5) {turnRate = 10.0f;} else {turnRate = 3.0f;}// while the angle is big our turn rate is fast
+    if(per<0.1 && per>-0.1) {turnRate = 1.0f;} //if the angle is small then our turn rate is reduced to 1
+    argos::CRadians cAngle = cAccumulator.Angle();
+    if(m_cGoStraightAngleRange.WithinMinBoundIncludedMaxBoundIncluded(cAngle) &&
+       cAccumulator.Length() < m_fDelta ){
+        if( per > 0.1 ){
+            m_pcWheels->SetLinearVelocity(turnRate, -turnRate );
+        }
+        else if ( per < -0.1 ){
+            m_pcWheels->SetLinearVelocity(-turnRate, turnRate);
+        }
+        else{
+            if (dotProd > 0){
+                m_pcWheels->SetLinearVelocity(velocity, velocity);
+            }
+            else{
+                m_pcWheels->SetLinearVelocity(velocity, 0.0f);
+            }
+        }
+    }
+    else{
+
+
+        /* Turn, depending on the sign of the angle */
+        if(cAngle.GetValue() > 0.0f) {
+            m_pcWheels->SetLinearVelocity(10.0f, 0.0f); // right
+        }
+        else {
+            m_pcWheels->SetLinearVelocity( 0.0f, 10.0f); // left
+        }
+    }
 }
 
 
@@ -178,10 +274,10 @@ std::vector<int> SingleThreadUppaalBot::getWaypointPlan(std::string modelOutput)
         m = *it;
         debug4 << m[0] << ": ->  "  << m[3] << std::endl;
 
-        int numOfStations = sMap.points.size(); //Needs to be generalized to the current position in the given matrix.
+        int currentPosition = 12; //Needs to be generalized to the current position in the given matrix.
 
         if(m[1] != "0" && stationsVisited.find(std::stoi(m[3])) == stationsVisited.end()){
-            if(stationPlan.empty() && std::stoi(m[3]) == numOfStations) {
+            if(stationPlan.empty() && std::stoi(m[3]) == currentPosition) {
                 continue;
             }
             stationPlan.push_back(std::stoi(m[3]));
@@ -207,7 +303,7 @@ void SingleThreadUppaalBot::setWaypointPlan(std::vector<int> waypointPlan){
 }
 
 std::string SingleThreadUppaalBot::runStationModel(){
-    std::string verifyta{"~/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
+    std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
     //std::string verifyta{"~/phd/Uppaal/uppaal64-4.1.20-stratego-7/bin-Linux/verifyta"};
     std::string model{"./initial_model.xml"};
 
@@ -229,7 +325,7 @@ std::string SingleThreadUppaalBot::runStationModel(){
 }
 
 std::string SingleThreadUppaalBot::runWaypointModel(){
-    std::string verifyta{"~/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
+    std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
     std::string model{"./waypoint_model.xml"};
 
     std::string terminalCommand = verifyta + " " + model;
@@ -263,6 +359,10 @@ void SingleThreadUppaalBot::setJob() {
 
 std::vector<int> SingleThreadUppaalBot::getJob(){
     return job;
+}
+
+void SingleThreadUppaalBot::setNextLocation(int locationID){
+    nextLocation = locationID;
 }
 
 void SingleThreadUppaalBot::constructStationUppaalModel(){
