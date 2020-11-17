@@ -102,5 +102,6 @@ std::string format_order(int numOfStations, std::vector<int> order);
 std::vector<int> convertIDsToBools(int size, std::vector<int>);
 // Endstations formatting
 std::string format_endstations(int numOfStations, std::vector<int> endstationIDs);
-
+// Get the right number of entries in the query
+std::string format_query(unsigned numOfPoint);
 #endif //SWARMSIMULATOR_UPPAAL_MODEL_PARSING_H

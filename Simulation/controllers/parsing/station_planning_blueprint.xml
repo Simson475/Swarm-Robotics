@@ -477,32 +477,7 @@ system Robot, #OTHER_IN_SYSTEM# Station;
 		<query>
 			<formula>strategy plan = minE (global) [&lt;=2000]{
 		cur_station,
-		order[0],
-		order[1],
-		order[2],
-		order[3],
-		order[4],
-		order[5],
-		order[6],
-		order[7],
-		order[8],
-		order[9],
-		order[10],
-		order[11],
-		order[12],
-		visited[0],
-		visited[1],
-		visited[2],
-		visited[3],
-		visited[4],
-		visited[5],
-		visited[6],
-		visited[7],
-		visited[8],
-		visited[9],
-		visited[10],
-		visited[11],
-		visited[12]
+		#QUERY#
 } -&gt; {
 	global
 } : &lt;&gt; Robot.Done</formula>

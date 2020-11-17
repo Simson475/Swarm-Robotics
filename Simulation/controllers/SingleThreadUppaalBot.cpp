@@ -258,6 +258,12 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
             }
         }
 
+        pos = line.find("#QUERY#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#QUERY#"}.size(),
+                         format_query(numOfStations));
+        }
+
         full_model << line << std::endl;
 
     }
@@ -368,6 +374,12 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
                 throw std::logic_error{"Not implemented yet"};
                 line.replace(pos, std::string{"#OTHER_IN_SYSTEM#"}.size(), "BLA");
             }
+        }
+
+        pos = line.find("#QUERY#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#QUERY#"}.size(),
+                         format_query(sMap.points.size())); //@todo: Make proper getter!
         }
 
         waypoint_model << line << std::endl;

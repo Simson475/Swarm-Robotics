@@ -243,3 +243,10 @@ std::vector<std::vector<float>> getDistanceMatrix(Map_Structure &map_structure){
 
     return waypointsDistances;
 }
+
+std::string format_query(unsigned numOfPoint){
+    std::vector<int> points(numOfPoint);
+    std::iota(std::begin(points), std::end(points), 0);
+
+    return element_joiner(points, "],\nvisited[", "visited[", "]\n");
+}
