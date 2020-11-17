@@ -120,17 +120,19 @@ bool is_done(){
 bool must_visit(stations_t station) {
     if (order[station] &amp;&amp; !visited[station])
         return true;
+    #REQUIRE_ENDSTATIONS_START#
     if(is_done()){
         return end_stations[station];
     }
+    #REQUIRE_ENDSTATIONS_END#
     return false;       
 }
 
 void update_order(stations_t s){
-    if(is_done())
-        finished = true;
-    else
+    if(!is_done())
         visited[cur_station] = true;
+    if(is_done() &amp;&amp; #END_AT_ENDSTATION#)
+        finished = true;
 }
 
 

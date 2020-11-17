@@ -461,6 +461,21 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
                 line.replace(pos, std::string{"#CODE_COMMENT_END#"}.size(), "");
         }
 
+        pos = line.find("#REQUIRE_ENDSTATIONS_START#");
+        if(pos != std::string::npos){
+                line.replace(pos, std::string{"#REQUIRE_ENDSTATIONS_START#"}.size(), "");
+        }
+
+        pos = line.find("#REQUIRE_ENDSTATIONS_END#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#REQUIRE_ENDSTATIONS_END#"}.size(), "");
+        }
+
+        pos = line.find("#END_AT_ENDSTATION#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#END_AT_ENDSTATION#"}.size(), "end_stations[s]");
+        }
+
         pos = line.find("#OTHER_CREATION#");
         if(pos != std::string::npos){
             if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
@@ -577,6 +592,21 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
                 line.replace(pos, std::string{"#CODE_COMMENT_END#"}.size(), "*/");
             else
                 line.replace(pos, std::string{"#CODE_COMMENT_END#"}.size(), "");
+        }
+
+        pos = line.find("#REQUIRE_ENDSTATIONS_START#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#REQUIRE_ENDSTATIONS_START#"}.size(), "/*");
+        }
+
+        pos = line.find("#REQUIRE_ENDSTATIONS_END#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#REQUIRE_ENDSTATIONS_END#"}.size(), "*/");
+        }
+
+        pos = line.find("#END_AT_ENDSTATION#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#END_AT_ENDSTATION#"}.size(), "true");
         }
 
         pos = line.find("#OTHER_CREATION#");
