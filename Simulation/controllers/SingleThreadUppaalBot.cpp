@@ -73,6 +73,12 @@ Robot SingleThreadUppaalBot::getSelf(){
 }
 
 void SingleThreadUppaalBot::ControlStep(){
+    if(!hasJob()) {
+        setJob();
+    }
+
+
+
     constructStationUppaalModel();
     std::vector<int> stationPlan = getStationPlan(runStationModel());
 
@@ -220,16 +226,27 @@ std::string SingleThreadUppaalBot::runWaypointModel(){
     return result;
 }
 
+bool SingleThreadUppaalBot::hasJob() {
+    return !job.empty();
+}
+
+void SingleThreadUppaalBot::setJob() {
+    if(!hasJob()) {
+        std::vector<int> nextJob = sMap.getNextJob();
+        for(int j : nextJob)
+            job.push_back(j);
+    }
+}
+
+std::vector<int> SingleThreadUppaalBot::getJob(){
+    return job;
+}
+
 void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/station_planning_blueprint.xml"};
     std::ofstream full_model{std::string{std::filesystem::current_path()} + "/initial_model.xml"};
 
     Robot self = sMap.getRobotByName(m_strId);
-    if(!self.hasJob()) {
-        std::vector<int> job = sMap.getNextJob();
-        for(int j : job)
-            self.addSinglePickUp(sMap.getPointByID(j));
-    }
 
     // This is the Uppaal model for the initial strategy.
     std::string line;
@@ -260,7 +277,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
         pos = line.find("#CUR_ORDER#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#CUR_ORDER#"}.size(),
-                         format_order(numOfStations, self.getJobByIds()));
+                         format_order(numOfStations, getJob()));
         }
 
         std::string matrix = get_expanded_distance_matrix(sMap, self.getInitialLoc());

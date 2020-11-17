@@ -17,6 +17,7 @@
 
 #include <vector>
 #include <string>
+#include <set>
 
 
 class SingleThreadUppaalBot : public argos::CCI_Controller {
@@ -78,6 +79,7 @@ private:
 
     std::vector<int> stationPlan{};
     std::vector<int> waypointPlan{};
+    std::vector<int> job{};
 
     //**************** ControlStep functionality
     void constructStationUppaalModel();
@@ -89,6 +91,10 @@ private:
     void setWaypointPlan(std::vector<int> waypointPlan);
 
     void constructWaypointUppaalModel();
+    bool hasJob();
+    void setJob();
+    std::vector<int> getJob();
+
 
     //*************** Helper functions
     Robot getSelf();
