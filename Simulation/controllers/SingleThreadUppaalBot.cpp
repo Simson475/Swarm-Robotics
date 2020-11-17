@@ -92,22 +92,22 @@ void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
 }
 
 void SingleThreadUppaalBot::ControlStep(){
+    if(!stationPlan.empty() && isAtStation()){ // If we have a plan and we are at a point
+        argos::LOG<< m_strId <<" Pre-reset"<< std::endl;
+        lastLocation = nextLocation;
+        resetWaypointPlan();
+        if(lastLocation == stationPlan.front()){ // Then we have reached the station @todo: Proper function for checking
+            removeStationFromJob(lastLocation);
+            resetStationPlan();
+        }
+        argos::LOG<< m_strId <<" Post-reset"<< std::endl;
+    }
+
     if(!hasJob()) {
         setJob();
     }
 
-    if(!stationPlan.empty() && isAtStation()){ // If we have a plan and we are at a point
-        resetWaypointPlan();
-        if(waypointPlan.empty()){ // Then we have reached the station
-            removeFrontStationPlan();
-        }
-        else{
-            setNextLocation(waypointPlan.front());
-            argos::LOG<< m_strId <<" going towards: "<< nextLocation <<std::endl;
-        }
-    }
-
-    if(stationPlan.empty()) //@todo: Have proper boolean function
+    if(hasJob() && stationPlan.empty()) //@todo: Have proper boolean function
     {
         argos::LOG<< m_strId <<" Constructs Station plan"<< std::endl;
         constructStationUppaalModel();
@@ -117,7 +117,7 @@ void SingleThreadUppaalBot::ControlStep(){
     }
 
 
-    if(waypointPlan.empty()) //@todo: Have proper boolean function
+    if(hasJob() && waypointPlan.empty()) //@todo: Have proper boolean function
     {
         argos::LOG<< m_strId <<" Constructs Waypoint plan" <<std::endl;
         constructWaypointUppaalModel();
@@ -134,15 +134,19 @@ void SingleThreadUppaalBot::resetWaypointPlan(){
     waypointPlan.clear();
 }
 
-void SingleThreadUppaalBot::removeFrontStationPlan(){
-    stationPlan.erase(stationPlan.begin());
+void SingleThreadUppaalBot::resetStationPlan(){
+    stationPlan.clear();
+}
+
+void SingleThreadUppaalBot::removeStationFromJob(int specificStation){
+    job.erase(std::find(job.begin(), job.end(), specificStation));
 }
 
 bool SingleThreadUppaalBot::isAtStation(){
     const argos::CCI_PositioningSensor::SReading& tPosReads  = m_pcPosition->GetReading();
     Point nextPoint = sMap.getPointByID(nextLocation);
 
-    if (Distance(tPosReads.Position,nextPoint) <= 0.15){
+    if (Distance(tPosReads.Position,nextPoint) <= 0.16){
         argos::LOG<< m_strId <<" has arrived at station: "<< nextLocation <<std::endl;
         return true;
     }
@@ -283,7 +287,7 @@ std::vector<int> SingleThreadUppaalBot::getWaypointPlan(std::string modelOutput)
         m = *it;
         debug4 << m[0] << ": ->  "  << m[3] << std::endl;
 
-        int currentPosition = 12; //Needs to be generalized to the current position in the given matrix.
+        int currentPosition = lastLocation; //Needs to be generalized to the current position in the given matrix.
 
         if(m[1] != "0" && stationsVisited.find(std::stoi(m[3])) == stationsVisited.end()){
             if(stationPlan.empty() && std::stoi(m[3]) == currentPosition) {
@@ -512,7 +516,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
             //@todo: Make proper functions to encapsulate the number written!
             // The id matches the last index of the expanded DistMatrix.
             line.replace(pos, std::string{"#CUR_STATION#"}.size(),
-                         std::to_string(self.getLatestPoint().getId()));
+                         std::to_string(lastLocation));
         }
 
         pos = line.find("#OTHER_ROBOTS#");

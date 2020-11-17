@@ -83,6 +83,7 @@ private:
     std::vector<int> waypointPlan{};
     std::vector<int> job{};
     int nextLocation;
+    int lastLocation = 12; //@todo: Do initialise properly!
 
     //**************** ControlStep functionality
     void constructStationUppaalModel();
@@ -103,7 +104,8 @@ private:
     void controlStep(double per, double dotProd, float velocity);
     bool isAtStation();
     void resetWaypointPlan();
-    void removeFrontStationPlan();
+    void resetStationPlan();
+    void removeStationFromJob(int);
 
 };
 
