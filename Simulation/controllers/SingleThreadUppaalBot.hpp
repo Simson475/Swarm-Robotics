@@ -97,9 +97,6 @@ private:
     void setJob();
     std::vector<int> getJob();
 
-
-    //*************** Helper functions
-    Robot getSelf();
 };
 
 

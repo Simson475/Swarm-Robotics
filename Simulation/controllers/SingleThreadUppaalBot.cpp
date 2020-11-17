@@ -91,10 +91,6 @@ void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
     argos::GetNodeAttributeOrDefault(t_node, "velocity", m_fWheelVelocity, m_fWheelVelocity);
 }
 
-Robot SingleThreadUppaalBot::getSelf(){
-    return sMap.getRobotByName(m_strId);
-}
-
 void SingleThreadUppaalBot::ControlStep(){
     test_function();
     exit(0);
