@@ -21,8 +21,8 @@ SingleThreadUppaalBot::SingleThreadUppaalBot():
                             ToRadians(m_cAlpha)) {}
 
 
-void print_string(std::string text){
-    std::ofstream debug{std::string{std::filesystem::current_path()} + "/debug.txt"};
+void print_string(std::string text, std::string fileName="/debug.txt"){
+    std::ofstream debug{std::string{std::filesystem::current_path()} + fileName};
 
     debug << text;
 
@@ -79,8 +79,11 @@ void SingleThreadUppaalBot::ControlStep(){
     setStationPlan(stationPlan);
 
     constructWaypointUppaalModel();
+    std::vector<int> waypointPlan = getWaypointPlan(runWaypointModel());
+    setWaypointPlan(waypointPlan);
     exit(0);
 }
+
 
 std::vector<int> SingleThreadUppaalBot::getStationPlan(std::string modelOutput) {
     std::smatch m;
@@ -124,14 +127,81 @@ std::vector<int> SingleThreadUppaalBot::getStationPlan(std::string modelOutput) 
     return stationPlan;
 }
 
+std::vector<int> SingleThreadUppaalBot::getWaypointPlan(std::string modelOutput) {
+    std::smatch m;
+    std::regex queryForm ("cur_station:\n");
+    std::regex_search(modelOutput, m, queryForm);
+
+
+    std::string queryResult = modelOutput.substr(m.position());
+    std::ofstream debug4{std::string{std::filesystem::current_path()} + "/debug4.txt"};
+
+    debug4 << queryResult;
+
+    std::set<int> stationsVisited{};
+    std::vector<int> stationPlan{};
+
+
+    std::regex queryPart(R"(([0-9]+)([.][0-9])?,([0-9]+))");
+    std::regex_search(queryResult, m, queryPart);
+    for (auto it = std::sregex_iterator(queryResult.begin(), queryResult.end(), queryPart);
+         it != std::sregex_iterator(); it++){
+        m = *it;
+        debug4 << m[0] << ": ->  "  << m[3] << std::endl;
+
+        int numOfStations = sMap.points.size(); //Needs to be generalized to the current position in the given matrix.
+
+        if(m[1] != "0" && stationsVisited.find(std::stoi(m[3])) == stationsVisited.end()){
+            if(stationPlan.empty() && std::stoi(m[3]) == numOfStations) {
+                continue;
+            }
+            stationPlan.push_back(std::stoi(m[3]));
+            stationsVisited.insert(std::stoi(m[3]));
+        }
+    }
+
+    debug4 << "Station plan:\n";
+    for(int s : stationPlan)
+        debug4 << s << std::endl;
+
+
+    debug4.close();
+    return stationPlan;
+}
+
 void SingleThreadUppaalBot::setStationPlan(std::vector<int> stationPlan){
     this->stationPlan = stationPlan;
+}
+
+void SingleThreadUppaalBot::setWaypointPlan(std::vector<int> waypointPlan){
+    this->waypointPlan = waypointPlan;
 }
 
 std::string SingleThreadUppaalBot::runStationModel(){
     std::string verifyta{"~/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
     //std::string verifyta{"~/phd/Uppaal/uppaal64-4.1.20-stratego-7/bin-Linux/verifyta"};
     std::string model{"./initial_model.xml"};
+
+    std::string terminalCommand = verifyta + " " + model;
+
+    std::string result;
+    FILE * stream;
+    const int max_buffer = 256;
+    char buffer[max_buffer];
+    stream = popen(terminalCommand.c_str(), "r");
+    if (stream) {
+        while (!feof(stream))
+            if (fgets(buffer, max_buffer, stream) != NULL) result.append(buffer);
+        pclose(stream);
+    }
+
+    print_string(result);
+    return result;
+}
+
+std::string SingleThreadUppaalBot::runWaypointModel(){
+    std::string verifyta{"~/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
+    std::string model{"./waypoint_model.xml"};
 
     std::string terminalCommand = verifyta + " " + model;
 

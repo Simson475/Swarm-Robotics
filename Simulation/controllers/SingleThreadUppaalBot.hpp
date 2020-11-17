@@ -77,12 +77,16 @@ private:
     Map_Structure &sMap = Map_Structure::get_instance();
 
     std::vector<int> stationPlan{};
+    std::vector<int> waypointPlan{};
 
     //**************** ControlStep functionality
     void constructStationUppaalModel();
     std::string runStationModel();
+    std::string runWaypointModel();
     std::vector<int> getStationPlan(std::string modelOutput);
+    std::vector<int> getWaypointPlan(std::string modelOutput);
     void setStationPlan(std::vector<int>);
+    void setWaypointPlan(std::vector<int> waypointPlan);
 
     void constructWaypointUppaalModel();
 
