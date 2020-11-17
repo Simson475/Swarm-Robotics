@@ -148,6 +148,10 @@ int get_min_travel_time(){
     return fint(floor(travel_time[cur_station][dest_station]));
 }
 
+bool is_connected(stations_t station){
+    return travel_time[cur_station][station] &gt; 0.0;
+}
+
 </declaration>
 		<location id="id0" x="212" y="119">
 			<name x="178" y="85">Idle</name>
@@ -183,7 +187,7 @@ int get_min_travel_time(){
 			<source ref="id0"/>
 			<target ref="id1"/>
 			<label kind="select" x="221" y="-51">s : stations_t</label>
-			<label kind="guard" x="221" y="-34">s != cur_station &amp;&amp; 
+			<label kind="guard" x="221" y="-34">is_connected(s) &amp;&amp;
 !finished</label>
 			<label kind="assignment" x="221" y="17">dest_station = s</label>
 		</transition>
