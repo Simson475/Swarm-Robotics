@@ -279,7 +279,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
         auto pos = line.find("#MAX_STATIONS#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#MAX_STATIONS#"}.size(),
-                         numOfPoints(sMap));
+                         std::to_string(sMap.points.size())); //@Todo: Have proper getter!
         }
 
         pos = line.find("#CUR_STATION#");
