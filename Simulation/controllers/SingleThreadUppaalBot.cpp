@@ -9,6 +9,7 @@
 #include <regex>
 #include <fstream>
 #include <set>
+#include <iostream>
 
 SingleThreadUppaalBot::SingleThreadUppaalBot():
     m_pcWheels(NULL),
@@ -27,6 +28,19 @@ void print_string(std::string text, std::string fileName="/debug.txt"){
     debug << text;
 
     debug.close();
+}
+
+void test_function(){
+    argos::CSpace::TMapPerType &tBotMap =
+        argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
+    for (auto it = tBotMap.begin(); it != tBotMap.end();
+         ++it) {
+        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(it->second);
+        //argos::CCI_Controller& controller = pcBot->GetControllableEntity().GetController();
+        SingleThreadUppaalBot& testClass = dynamic_cast<SingleThreadUppaalBot&>(pcBot->GetControllableEntity().GetController());
+
+        print_string(testClass.GetId() + "\n");
+    }
 }
 
 void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
@@ -73,6 +87,10 @@ Robot SingleThreadUppaalBot::getSelf(){
 }
 
 void SingleThreadUppaalBot::ControlStep(){
+    test_function();
+    exit(0);
+
+
     if(!hasJob()) {
         setJob();
     }
