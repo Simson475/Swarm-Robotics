@@ -39,7 +39,16 @@ void test_function(){
         //argos::CCI_Controller& controller = pcBot->GetControllableEntity().GetController();
         SingleThreadUppaalBot& testClass = dynamic_cast<SingleThreadUppaalBot&>(pcBot->GetControllableEntity().GetController());
 
-        print_string(testClass.GetId() + "\n");
+        testClass.hurra = "Good job!";
+    }
+
+    for (auto it = tBotMap.begin(); it != tBotMap.end();
+         ++it) {
+        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(it->second);
+        //argos::CCI_Controller& controller = pcBot->GetControllableEntity().GetController();
+        SingleThreadUppaalBot& testClass = dynamic_cast<SingleThreadUppaalBot&>(pcBot->GetControllableEntity().GetController());
+
+        print_string(testClass.hurra);
     }
 }
 

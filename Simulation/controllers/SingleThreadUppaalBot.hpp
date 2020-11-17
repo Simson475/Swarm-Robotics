@@ -42,6 +42,9 @@ public:
      */
     void ControlStep() override;
 
+    // Test field!
+    std::string hurra{"Hurra!!!"};
+
 private:
     /* Pointer to the differential steering actuator */
     argos::CCI_DifferentialSteeringActuator *m_pcWheels;
@@ -74,7 +77,6 @@ private:
      * It is set to [-alpha,alpha]. */
     argos::CRange<argos::CRadians> m_cGoStraightAngleRange;
 
-    static int counter;
     Map_Structure &sMap = Map_Structure::get_instance();
 
     std::vector<int> stationPlan{};
