@@ -96,8 +96,20 @@ void SingleThreadUppaalBot::ControlStep(){
         setJob();
     }
 
+    if(!stationPlan.empty() && isAtStation()){ // If we have a plan and we are at a point
+        resetWaypointPlan();
+        if(waypointPlan.empty()){ // Then we have reached the station
+            removeFrontStationPlan();
+        }
+        else{
+            setNextLocation(waypointPlan.front());
+            argos::LOG<< m_strId <<" going towards: "<< nextLocation <<std::endl;
+        }
+    }
+
     if(stationPlan.empty()) //@todo: Have proper boolean function
     {
+        argos::LOG<< m_strId <<" Constructs Station plan"<< std::endl;
         constructStationUppaalModel();
         std::vector<int> stationPlan = getStationPlan(runStationModel());
 
@@ -107,25 +119,38 @@ void SingleThreadUppaalBot::ControlStep(){
 
     if(waypointPlan.empty()) //@todo: Have proper boolean function
     {
+        argos::LOG<< m_strId <<" Constructs Waypoint plan" <<std::endl;
         constructWaypointUppaalModel();
         std::vector<int> waypointPlan = getWaypointPlan(runWaypointModel());
         setWaypointPlan(waypointPlan);
         setNextLocation(waypointPlan.front());
+        argos::LOG<< m_strId <<" going towards: "<< nextLocation <<std::endl;
     }
 
     movementLogic();
 }
 
+void SingleThreadUppaalBot::resetWaypointPlan(){
+    waypointPlan.clear();
+}
+
+void SingleThreadUppaalBot::removeFrontStationPlan(){
+    stationPlan.erase(stationPlan.begin());
+}
+
+bool SingleThreadUppaalBot::isAtStation(){
+    const argos::CCI_PositioningSensor::SReading& tPosReads  = m_pcPosition->GetReading();
+    Point nextPoint = sMap.getPointByID(nextLocation);
+
+    if (Distance(tPosReads.Position,nextPoint) <= 0.15){
+        argos::LOG<< m_strId <<" has arrived at station: "<< nextLocation <<std::endl;
+        return true;
+    }
+    return false;
+}
+
 void SingleThreadUppaalBot::movementLogic(){
     const argos::CCI_PositioningSensor::SReading& tPosReads  = m_pcPosition->GetReading();
-    //if (sMap.Robots[n].getWatch() == -1){ //check if the robot is suppose to stay still
-    /* This was to obtain the next location
-    Point* currTarget;
-    if(sMap.Robots[n].getStatus() == Status::available){
-        currTarget = &sMap.Robots[n].getInitialLoc();
-    }
-    else currTarget = sMap.Robots[n].getNextWayPoint();  // determine the next target location of the robot
-     */
 
     Point nextPoint = sMap.getPointByID(nextLocation);
     argos::CRadians a,c,b;
@@ -141,28 +166,12 @@ void SingleThreadUppaalBot::movementLogic(){
     double dotProd = newOri.GetX()*Ori.GetX() + newOri.GetY()*Ori.GetY();
 
     if(Distance(tPosReads.Position,nextPoint) <= 1.5 ){ // acceptance radius between point and robot
-        //if(!sMap.getPointByID(sMap.Robots[n].getCurrentTarget()->getId()).isOccupied()){ //Is for checking whether or not a point is occupied by another robot.
-        if(Distance(tPosReads.Position,nextPoint) <= 0.15){
-            m_pcWheels->SetLinearVelocity(0.0f, 0.0f); // setting robots speed to 0 when the target is reached
-
-            argos::LOG<< m_strId <<" has arrived at station: "<< nextLocation <<std::endl;
-        }
-        else {
-            controlStep(per,dotProd, Distance(tPosReads.Position, nextPoint)*60);
-        }
-
+        controlStep(per,dotProd, Distance(tPosReads.Position, nextPoint)*60);
     }
     else {
         controlStep(per,dotProd, m_fWheelVelocity);
     }
 
-    //}
-    /* Was for incrementing value for wait
-    else {
-        sMap.Robots[n].increment(sMap.Robots[n].getWatch()+1);
-        m_pcWheels->SetLinearVelocity(0, 0);
-    }
-    */
 }
 
 void SingleThreadUppaalBot::controlStep(double per, double dotProd, float velocity){

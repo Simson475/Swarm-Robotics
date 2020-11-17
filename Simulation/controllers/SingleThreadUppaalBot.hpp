@@ -101,6 +101,9 @@ private:
     void setNextLocation(int);
     void movementLogic();
     void controlStep(double per, double dotProd, float velocity);
+    bool isAtStation();
+    void resetWaypointPlan();
+    void removeFrontStationPlan();
 
 };
 
