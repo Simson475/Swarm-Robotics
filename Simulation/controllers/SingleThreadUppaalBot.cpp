@@ -30,6 +30,23 @@ void print_string(std::string text, std::string fileName="/debug.txt"){
     debug.close();
 }
 
+void SingleThreadUppaalBot::log_helper(std::string message, bool newLine, bool printName){
+    std::ofstream logFile;
+    logFile.open(std::string{std::filesystem::current_path()} + "/log.txt", std::ofstream::app);
+    std::string name = printName ? m_strId + ": " : "";
+
+
+    argos::LOG << name << message;
+    logFile << name << message;
+
+    if(newLine) {
+        argos::LOG << std::endl;
+        logFile << std::endl;
+    }
+
+
+}
+
 void test_function(){
     argos::CSpace::TMapPerType &tBotMap =
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
@@ -93,14 +110,15 @@ void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
 
 void SingleThreadUppaalBot::ControlStep(){
     if(!stationPlan.empty() && isAtStation()){ // If we have a plan and we are at a point
-        argos::LOG<< m_strId <<" Pre-reset"<< std::endl;
+
+        log_helper("Pre-reset");
         lastLocation = nextLocation;
         resetWaypointPlan();
         if(lastLocation == stationPlan.front()){ // Then we have reached the station @todo: Proper function for checking
             removeStationFromJob(lastLocation);
             resetStationPlan();
         }
-        argos::LOG<< m_strId <<" Post-reset"<< std::endl;
+        log_helper("Post-reset");
     }
 
     if(!hasJob()) {
@@ -109,7 +127,7 @@ void SingleThreadUppaalBot::ControlStep(){
 
     if(hasJob() && stationPlan.empty()) //@todo: Have proper boolean function
     {
-        argos::LOG<< m_strId <<" Constructs Station plan"<< std::endl;
+        log_helper("Constructs Station plan");
         constructStationUppaalModel();
         std::vector<int> stationPlan = getStationPlan(runStationModel());
 
@@ -119,12 +137,12 @@ void SingleThreadUppaalBot::ControlStep(){
 
     if(hasJob() && waypointPlan.empty()) //@todo: Have proper boolean function
     {
-        argos::LOG<< m_strId <<" Constructs Waypoint plan" <<std::endl;
+        log_helper("Constructs Waypoint plan");
         constructWaypointUppaalModel();
         std::vector<int> waypointPlan = getWaypointPlan(runWaypointModel());
         setWaypointPlan(waypointPlan);
         setNextLocation(waypointPlan.front());
-        argos::LOG<< m_strId <<" going towards: "<< nextLocation <<std::endl;
+        log_helper("Going towards " + std::to_string(nextLocation));
     }
 
     movementLogic();
@@ -140,14 +158,22 @@ void SingleThreadUppaalBot::resetStationPlan(){
 
 void SingleThreadUppaalBot::removeStationFromJob(int specificStation){
     job.erase(std::find(job.begin(), job.end(), specificStation));
+
+    log_helper("Job is now: ", false);
+    for(int j : job){
+        log_helper(std::to_string(j) + " ", false, false);
+    }
+
+    log_helper("", true, false);
 }
 
 bool SingleThreadUppaalBot::isAtStation(){
     const argos::CCI_PositioningSensor::SReading& tPosReads  = m_pcPosition->GetReading();
     Point nextPoint = sMap.getPointByID(nextLocation);
 
-    if (Distance(tPosReads.Position,nextPoint) <= 0.16){
+    if (Distance(tPosReads.Position,nextPoint) <= 0.15){
         argos::LOG<< m_strId <<" has arrived at station: "<< nextLocation <<std::endl;
+        log_helper("Has arrived at station " + std::to_string(nextLocation));
         return true;
     }
     return false;
@@ -169,7 +195,7 @@ void SingleThreadUppaalBot::movementLogic(){
     double per = newOri.GetX()*Ori.GetY() - newOri.GetY()*Ori.GetX() ;
     double dotProd = newOri.GetX()*Ori.GetX() + newOri.GetY()*Ori.GetY();
 
-    if(Distance(tPosReads.Position,nextPoint) <= 1.5 ){ // acceptance radius between point and robot
+    if(Distance(tPosReads.Position,nextPoint) <= 1.0 ){ // acceptance radius between point and robot
         controlStep(per,dotProd, Distance(tPosReads.Position, nextPoint)*60);
     }
     else {
@@ -368,6 +394,12 @@ void SingleThreadUppaalBot::setJob() {
         for(int j : nextJob)
             job.push_back(j);
     }
+
+    log_helper("Job is now: ", false);
+    for(int j : job){
+        log_helper(std::to_string(j) + " ", false, false);
+    }
+    log_helper("", true, false);
 }
 
 std::vector<int> SingleThreadUppaalBot::getJob(){

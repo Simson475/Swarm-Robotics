@@ -403,7 +403,7 @@ void Map_Structure::generateJobs() {
                 if(station == temp){ check = false;break;}}
             if(check)stationsToVisit.push_back(temp);
         }
-        stationsToVisit.push_back(endPoints(eng));
+        //stationsToVisit.push_back(endPoints(eng));
         jsonObj["job"] = stationsToVisit;
         mainJsonObj.push_back(jsonObj);
     }
