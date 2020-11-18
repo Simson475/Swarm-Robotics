@@ -540,6 +540,12 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
                          format_query(numOfStations));
         }
 
+        pos = line.find("#QUERY_TIME#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
+                         "2000");
+        }
+
         full_model << line << std::endl;
 
     }
@@ -671,6 +677,12 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#QUERY#"}.size(),
                          format_query(sMap.points.size())); //@todo: Make proper getter!
+        }
+
+        pos = line.find("#QUERY_TIME#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
+                         "500");
         }
 
         waypoint_model << line << std::endl;

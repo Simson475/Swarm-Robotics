@@ -481,7 +481,7 @@ system Robot, #OTHER_IN_SYSTEM# Station;
 			<comment></comment>
 		</query>
 		<query>
-			<formula>strategy plan = minE (global) [&lt;=2000]{
+			<formula>strategy plan = minE (global) [&lt;=#QUERY_TIME#]{
 		cur_station,
 		#QUERY#
 } -&gt; {
