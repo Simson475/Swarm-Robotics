@@ -264,6 +264,7 @@ std::vector<int> SingleThreadUppaalBot::getStationPlan(std::string modelOutput) 
     std::string queryResult = modelOutput.substr(m.position());
     std::ofstream debug2{std::string{std::filesystem::current_path()} + "/debug2.txt"};
 
+    debug2 << modelOutput << "\n\n";
     debug2 << queryResult;
 
     std::set<int> stationsVisited{};
@@ -306,6 +307,7 @@ std::vector<int> SingleThreadUppaalBot::getWaypointPlan(std::string modelOutput)
     std::string queryResult = modelOutput.substr(m.position());
     std::ofstream debug4{std::string{std::filesystem::current_path()} + "/debug4.txt"};
 
+    debug4 << modelOutput << "\n\n";
     debug4 << queryResult;
 
     std::set<int> stationsVisited{};
