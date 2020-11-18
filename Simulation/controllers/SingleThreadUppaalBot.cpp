@@ -127,9 +127,11 @@ void SingleThreadUppaalBot::ControlStep(){
 
     if(hasJob() && stationPlan.empty()) //@todo: Have proper boolean function
     {
-        log_helper("Constructs Station plan");
+        log_helper("Constructs Station model");
         constructStationUppaalModel();
+        log_helper("Constructed Station model");
         std::vector<int> stationPlan = getStationPlan(runStationModel());
+        log_helper("Station plan has size " + std::to_string(stationPlan.size()));
 
         setStationPlan(stationPlan);
     }
@@ -137,9 +139,11 @@ void SingleThreadUppaalBot::ControlStep(){
 
     if(hasJob() && waypointPlan.empty()) //@todo: Have proper boolean function
     {
-        log_helper("Constructs Waypoint plan");
+        log_helper("Constructs Waypoint model");
         constructWaypointUppaalModel();
+        log_helper("Constructed Waypoint model");
         std::vector<int> waypointPlan = getWaypointPlan(runWaypointModel());
+        log_helper("Waypoint plan has size " + std::to_string(waypointPlan.size()));
         setWaypointPlan(waypointPlan);
         setNextLocation(waypointPlan.front());
         log_helper("Going towards " + std::to_string(nextLocation));
