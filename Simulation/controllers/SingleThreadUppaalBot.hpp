@@ -105,7 +105,7 @@ private:
     bool isAtStation();
     void resetWaypointPlan();
     void resetStationPlan();
-    void removeStationFromJob(int);
+    void removeStationFromJobIfIn(int);
     void log_helper(std::string message, bool newLine=true, bool printName=true);
 };
 

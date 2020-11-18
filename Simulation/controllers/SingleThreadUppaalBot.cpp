@@ -115,7 +115,7 @@ void SingleThreadUppaalBot::ControlStep(){
         lastLocation = nextLocation;
         resetWaypointPlan();
         if(lastLocation == stationPlan.front()){ // Then we have reached the station @todo: Proper function for checking
-            removeStationFromJob(lastLocation);
+            removeStationFromJobIfIn(lastLocation);
             resetStationPlan();
         }
         log_helper("Post-reset");
@@ -160,8 +160,10 @@ void SingleThreadUppaalBot::resetStationPlan(){
     stationPlan.clear();
 }
 
-void SingleThreadUppaalBot::removeStationFromJob(int specificStation){
-    job.erase(std::find(job.begin(), job.end(), specificStation));
+void SingleThreadUppaalBot::removeStationFromJobIfIn(int specificStation){
+    if(std::find(job.begin(), job.end(), specificStation) != job.end()){
+        job.erase(std::find(job.begin(), job.end(), specificStation));
+    }
 
     log_helper("Job is now: ", false);
     for(int j : job){
