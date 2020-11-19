@@ -1,5 +1,9 @@
 #include "CTrajectoryLoopFunctions.h"
 
+#include "controllers/SingleThreadUppaalBot.hpp"
+
+#include <set>
+
 /****************************************/
 /****************************************/
 
@@ -28,9 +32,37 @@ void CTrajectoryLoopFunctions::Init(argos::TConfigurationNode &t_tree) {
     sMap.setDistanceMatrix();
     std::cout << "Create JSON" << std::endl;
     sMap.createStaticJSON();
+
+    std::cout << "Setting JobGenerator in controllers" << std::endl;
+    setJobGenerator();
+    assignJobGeneratorToControllers();
+
     std::cout << "Setup complete" << std::endl;
 }
 
+void CTrajectoryLoopFunctions::setJobGenerator(){
+    Map_Structure &sMap = Map_Structure::get_instance();
+
+    int numOfStations = sMap.endStationIDs.size() + sMap.endStationIDs.size();
+
+    std::set<int> endStationIDs{};
+    for(auto id : sMap.endStationIDs)
+        endStationIDs.insert(id);
+
+    jobGenerator = std::make_shared<JobGenerator>(JobGenerator(numOfStations, endStationIDs, 2));
+};
+
+void CTrajectoryLoopFunctions::assignJobGeneratorToControllers() {
+    argos::CSpace::TMapPerType &tBotMap =
+        argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
+    for (auto it = tBotMap.begin(); it != tBotMap.end();
+         ++it) {
+        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(it->second);
+        SingleThreadUppaalBot& controller = dynamic_cast<SingleThreadUppaalBot&>(pcBot->GetControllableEntity().GetController());
+
+        controller.setJobGenerator(jobGenerator);
+    }
+}
 /****************************************/
 /****************************************/
 REGISTER_LOOP_FUNCTIONS(CTrajectoryLoopFunctions, "CTrajectoryLoopFunctions")

@@ -47,6 +47,7 @@ void SingleThreadUppaalBot::log_helper(std::string message, bool newLine, bool p
 
 }
 
+/*
 void test_function(){
     argos::CSpace::TMapPerType &tBotMap =
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
@@ -68,6 +69,7 @@ void test_function(){
         print_string(testClass.hurra);
     }
 }
+ */
 
 void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
     /*
@@ -158,6 +160,10 @@ void SingleThreadUppaalBot::resetWaypointPlan(){
 
 void SingleThreadUppaalBot::resetStationPlan(){
     stationPlan.clear();
+}
+
+void SingleThreadUppaalBot::setJobGenerator(std::shared_ptr<JobGenerator> jobGenerator){
+    this->jobGenerator = jobGenerator;
 }
 
 void SingleThreadUppaalBot::removeStationFromJobIfIn(int specificStation){

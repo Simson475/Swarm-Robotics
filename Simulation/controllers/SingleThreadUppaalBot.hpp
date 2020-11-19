@@ -3,6 +3,7 @@
 
 #include "models/map/map_structure.hpp"
 #include "parsing/uppaal_model_parsing.hpp"
+#include "models/jobs/JobGenerator.hpp"
 
 /* Definition of the CCI_Controller class. */
 #include "argos3/core/control_interface/ci_controller.h"
@@ -18,6 +19,7 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <memory>
 
 
 class SingleThreadUppaalBot : public argos::CCI_Controller {
@@ -42,8 +44,8 @@ public:
      */
     void ControlStep() override;
 
-    // Test field!
-    std::string hurra{"Hurra!!!"};
+    // Sets the job generator that is shared between the main loop function and all controllers.
+    void setJobGenerator(std::shared_ptr<JobGenerator> jobGenerator);
 
 private:
     /* Pointer to the differential steering actuator */
@@ -78,6 +80,7 @@ private:
     argos::CRange<argos::CRadians> m_cGoStraightAngleRange;
 
     Map_Structure &sMap = Map_Structure::get_instance();
+    std::shared_ptr<JobGenerator> jobGenerator;
 
     std::vector<int> stationPlan{};
     std::vector<int> waypointPlan{};

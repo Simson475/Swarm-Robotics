@@ -5,9 +5,6 @@
 Job::Job(std::set<int> stationsToVisit, std::set<int> endStations) :
     JobBlueprint(std::move(stationsToVisit), std::move(endStations)) {}
 
-bool Job::isCompleted() {
-    return completed;
-}
 
 std::set<int> Job::getRemainingStations() {
     return stationsToVisit;

@@ -2,6 +2,7 @@
 #define CTrajectoryLoopFunctions_H
 
 #include "models/map/map_structure.hpp"
+#include "../models/jobs/JobGenerator.hpp"
 
 #include "argos3/core/simulator/loop_functions.h"
 #include "argos3/plugins/robots/foot-bot/simulator/footbot_entity.h"
@@ -28,6 +29,10 @@ public:
     inline const BoxMap &GetBoxMap() const { return m_box_map; }
 
 private:
+    std::shared_ptr<JobGenerator> jobGenerator;
+
+    void setJobGenerator();
+    void assignJobGeneratorToControllers();
 };
 
 #endif
