@@ -102,6 +102,7 @@ private:
     void constructWaypointUppaalModel();
     bool hasJob();
     void setJob();
+    void clearJob();
     bool jobCompleted();
 
     void setNextLocation(int);
@@ -110,6 +111,8 @@ private:
     bool isAtStation();
     void resetWaypointPlan();
     void resetStationPlan();
+    int getNextStation();
+    void removeFrontFromStationPlan();
     void log_helper(std::string message, bool newLine=true, bool printName=true);
 };
 

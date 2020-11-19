@@ -120,16 +120,23 @@ void SingleThreadUppaalBot::ControlStep(){
             currentJob->visitedStation(lastLocation);
             resetStationPlan();
         }
+        else if (lastLocation == getNextStation()) {
+            removeFrontFromStationPlan();
+        }
         log_helper("Post-reset");
     }
 
 
 
     if(!hasJob() || jobCompleted()) {
-        if(jobCompleted())
+        if(jobCompleted()) {
             jobGenerator->completedJob();
-        log_helper("Sets job");
-        setJob();
+            clearJob();
+        }
+        if(jobGenerator->anyJobsLeft()) {
+            log_helper("Sets job");
+            setJob();
+        }
     }
 
     if(hasJob() && stationPlan.empty()) //@todo: Have proper boolean function
@@ -167,6 +174,14 @@ void SingleThreadUppaalBot::resetStationPlan(){
     stationPlan.clear();
 }
 
+int SingleThreadUppaalBot::getNextStation(){
+    return stationPlan.front();
+}
+
+void SingleThreadUppaalBot::removeFrontFromStationPlan(){
+    stationPlan.erase(stationPlan.begin());
+}
+
 void SingleThreadUppaalBot::setJobGenerator(std::shared_ptr<JobGenerator> jobGenerator){
     this->jobGenerator = jobGenerator;
 }
@@ -176,6 +191,10 @@ bool SingleThreadUppaalBot::jobCompleted(){
         return false;
 
     return currentJob->isCompleted();
+}
+
+void SingleThreadUppaalBot::clearJob(){
+    currentJob = nullptr;
 }
 
 bool SingleThreadUppaalBot::isAtStation(){
