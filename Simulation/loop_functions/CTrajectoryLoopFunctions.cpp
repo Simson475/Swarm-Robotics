@@ -3,6 +3,8 @@
 #include "controllers/SingleThreadUppaalBot.hpp"
 
 #include <set>
+#include <fstream>
+#include <iostream>
 
 /****************************************/
 /****************************************/
@@ -38,6 +40,20 @@ void CTrajectoryLoopFunctions::Init(argos::TConfigurationNode &t_tree) {
     assignJobGeneratorToControllers();
 
     std::cout << "Setup complete" << std::endl;
+}
+
+bool CTrajectoryLoopFunctions::IsExperimentFinished() {
+    return jobGenerator->allJobsCompleted();
+}
+
+void CTrajectoryLoopFunctions::PostExperiment() {
+    std::ofstream logFile;
+    logFile.open(std::string{std::filesystem::current_path()} + "/log.txt", std::ofstream::app);
+
+    logFile << "Simulation completed at time step: ";
+    logFile << argos::CSimulator::GetInstance().GetSpace().GetSimulationClock() << std::endl;
+
+    logFile.close();
 }
 
 void CTrajectoryLoopFunctions::setJobGenerator(){

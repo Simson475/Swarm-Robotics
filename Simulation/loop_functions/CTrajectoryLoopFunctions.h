@@ -22,11 +22,15 @@ public:
 public:
     virtual ~CTrajectoryLoopFunctions() {}
 
-    virtual void Init(argos::TConfigurationNode &t_tree);
+    inline void Init(argos::TConfigurationNode &t_tree) override;
 
     inline const TWaypointMap &GetWaypoints() const { return m_tWaypoints; }
 
     inline const BoxMap &GetBoxMap() const { return m_box_map; }
+
+    bool IsExperimentFinished() override;
+
+    void PostExperiment() override;
 
 private:
     std::shared_ptr<JobGenerator> jobGenerator;
