@@ -2,6 +2,7 @@
 #define SWARMSIMULATOR_JOBBLUEPRINT_HPP
 
 #include <set>
+#include <exception>
 
 class JobBlueprint {
 public:
@@ -9,8 +10,12 @@ public:
         stationsToVisit(std::move(stationsToVisit)),
         endStations(std::move(endStations)) {}
 
-    virtual std::set<int> getRemainingStations();
-    virtual void visitedStation(int stationID);
+    virtual std::set<int> getRemainingStations(){
+        throw std::logic_error("Calls base function 'getRemainingStations' of JobBlueprint.");
+    }
+    virtual void visitedStation(int stationID){
+        throw std::logic_error("Calls base function 'visitedStation' of JobBlueprint.");
+    };
 
     virtual ~JobBlueprint() = default;
 
