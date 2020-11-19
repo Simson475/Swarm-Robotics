@@ -117,11 +117,19 @@ void SingleThreadUppaalBot::ControlStep(){
         lastLocation = nextLocation;
         resetWaypointPlan();
         if(currentJob->isStationInJob(lastLocation)){ // Then we have reached the station @todo: Proper function for checking
+            log_helper("Arrived at a work station");
             currentJob->visitedStation(lastLocation);
             resetStationPlan();
+
+            log_helper("Job is reduced: ", false);
+            for(int j : currentJob->getRemainingStations()){
+                log_helper(std::to_string(j) + " ", false, false);
+            }
+            log_helper("", true, false);
         }
         else if (lastLocation == getNextStation()) {
-            removeFrontFromStationPlan();
+            log_helper("Arrived at a relay station");
+            resetStationPlan();
         }
         log_helper("Post-reset");
     }
@@ -148,6 +156,7 @@ void SingleThreadUppaalBot::ControlStep(){
         log_helper("Station plan has size " + std::to_string(stationPlan.size()));
 
         setStationPlan(stationPlan);
+        log_helper("Next station is now: " + std::to_string(getNextStation()));
     }
 
 
@@ -171,6 +180,7 @@ void SingleThreadUppaalBot::resetWaypointPlan(){
 }
 
 void SingleThreadUppaalBot::resetStationPlan(){
+    log_helper("Clearing station plan");
     stationPlan.clear();
 }
 
@@ -179,6 +189,7 @@ int SingleThreadUppaalBot::getNextStation(){
 }
 
 void SingleThreadUppaalBot::removeFrontFromStationPlan(){
+    log_helper("Clearing front of station plan");
     stationPlan.erase(stationPlan.begin());
 }
 

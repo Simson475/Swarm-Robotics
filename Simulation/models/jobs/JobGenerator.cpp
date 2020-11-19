@@ -37,7 +37,7 @@ bool JobGenerator::anyJobsLeft() {
 }
 
 bool JobGenerator::allJobsCompleted() {
-    return numOfStations - jobsCompleted == 0;
+    return numOfJobs - jobsCompleted == 0;
 }
 
 std::unique_ptr<Job> JobGenerator::getNextJob() {
