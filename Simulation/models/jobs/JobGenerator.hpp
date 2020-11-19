@@ -5,6 +5,7 @@
 
 #include <set>
 #include <vector>
+#include <memory>
 
 
 class JobGenerator {
@@ -19,7 +20,7 @@ private:
 
     std::vector<Job> jobs{};
 
-    Job generateJob();
+    std::unique_ptr<Job> generateJob();
 
 
 
@@ -28,7 +29,7 @@ public:
 
     bool anyJobsLeft();
     bool allJobsCompleted();
-    Job getNextJob();
+    std::unique_ptr<Job> getNextJob();
     void completedJob();
 };
 

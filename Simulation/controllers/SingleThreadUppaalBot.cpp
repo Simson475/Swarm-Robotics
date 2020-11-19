@@ -124,6 +124,7 @@ void SingleThreadUppaalBot::ControlStep(){
     }
 
     if(!hasJob()) {
+        log_helper("Sets job");
         setJob();
     }
 
@@ -403,7 +404,7 @@ bool SingleThreadUppaalBot::hasJob() {
 }
 
 void SingleThreadUppaalBot::setJob() {
-    currentJob = std::make_shared<JobBlueprint>(jobGenerator->getNextJob());
+    currentJob = jobGenerator->getNextJob();
 
     log_helper("Job is now: ", false);
     for(int j : currentJob->getRemainingStations()){

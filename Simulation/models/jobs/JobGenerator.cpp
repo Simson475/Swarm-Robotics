@@ -14,7 +14,7 @@ JobGenerator::JobGenerator(int numOfStations, std::set<int> endStations, int num
 
 // This function is hardcored in the way that end stations have the first IDs in the map and the stations have the
 // next IDs. After the stations, the waypoints gets IDs.
-Job JobGenerator::generateJob() {
+std::unique_ptr<Job> JobGenerator::generateJob() {
     //************creates random jobs in json file************
     std::random_device rd;  // obtain a random number from hardware
     std::mt19937 eng(rd()); // seed the generator
@@ -28,7 +28,7 @@ Job JobGenerator::generateJob() {
         stationsToVisit.insert(distr(eng));
     }
 
-    return Job{stationsToVisit, endStations};
+    return std::make_unique<Job>(Job{stationsToVisit, endStations});
 }
 
 bool JobGenerator::anyJobsLeft() {
@@ -39,7 +39,7 @@ bool JobGenerator::allJobsCompleted() {
     return numOfStations - jobsCompleted == 0;
 }
 
-Job JobGenerator::getNextJob() {
+std::unique_ptr<Job> JobGenerator::getNextJob() {
     return generateJob();
 }
 

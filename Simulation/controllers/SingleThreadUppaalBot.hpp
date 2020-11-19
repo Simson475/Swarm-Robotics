@@ -82,7 +82,7 @@ private:
 
     Map_Structure &sMap = Map_Structure::get_instance();
     std::shared_ptr<JobGenerator> jobGenerator;
-    std::shared_ptr<JobBlueprint> currentJob{}; //Does not compile with unique_ptr
+    std::unique_ptr<JobBlueprint> currentJob; //Does not compile with unique_ptr
 
     std::vector<int> stationPlan{};
     std::vector<int> waypointPlan{};
