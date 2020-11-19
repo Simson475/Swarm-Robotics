@@ -34,8 +34,7 @@ void SingleThreadUppaalBot::log_helper(std::string message, bool newLine, bool p
     std::ofstream logFile;
     logFile.open(std::string{std::filesystem::current_path()} + "/log.txt", std::ofstream::app);
     std::string name = printName ? m_strId + ": " : "";
-
-
+    
     argos::LOG << name << message;
     logFile << name << message;
 
@@ -43,33 +42,7 @@ void SingleThreadUppaalBot::log_helper(std::string message, bool newLine, bool p
         argos::LOG << std::endl;
         logFile << std::endl;
     }
-
-
 }
-
-/*
-void test_function(){
-    argos::CSpace::TMapPerType &tBotMap =
-        argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
-    for (auto it = tBotMap.begin(); it != tBotMap.end();
-         ++it) {
-        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(it->second);
-        //argos::CCI_Controller& controller = pcBot->GetControllableEntity().GetController();
-        SingleThreadUppaalBot& testClass = dynamic_cast<SingleThreadUppaalBot&>(pcBot->GetControllableEntity().GetController());
-
-        testClass.hurra = "Good job!";
-    }
-
-    for (auto it = tBotMap.begin(); it != tBotMap.end();
-         ++it) {
-        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(it->second);
-        //argos::CCI_Controller& controller = pcBot->GetControllableEntity().GetController();
-        SingleThreadUppaalBot& testClass = dynamic_cast<SingleThreadUppaalBot&>(pcBot->GetControllableEntity().GetController());
-
-        print_string(testClass.hurra);
-    }
-}
- */
 
 void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
     /*
