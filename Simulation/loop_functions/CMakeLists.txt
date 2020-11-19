@@ -37,11 +37,19 @@ add_library(CTrajectoryLoopFunctions MODULE
         ../argos_wrapper/argos_wrapper.hpp
         ../argos_wrapper/argos_wrapper.cpp
 
-	CTrajectoryLoopFunctions.h
-	CTrajectoryQTUserFunctions.h
+	    CTrajectoryLoopFunctions.h
+	    CTrajectoryQTUserFunctions.h
 
-	CTrajectoryLoopFunctions.cpp
-	CTrajectoryQTUserFunctions.cpp
+	    CTrajectoryLoopFunctions.cpp
+	    CTrajectoryQTUserFunctions.cpp
+
+        ../models/jobs/JobGenerator.hpp
+        ../models/jobs/JobGenerator.cpp
+
+        ../models/jobs/Job.hpp
+        ../models/jobs/Job.cpp
+
+        ../models/jobs/JobBlueprint.hpp
 )
 
 
