@@ -86,7 +86,7 @@ private:
 
     std::vector<int> stationPlan{};
     std::vector<int> waypointPlan{};
-    std::vector<int> job{};
+    //std::vector<int> job{};
     int nextLocation;
     int lastLocation = 12; //@todo: Do initialise properly!
 
@@ -102,7 +102,7 @@ private:
     void constructWaypointUppaalModel();
     bool hasJob();
     void setJob();
-    std::vector<int> getJob();
+    bool jobCompleted();
 
     void setNextLocation(int);
     void movementLogic();
@@ -110,7 +110,6 @@ private:
     bool isAtStation();
     void resetWaypointPlan();
     void resetStationPlan();
-    void removeStationFromJobIfIn(int);
     void log_helper(std::string message, bool newLine=true, bool printName=true);
 };
 

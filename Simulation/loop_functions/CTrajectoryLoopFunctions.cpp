@@ -43,7 +43,7 @@ void CTrajectoryLoopFunctions::Init(argos::TConfigurationNode &t_tree) {
 void CTrajectoryLoopFunctions::setJobGenerator(){
     Map_Structure &sMap = Map_Structure::get_instance();
 
-    int numOfStations = sMap.endStationIDs.size() + sMap.endStationIDs.size();
+    int numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size();
 
     std::set<int> endStationIDs{};
     for(auto id : sMap.endStationIDs)

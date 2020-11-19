@@ -199,15 +199,15 @@ std::string get_expanded_distance_matrix(Map_Structure &map_structure, const Poi
     return format_distance_matrix(newDistMatrix);
 }
 
-std::string format_order(int numOfStations, std::vector<int> order){
-    std::vector<int> verbatimOrder = convertIDsToBools(numOfStations, std::move(order));
+std::string format_order(int numOfStations, std::set<int> order){
+    std::vector<int> verbatimOrder = convertIDsToBools<std::set<int>>(numOfStations, std::move(order));
 
     std::string formatted_order = element_joiner(verbatimOrder, ", ", "{", "}");
 
     return formatted_order;
 }
 
-
+/*
 std::vector<int> convertIDsToBools(int size, std::vector<int> ids){
     std::vector<int> verbatimOrder(size, 0);
 
@@ -218,6 +218,7 @@ std::vector<int> convertIDsToBools(int size, std::vector<int> ids){
 
     return verbatimOrder;
 }
+*/
 
 std::string format_endstations(int numOfStations, std::vector<int> endstationIDs){
     std::vector<int> verbatimOrder = convertIDsToBools(numOfStations, std::move(endstationIDs));

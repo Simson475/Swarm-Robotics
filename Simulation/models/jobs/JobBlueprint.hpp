@@ -19,6 +19,19 @@ public:
 
     virtual ~JobBlueprint() = default;
 
+    // If there are no more stations to visit, we see if the station is an end stations.
+    // If there are more stations left to visit, the station must be in that set of stations.
+    virtual bool isStationInJob(int stationID){
+        if(stationsToVisit.empty())
+            return endStations.find(stationID) != endStations.end();
+        else
+            return stationsToVisit.find(stationID) != stationsToVisit.end();
+    }
+
+    virtual bool isCompleted() {
+        return completed;
+    }
+
 protected:
     std::set<int> stationsToVisit;
     const std::set<int> endStations;
@@ -28,14 +41,6 @@ protected:
     // Common helper functions
     bool isEndStation(int stationID) {
         return endStations.find(stationID) != endStations.end();
-    }
-
-    bool isStationInJob(int stationID){
-        return stationsToVisit.find(stationID) != stationsToVisit.end();
-    }
-
-    bool isCompleted() {
-        return completed;
     }
 
 };

@@ -116,14 +116,18 @@ void SingleThreadUppaalBot::ControlStep(){
         log_helper("Pre-reset");
         lastLocation = nextLocation;
         resetWaypointPlan();
-        if(lastLocation == stationPlan.front()){ // Then we have reached the station @todo: Proper function for checking
-            removeStationFromJobIfIn(lastLocation);
+        if(currentJob->isStationInJob(lastLocation)){ // Then we have reached the station @todo: Proper function for checking
+            currentJob->visitedStation(lastLocation);
             resetStationPlan();
         }
         log_helper("Post-reset");
     }
 
-    if(!hasJob()) {
+
+
+    if(!hasJob() || jobCompleted()) {
+        if(jobCompleted())
+            jobGenerator->completedJob();
         log_helper("Sets job");
         setJob();
     }
@@ -167,17 +171,11 @@ void SingleThreadUppaalBot::setJobGenerator(std::shared_ptr<JobGenerator> jobGen
     this->jobGenerator = jobGenerator;
 }
 
-void SingleThreadUppaalBot::removeStationFromJobIfIn(int specificStation){
-    if(std::find(job.begin(), job.end(), specificStation) != job.end()){
-        job.erase(std::find(job.begin(), job.end(), specificStation));
-    }
+bool SingleThreadUppaalBot::jobCompleted(){
+    if(currentJob == nullptr)
+        return false;
 
-    log_helper("Job is now: ", false);
-    for(int j : job){
-        log_helper(std::to_string(j) + " ", false, false);
-    }
-
-    log_helper("", true, false);
+    return currentJob->isCompleted();
 }
 
 bool SingleThreadUppaalBot::isAtStation(){
@@ -413,10 +411,6 @@ void SingleThreadUppaalBot::setJob() {
     log_helper("", true, false);
 }
 
-std::vector<int> SingleThreadUppaalBot::getJob(){
-    return job;
-}
-
 void SingleThreadUppaalBot::setNextLocation(int locationID){
     nextLocation = locationID;
 }
@@ -456,7 +450,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
         pos = line.find("#CUR_ORDER#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#CUR_ORDER#"}.size(),
-                         format_order(numOfStations, getJob()));
+                         format_order(numOfStations, currentJob->getRemainingStations()));
         }
 
         std::string matrix = get_expanded_distance_matrix(sMap, self.getInitialLoc());
@@ -594,8 +588,8 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
 
         pos = line.find("#CUR_ORDER#");
         if (pos != std::string::npos) {
-            std::vector<int> nextStation{};
-            nextStation.push_back(stationPlan.front());
+            std::set<int> nextStation{};
+            nextStation.insert(stationPlan.front());
             line.replace(pos, std::string{"#CUR_ORDER#"}.size(),
                          format_order(matrix.size(), nextStation));
         }

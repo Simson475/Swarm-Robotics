@@ -18,6 +18,7 @@
 #include <fstream>
 #include <filesystem>
 #include <experimental/iterator>
+#include <set>
 
 struct abs_robot_info {
     std::string name;
@@ -87,6 +88,19 @@ std::string element_joiner(std::vector<C> elements, std::string delimiter, std::
     return formatted_elements.str();
 }
 
+// Function to convert a vector of IDs to a int (0's and 1's) vector where indexes indicate that the ID was present
+template <typename C>
+std::vector<int> convertIDsToBools(int size, C ids){
+    std::vector<int> verbatimOrder(size, 0);
+
+    for(int id = 0; id < size; id++){
+        if(std::find(ids.begin(), ids.end(), id) != ids.end())
+            verbatimOrder[id] = 1;
+    }
+
+    return verbatimOrder;
+}
+
 
 // Gets distance Matrix between all stations.
 std::string getStationDistanceMatrix(Map_Structure &map_structure);
@@ -97,9 +111,9 @@ std::string combine_distance_lines(const std::vector<std::vector<std::string>> &
 // Function for formatting an arbitrary distance matrix.
 std::string format_distance_matrix(const std::vector<std::vector<float>>& distance_matrix);
 // Function for formatting the order array
-std::string format_order(int numOfStations, std::vector<int> order);
+std::string format_order(int numOfStations, std::set<int> order);
 // Function to convert a vector of IDs to a int (0's and 1's) vector where indexes indicate that the ID was present
-std::vector<int> convertIDsToBools(int size, std::vector<int>);
+//std::vector<int> convertIDsToBools(int size, std::vector<int>);
 // Endstations formatting
 std::string format_endstations(int numOfStations, std::vector<int> endstationIDs);
 // Get the right number of entries in the query

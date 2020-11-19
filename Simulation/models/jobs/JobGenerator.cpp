@@ -28,6 +28,7 @@ std::unique_ptr<Job> JobGenerator::generateJob() {
         stationsToVisit.insert(distr(eng));
     }
 
+    jobsGenerated++;
     return std::make_unique<Job>(Job{stationsToVisit, endStations});
 }
 
