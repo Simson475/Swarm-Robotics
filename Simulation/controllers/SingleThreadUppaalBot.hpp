@@ -88,7 +88,7 @@ private:
     std::vector<int> waypointPlan{};
     //std::vector<int> job{};
     int nextLocation;
-    int lastLocation = 12; //@todo: Do initialise properly!
+    int lastLocation = 11; //@todo: Do initialise properly!
 
     //**************** ControlStep functionality
     void constructStationUppaalModel();

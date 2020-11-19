@@ -127,10 +127,6 @@ void SingleThreadUppaalBot::ControlStep(){
             }
             log_helper("", true, false);
         }
-        else if (lastLocation == getNextStation()) {
-            log_helper("Arrived at a relay station");
-            resetStationPlan();
-        }
         log_helper("Post-reset");
     }
 
@@ -213,7 +209,6 @@ bool SingleThreadUppaalBot::isAtStation(){
     Point nextPoint = sMap.getPointByID(nextLocation);
 
     if (Distance(tPosReads.Position,nextPoint) <= 0.15){
-        argos::LOG<< m_strId <<" has arrived at station: "<< nextLocation <<std::endl;
         log_helper("Has arrived at station " + std::to_string(nextLocation));
         return true;
     }
@@ -313,10 +308,8 @@ std::vector<int> SingleThreadUppaalBot::getStationPlan(std::string modelOutput) 
         m = *it;
         debug2 << m[0] << ": ->  "  << m[3] << std::endl;
 
-        int numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size(); //Needs to be generalized to the current position in the given matrix.
-
         if(m[1] != "0" && stationsVisited.find(std::stoi(m[3])) == stationsVisited.end()){
-            if(stationPlan.empty() && std::stoi(m[3]) == numOfStations) {
+            if(stationPlan.empty() && std::stoi(m[3]) == lastLocation) {
                 continue;
             }
             stationPlan.push_back(std::stoi(m[3]));
@@ -453,8 +446,20 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
 
     // This is the Uppaal model for the initial strategy.
     std::string line;
-    int numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size() + 1;
+    int numOfStations;
+    std::string matrix;
+    if(lastLocation >= sMap.stationIDs.size() + sMap.endStationIDs.size()){
+        matrix = get_expanded_distance_matrix(sMap, self.getInitialLoc());
+        numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size() + 1;
+    }
+    else {
+        matrix = format_distance_matrix(sMap.floydShortestOfStations());
+        numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size();
+    }
+
     while(std::getline(partial_blueprint, line)){
+
+
 
         auto pos = line.find("#MAX_STATIONS#");
         if(pos != std::string::npos){
@@ -467,7 +472,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
             //@todo: Make proper functions to encapsulate the number written!
             // The id matches the last index of the expanded DistMatrix.
             line.replace(pos, std::string{"#CUR_STATION#"}.size(),
-                std::to_string(numOfStations - 1));
+                std::to_string(lastLocation));
         }
 
         pos = line.find("#OTHER_ROBOTS#");
@@ -482,8 +487,6 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
             line.replace(pos, std::string{"#CUR_ORDER#"}.size(),
                          format_order(numOfStations, currentJob->getRemainingStations()));
         }
-
-        std::string matrix = get_expanded_distance_matrix(sMap, self.getInitialLoc());
 
         pos = line.find("#DISTANCE_MATRIX#");
         if(pos != std::string::npos){
