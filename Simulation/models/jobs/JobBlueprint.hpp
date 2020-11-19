@@ -9,8 +9,8 @@ public:
         stationsToVisit(std::move(stationsToVisit)),
         endStations(std::move(endStations)) {}
 
-    virtual std::set<int> getRemainingStations() = 0;
-    virtual void visitedStation(int stationID) = 0;
+    virtual std::set<int> getRemainingStations();
+    virtual void visitedStation(int stationID);
 
     virtual ~JobBlueprint() = default;
 

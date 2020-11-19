@@ -6,7 +6,7 @@
 #include <set>
 
 
-class Job : JobBlueprint {
+class Job : public JobBlueprint {
 public:
     Job(std::set<int> stationsToVisit, std::set<int> endStations);
 

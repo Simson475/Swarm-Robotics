@@ -399,18 +399,14 @@ std::string SingleThreadUppaalBot::runWaypointModel(){
 }
 
 bool SingleThreadUppaalBot::hasJob() {
-    return !job.empty();
+    return currentJob != nullptr;
 }
 
 void SingleThreadUppaalBot::setJob() {
-    if(!hasJob()) {
-        std::vector<int> nextJob = sMap.getNextJob();
-        for(int j : nextJob)
-            job.push_back(j);
-    }
+    currentJob = std::make_shared<JobBlueprint>(jobGenerator->getNextJob());
 
     log_helper("Job is now: ", false);
-    for(int j : job){
+    for(int j : currentJob->getRemainingStations()){
         log_helper(std::to_string(j) + " ", false, false);
     }
     log_helper("", true, false);

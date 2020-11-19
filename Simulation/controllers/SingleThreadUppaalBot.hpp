@@ -4,6 +4,7 @@
 #include "models/map/map_structure.hpp"
 #include "parsing/uppaal_model_parsing.hpp"
 #include "models/jobs/JobGenerator.hpp"
+#include "models/jobs/JobBlueprint.hpp"
 
 /* Definition of the CCI_Controller class. */
 #include "argos3/core/control_interface/ci_controller.h"
@@ -81,6 +82,7 @@ private:
 
     Map_Structure &sMap = Map_Structure::get_instance();
     std::shared_ptr<JobGenerator> jobGenerator;
+    std::shared_ptr<JobBlueprint> currentJob{}; //Does not compile with unique_ptr
 
     std::vector<int> stationPlan{};
     std::vector<int> waypointPlan{};
