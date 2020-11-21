@@ -112,6 +112,7 @@ private:
     void movementLogic();
     void movementHelper(double per, double dotProd, float velocity);
     bool isAtStation();
+    bool isStationNextInPlan(int);
     void resetWaypointPlan();
     void resetStationPlan();
     int getNextStation();

@@ -100,6 +100,9 @@ void SingleThreadUppaalBot::ControlStep(){
             }
             log_helper("", true, false);
         }
+        else if (isStationNextInPlan(lastLocation)){
+            resetStationPlan();
+        }
         log_helper("Post-reset");
     }
 
@@ -182,6 +185,10 @@ bool SingleThreadUppaalBot::isAtStation(){
         return true;
     }
     return false;
+}
+
+bool SingleThreadUppaalBot::isStationNextInPlan(int stationId){
+    return stationId == stationPlan.front();
 }
 
 void SingleThreadUppaalBot::movementLogic(){
