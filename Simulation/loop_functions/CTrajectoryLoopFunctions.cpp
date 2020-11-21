@@ -40,6 +40,9 @@ void CTrajectoryLoopFunctions::Init(argos::TConfigurationNode &t_tree) {
     initJobGenerator();
     assignJobGeneratorToControllers();
 
+    std::cout << "Setting bots initial location" << std::endl;
+    setInitLocationOnControllers(sMap);
+
     std::cout << "Deletes old log file" << std::endl;
     removeOldLogFile();
     std::cout << "Setup complete" << std::endl;
@@ -79,6 +82,19 @@ void CTrajectoryLoopFunctions::assignJobGeneratorToControllers() {
         auto& controller = dynamic_cast<SingleThreadUppaalBot&>(pcBot->GetControllableEntity().GetController());
 
         controller.setJobGenerator(jobGenerator);
+    }
+}
+
+void CTrajectoryLoopFunctions::setInitLocationOnControllers(Map_Structure& sMap){
+    argos::CSpace::TMapPerType &tBotMap =
+        argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
+    for (auto& botPair : tBotMap) {
+        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
+        auto& controller = dynamic_cast<SingleThreadUppaalBot&>(pcBot->GetControllableEntity().GetController());
+
+        Robot robot = sMap.getRobotByName(controller.GetId());
+
+        controller.setInitLocation(robot.getInitialLoc().getId());
     }
 }
 

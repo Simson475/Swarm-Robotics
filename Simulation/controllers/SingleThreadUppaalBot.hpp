@@ -48,6 +48,9 @@ public:
     // Sets the job generator that is shared between the main loop function and all controllers.
     void setJobGenerator(std::shared_ptr<JobGenerator> jobGenerator);
 
+    // Set the robots initial location
+    void setInitLocation(int);
+
 private:
     /* Pointer to the differential steering actuator */
     argos::CCI_DifferentialSteeringActuator *m_pcWheels;

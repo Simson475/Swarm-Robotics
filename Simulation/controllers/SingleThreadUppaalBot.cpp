@@ -407,6 +407,10 @@ void SingleThreadUppaalBot::setNextLocation(int locationID){
     nextLocation = locationID;
 }
 
+void SingleThreadUppaalBot::setInitLocation(int locationID){
+    lastLocation = locationID;
+}
+
 void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/station_planning_blueprint.xml"};
     std::ofstream full_model{std::string{std::filesystem::current_path()} + "/initial_model.xml"};
