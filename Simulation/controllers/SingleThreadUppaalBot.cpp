@@ -157,10 +157,6 @@ int SingleThreadUppaalBot::getNextStation(){
     return stationPlan.front();
 }
 
-void SingleThreadUppaalBot::removeFrontFromStationPlan(){
-    log_helper("Clearing front of station plan");
-    stationPlan.erase(stationPlan.begin());
-}
 
 void SingleThreadUppaalBot::setJobGenerator(std::shared_ptr<JobGenerator> jobGenerator){
     this->jobGenerator = jobGenerator;
@@ -205,15 +201,15 @@ void SingleThreadUppaalBot::movementLogic(){
     double dotProd = newOri.GetX()*Ori.GetX() + newOri.GetY()*Ori.GetY();
 
     if(Distance(tPosReads.Position,nextPoint) <= 1.0 ){ // acceptance radius between point and robot
-        controlStep(per,dotProd, Distance(tPosReads.Position, nextPoint)*60);
+        movementHelper(per, dotProd, Distance(tPosReads.Position, nextPoint) * 60);
     }
     else {
-        controlStep(per,dotProd, m_fWheelVelocity);
+        movementHelper(per, dotProd, m_fWheelVelocity);
     }
 
 }
 
-void SingleThreadUppaalBot::controlStep(double per, double dotProd, float velocity){
+void SingleThreadUppaalBot::movementHelper(double per, double dotProd, float velocity){
     const argos::CCI_FootBotProximitySensor::TReadings& tProxReads = m_pcProximity->GetReadings();
     argos::CVector2 cAccumulator;
     for(size_t i = 0; i < tProxReads.size(); ++i){

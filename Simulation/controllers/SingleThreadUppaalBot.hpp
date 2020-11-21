@@ -107,12 +107,11 @@ private:
 
     void setNextLocation(int);
     void movementLogic();
-    void controlStep(double per, double dotProd, float velocity);
+    void movementHelper(double per, double dotProd, float velocity);
     bool isAtStation();
     void resetWaypointPlan();
     void resetStationPlan();
     int getNextStation();
-    void removeFrontFromStationPlan();
     void log_helper(std::string message, bool newLine=true, bool printName=true);
 };
 
