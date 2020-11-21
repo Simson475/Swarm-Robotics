@@ -5,6 +5,7 @@
 #include <set>
 #include <fstream>
 #include <iostream>
+#include <cstdio>
 
 /****************************************/
 /****************************************/
@@ -36,9 +37,11 @@ void CTrajectoryLoopFunctions::Init(argos::TConfigurationNode &t_tree) {
     sMap.createStaticJSON();
 
     std::cout << "Setting JobGenerator in controllers" << std::endl;
-    setJobGenerator();
+    initJobGenerator();
     assignJobGeneratorToControllers();
 
+    std::cout << "Deletes old log file" << std::endl;
+    removeOldLogFile();
     std::cout << "Setup complete" << std::endl;
 }
 
@@ -56,7 +59,7 @@ void CTrajectoryLoopFunctions::PostExperiment() {
     logFile.close();
 }
 
-void CTrajectoryLoopFunctions::setJobGenerator(){
+void CTrajectoryLoopFunctions::initJobGenerator(){
     Map_Structure &sMap = Map_Structure::get_instance();
 
     int numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size();
@@ -71,13 +74,17 @@ void CTrajectoryLoopFunctions::setJobGenerator(){
 void CTrajectoryLoopFunctions::assignJobGeneratorToControllers() {
     argos::CSpace::TMapPerType &tBotMap =
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
-    for (auto it = tBotMap.begin(); it != tBotMap.end();
-         ++it) {
-        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(it->second);
-        SingleThreadUppaalBot& controller = dynamic_cast<SingleThreadUppaalBot&>(pcBot->GetControllableEntity().GetController());
+    for (auto& botPair : tBotMap) {
+        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
+        auto& controller = dynamic_cast<SingleThreadUppaalBot&>(pcBot->GetControllableEntity().GetController());
 
         controller.setJobGenerator(jobGenerator);
     }
+}
+
+void CTrajectoryLoopFunctions::removeOldLogFile() {
+    std::string fileName = std::string{std::filesystem::current_path()} + "/log.txt";
+    remove(fileName.c_str());
 }
 /****************************************/
 /****************************************/

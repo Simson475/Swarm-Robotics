@@ -20,7 +20,7 @@ public:
     BoxMap m_box_map;
 
 public:
-    virtual ~CTrajectoryLoopFunctions() {}
+    virtual ~CTrajectoryLoopFunctions() = default;
 
     inline void Init(argos::TConfigurationNode &t_tree) override;
 
@@ -35,8 +35,9 @@ public:
 private:
     std::shared_ptr<JobGenerator> jobGenerator;
 
-    void setJobGenerator();
+    void initJobGenerator();
     void assignJobGeneratorToControllers();
+    void removeOldLogFile();
 };
 
 #endif
