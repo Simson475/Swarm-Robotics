@@ -3,6 +3,7 @@
 //
 
 #include "SingleThreadUppaalBot.hpp"
+#include "parsing/uppaal_model_parsing.hpp"
 
 #include <exception>
 #include <cstdio>
@@ -471,7 +472,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
         pos = line.find("#OTHER_ROBOTS#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#OTHER_ROBOTS#"}.size(),
-                         std::to_string(numOfOtherActiveRobots(sMap.Robots, self)));
+                         std::to_string(numOfOtherActiveRobots(otherBots)));
         }
 
 
@@ -494,7 +495,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
 
         pos = line.find("#XML_COMMENT_START#");
         if(pos != std::string::npos){
-            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+            if(numOfOtherActiveRobots(otherBots) == 0)
                 line.replace(pos, std::string{"#XML_COMMENT_START#"}.size(), "<!--");
             else
                 line.replace(pos, std::string{"#XML_COMMENT_START#"}.size(), "");
@@ -502,7 +503,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
 
         pos = line.find("#XML_COMMENT_END#");
         if(pos != std::string::npos){
-            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+            if(numOfOtherActiveRobots(otherBots) == 0)
                 line.replace(pos, std::string{"#XML_COMMENT_END#"}.size(), "-->");
             else
                 line.replace(pos, std::string{"#XML_COMMENT_END#"}.size(), "");
@@ -510,7 +511,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
 
         pos = line.find("#CODE_COMMENT_START#");
         if(pos != std::string::npos){
-            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+            if(numOfOtherActiveRobots(otherBots) == 0)
                 line.replace(pos, std::string{"#CODE_COMMENT_START#"}.size(), "/*");
             else
                 line.replace(pos, std::string{"#CODE_COMMENT_START#"}.size(), "");
@@ -518,7 +519,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
 
         pos = line.find("#CODE_COMMENT_END#");
         if(pos != std::string::npos){
-            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+            if(numOfOtherActiveRobots(otherBots) == 0)
                 line.replace(pos, std::string{"#CODE_COMMENT_END#"}.size(), "*/");
             else
                 line.replace(pos, std::string{"#CODE_COMMENT_END#"}.size(), "");
@@ -541,7 +542,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
 
         pos = line.find("#OTHER_CREATION#");
         if(pos != std::string::npos){
-            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+            if(numOfOtherActiveRobots(otherBots) == 0)
                 line.replace(pos, std::string{"#OTHER_CREATION#"}.size(), "");
             else {
                 throw std::logic_error{"Not implemented yet"};
@@ -551,7 +552,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
 
         pos = line.find("#OTHER_IN_SYSTEM#");
         if(pos != std::string::npos){
-            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+            if(numOfOtherActiveRobots(otherBots) == 0)
                 line.replace(pos, std::string{"#OTHER_IN_SYSTEM#"}.size(), "");
             else {
                 throw std::logic_error{"Not implemented yet"};
@@ -606,7 +607,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
         pos = line.find("#OTHER_ROBOTS#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#OTHER_ROBOTS#"}.size(),
-                         std::to_string(numOfOtherActiveRobots(sMap.Robots, self)));
+                         std::to_string(numOfOtherActiveRobots(otherBots)));
         }
 
 
@@ -633,7 +634,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
 
         pos = line.find("#XML_COMMENT_START#");
         if(pos != std::string::npos){
-            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+            if(numOfOtherActiveRobots(otherBots) == 0)
                 line.replace(pos, std::string{"#XML_COMMENT_START#"}.size(), "<!--");
             else
                 line.replace(pos, std::string{"#XML_COMMENT_START#"}.size(), "");
@@ -641,7 +642,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
 
         pos = line.find("#XML_COMMENT_END#");
         if(pos != std::string::npos){
-            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+            if(numOfOtherActiveRobots(otherBots) == 0)
                 line.replace(pos, std::string{"#XML_COMMENT_END#"}.size(), "-->");
             else
                 line.replace(pos, std::string{"#XML_COMMENT_END#"}.size(), "");
@@ -649,7 +650,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
 
         pos = line.find("#CODE_COMMENT_START#");
         if(pos != std::string::npos){
-            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+            if(numOfOtherActiveRobots(otherBots) == 0)
                 line.replace(pos, std::string{"#CODE_COMMENT_START#"}.size(), "/*");
             else
                 line.replace(pos, std::string{"#CODE_COMMENT_START#"}.size(), "");
@@ -657,7 +658,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
 
         pos = line.find("#CODE_COMMENT_END#");
         if(pos != std::string::npos){
-            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+            if(numOfOtherActiveRobots(otherBots) == 0)
                 line.replace(pos, std::string{"#CODE_COMMENT_END#"}.size(), "*/");
             else
                 line.replace(pos, std::string{"#CODE_COMMENT_END#"}.size(), "");
@@ -680,7 +681,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
 
         pos = line.find("#OTHER_CREATION#");
         if(pos != std::string::npos){
-            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+            if(numOfOtherActiveRobots(otherBots) == 0)
                 line.replace(pos, std::string{"#OTHER_CREATION#"}.size(), "");
             else {
                 throw std::logic_error{"Not implemented yet"};
@@ -690,7 +691,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
 
         pos = line.find("#OTHER_IN_SYSTEM#");
         if(pos != std::string::npos){
-            if(numOfOtherActiveRobots(sMap.Robots, self) == 0)
+            if(numOfOtherActiveRobots(otherBots) == 0)
                 line.replace(pos, std::string{"#OTHER_IN_SYSTEM#"}.size(), "");
             else {
                 throw std::logic_error{"Not implemented yet"};

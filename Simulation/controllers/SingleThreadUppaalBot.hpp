@@ -2,7 +2,6 @@
 #define SWARMSIMULATOR_SINGLETHREADUPPAALBOT_HPP
 
 #include "models/map/map_structure.hpp"
-#include "parsing/uppaal_model_parsing.hpp"
 #include "models/jobs/JobGenerator.hpp"
 #include "models/jobs/JobBlueprint.hpp"
 
@@ -54,6 +53,10 @@ public:
 
     // Obtain references for the other robots for information extraction when creating Uppaal models.
     void obtainOtherBots(Map_Structure&);
+
+
+    // Functions the other controllers need
+    bool hasJob();
 
 private:
     /* Pointer to the differential steering actuator */
@@ -107,7 +110,6 @@ private:
     void setWaypointPlan(std::vector<int> waypointPlan);
 
     void constructWaypointUppaalModel();
-    bool hasJob();
     void setJob();
     void clearJob();
     bool jobCompleted();
@@ -121,6 +123,7 @@ private:
     void resetStationPlan();
     int getNextStation();
     void log_helper(std::string message, bool newLine=true, bool printName=true);
+
 };
 
 

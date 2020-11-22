@@ -164,11 +164,11 @@ std::string combine_distance_lines(const std::vector<std::vector<std::string>> &
     return final_matrix;
 }
 
-std::size_t numOfOtherActiveRobots(const std::vector<Robot> &robots, const Robot &currentRobot){
+std::size_t numOfOtherActiveRobots(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>>& otherBots){
     std::size_t robots_with_jobs = 0;
 
-    for(auto& robot : robots){
-        if (robot.getName() != currentRobot.getName() && robot.getStatus() != Status::available){
+    for(auto& bot : otherBots){
+        if (bot.get().hasJob()){
             robots_with_jobs++;
         }
     }

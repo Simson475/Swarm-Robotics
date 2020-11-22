@@ -9,6 +9,7 @@
 #include "models/map/map_structure.hpp"
 #include "argos_wrapper/argos_wrapper.hpp"
 #include "models/map/line.hpp"
+#include "controllers/SingleThreadUppaalBot.hpp"
 
 #include <string>
 #include <vector>
@@ -19,6 +20,7 @@
 #include <filesystem>
 #include <experimental/iterator>
 #include <set>
+#include <functional>
 
 struct abs_robot_info {
     std::string name;
@@ -68,7 +70,7 @@ void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure);
 //std::string current_robots_loc(const std::vector<abs_robot_info>&, const Robot&);
 
 // Helper_functions
-std::size_t numOfOtherActiveRobots(const std::vector<Robot> &robots, const Robot &currentRobot);
+std::size_t numOfOtherActiveRobots(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>>&);
 std::string get_expanded_distance_matrix(Map_Structure &map_structure, const Point &point);
 std::vector<std::vector<float>> getDistanceMatrix(Map_Structure &map_structure);
 
