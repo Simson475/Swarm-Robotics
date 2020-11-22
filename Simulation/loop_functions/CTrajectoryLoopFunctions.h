@@ -39,6 +39,7 @@ private:
     void assignJobGeneratorToControllers();
     void removeOldLogFile();
     void setInitLocationOnControllers(Map_Structure&);
+    void haveControllersAccessEachOther();
 };
 
 #endif

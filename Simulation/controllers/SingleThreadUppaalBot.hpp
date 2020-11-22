@@ -22,6 +22,7 @@
 #include <set>
 #include <memory>
 
+#include <functional>
 
 class SingleThreadUppaalBot : public argos::CCI_Controller {
 
@@ -50,6 +51,9 @@ public:
 
     // Set the robots initial location
     void setInitLocation(int);
+
+    // Obtain references for the other robots for information extraction when creating Uppaal models.
+    void obtainOtherBots(Map_Structure&);
 
 private:
     /* Pointer to the differential steering actuator */
@@ -89,9 +93,9 @@ private:
 
     std::vector<int> stationPlan{};
     std::vector<int> waypointPlan{};
-    //std::vector<int> job{};
+    std::vector<std::reference_wrapper<SingleThreadUppaalBot>> otherBots{};
     int nextLocation;
-    int lastLocation = 11; //@todo: Do initialise properly!
+    int lastLocation;
 
     //**************** ControlStep functionality
     void constructStationUppaalModel();

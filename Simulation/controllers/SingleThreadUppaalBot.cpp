@@ -147,6 +147,19 @@ void SingleThreadUppaalBot::ControlStep(){
     movementLogic();
 }
 
+//Sets the vector of references of all the other robots in the system.
+void SingleThreadUppaalBot::obtainOtherBots(Map_Structure& sMap){
+    argos::CSpace::TMapPerType &tBotMap =
+        argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
+    for (auto& botPair : tBotMap) {
+        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
+        auto& controller = dynamic_cast<SingleThreadUppaalBot&>(pcBot->GetControllableEntity().GetController());
+
+        if(GetId() != controller.GetId())
+            otherBots.push_back(controller);
+    }
+}
+
 void SingleThreadUppaalBot::resetWaypointPlan(){
     waypointPlan.clear();
 }

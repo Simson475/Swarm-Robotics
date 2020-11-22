@@ -43,6 +43,9 @@ void CTrajectoryLoopFunctions::Init(argos::TConfigurationNode &t_tree) {
     std::cout << "Setting bots initial location" << std::endl;
     setInitLocationOnControllers(sMap);
 
+    std::cout << "Controllers get references to other controllers" << std::endl;
+    haveControllersAccessEachOther();
+
     std::cout << "Deletes old log file" << std::endl;
     removeOldLogFile();
     std::cout << "Setup complete" << std::endl;
@@ -95,6 +98,19 @@ void CTrajectoryLoopFunctions::setInitLocationOnControllers(Map_Structure& sMap)
         Robot robot = sMap.getRobotByName(controller.GetId());
 
         controller.setInitLocation(robot.getInitialLoc().getId());
+    }
+}
+
+void CTrajectoryLoopFunctions::haveControllersAccessEachOther(){
+    Map_Structure &sMap = Map_Structure::get_instance();
+
+    argos::CSpace::TMapPerType &tBotMap =
+        argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
+    for (auto& botPair : tBotMap) {
+        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
+        auto &controller = dynamic_cast<SingleThreadUppaalBot &>(pcBot->GetControllableEntity().GetController());
+
+        controller.obtainOtherBots(sMap);
     }
 }
 
