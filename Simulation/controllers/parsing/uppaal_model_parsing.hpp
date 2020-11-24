@@ -73,6 +73,8 @@ void configure_static_settings_of_Uppaal_model(Map_Structure& map_structure);
 std::size_t numOfOtherActiveRobots(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>>&);
 std::string get_expanded_distance_matrix(Map_Structure &map_structure, const Point &point);
 std::vector<std::vector<float>> getDistanceMatrix(Map_Structure &map_structure);
+std::string formatStationOrderLenghts(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
+std::string formatOrderStartLocs(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
 
 
 //********************************* Formatting functions:

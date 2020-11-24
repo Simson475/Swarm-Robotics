@@ -414,6 +414,14 @@ bool SingleThreadUppaalBot::hasJob() {
     return currentJob != nullptr;
 }
 
+unsigned int SingleThreadUppaalBot::sizeOfStationPlan(){
+    return (unsigned)stationPlan.size();
+}
+
+int SingleThreadUppaalBot::getLastLocation(){
+    return lastLocation;
+}
+
 void SingleThreadUppaalBot::setJob() {
     currentJob = jobGenerator->getNextJob();
 
@@ -572,6 +580,20 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
                          "2000");
         }
 
+        //********************* Helper functions for when there are other active robots
+        if(numOfOtherActiveRobots(otherBots) > 0) {
+            pos = line.find("#OTHER_ORDER_LENGHT#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_ORDER_LENGHT#"}.size(),
+                             formatStationOrderLenghts(otherBots));
+            }
+
+            pos = line.find("#OTHER_START_LOCS#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_START_LOCS#"}.size(),
+                             formatOrderStartLocs(otherBots));
+            }
+        }
         full_model << line << std::endl;
 
     }

@@ -57,6 +57,9 @@ public:
 
     // Functions the other controllers need
     bool hasJob();
+    unsigned int sizeOfStationPlan();
+    int getLastLocation();
+
 
 private:
     /* Pointer to the differential steering actuator */

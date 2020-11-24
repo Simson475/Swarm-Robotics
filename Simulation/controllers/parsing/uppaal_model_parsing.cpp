@@ -245,6 +245,28 @@ std::vector<std::vector<float>> getDistanceMatrix(Map_Structure &map_structure){
     return waypointsDistances;
 }
 
+std::string formatStationOrderLenghts(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots){
+    std::vector<unsigned> orderLenghts{};
+
+    for(auto& bot: otherBots){
+        if(bot.get().hasJob())
+            orderLenghts.push_back(bot.get().sizeOfStationPlan());
+    }
+
+    return element_joiner(orderLenghts, ", ", "{", "}");
+}
+
+std::string formatOrderStartLocs(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots){
+    std::vector<unsigned> otherLocations{};
+
+    for(auto& bot: otherBots){
+        if(bot.get().hasJob())
+            otherLocations.push_back(bot.get().getLastLocation());
+    }
+
+    return element_joiner(otherLocations, ", ", "{", "}");
+}
+
 std::string format_query(unsigned numOfPoint){
     std::vector<int> points(numOfPoint);
     std::iota(std::begin(points), std::end(points), 0);
