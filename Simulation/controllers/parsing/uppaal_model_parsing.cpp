@@ -7,10 +7,6 @@
 #include <cmath>
 
 
-std::string format_distance_matrix(const std::vector<std::vector<float>>& distance_matrix){
-    return combine_distance_lines(format_distance_lines(distance_matrix));
-}
-
 std::vector<abs_robot_info> get_robot_plans_and_positions(const std::vector<Robot> &robots, const Robot &currentRobot){
     // What we need from the other robots are:
     // - Their plan
@@ -132,24 +128,11 @@ std::string getStationDistanceMatrix(Map_Structure &map_structure){
     // Map_structure calculates all the fastests paths between all the stations.
     std::vector<std::vector<float>> distance_matrix = map_structure.floydShortestOfStations();
 
-    return format_distance_matrix(distance_matrix);
+    return formatMatrix(distance_matrix);
 }
 
-std::vector<std::vector<std::string>> format_distance_lines(const std::vector<std::vector<float>>& dist_matrix){
-    std::vector<std::vector<std::string>> distance_matrix_str{};
 
-    for(auto& line : dist_matrix){
-        std::vector<std::string> formatted_numbers{};
-        for(auto& number : line) {
-            formatted_numbers.push_back(std::to_string(number));
-        }
-        distance_matrix_str.push_back(formatted_numbers);
-    }
-
-    return distance_matrix_str;
-}
-
-std::string combine_distance_lines(const std::vector<std::vector<std::string>> &distance_values){
+std::string combineMatrixLines(const std::vector<std::vector<std::string>> &distance_values){
     // Temporary results of the lines in the matrix on string-form.
     std::vector<std::string> waited_matrix{};
 
@@ -196,7 +179,7 @@ std::string get_expanded_distance_matrix(Map_Structure &map_structure, const Poi
     }
     newDistMatrix.push_back(pointToStations);
 
-    return format_distance_matrix(newDistMatrix);
+    return formatMatrix(newDistMatrix);
 }
 
 std::string format_order(int numOfStations, std::set<int> order){
@@ -206,19 +189,6 @@ std::string format_order(int numOfStations, std::set<int> order){
 
     return formatted_order;
 }
-
-/*
-std::vector<int> convertIDsToBools(int size, std::vector<int> ids){
-    std::vector<int> verbatimOrder(size, 0);
-
-    for(int id = 0; id < size; id++){
-        if(std::find(ids.begin(), ids.end(), id) != ids.end())
-            verbatimOrder[id] = 1;
-    }
-
-    return verbatimOrder;
-}
-*/
 
 std::string format_endstations(int numOfStations, std::vector<int> endstationIDs){
     std::vector<int> verbatimOrder = convertIDsToBools(numOfStations, std::move(endstationIDs));
@@ -257,7 +227,7 @@ std::string formatStationOrderLenghts(const std::vector<std::reference_wrapper<S
 }
 
 std::string formatOrderStartLocs(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots){
-    std::vector<unsigned> otherLocations{};
+    std::vector<int> otherLocations{};
 
     for(auto& bot: otherBots){
         if(bot.get().hasJob())
@@ -265,6 +235,23 @@ std::string formatOrderStartLocs(const std::vector<std::reference_wrapper<Single
     }
 
     return element_joiner(otherLocations, ", ", "{", "}");
+}
+
+std::string formatOtherStationPlan(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations){
+    std::vector<std::vector<int>> plans{};
+
+    for(auto& bot: otherBots){
+        if(bot.get().hasJob()) {
+            std::vector<int> stationPlan{};
+            for (int station : bot.get().getStationPlan()) {
+                stationPlan.push_back(station);
+            }
+            stationPlan.resize(numOfStations);
+            plans.push_back(stationPlan);
+        }
+    }
+
+    return formatMatrix(plans);
 }
 
 std::string format_query(unsigned numOfPoint){

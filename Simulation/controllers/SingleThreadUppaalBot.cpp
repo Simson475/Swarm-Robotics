@@ -422,6 +422,10 @@ int SingleThreadUppaalBot::getLastLocation(){
     return lastLocation;
 }
 
+std::vector<int> SingleThreadUppaalBot::getStationPlan(){
+    return stationPlan;
+}
+
 void SingleThreadUppaalBot::setJob() {
     currentJob = jobGenerator->getNextJob();
 
@@ -455,7 +459,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
         numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size() + 1;
     }
     else {
-        matrix = format_distance_matrix(sMap.floydShortestOfStations());
+        matrix = formatMatrix(sMap.floydShortestOfStations());
         numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size();
     }
 
@@ -593,6 +597,13 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
                 line.replace(pos, std::string{"#OTHER_START_LOCS#"}.size(),
                              formatOrderStartLocs(otherBots));
             }
+
+            pos = line.find("#OTHER_PLANS#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_PLANS#"}.size(),
+                             formatOtherStationPlan(otherBots, numOfStations));
+            }
+
         }
         full_model << line << std::endl;
 
@@ -645,7 +656,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
 
         pos = line.find("#DISTANCE_MATRIX#");
         if(pos != std::string::npos){
-            line.replace(pos, std::string{"#DISTANCE_MATRIX#"}.size(), format_distance_matrix(matrix));
+            line.replace(pos, std::string{"#DISTANCE_MATRIX#"}.size(), formatMatrix(matrix));
         }
 
         pos = line.find("#END_STATIONS#");

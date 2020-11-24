@@ -75,6 +75,7 @@ std::string get_expanded_distance_matrix(Map_Structure &map_structure, const Poi
 std::vector<std::vector<float>> getDistanceMatrix(Map_Structure &map_structure);
 std::string formatStationOrderLenghts(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
 std::string formatOrderStartLocs(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
+std::string formatOtherStationPlan(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations);
 
 
 //********************************* Formatting functions:
@@ -105,21 +106,38 @@ std::vector<int> convertIDsToBools(int size, C ids){
     return verbatimOrder;
 }
 
+// Takes a matrix of values (std::to_string must work on the type) and convert the lines to a string.
+template <typename C>
+std::vector<std::vector<std::string>> formatMatrixLines(const std::vector<std::vector<C>> &dist_matrix){
+    std::vector<std::vector<std::string>> matrixStr{};
+
+    for(auto& line : dist_matrix){
+        std::vector<std::string> formatted_numbers{};
+        for(auto& number : line) {
+            formatted_numbers.push_back(std::to_string(number));
+        }
+        matrixStr.push_back(formatted_numbers);
+    }
+
+    return matrixStr;
+}
+
 
 // Gets distance Matrix between all stations.
 std::string getStationDistanceMatrix(Map_Structure &map_structure);
-// Formats the single rows of a matrix
-std::vector<std::vector<std::string>> format_distance_lines(const std::vector<std::vector<float>>& dist_matrix);
 // Formats and combine the rows of a matrix into a single formatted string.
-std::string combine_distance_lines(const std::vector<std::vector<std::string>> &distance_values);
-// Function for formatting an arbitrary distance matrix.
-std::string format_distance_matrix(const std::vector<std::vector<float>>& distance_matrix);
+std::string combineMatrixLines(const std::vector<std::vector<std::string>> &distance_values);
 // Function for formatting the order array
 std::string format_order(int numOfStations, std::set<int> order);
-// Function to convert a vector of IDs to a int (0's and 1's) vector where indexes indicate that the ID was present
-//std::vector<int> convertIDsToBools(int size, std::vector<int>);
 // Endstations formatting
 std::string format_endstations(int numOfStations, std::vector<int> endstationIDs);
 // Get the right number of entries in the query
 std::string format_query(unsigned numOfPoint);
+
+// Function for formatting an arbitrary matrix where the type has a std::to_string(C) function.
+template <typename C>
+std::string formatMatrix(const std::vector<std::vector<C>> &distance_matrix){
+    return combineMatrixLines(formatMatrixLines(distance_matrix));
+}
+
 #endif //SWARMSIMULATOR_UPPAAL_MODEL_PARSING_H

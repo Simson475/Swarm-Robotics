@@ -59,6 +59,7 @@ public:
     bool hasJob();
     unsigned int sizeOfStationPlan();
     int getLastLocation();
+    std::vector<int> getStationPlan();
 
 
 private:
