@@ -298,8 +298,15 @@ std::vector<int> SingleThreadUppaalBot::getStationPlan(std::string modelOutput) 
         m = *it;
         debug2 << m[0] << ": ->  "  << m[3] << std::endl;
 
+        //Needed for the initial creation of station plans.
+        int tmpLastLocation;
+        if(lastLocation >= sMap.stationIDs.size() + sMap.endStationIDs.size())
+            tmpLastLocation = sMap.stationIDs.size() + sMap.endStationIDs.size();
+        else
+            tmpLastLocation = lastLocation;
+
         if(m[1] != "0" && stationsVisited.find(std::stoi(m[3])) == stationsVisited.end()){
-            if(stationPlan.empty() && std::stoi(m[3]) == lastLocation) {
+            if(stationPlan.empty() && std::stoi(m[3]) == tmpLastLocation) {
                 continue;
             }
             stationPlan.push_back(std::stoi(m[3]));
