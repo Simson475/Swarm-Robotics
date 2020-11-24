@@ -61,6 +61,8 @@ public:
     int getLastLocation();
     std::vector<int> getStationPlan();
     std::set<int> getOrder();
+    std::vector<int> getWaypointPlan();
+    int getNextStation();
 
 
 private:
@@ -126,7 +128,6 @@ private:
     bool isStationNextInPlan(int);
     void resetWaypointPlan();
     void resetStationPlan();
-    int getNextStation();
     void log_helper(std::string message, bool newLine=true, bool printName=true);
 
 };

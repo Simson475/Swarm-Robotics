@@ -426,6 +426,10 @@ std::vector<int> SingleThreadUppaalBot::getStationPlan(){
     return stationPlan;
 }
 
+std::vector<int> SingleThreadUppaalBot::getWaypointPlan(){
+    return waypointPlan;
+}
+
 std::set<int> SingleThreadUppaalBot::getOrder(){
     return currentJob->getRemainingStations();
 }
@@ -617,8 +621,6 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
     }
 
     full_model.close();
-    if(numOfOtherActiveRobots(otherBots) > 0)
-        exit(0);
 }
 
 void SingleThreadUppaalBot::constructWaypointUppaalModel(){
@@ -721,23 +723,12 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
             line.replace(pos, std::string{"#END_AT_ENDSTATION#"}.size(), "true");
         }
 
-        pos = line.find("#OTHER_CREATION#");
-        if(pos != std::string::npos){
-            if(numOfOtherActiveRobots(otherBots) == 0)
-                line.replace(pos, std::string{"#OTHER_CREATION#"}.size(), "");
-            else {
-                throw std::logic_error{"Not implemented yet"};
-                line.replace(pos, std::string{"#OTHER_CREATION#"}.size(), "BLA");
-            }
-        }
-
         pos = line.find("#OTHER_IN_SYSTEM#");
         if(pos != std::string::npos){
             if(numOfOtherActiveRobots(otherBots) == 0)
                 line.replace(pos, std::string{"#OTHER_IN_SYSTEM#"}.size(), "");
             else {
-                throw std::logic_error{"Not implemented yet"};
-                line.replace(pos, std::string{"#OTHER_IN_SYSTEM#"}.size(), "BLA");
+                line.replace(pos, std::string{"#OTHER_IN_SYSTEM#"}.size(), "OtherRobot, ");
             }
         }
 
@@ -751,6 +742,35 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
                          "500");
+        }
+
+        //********************* Helper functions for when there are other active robots
+        if(numOfOtherActiveRobots(otherBots) > 0) {
+            int numOfStations = sMap.points.size();
+            pos = line.find("#OTHER_ORDER_LENGHT#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_ORDER_LENGHT#"}.size(),
+                             formatWaypointOrderLenghts(otherBots));
+            }
+
+            pos = line.find("#OTHER_START_LOCS#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_START_LOCS#"}.size(),
+                             formatOrtherWaypointStartLocs(otherBots));
+            }
+
+            pos = line.find("#OTHER_PLANS#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_PLANS#"}.size(),
+                             formatOtherWaypointPlan(otherBots, numOfStations));
+            }
+
+            pos = line.find("#OTHER_ORDERS#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_ORDERS#"}.size(),
+                             formatOtherWaypointOrders(otherBots, numOfStations));
+            }
+
         }
 
         waypoint_model << line << std::endl;
