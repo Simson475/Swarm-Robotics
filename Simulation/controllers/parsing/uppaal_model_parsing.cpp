@@ -254,6 +254,19 @@ std::string formatOtherStationPlan(const std::vector<std::reference_wrapper<Sing
     return formatMatrix(plans);
 }
 
+std::string formatOtherOrders(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations){
+    std::vector<std::vector<int>> orders{};
+
+    for(auto& bot: otherBots){
+        if(bot.get().hasJob()) {
+            std::vector<int> order = convertIDsToBools(numOfStations, bot.get().getOrder());
+            orders.push_back(order);
+        }
+    }
+
+    return formatMatrix(orders);
+}
+
 std::string format_query(unsigned numOfPoint){
     std::vector<int> points(numOfPoint);
     std::iota(std::begin(points), std::end(points), 0);

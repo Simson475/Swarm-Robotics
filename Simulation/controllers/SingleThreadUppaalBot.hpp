@@ -60,6 +60,7 @@ public:
     unsigned int sizeOfStationPlan();
     int getLastLocation();
     std::vector<int> getStationPlan();
+    std::set<int> getOrder();
 
 
 private:

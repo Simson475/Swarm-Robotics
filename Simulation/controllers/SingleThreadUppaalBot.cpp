@@ -426,6 +426,10 @@ std::vector<int> SingleThreadUppaalBot::getStationPlan(){
     return stationPlan;
 }
 
+std::set<int> SingleThreadUppaalBot::getOrder(){
+    return currentJob->getRemainingStations();
+}
+
 void SingleThreadUppaalBot::setJob() {
     currentJob = jobGenerator->getNextJob();
 
@@ -602,6 +606,12 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
             if (pos != std::string::npos) {
                 line.replace(pos, std::string{"#OTHER_PLANS#"}.size(),
                              formatOtherStationPlan(otherBots, numOfStations));
+            }
+
+            pos = line.find("#OTHER_ORDERS#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_ORDERS#"}.size(),
+                             formatOtherOrders(otherBots, numOfStations));
             }
 
         }
