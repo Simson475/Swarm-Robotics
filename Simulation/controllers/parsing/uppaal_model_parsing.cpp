@@ -226,12 +226,15 @@ std::string formatStationOrderLenghts(const std::vector<std::reference_wrapper<S
     return element_joiner(orderLenghts, ", ", "{", "}");
 }
 
-std::string formatOrderStartLocs(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots){
+std::string formatOrthersStartLocs(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots){
     std::vector<int> otherLocations{};
 
-    for(auto& bot: otherBots){
-        if(bot.get().hasJob())
-            otherLocations.push_back(bot.get().getLastLocation());
+    for(auto& bot: otherBots) {
+        //@todo: Must be fixed when they can work at stations.
+        if (bot.get().hasJob()){
+            //otherLocations.push_back(bot.get().getLastLocation());
+            otherLocations.push_back(0);
+        }
     }
 
     return element_joiner(otherLocations, ", ", "{", "}");

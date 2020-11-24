@@ -238,13 +238,13 @@ min_travel = get_min_travel_time()</label>
 #XML_COMMENT_START#
 	<template>
 		<name>OtherRobot</name>
-		<parameter>const other_bots_t id, const stations_t end_station</parameter>
+		<parameter>const other_bots_t id</parameter>
 		<declaration>// Place local declarations here
 //stations_t cur_station = 0;
-stations_t cur_station = start_locs[id];
+stations_t cur_station = 0;
 stations_t dest_station = 0;
 
-bool visited[order_lenghts[id]];
+bool visited[MAX_STATIONS];
 
 clock travel;
 int max_travel;
@@ -257,12 +257,23 @@ stations_t get_next_station(){
         if (!visited[i])
             return other_robots_plans[id][i];
     }
-    return end_station;
+
+    // THis would mean it looks for a next station when all is visited.
+    assert(false);
+    return 0;
 }
 
 
 bool is_done(){
-    return visited[order_lenghts[id] - 1];
+    int i;
+
+    for(i = 0; i &lt; order_lenghts[id]; i++){
+        if(!visited[i]) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 
@@ -277,7 +288,10 @@ void set_visited(){
             }
         }
     }
-    else
+}
+
+void updateFinish(){
+    if(is_done())
         finished = true;
 }
 
@@ -297,7 +311,10 @@ int get_min_travel_time(){
     return fint(floor(travel_time[cur_station][dest_station]));
 }
 
-</declaration>
+
+void setCurrentStation(){
+    cur_station = start_locs[id];
+}</declaration>
 		<location id="id6" x="-289" y="-26">
 			<name x="-323" y="-8">Idle</name>
 			<label kind="invariant" x="-272" y="-18">travel' == 0</label>
@@ -318,25 +335,34 @@ int get_min_travel_time(){
 		<location id="id10" x="-493" y="-25">
 			<label kind="invariant" x="-586" y="-25">travel' == 0</label>
 		</location>
-		<location id="id11" x="-289" y="85">
-			<name x="-348" y="77">Done</name>
+		<location id="id11" x="-221" y="119">
+			<name x="-280" y="111">Done</name>
 		</location>
-		<init ref="id6"/>
+		<location id="id12" x="-467" y="119">
+			<committed/>
+		</location>
+		<init ref="id12"/>
+		<transition controllable="false">
+			<source ref="id12"/>
+			<target ref="id6"/>
+			<label kind="assignment" x="-433" y="85">setCurrentStation()</label>
+		</transition>
 		<transition controllable="false">
 			<source ref="id6"/>
 			<target ref="id6"/>
-			<label kind="guard" x="-518" y="-212">!finished &amp;&amp;
+			<label kind="guard" x="-518" y="-229">!finished &amp;&amp;
 at_next_station() &amp;&amp;
 !loc_in_order()</label>
-			<label kind="assignment" x="-518" y="-161">set_visited()</label>
+			<label kind="assignment" x="-518" y="-178">set_visited(),
+updateFinish()</label>
 			<nail x="-484" y="-136"/>
 			<nail x="-365" y="-136"/>
 		</transition>
 		<transition controllable="false">
 			<source ref="id6"/>
 			<target ref="id11"/>
-			<label kind="guard" x="-280" y="25">finished</label>
-			<label kind="synchronisation" x="-280" y="42">complete!</label>
+			<label kind="guard" x="-246" y="42">finished</label>
+			<label kind="synchronisation" x="-246" y="51">complete!</label>
 		</transition>
 		<transition controllable="false">
 			<source ref="id6"/>
@@ -348,8 +374,9 @@ at_next_station() &amp;&amp;
 		<transition controllable="false">
 			<source ref="id10"/>
 			<target ref="id6"/>
-			<label kind="synchronisation" x="-501" y="-8">completed[cur_station][id]?</label>
-			<label kind="assignment" x="-501" y="8">set_visited()</label>
+			<label kind="synchronisation" x="-518" y="-8">completed[cur_station][id]?</label>
+			<label kind="assignment" x="-518" y="8">set_visited(),
+updateFinish()</label>
 		</transition>
 		<transition controllable="false">
 			<source ref="id6"/>
@@ -414,18 +441,18 @@ bots_t pop_queue(){
 
     return tmp;
 }</declaration>
-		<location id="id12" x="-85" y="8">
+		<location id="id13" x="-85" y="8">
 			<name x="-136" y="-25">Free</name>
 			<label kind="invariant" x="-153" y="25">work' == 0</label>
 		</location>
-		<location id="id13" x="144" y="8">
+		<location id="id14" x="144" y="8">
 			<name x="127" y="42">Occupied</name>
 			<label kind="invariant" x="134" y="25">work &lt;= 5</label>
 		</location>
-		<init ref="id12"/>
+		<init ref="id13"/>
 		<transition>
-			<source ref="id13"/>
-			<target ref="id13"/>
+			<source ref="id14"/>
+			<target ref="id14"/>
 			<label kind="select" x="238" y="-51">b : bots_t</label>
 			<label kind="synchronisation" x="238" y="-34">arrival[id][b]?</label>
 			<label kind="assignment" x="238" y="-17">add_to_queue(b)</label>
@@ -433,8 +460,8 @@ bots_t pop_queue(){
 			<nail x="229" y="8"/>
 		</transition>
 		<transition controllable="false">
-			<source ref="id13"/>
-			<target ref="id13"/>
+			<source ref="id14"/>
+			<target ref="id14"/>
 			<label kind="guard" x="76" y="-229">work == 5 &amp;&amp;
 queue_lenght &gt; 0</label>
 			<label kind="synchronisation" x="76" y="-195">completed[id][cur_bot]!</label>
@@ -444,8 +471,8 @@ cur_bot = pop_queue()</label>
 			<nail x="221" y="-127"/>
 		</transition>
 		<transition controllable="false">
-			<source ref="id13"/>
-			<target ref="id12"/>
+			<source ref="id14"/>
+			<target ref="id13"/>
 			<label kind="guard" x="-8" y="85">work == 5 &amp;&amp;
 queue_lenght == 0</label>
 			<label kind="synchronisation" x="-8" y="119">completed[id][cur_bot]!</label>
@@ -454,15 +481,15 @@ cur_bot = 0</label>
 			<nail x="25" y="76"/>
 		</transition>
 		<transition>
-			<source ref="id12"/>
-			<target ref="id13"/>
+			<source ref="id13"/>
+			<target ref="id14"/>
 			<label kind="select" x="-42" y="-59">b : bots_t</label>
 			<label kind="synchronisation" x="-42" y="-42">arrival[id][b]?</label>
 			<label kind="assignment" x="-42" y="-25">cur_bot = b</label>
 		</transition>
 	</template>
 	<system>// Place template instantiations here.
-#OTHER_CREATION#
+
 // List one or more processes to be composed into a system.
 system Robot, #OTHER_IN_SYSTEM# Station;
 //system Robot, Station;

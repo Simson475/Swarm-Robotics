@@ -481,8 +481,13 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
         if(pos != std::string::npos){
             //@todo: Make proper functions to encapsulate the number written!
             // The id matches the last index of the expanded DistMatrix.
-            line.replace(pos, std::string{"#CUR_STATION#"}.size(),
-                std::to_string(lastLocation));
+            if(lastLocation >= sMap.stationIDs.size() + sMap.endStationIDs.size()){
+                line.replace(pos, std::string{"#CUR_STATION#"}.size(),
+                             std::to_string(sMap.stationIDs.size() + sMap.endStationIDs.size()));
+            }
+            else
+                line.replace(pos, std::string{"#CUR_STATION#"}.size(),
+                    std::to_string(lastLocation));
         }
 
         pos = line.find("#OTHER_ROBOTS#");
@@ -516,6 +521,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
             else
                 line.replace(pos, std::string{"#XML_COMMENT_START#"}.size(), "");
         }
+
 
         pos = line.find("#XML_COMMENT_END#");
         if(pos != std::string::npos){
@@ -556,24 +562,15 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
             line.replace(pos, std::string{"#END_AT_ENDSTATION#"}.size(), "end_stations[s]");
         }
 
-        pos = line.find("#OTHER_CREATION#");
-        if(pos != std::string::npos){
-            if(numOfOtherActiveRobots(otherBots) == 0)
-                line.replace(pos, std::string{"#OTHER_CREATION#"}.size(), "");
-            else {
-                throw std::logic_error{"Not implemented yet"};
-                line.replace(pos, std::string{"#OTHER_CREATION#"}.size(), "BLA");
-            }
-        }
 
         pos = line.find("#OTHER_IN_SYSTEM#");
         if(pos != std::string::npos){
             if(numOfOtherActiveRobots(otherBots) == 0)
                 line.replace(pos, std::string{"#OTHER_IN_SYSTEM#"}.size(), "");
             else {
-                throw std::logic_error{"Not implemented yet"};
-                line.replace(pos, std::string{"#OTHER_IN_SYSTEM#"}.size(), "BLA");
+                line.replace(pos, std::string{"#OTHER_IN_SYSTEM#"}.size(), "OtherRobot, ");
             }
+
         }
 
         pos = line.find("#QUERY#");
@@ -599,7 +596,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
             pos = line.find("#OTHER_START_LOCS#");
             if (pos != std::string::npos) {
                 line.replace(pos, std::string{"#OTHER_START_LOCS#"}.size(),
-                             formatOrderStartLocs(otherBots));
+                             formatOrthersStartLocs(otherBots));
             }
 
             pos = line.find("#OTHER_PLANS#");
@@ -620,6 +617,8 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
     }
 
     full_model.close();
+    if(numOfOtherActiveRobots(otherBots) > 0)
+        exit(0);
 }
 
 void SingleThreadUppaalBot::constructWaypointUppaalModel(){

@@ -74,7 +74,7 @@ std::size_t numOfOtherActiveRobots(const std::vector<std::reference_wrapper<Sing
 std::string get_expanded_distance_matrix(Map_Structure &map_structure, const Point &point);
 std::vector<std::vector<float>> getDistanceMatrix(Map_Structure &map_structure);
 std::string formatStationOrderLenghts(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
-std::string formatOrderStartLocs(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
+std::string formatOrthersStartLocs(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
 std::string formatOtherStationPlan(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations);
 std::string formatOtherOrders(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations);
 
