@@ -128,127 +128,8 @@ Point& Map_Structure::getPointByID(int id){
     throw std::invalid_argument("Point not found");
 }
 
-void Map_Structure::createStaticJSON() {
-    nlohmann::json jsonObj;
 
 
-    jsonObj["station_delay"] = 6;
-    jsonObj["waypoint_delay"] = 3;
-    jsonObj["uncertainty"] = 1.1;
-
-    //std::vector<std::pair<float,float>> xypoints;
-    std::vector<std::vector<double>> xypoints;
-    std::vector<int> dropIds;
-    std::vector<int> contIds;
-
-    for (Point p : Map_Structure::points) {
-        if (p.getType() == pointType::endpoint) {
-            dropIds.push_back(p.getId());
-            std::vector<double> xy;
-            xy.push_back(p.getX());
-            xy.push_back(p.getY());
-            xypoints.push_back(xy);
-        }
-        if (p.getType() == pointType::station) {
-            contIds.push_back(p.getId());
-            std::vector<double> xy;
-            xy.push_back(p.getX());
-            xy.push_back(p.getY());
-            xypoints.push_back(xy);
-        }
-    }
-    jsonObj["end_stations"] = dropIds;
-
-    jsonObj["station_distance_matrix"] =
-        floydShortestOfStations();
-
-    jsonObj["stations"] = contIds;
-    std::vector<std::vector<int>> shortestp;
-    for (long unsigned i = 0; i < points.size(); i ++) {
-        std::vector<int> tmp;
-        for (long unsigned j = 0; j < points.size(); j ++) {
-            if(i != j)
-                tmp.push_back(findPath(points[i].getId(), points[j].getId())[0].getId());
-            else
-                tmp.push_back(points[i].getId());
-        }
-        shortestp.push_back(tmp);
-    }
-    jsonObj["shortest_paths"] = shortestp;
-    std::vector<int> vias;
-    for (auto & point : Map_Structure::points) {
-        if (point.getType() == pointType::via) {
-            vias.push_back(point.getId());
-            std::vector<double> xy;
-            xy.push_back(point.getX());
-            xy.push_back(point.getY());
-            xypoints.push_back(xy);
-
-        }
-    }
-    jsonObj["vias"] = vias;
-    jsonObj["coordinates"] = xypoints;
-    // collect all the wayPoints in 2 dimensions
-    int sizeLines = sqrt(Map_Structure::lines.size()); //@todo: Make 2-dimentional to begin with.
-
-    std::vector<std::vector<int>> waypointsDistances(sizeLines, std::vector<int>());
-
-    int k = -1;
-    for (long unsigned i = 0; i < Map_Structure::lines.size(); i++) {
-        if (i % sizeLines == 0)
-            k++;
-        if(Map_Structure::lines[i].GetDistance()==-1){
-            waypointsDistances[k].push_back(Map_Structure::lines[i].GetDistance());
-        }else waypointsDistances[k].push_back(Map_Structure::lines[i].GetDistance()/(double)VELOCITY*100);
-    }
-    jsonObj["waypoint_distance_matrix"] = waypointsDistances;
-
-    // creation of waypoints json Object
-    for (long unsigned i = 0; i < Map_Structure::points.size(); i++) {
-        for (long unsigned j = 0; j < Map_Structure::lines.size(); j++) {
-            if (Map_Structure::points[i].getId() ==
-                Map_Structure::lines[j].Geta().getId()) {
-                if (Map_Structure::lines[j].GetDistance() != -1)
-                    Map_Structure::points[i].pushAdjID(
-                        Map_Structure::lines[j].Getb().getId());
-            } else
-                break;
-        }
-    }
-    std::vector<nlohmann::json> waypoints;
-    for (long unsigned i = 0; i < Map_Structure::points.size(); i++) {
-        nlohmann::json wayPoint;
-        wayPoint["adjList"] = Map_Structure::points[i].getAdjIDs();
-        wayPoint["id"] = Map_Structure::points[i].getId();
-        switch (Map_Structure::points[i].getType()) {
-            case 0:
-                wayPoint["type"] = "vias";
-                break;
-            case 1:
-                wayPoint["type"] = "endpoint";
-                break;
-            case 2:
-                wayPoint["type"] = "station";
-                break;
-        }
-        wayPoint["x"] = Map_Structure::points[i].GetX();
-        wayPoint["y"] = Map_Structure::points[i].GetY();
-        waypoints.push_back(wayPoint);
-    }
-    jsonObj["waypoints"] = waypoints;
-    // create static_config for each robot
-    std::cout << "Set static for robot" << std::endl;
-    for (long unsigned i = 0; i < Map_Structure::Robots.size(); i++) {
-
-        std::string tmp = folderPath +
-                          Map_Structure::Robots[i].getfootBot()->GetId() + "/";
-        std::cout << tmp <<std::endl;
-        std::ofstream out(tmp + "static_config.json");
-        out << std::setw(4) << jsonObj;
-
-        //out << jsonObj;
-    }
-}
 // Combines from all the points all possibleMap_Structure::lines
 void Map_Structure::setAllPossibleLines() {
     for (auto& point_a : Map_Structure::points) {
@@ -348,15 +229,8 @@ void Map_Structure::initializeStations() {
             endStationIDs.push_back(points[i].getId());
     }
 }
-void Map_Structure::initializeJobs() {
-    // get all the points defined in JSON file
-    std::cout << folderPath +"jobs.json" <<std::endl;
-    std::ifstream i(folderPath +"jobs.json");
-    nlohmann::json j = nlohmann::json::parse(i);
-    for (long unsigned i = 0; i < j.size(); i++) {
-        jobs.push_back(j[i].value("job", std::vector<int>(0)));
-    }
-}
+
+
 void Map_Structure::createFolderForEachRobot() {
     for (long unsigned i = 0; i < Robots.size(); i++) {
 
@@ -376,35 +250,6 @@ void Map_Structure::setFolderPath() {
         folderPath = "/";
     }
     std::cout << folderPath <<std::endl;
-}
-
-void Map_Structure::generateJobs() {
-    //************creates random jobs in json file************
-    std::random_device rd;  // obtain a random number from hardware
-    std::mt19937 eng(rd()); // seed the generator
-    std::uniform_int_distribution<> distr(2, 11);   // define the range of stations ids
-    std::uniform_int_distribution<> distrEnd(2, 3); // define the range of how many stations to visit
-    std::uniform_int_distribution<> endPoints(0, 1);//define end points ids
-    nlohmann::json mainJsonObj;
-    for (auto i = 0; i < 100; i++){
-        nlohmann::json jsonObj;
-        jsonObj["job_id"] = i;
-        std::vector<nlohmann::json> stationsToVisit;
-        int amountPickups = distrEnd(eng);
-        for (auto j = 0; j < amountPickups ;j++) {
-            int temp = distr(eng);
-            bool check = true;
-            for(auto& station: stationsToVisit){
-                if(station == temp){ check = false;break;}}
-            if(check)stationsToVisit.push_back(temp);
-        }
-        //stationsToVisit.push_back(endPoints(eng));
-        jsonObj["job"] = stationsToVisit;
-        mainJsonObj.push_back(jsonObj);
-    }
-    Map_Structure sMap = Map_Structure::get_instance();
-    std::ofstream out(sMap.folderPath + "/jobs.json");
-    out << std::setw(4) << mainJsonObj;
 }
 
 //Check if there are more jobs

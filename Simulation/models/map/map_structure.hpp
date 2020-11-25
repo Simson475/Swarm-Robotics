@@ -41,11 +41,6 @@ public:
     int timesUppaalFailed = 0;
     int totalTries = 0;
 
-
-    const std::vector<Line>& get_lines() const {
-        return lines;
-    }
-
     //ensurance that the class is created only once
     static Map_Structure &get_instance() {
         static Map_Structure instance;
@@ -69,8 +64,6 @@ public:
     //collects all waypoints from the map including station/ end point/ via/ start locations
     void collectAllWayPoints();
 
-    //creates a static_config.json file with all the relevant data
-    void createStaticJSON();
 
     //usage of Floyd-Warshall Algorithm for shortest paths between each via
     std::vector<std::vector<float>> floydShortestOfStations() ;
@@ -89,14 +82,8 @@ public:
     //collects all the stations from experiment/scene2/points.json
     void initializeStations();
 
-    //collects all the stations from experiment/scene2/points.json
-    void initializeJobs();
-
     //creates for each simulated robot a folder, where one stores it's config files
     void createFolderForEachRobot();
-
-    // Generates the jobs
-    void generateJobs();
 
     // Sets up the distance matrix for all paths
     void setDistanceMatrix();
