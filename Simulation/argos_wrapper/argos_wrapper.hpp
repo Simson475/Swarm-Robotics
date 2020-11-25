@@ -5,11 +5,10 @@
 #ifndef SWARMSIMULATOR_ARGOS_WRAPPER_H
 #define SWARMSIMULATOR_ARGOS_WRAPPER_H
 
-#include <cmath>
+#include "models/map/map_structure.hpp"
+/* Definition of the CCI_Controller class. */
+#include "argos3/core/control_interface/ci_controller.h"
 
-#include "models/robot/robot.hpp"
-#include "argos3/core/utility/math/vector3.h"
-
-double get_distance_to_latest_point(const Robot& robot);
+double getDistanceToNextPoint(const argos::CCI_Controller& controller, Map_Structure map_structure, int nextPoint);
 
 #endif //SWARMSIMULATOR_ARGOS_WRAPPER_H

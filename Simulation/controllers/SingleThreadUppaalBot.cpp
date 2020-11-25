@@ -4,6 +4,7 @@
 
 #include "SingleThreadUppaalBot.hpp"
 #include "parsing/uppaal_model_parsing.hpp"
+#include "argos_wrapper/argos_wrapper.hpp"
 
 #include <exception>
 #include <cstdio>
