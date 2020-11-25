@@ -14,10 +14,6 @@
 #include <random>
 #include <limits>
 
-
-// performs all the actions only once, upon start of the program.
-#define newJobs true
-
 class Map_Structure {
 private:
     // Shortest distance between each point
@@ -34,12 +30,8 @@ public:
     std::vector<int> endStationIDs;
     std::vector<int> waypointsIDs;
     std::vector<Robot> Robots;
-    std::vector<std::vector<int>> jobs;
     //shortest paths between each point
     std::vector<std::vector<int>> shortestPath;
-    //counters to figure how often uppaal was too slow
-    int timesUppaalFailed = 0;
-    int totalTries = 0;
 
     //ensurance that the class is created only once
     static Map_Structure &get_instance() {
@@ -87,12 +79,6 @@ public:
 
     // Sets up the distance matrix for all paths
     void setDistanceMatrix();
-
-    //Check if there are more jobs
-    bool allJobsCompleted();
-
-    // Get next job
-    std::vector<int> getNextJob();
 
 private:
 //private constructor ensuring that only one instance is being created of the class

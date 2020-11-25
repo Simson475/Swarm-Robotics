@@ -141,11 +141,11 @@ void Map_Structure::setAllPossibleLines() {
     eliminateBadLines();
 }
 
-float cross(argos::CVector3 a, argos::CVector3 b) {
+double cross(argos::CVector3 a, argos::CVector3 b) {
     return a.GetX() * b.GetY() - a.GetY() * b.GetX();
 }
 
-float dot(argos::CVector3 a, argos::CVector3 b) {
+double dot(argos::CVector3 a, argos::CVector3 b) {
     return a.GetX() * b.GetX() + a.GetY() * b.GetY();
 }
 
@@ -251,16 +251,3 @@ void Map_Structure::setFolderPath() {
     }
     std::cout << folderPath <<std::endl;
 }
-
-//Check if there are more jobs
-bool Map_Structure::allJobsCompleted(){
-    return jobs.empty();
-};
-
-// Get next job
-std::vector<int> Map_Structure::getNextJob(){
-    std::vector<int> job{jobs.front()};
-    jobs.erase(jobs.begin());
-
-    return job;
-};
