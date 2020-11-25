@@ -11,6 +11,7 @@
 #include <fstream>
 #include <set>
 #include <iostream>
+#include <filesystem>
 
 SingleThreadUppaalBot::SingleThreadUppaalBot():
     m_pcWheels(NULL),

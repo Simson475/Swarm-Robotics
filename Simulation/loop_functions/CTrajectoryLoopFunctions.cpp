@@ -34,8 +34,6 @@ void CTrajectoryLoopFunctions::Init(argos::TConfigurationNode &t_tree) {
     sMap.setAllPossibleLines();
     std::cout << "Calculating Distance Matrix" << std::endl;
     sMap.setDistanceMatrix();
-    std::cout << "Create JSON" << std::endl;
-    sMap.createStaticJSON();
 
     std::cout << "Setting JobGenerator in controllers" << std::endl;
     initJobGenerator();
@@ -75,7 +73,7 @@ void CTrajectoryLoopFunctions::initJobGenerator(){
     for(auto id : sMap.endStationIDs)
         endStationIDs.insert(id);
 
-    jobGenerator = std::make_shared<JobGenerator>(JobGenerator(numOfStations, endStationIDs, 10));
+    jobGenerator = std::make_shared<JobGenerator>(JobGenerator(numOfStations, endStationIDs, 2));
 };
 
 void CTrajectoryLoopFunctions::assignJobGeneratorToControllers() {

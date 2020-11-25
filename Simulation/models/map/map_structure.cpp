@@ -129,11 +129,6 @@ Point& Map_Structure::getPointByID(int id){
 }
 
 void Map_Structure::createStaticJSON() {
-
-    configure_static_settings_of_Uppaal_model(Map_Structure::get_instance());
-
-    //return;
-
     nlohmann::json jsonObj;
 
 

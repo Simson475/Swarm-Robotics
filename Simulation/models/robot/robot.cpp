@@ -1,6 +1,5 @@
 #include "robot.hpp"
 #include "models/map/map_structure.hpp"
-#include "controllers/parsing/uppaal_model_parsing.hpp"
 
 Robot::Robot(argos::CFootBotEntity *footBot, Point *initialLoc) {
     initialLocation = initialLoc;
@@ -274,11 +273,6 @@ void Robot::converJSONStation(std::string robotId, std::string choice) {
         if (choice == "Waypoints")
             waypointPath.push_back(simExpression);
     }
-}
-
-std::string Robot::createDynamicJson2(std::vector<Robot> &robots, Robot &currentRobot, bool stations){
-
-    return constructUppaalModel(robots, currentRobot, stations);
 }
 
 
