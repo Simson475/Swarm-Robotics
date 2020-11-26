@@ -63,7 +63,7 @@ std::string format_order(int numOfStations, std::set<int> order){
     return formatted_order;
 }
 
-std::string format_endstations(int numOfStations, std::vector<int> endstationIDs){
+std::string format_endstations(int numOfStations, std::set<int> endstationIDs){
     std::vector<int> verbatimOrder = convertIDsToBools(numOfStations, std::move(endstationIDs));
 
     std::string formatted_endstations = element_joiner(verbatimOrder, ", ", "{", "}");

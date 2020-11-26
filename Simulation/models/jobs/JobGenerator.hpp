@@ -30,6 +30,7 @@ public:
     bool anyJobsLeft();
     bool allJobsCompleted();
     std::unique_ptr<Job> getNextJob();
+    std::unique_ptr<Job> generateGetHomeJob(int location);
     void completedJob();
 };
 

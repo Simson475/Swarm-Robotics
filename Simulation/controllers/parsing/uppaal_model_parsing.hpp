@@ -80,7 +80,7 @@ std::string combineMatrixLines(const std::vector<std::vector<std::string>> &dist
 // Function for formatting the order array
 std::string format_order(int numOfStations, std::set<int> order);
 // Endstations formatting
-std::string format_endstations(int numOfStations, std::vector<int> endstationIDs);
+std::string format_endstations(int numOfStations, std::set<int> endstationIDs);
 // Get the right number of entries in the query
 std::string format_query(unsigned numOfPoint);
 

@@ -6,6 +6,7 @@
 
 class JobBlueprint {
 public:
+
     JobBlueprint(std::set<int> stationsToVisit, std::set<int> endStations) :
         stationsToVisit(std::move(stationsToVisit)),
         endStations(std::move(endStations)) {}
@@ -13,9 +14,14 @@ public:
     virtual std::set<int> getRemainingStations(){
         throw std::logic_error("Calls base function 'getRemainingStations' of JobBlueprint.");
     }
+
     virtual void visitedStation(int stationID){
         throw std::logic_error("Calls base function 'visitedStation' of JobBlueprint.");
     };
+
+    virtual void markAsCompleted(){
+        throw std::logic_error("Calls base function 'markAsCompleted' of JobBlueprint.");
+    }
 
     virtual ~JobBlueprint() = default;
 
@@ -30,6 +36,10 @@ public:
 
     virtual bool isCompleted() {
         return completed;
+    }
+
+    std::set<int> getEndStations(){
+        return endStations;
     }
 
 protected:

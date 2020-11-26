@@ -113,16 +113,19 @@ void SingleThreadUppaalBot::ControlStep(){
 
     if(!hasJob() || jobCompleted()) {
         if(jobCompleted()) {
-            jobGenerator->completedJob();
+            currentJob->markAsCompleted();
             clearJob();
         }
         if(jobGenerator->anyJobsLeft()) {
             log_helper("Sets job");
             setJob();
         }
+        else if(lastLocation != initLocation){
+            setFinalJob();
+        }
     }
 
-    if(hasJob() && stationPlan.empty()) //@todo: Have proper boolean function
+    if(hasJob() && stationPlan.empty() && !returningToInit) //@todo: Have proper boolean function
     {
         log_helper("Constructs Station model");
         constructStationUppaalModel();
@@ -132,6 +135,9 @@ void SingleThreadUppaalBot::ControlStep(){
 
         setStationPlan(stationPlan);
         log_helper("Next station is now: " + std::to_string(getNextStation()));
+    }
+    else if(stationPlan.empty() && lastLocation != initLocation && returningToInit){
+        setStationPlan(std::vector<int>{initLocation});
     }
 
 
@@ -456,12 +462,26 @@ void SingleThreadUppaalBot::setJob() {
     log_helper("", true, false);
 }
 
+void SingleThreadUppaalBot::setFinalJob() {
+    currentJob = jobGenerator->generateGetHomeJob(initLocation);
+    returningToInit = true;
+
+    log_helper("Final job set");
+
+    log_helper("Job is now: ", false);
+    for(int j : currentJob->getRemainingStations()){
+        log_helper(std::to_string(j) + " ", false, false);
+    }
+    log_helper("", true, false);
+}
+
 void SingleThreadUppaalBot::setNextLocation(int locationID){
     nextLocation = locationID;
 }
 
 void SingleThreadUppaalBot::setInitLocation(int locationID){
     lastLocation = locationID;
+    initLocation = locationID;
 }
 
 void SingleThreadUppaalBot::constructStationUppaalModel(){
@@ -525,7 +545,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
         pos = line.find("#END_STATIONS#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#END_STATIONS#"}.size(),
-                format_endstations(numOfStations, sMap.endStationIDs));
+                format_endstations(numOfStations, currentJob->getEndStations()));
         }
 
         pos = line.find("#XML_COMMENT_START#");
@@ -687,7 +707,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
         pos = line.find("#END_STATIONS#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#END_STATIONS#"}.size(),
-                         format_endstations(matrix.size(), sMap.endStationIDs));
+                         format_endstations(matrix.size(), currentJob->getEndStations()));
         }
 
         pos = line.find("#XML_COMMENT_START#");

@@ -107,6 +107,8 @@ private:
     std::vector<std::reference_wrapper<SingleThreadUppaalBot>> otherBots{};
     int nextLocation;
     int lastLocation;
+    int initLocation;
+    bool returningToInit;
 
     //**************** ControlStep functionality
     void constructStationUppaalModel();
@@ -119,6 +121,7 @@ private:
 
     void constructWaypointUppaalModel();
     void setJob();
+    void setFinalJob();
     void clearJob();
     bool jobCompleted();
 

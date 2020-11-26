@@ -2,8 +2,10 @@
 
 #include <exception>
 
-Job::Job(std::set<int> stationsToVisit, std::set<int> endStations) :
-    JobBlueprint(std::move(stationsToVisit), std::move(endStations)) {}
+Job::Job(std::set<int> stationsToVisit, std::set<int> endStations, std::function<void()> callBack) :
+    JobBlueprint(std::move(stationsToVisit), std::move(endStations)) {
+    this->callBackFunction = callBack;
+}
 
 
 std::set<int> Job::getRemainingStations() {
@@ -17,4 +19,8 @@ void Job::visitedStation(int stationID) {
         completed = true;
     else
         throw std::invalid_argument("Tried to remove stations not part of the station plan.");
+}
+
+void Job::markAsCompleted(){
+    callBackFunction();
 }
