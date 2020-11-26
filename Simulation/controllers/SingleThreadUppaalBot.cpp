@@ -176,6 +176,9 @@ int SingleThreadUppaalBot::getNextStation(){
     return stationPlan.front();
 }
 
+int SingleThreadUppaalBot::getNextWaypoint(){
+    return waypointPlan.front();
+}
 
 void SingleThreadUppaalBot::setJobGenerator(std::shared_ptr<JobGenerator> jobGenerator){
     this->jobGenerator = jobGenerator;
@@ -624,6 +627,12 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
                              formatOtherOrders(otherBots, numOfStations));
             }
 
+            pos = line.find("#OTHER_DISTANCES#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_DISTANCES#"}.size(),
+                             formatOtherStationDistances(otherBots, sMap));
+            }
+
         }
         full_model << line << std::endl;
 
@@ -780,6 +789,11 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
                              formatOtherWaypointOrders(otherBots, numOfStations));
             }
 
+            pos = line.find("#OTHER_DISTANCES#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_DISTANCES#"}.size(),
+                             formatOtherStationDistances(otherBots, sMap));
+            }
         }
 
         waypoint_model << line << std::endl;

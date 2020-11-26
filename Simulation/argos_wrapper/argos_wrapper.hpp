@@ -9,6 +9,7 @@
 /* Definition of the CCI_Controller class. */
 #include "argos3/core/control_interface/ci_controller.h"
 
-double getDistanceToNextPoint(const argos::CCI_Controller& controller, Map_Structure map_structure, int nextPoint);
+double getDistanceToNextPoint(const argos::CCI_Controller& controller, Map_Structure& map_structure, int nextPoint);
+double getDistanceBetweenPoints(Map_Structure& map_structure, std::vector<int> points);
 
 #endif //SWARMSIMULATOR_ARGOS_WRAPPER_H

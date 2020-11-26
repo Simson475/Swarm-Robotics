@@ -63,6 +63,7 @@ public:
     std::set<int> getOrder();
     std::vector<int> getWaypointPlan();
     int getNextStation();
+    int getNextWaypoint();
 
 
 private:

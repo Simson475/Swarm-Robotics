@@ -3,6 +3,7 @@
 //
 
 #include "uppaal_model_parsing.hpp"
+#include "argos_wrapper/argos_wrapper.hpp"
 
 #include <cmath>
 
@@ -182,6 +183,33 @@ std::string formatOtherOrders(const std::vector<std::reference_wrapper<SingleThr
     }
 
     return formatMatrix(orders);
+}
+
+std::string formatOtherStationDistances(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, Map_Structure map_structure){
+    std::vector<double> distances{};
+
+    for(auto& bot: otherBots){
+        if(bot.get().hasJob()) {
+            double dist = getDistanceToNextPoint(bot.get(), map_structure, bot.get().getNextWaypoint());
+            dist += getDistanceBetweenPoints(map_structure, bot.get().getWaypointPlan());
+            distances.push_back(dist);
+        }
+    }
+
+    return element_joiner(distances, ", ", "{", "}");
+}
+
+std::string formatOtherWaypointDistances(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, Map_Structure map_structure){
+    std::vector<double> distances{};
+
+    for(auto& bot: otherBots){
+        if(bot.get().hasJob()) {
+            double dist = getDistanceToNextPoint(bot.get(), map_structure, bot.get().getNextWaypoint());
+            distances.push_back(dist);
+        }
+    }
+
+    return element_joiner(distances, ", ", "{", "}");
 }
 
 std::string formatOtherWaypointOrders(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations){
