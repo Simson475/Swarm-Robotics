@@ -16,7 +16,7 @@
 
 // Helper_functions
 std::size_t numOfOtherActiveRobots(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>>&);
-std::string get_expanded_distance_matrix(Map_Structure &map_structure, const Point &point);
+std::string get_expanded_distance_matrix(Map_Structure &map_structure, int p_id);
 std::vector<std::vector<float>> getDistanceMatrix(Map_Structure &map_structure);
 std::string formatStationOrderLenghts(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
 std::string formatOrthersStartLocs(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);

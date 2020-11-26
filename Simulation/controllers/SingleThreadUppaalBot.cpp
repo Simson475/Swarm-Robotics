@@ -468,14 +468,12 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/station_planning_blueprint.xml"};
     std::ofstream full_model{std::string{std::filesystem::current_path()} + "/initial_model.xml"};
 
-    Robot self = sMap.getRobotByName(m_strId);
-
     // This is the Uppaal model for the initial strategy.
     std::string line;
     int numOfStations;
     std::string matrix;
     if(lastLocation >= sMap.stationIDs.size() + sMap.endStationIDs.size()){
-        matrix = get_expanded_distance_matrix(sMap, self.getInitialLoc());
+        matrix = get_expanded_distance_matrix(sMap, lastLocation);
         numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size() + 1;
     }
     else {
@@ -644,8 +642,6 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
 void SingleThreadUppaalBot::constructWaypointUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/station_planning_blueprint.xml"};
     std::ofstream waypoint_model{std::string{std::filesystem::current_path()} + "/waypoint_model.xml"};
-
-    Robot self = sMap.getRobotByName(m_strId);
 
     // This is the Uppaal model for the initial strategy.
     std::string line;

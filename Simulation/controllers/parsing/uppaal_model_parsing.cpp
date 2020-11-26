@@ -35,12 +35,10 @@ std::size_t numOfOtherActiveRobots(const std::vector<std::reference_wrapper<Sing
 }
 
 // Gets the distances between all stations and the point given as argument
-std::string get_expanded_distance_matrix(Map_Structure &map_structure, const Point &point){
+std::string get_expanded_distance_matrix(Map_Structure &map_structure, int p_id){
     // Copies the full distance matrix and the short distance between stations.
     const std::vector<std::vector<float>>& fullDistMatrix = map_structure.getShortestDistanceMatrix();
     std::vector<std::vector<float>> newDistMatrix = map_structure.floydShortestOfStations();
-
-    int p_id = point.getId();
 
     // Adds the distance from stations to point.
     for(std::size_t i = 0; i < newDistMatrix.size(); i++){
