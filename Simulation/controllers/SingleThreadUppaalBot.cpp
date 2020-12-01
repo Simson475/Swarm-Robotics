@@ -200,7 +200,7 @@ int SingleThreadUppaalBot::getNextWaypoint(){
 }
 
 void SingleThreadUppaalBot::setJobGenerator(std::shared_ptr<JobGenerator> jobGenerator){
-    this->jobGenerator = jobGenerator;
+    this->jobGenerator = std::move(jobGenerator);
 }
 
 bool SingleThreadUppaalBot::jobCompleted(){
@@ -236,8 +236,8 @@ void SingleThreadUppaalBot::movementLogic(){
     argos::CRadians a,c,b;
     tPosReads.Orientation.ToEulerAngles(a,b,c);
 
-    float oy = sin(a.GetValue());
-    float ox = cos(a.GetValue());
+    double oy = sin(a.GetValue());
+    double ox = cos(a.GetValue());
     argos::CVector3 Ori(ox,oy,0);
     argos::CVector3 newOri = nextPoint - tPosReads.Position; // Direct Access to Map
     newOri.Normalize();
@@ -254,7 +254,7 @@ void SingleThreadUppaalBot::movementLogic(){
 
 }
 
-void SingleThreadUppaalBot::movementHelper(double per, double dotProd, float velocity){
+void SingleThreadUppaalBot::movementHelper(double per, double dotProd, double velocity){
     const argos::CCI_FootBotProximitySensor::TReadings& tProxReads = m_pcProximity->GetReadings();
     argos::CVector2 cAccumulator;
     for(size_t i = 0; i < tProxReads.size(); ++i){
@@ -391,17 +391,17 @@ std::vector<int> SingleThreadUppaalBot::getWaypointPlan(std::string modelOutput)
 }
 
 void SingleThreadUppaalBot::setStationPlan(std::vector<int> stationPlan){
-    this->stationPlan = stationPlan;
+    this->stationPlan = std::move(stationPlan);
 }
 
 void SingleThreadUppaalBot::setWaypointPlan(std::vector<int> waypointPlan){
-    this->waypointPlan = waypointPlan;
+    this->waypointPlan = std::move(waypointPlan);
 }
 
 std::string SingleThreadUppaalBot::runStationModel(){
     std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
     //std::string verifyta{"~/phd/Uppaal/uppaal64-4.1.20-stratego-7/bin-Linux/verifyta"};
-    std::string model{"./initial_model.xml"};
+    std::string model{"./station_model.xml"};
 
     std::string terminalCommand = verifyta + " " + model;
 
@@ -412,7 +412,7 @@ std::string SingleThreadUppaalBot::runStationModel(){
     stream = popen(terminalCommand.c_str(), "r");
     if (stream) {
         while (!feof(stream))
-            if (fgets(buffer, max_buffer, stream) != NULL) result.append(buffer);
+            if (fgets(buffer, max_buffer, stream) != nullptr) result.append(buffer);
         pclose(stream);
     }
 
@@ -433,7 +433,7 @@ std::string SingleThreadUppaalBot::runWaypointModel(){
     stream = popen(terminalCommand.c_str(), "r");
     if (stream) {
         while (!feof(stream))
-            if (fgets(buffer, max_buffer, stream) != NULL) result.append(buffer);
+            if (fgets(buffer, max_buffer, stream) != nullptr) result.append(buffer);
         pclose(stream);
     }
 
@@ -515,12 +515,12 @@ void SingleThreadUppaalBot::advanceClock(){
     clock++;
 
     if (clock > clockLimit)
-        throw new std::logic_error("Working clock exceeds the limit of work to do.");
+        throw std::logic_error("Working clock exceeds the limit of work to do.");
 }
 
 void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/station_planning_blueprint.xml"};
-    std::ofstream full_model{std::string{std::filesystem::current_path()} + "/initial_model.xml"};
+    std::ofstream full_model{std::string{std::filesystem::current_path()} + "/station_model.xml"};
 
     // This is the Uppaal model for the initial strategy.
     std::string line;

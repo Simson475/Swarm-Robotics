@@ -136,7 +136,7 @@ private:
 
     void setNextLocation(int);
     void movementLogic();
-    void movementHelper(double per, double dotProd, float velocity);
+    void movementHelper(double per, double dotProd, double velocity);
     bool isAtStation();
     bool isStationNextInPlan(int);
     void resetWaypointPlan();
