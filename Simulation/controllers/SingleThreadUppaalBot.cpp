@@ -115,6 +115,7 @@ void SingleThreadUppaalBot::ControlStep(){
                     log_helper("Sets job");
                     setJob();
                 } else if (lastLocation != initLocation) {
+                    log_helper("Sets final job");
                     setFinalJob();
                 }
             }
@@ -145,8 +146,6 @@ void SingleThreadUppaalBot::ControlStep(){
                 setNextLocation(waypointPlan.front());
                 log_helper("Going towards " + std::to_string(nextLocation));
             }
-
-            movementLogic();
         }
     }
     else if(currentState == state::working){
@@ -166,6 +165,8 @@ void SingleThreadUppaalBot::ControlStep(){
             advanceClock();
         }
     }
+
+    movementLogic();
 }
 
 //Sets the vector of references of all the other robots in the system.

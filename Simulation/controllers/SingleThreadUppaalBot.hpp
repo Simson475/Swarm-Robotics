@@ -113,7 +113,7 @@ private:
     int nextLocation;
     int lastLocation;
     int initLocation;
-    bool returningToInit;
+    bool returningToInit = false;
 
     // Used as a clock counter for when working at stations
     int clock;
