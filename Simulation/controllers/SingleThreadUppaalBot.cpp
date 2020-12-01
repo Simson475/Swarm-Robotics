@@ -484,6 +484,27 @@ void SingleThreadUppaalBot::setInitLocation(int locationID){
     initLocation = locationID;
 }
 
+bool SingleThreadUppaalBot::isDoneWorking(){
+    return clock >= clockLimit;
+}
+
+void SingleThreadUppaalBot::startWorking(int clockLimit){
+    clock = 0;
+    this->clockLimit = clockLimit;
+    currentState = state::working;
+}
+
+void SingleThreadUppaalBot::setWorkAsComplete(){
+    currentState = state::moving;
+}
+
+void SingleThreadUppaalBot::advanceClock(){
+    clock++;
+
+    if (clock > clockLimit)
+        throw new std::logic_error("Working clock exceeds the limit of work to do.");
+}
+
 void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/station_planning_blueprint.xml"};
     std::ofstream full_model{std::string{std::filesystem::current_path()} + "/initial_model.xml"};

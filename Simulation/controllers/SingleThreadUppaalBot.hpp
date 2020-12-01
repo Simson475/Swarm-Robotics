@@ -67,6 +67,11 @@ public:
 
 
 private:
+    //Internal state for when to move and when to move
+    enum class state {working, moving, done};
+
+    state currentState = state::working;
+
     /* Pointer to the differential steering actuator */
     argos::CCI_DifferentialSteeringActuator *m_pcWheels;
     /* Pointer to the foot-bot proximity sensor */
@@ -110,6 +115,10 @@ private:
     int initLocation;
     bool returningToInit;
 
+    // Used as a clock counter for when working at stations
+    int clock;
+    int clockLimit;
+
     //**************** ControlStep functionality
     void constructStationUppaalModel();
     std::string runStationModel();
@@ -133,6 +142,12 @@ private:
     void resetWaypointPlan();
     void resetStationPlan();
     void log_helper(std::string message, bool newLine=true, bool printName=true);
+
+    //Clock/working functionality
+    bool isDoneWorking();
+    void startWorking(int clockLimit);
+    void setWorkAsComplete();
+    void advanceClock();
 
 };
 
