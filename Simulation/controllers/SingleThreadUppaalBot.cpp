@@ -519,7 +519,7 @@ void SingleThreadUppaalBot::advanceClock(){
 }
 
 void SingleThreadUppaalBot::constructStationUppaalModel(){
-    std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/station_planning_blueprint.xml"};
+    std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/planning_blueprint.xml"};
     std::ofstream full_model{std::string{std::filesystem::current_path()} + "/station_model.xml"};
 
     // This is the Uppaal model for the initial strategy.
@@ -694,7 +694,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
 }
 
 void SingleThreadUppaalBot::constructWaypointUppaalModel(){
-    std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/station_planning_blueprint.xml"};
+    std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/planning_blueprint.xml"};
     std::ofstream waypoint_model{std::string{std::filesystem::current_path()} + "/waypoint_model.xml"};
 
     // This is the Uppaal model for the initial strategy.
