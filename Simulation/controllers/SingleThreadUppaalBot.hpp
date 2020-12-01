@@ -70,7 +70,7 @@ private:
     //Internal state for when to move and when to move
     enum class state {working, moving, done};
 
-    state currentState = state::working;
+    state currentState;
 
     /* Pointer to the differential steering actuator */
     argos::CCI_DifferentialSteeringActuator *m_pcWheels;
@@ -146,7 +146,7 @@ private:
     //Clock/working functionality
     bool isDoneWorking();
     void startWorking(int clockLimit);
-    void setWorkAsComplete();
+    void setWorkingClockAsComplete();
     void advanceClock();
 
 };

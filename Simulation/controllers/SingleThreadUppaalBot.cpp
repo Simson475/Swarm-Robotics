@@ -84,76 +84,88 @@ void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
     m_cGoStraightAngleRange.Set(-ToRadians(m_cAlpha), ToRadians(m_cAlpha));
     argos::GetNodeAttributeOrDefault(t_node, "delta", m_fDelta, m_fDelta);
     argos::GetNodeAttributeOrDefault(t_node, "velocity", m_fWheelVelocity, m_fWheelVelocity);
+
+    currentState = state::moving;
 }
 
 void SingleThreadUppaalBot::ControlStep(){
-    if(!stationPlan.empty() && isAtStation()){ // If we have a plan and we are at a point
+    if(currentState == state::moving) {
+        if (!stationPlan.empty() && isAtStation()) { // If we have a plan and we are at a point
 
-        log_helper("Pre-reset");
-        lastLocation = nextLocation;
-        resetWaypointPlan();
-        if(currentJob->isStationInJob(lastLocation)){ // Then we have reached the station @todo: Proper function for checking
-            log_helper("Arrived at a work station");
+            log_helper("Pre-reset");
+            lastLocation = nextLocation;
+            resetWaypointPlan();
+            if (currentJob->isStationInJob(lastLocation)) { // Then we have reached the station @todo: Proper function for checking
+                log_helper("Arrived at a work station");
+
+                startWorking(50);
+            } else if (isStationNextInPlan(lastLocation)) {
+                resetStationPlan();
+            }
+            log_helper("Post-reset");
+        }
+
+        if(currentState == state::moving) {
+            if (!hasJob() || jobCompleted()) {
+                if (jobCompleted()) {
+                    currentJob->markAsCompleted();
+                    clearJob();
+                }
+                if (jobGenerator->anyJobsLeft()) {
+                    log_helper("Sets job");
+                    setJob();
+                } else if (lastLocation != initLocation) {
+                    setFinalJob();
+                }
+            }
+
+            if (hasJob() && stationPlan.empty() && !returningToInit) //@todo: Have proper boolean function
+            {
+                log_helper("Constructs Station model");
+                constructStationUppaalModel();
+                log_helper("Constructed Station model");
+                std::vector<int> stationPlan = getStationPlan(runStationModel());
+                log_helper("Station plan has size " + std::to_string(stationPlan.size()));
+
+                setStationPlan(stationPlan);
+                log_helper("Next station is now: " + std::to_string(getNextStation()));
+            } else if (stationPlan.empty() && lastLocation != initLocation && returningToInit) {
+                setStationPlan(std::vector<int>{initLocation});
+            }
+
+
+            if (hasJob() && waypointPlan.empty()) //@todo: Have proper boolean function
+            {
+                log_helper("Constructs Waypoint model");
+                constructWaypointUppaalModel();
+                log_helper("Constructed Waypoint model");
+                std::vector<int> waypointPlan = getWaypointPlan(runWaypointModel());
+                log_helper("Waypoint plan has size " + std::to_string(waypointPlan.size()));
+                setWaypointPlan(waypointPlan);
+                setNextLocation(waypointPlan.front());
+                log_helper("Going towards " + std::to_string(nextLocation));
+            }
+
+            movementLogic();
+        }
+    }
+    else if(currentState == state::working){
+        if(isDoneWorking()){
+            setWorkingClockAsComplete();
+
             currentJob->visitedStation(lastLocation);
             resetStationPlan();
 
             log_helper("Job is reduced: ", false);
-            for(int j : currentJob->getRemainingStations()){
+            for (int j : currentJob->getRemainingStations()) {
                 log_helper(std::to_string(j) + " ", false, false);
             }
             log_helper("", true, false);
         }
-        else if (isStationNextInPlan(lastLocation)){
-            resetStationPlan();
-        }
-        log_helper("Post-reset");
-    }
-
-
-
-    if(!hasJob() || jobCompleted()) {
-        if(jobCompleted()) {
-            currentJob->markAsCompleted();
-            clearJob();
-        }
-        if(jobGenerator->anyJobsLeft()) {
-            log_helper("Sets job");
-            setJob();
-        }
-        else if(lastLocation != initLocation){
-            setFinalJob();
+        else {
+            advanceClock();
         }
     }
-
-    if(hasJob() && stationPlan.empty() && !returningToInit) //@todo: Have proper boolean function
-    {
-        log_helper("Constructs Station model");
-        constructStationUppaalModel();
-        log_helper("Constructed Station model");
-        std::vector<int> stationPlan = getStationPlan(runStationModel());
-        log_helper("Station plan has size " + std::to_string(stationPlan.size()));
-
-        setStationPlan(stationPlan);
-        log_helper("Next station is now: " + std::to_string(getNextStation()));
-    }
-    else if(stationPlan.empty() && lastLocation != initLocation && returningToInit){
-        setStationPlan(std::vector<int>{initLocation});
-    }
-
-
-    if(hasJob() && waypointPlan.empty()) //@todo: Have proper boolean function
-    {
-        log_helper("Constructs Waypoint model");
-        constructWaypointUppaalModel();
-        log_helper("Constructed Waypoint model");
-        std::vector<int> waypointPlan = getWaypointPlan(runWaypointModel());
-        log_helper("Waypoint plan has size " + std::to_string(waypointPlan.size()));
-        setWaypointPlan(waypointPlan);
-        setNextLocation(waypointPlan.front());
-        log_helper("Going towards " + std::to_string(nextLocation));
-    }
-
-    movementLogic();
 }
 
 //Sets the vector of references of all the other robots in the system.
@@ -494,7 +506,7 @@ void SingleThreadUppaalBot::startWorking(int clockLimit){
     currentState = state::working;
 }
 
-void SingleThreadUppaalBot::setWorkAsComplete(){
+void SingleThreadUppaalBot::setWorkingClockAsComplete(){
     currentState = state::moving;
 }
 
