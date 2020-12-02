@@ -8,29 +8,48 @@ find_package(Qt5Widgets)
 find_package(Lua)
 
 include_directories(${LUA_INCLUDE_DIR})
+#option(ARGOS_WITH_LUA "ARGOS_WITH_LUA" OFF)
+#set(-DARGOS_WITH_LUA "OFF")
+
+#set(ARGOS_WITH_LUA OFF)
+unset(ARGOS_WITH_LUA CACHE)
 
 add_library(CTrajectoryLoopFunctions MODULE
 
-../models/box.cpp
-../models/box.hpp
+        ../models/map/box.cpp
+        ../models/map/box.hpp
 
-../models/point.cpp
-../models/point.hpp
+        ../models/map/point.cpp
+        ../models/map/point.hpp
 
-../models/line.cpp
-../models/line.hpp
+        ../models/map/line.cpp
+        ../models/map/line.hpp
 
-../models/map_structure.hpp
-../models/map_structure.cpp
+        ../models/map/map_structure.hpp
+        ../models/map/map_structure.cpp
 
-../models/robot.hpp
-../models/robot.cpp
+        ../models/robot/robot.hpp
+        ../models/robot/robot.cpp
 
-	CTrajectoryLoopFunctions.h
-	CTrajectoryQTUserFunctions.h
+        ../controllers/parsing/uppaal_model_parsing.hpp
+        ../controllers/parsing/uppaal_model_parsing.cpp
 
-	CTrajectoryLoopFunctions.cpp
-	CTrajectoryQTUserFunctions.cpp
+        ../argos_wrapper/argos_wrapper.hpp
+        ../argos_wrapper/argos_wrapper.cpp
+
+	    CTrajectoryLoopFunctions.h
+	    CTrajectoryQTUserFunctions.h
+
+	    CTrajectoryLoopFunctions.cpp
+	    CTrajectoryQTUserFunctions.cpp
+
+        ../models/jobs/JobGenerator.hpp
+        ../models/jobs/JobGenerator.cpp
+
+        ../models/jobs/Job.hpp
+        ../models/jobs/Job.cpp
+
+        ../models/jobs/JobBlueprint.hpp
 )
 
 

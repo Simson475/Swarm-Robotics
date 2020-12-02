@@ -8,6 +8,7 @@ Line::Line(Point *a, Point *b) {
   time = (distance * 100) / VELOCITY; 
   
 }
+
 void Line::setFailureline() {
   if (a->getId() != b->getId()) {
     this->distance = -1;
@@ -15,23 +16,15 @@ void Line::setFailureline() {
   }
 }
 
-float Line::getFloydTime() {
-  if (time != -1)
-    return time;
-  else
-    return INF;
+const std::tuple<float, float, float, float> Line::getCoordinates(){
+    std::tuple<float, float, float, float>coordinates{a->GetX(), a->GetY(), b->GetX(), b->GetY()};
+
+    return coordinates;
 }
-void Line::SetDistance(float newDis) { distance = newDis; }
-void Line::setTime(double time) {this->time = time; }
-void Line::draw() {
-  glBegin(GL_LINES);
-  glVertex2f(a->GetX(), a->GetY());
-  glVertex2f(b->GetX(), b->GetY());
-  glEnd();
-}
+
 float Line::GetFloydDistance(){
   if (distance != -1)
     return distance;
   else
-    return INF;
+    return std::numeric_limits<float>::infinity();
 }

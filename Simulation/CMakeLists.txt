@@ -16,7 +16,7 @@ if (GetDependencies)
             URL https://github.com/ilpincy/argos3/archive/3.0.0-beta54.zip
             URL_HASH SHA512=cbce91291e1c3d622c094a6186c31ff236f9e60f7b17dd1ba19685f360b9fe33d27d7225e6233f702dfc190ba8fb0cee8c3c352e6460b1f507295f782a78836c
             SOURCE_SUBDIR = ../argos-ext/src
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DARGOS_INSTALL_LDSOCONF=OFF -DARGOS_DOCUMENTATION=OFF -DARGOS_WITH_LUA=OFF
+            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DARGOS_INSTALL_LDSOCONF=OFF -DARGOS_DOCUMENTATION=OFF
             )
 
     ExternalProject_add(model-utilities
@@ -27,7 +27,10 @@ if (GetDependencies)
     include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
     link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
   endif (GetDependencies)
-  
+
+
+unset(ARGOS_WITH_LUA CACHE)
+
 project(SwarmSimulator)
 set(CMAKE_CXX_STANDARD 17)
 

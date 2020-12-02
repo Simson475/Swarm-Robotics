@@ -1,7 +1,7 @@
 #include "point.hpp"
 
 unsigned int Point::id_counter = 0;
-Point::Point(float x, float y, float z, Type type, std::string name)
+Point::Point(float x, float y, float z, pointType type, std::string name)
     : argos::CVector3(x, y, z) {
       
   id = id_counter++;
@@ -9,7 +9,7 @@ Point::Point(float x, float y, float z, Type type, std::string name)
   this->pType = type;
   this->name = name;
 }
-Point::Point(CVector3 c, Type type, std::string name)
+Point::Point(CVector3 c, pointType type, std::string name)
     : CVector3(c.GetX(), c.GetY(), c.GetZ()) {
   id = id_counter++;
   this->pType = type;
@@ -21,8 +21,8 @@ Point::Point() : CVector3() {
 }
  Point::Point(Point && p) :
               argos::CVector3(p.GetX(), p.GetY(), p.GetZ()),
-              id(std::move(p.id)),
-              pType(std::move(p.pType)),
+              id(p.id),
+              pType(p.pType),
               adjIDs(std::move(p.adjIDs)),
               name(std::move(p.name)){
     }

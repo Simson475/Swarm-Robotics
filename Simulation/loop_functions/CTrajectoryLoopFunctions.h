@@ -1,36 +1,45 @@
 #ifndef CTrajectoryLoopFunctions_H
 #define CTrajectoryLoopFunctions_H
 
-#include <argos3/core/simulator/loop_functions.h>
-#include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
-#include <argos3/plugins/simulator/entities/box_entity.h>
+#include "models/map/map_structure.hpp"
+#include "../models/jobs/JobGenerator.hpp"
 
-using namespace argos;
-//using namespace std;
+#include "argos3/core/simulator/loop_functions.h"
+#include "argos3/plugins/robots/foot-bot/simulator/footbot_entity.h"
+#include "argos3/plugins/simulator/entities/box_entity.h"
 
-class CTrajectoryLoopFunctions : public CLoopFunctions {
 
-public:
-  typedef std::map<CFootBotEntity *, std::vector<CVector3>> TWaypointMap;
-  typedef std::vector<CBoxEntity> BoxMap;
 
-  TWaypointMap m_tWaypoints;
-  BoxMap m_box_map;
+class CTrajectoryLoopFunctions : public argos::CLoopFunctions {
 
 public:
-  virtual ~CTrajectoryLoopFunctions() {}
+    typedef std::map<argos::CFootBotEntity *, std::vector<argos::CVector3>> TWaypointMap;
+    typedef std::vector<argos::CBoxEntity> BoxMap;
 
-  virtual void Init(TConfigurationNode &t_tree);
+    TWaypointMap m_tWaypoints;
+    BoxMap m_box_map;
 
-  virtual void Reset();
+public:
+    virtual ~CTrajectoryLoopFunctions() = default;
 
-  virtual void PostStep();
+    inline void Init(argos::TConfigurationNode &t_tree) override;
 
-  inline const TWaypointMap &GetWaypoints() const { return m_tWaypoints; }
+    inline const TWaypointMap &GetWaypoints() const { return m_tWaypoints; }
 
-  inline const BoxMap &GetBoxMap() const { return m_box_map; }
+    inline const BoxMap &GetBoxMap() const { return m_box_map; }
+
+    bool IsExperimentFinished() override;
+
+    void PostExperiment() override;
 
 private:
+    std::shared_ptr<JobGenerator> jobGenerator;
+
+    void initJobGenerator();
+    void assignJobGeneratorToControllers();
+    void removeOldLogFile();
+    void setInitLocationOnControllers(Map_Structure&);
+    void haveControllersAccessEachOther();
 };
 
 #endif

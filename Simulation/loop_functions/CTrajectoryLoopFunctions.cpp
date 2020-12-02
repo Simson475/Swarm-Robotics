@@ -1,83 +1,116 @@
 #include "CTrajectoryLoopFunctions.h"
 
-/****************************************/
-/****************************************/
+#include "controllers/SingleThreadUppaalBot.hpp"
 
-/*
- * To reduce the number of waypoints stored in memory,
- * consider two robot positions distinct if they are
- * at least MIN_DISTANCE away from each other
- * This constant is expressed in meters
- */
-static const Real MIN_DISTANCE = 0.05f;
-/* Convenience constant to avoid calculating the square root in PostStep() */
-static const Real MIN_DISTANCE_SQUARED = MIN_DISTANCE * MIN_DISTANCE;
+#include <set>
+#include <fstream>
+#include <iostream>
+#include <cstdio>
+#include <filesystem>
 
 /****************************************/
 /****************************************/
 
-void CTrajectoryLoopFunctions::Init(TConfigurationNode &t_tree) {
-  /*
-   * Go through all the robots in the environment
-   * and create an entry in the waypoint map for each of them
-   */
-  /* Get the map of all foot-bots from the space */
 
-  CSpace::TMapPerType &tFBMap = GetSpace().GetEntitiesByType("foot-bot");
-  /* Go through them */
-  for (CSpace::TMapPerType::iterator it = tFBMap.begin(); it != tFBMap.end();
-       ++it) {
-    /* Create a pointer to the current foot-bot */
-    CFootBotEntity *pcFB = any_cast<CFootBotEntity *>(it->second);
-    /* Create a waypoint vector */
-    m_tWaypoints[pcFB] = std::vector<CVector3>();
-    /* Add the initial position of the foot-bot */
-    m_tWaypoints[pcFB].push_back(
-        pcFB->GetEmbodiedEntity().GetOriginAnchor().Position);
-  }
+/****************************************/
+/****************************************/
+
+void CTrajectoryLoopFunctions::Init(argos::TConfigurationNode &t_tree) {
+    Map_Structure &sMap = Map_Structure::get_instance();
+    std::cout << "Set Path" << std::endl;
+    sMap.setFolderPath();
+    std::cout << "Set Stations" << std::endl;
+    sMap.initializeStations();
+    std::cout << "Set Waypoints" << std::endl;
+    sMap.collectAllWayPoints();
+    std::cout << "Set Robot Folder" << std::endl;
+    sMap.createFolderForEachRobot();
+    std::cout << "Set Lines" << std::endl;
+    sMap.setAllPossibleLines();
+    std::cout << "Calculating Distance Matrix" << std::endl;
+    sMap.setDistanceMatrix();
+
+    std::cout << "Setting JobGenerator in controllers" << std::endl;
+    initJobGenerator();
+    assignJobGeneratorToControllers();
+
+    std::cout << "Setting bots initial location" << std::endl;
+    setInitLocationOnControllers(sMap);
+
+    std::cout << "Controllers get references to other controllers" << std::endl;
+    haveControllersAccessEachOther();
+
+    std::cout << "Deletes old log file" << std::endl;
+    removeOldLogFile();
+    std::cout << "Setup complete" << std::endl;
 }
 
-/****************************************/
-/****************************************/
-
-void CTrajectoryLoopFunctions::Reset() {
-  /*
-   * Clear all the waypoint vectors
-   */
-  /* Get the map of all foot-bots from the space */
-  CSpace::TMapPerType &tFBMap = GetSpace().GetEntitiesByType("foot-bot");
-  /* Go through them */
-  for (CSpace::TMapPerType::iterator it = tFBMap.begin(); it != tFBMap.end();
-       ++it) {
-    /* Create a pointer to the current foot-bot */
-    CFootBotEntity *pcFB = any_cast<CFootBotEntity *>(it->second);
-    /* Clear the waypoint vector */
-    m_tWaypoints[pcFB].clear();
-    /* Add the initial position of the foot-bot */
-    m_tWaypoints[pcFB].push_back(
-        pcFB->GetEmbodiedEntity().GetOriginAnchor().Position);
-  }
+bool CTrajectoryLoopFunctions::IsExperimentFinished() {
+    return jobGenerator->allJobsCompleted();
 }
 
-/****************************************/
-/****************************************/
+void CTrajectoryLoopFunctions::PostExperiment() {
+    std::ofstream logFile;
+    logFile.open(std::string{std::filesystem::current_path()} + "/log.txt", std::ofstream::app);
 
-void CTrajectoryLoopFunctions::PostStep() {
-  /* Get the map of all foot-bots from the space */
-  CSpace::TMapPerType &tFBMap = GetSpace().GetEntitiesByType("foot-bot");
-  /* Go through them */
-  for (CSpace::TMapPerType::iterator it = tFBMap.begin(); it != tFBMap.end();
-       ++it) {
-    /* Create a pointer to the current foot-bot */
-    CFootBotEntity *pcFB = any_cast<CFootBotEntity *>(it->second);
-    /* Add the current position of the foot-bot if it's sufficiently far from
-     * the last */
-    if (SquareDistance(pcFB->GetEmbodiedEntity().GetOriginAnchor().Position,
-                       m_tWaypoints[pcFB].back()) > MIN_DISTANCE_SQUARED) {
-      m_tWaypoints[pcFB].push_back(
-          pcFB->GetEmbodiedEntity().GetOriginAnchor().Position);
+    logFile << "Simulation completed at time step: ";
+    logFile << argos::CSimulator::GetInstance().GetSpace().GetSimulationClock() << std::endl;
+
+    logFile.close();
+}
+
+void CTrajectoryLoopFunctions::initJobGenerator(){
+    Map_Structure &sMap = Map_Structure::get_instance();
+
+    int numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size();
+
+    std::set<int> endStationIDs{};
+    for(auto id : sMap.endStationIDs)
+        endStationIDs.insert(id);
+
+    jobGenerator = std::make_shared<JobGenerator>(JobGenerator(numOfStations, endStationIDs, 2));
+};
+
+void CTrajectoryLoopFunctions::assignJobGeneratorToControllers() {
+    argos::CSpace::TMapPerType &tBotMap =
+        argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
+    for (auto& botPair : tBotMap) {
+        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
+        auto& controller = dynamic_cast<SingleThreadUppaalBot&>(pcBot->GetControllableEntity().GetController());
+
+        controller.setJobGenerator(jobGenerator);
     }
-  }
+}
+
+void CTrajectoryLoopFunctions::setInitLocationOnControllers(Map_Structure& sMap){
+    argos::CSpace::TMapPerType &tBotMap =
+        argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
+    for (auto& botPair : tBotMap) {
+        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
+        auto& controller = dynamic_cast<SingleThreadUppaalBot&>(pcBot->GetControllableEntity().GetController());
+
+        Robot robot = sMap.getRobotByName(controller.GetId());
+
+        controller.setInitLocation(robot.getInitialLoc().getId());
+    }
+}
+
+void CTrajectoryLoopFunctions::haveControllersAccessEachOther(){
+    Map_Structure &sMap = Map_Structure::get_instance();
+
+    argos::CSpace::TMapPerType &tBotMap =
+        argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
+    for (auto& botPair : tBotMap) {
+        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
+        auto &controller = dynamic_cast<SingleThreadUppaalBot &>(pcBot->GetControllableEntity().GetController());
+
+        controller.obtainOtherBots(sMap);
+    }
+}
+
+void CTrajectoryLoopFunctions::removeOldLogFile() {
+    std::string fileName = std::string{std::filesystem::current_path()} + "/log.txt";
+    remove(fileName.c_str());
 }
 /****************************************/
 /****************************************/

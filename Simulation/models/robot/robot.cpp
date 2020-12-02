@@ -1,12 +1,12 @@
 #include "robot.hpp"
-#include "map_structure.hpp"
+#include "models/map/map_structure.hpp"
 
-Robot::Robot(CFootBotEntity *footBot, Point *initialLoc) {
+Robot::Robot(argos::CFootBotEntity *footBot, Point *initialLoc) {
     initialLocation = initialLoc;
     this->footBot = footBot;
     status = Status::available;
     etaNextStation = 0.0;
-    currentPositionId = initialLoc;
+    latestPoint = initialLoc;
 
 }
 Robot &Robot::operator=(const Robot &that) {
@@ -14,27 +14,20 @@ Robot &Robot::operator=(const Robot &that) {
     initialLocation = that.initialLocation;
     status = Status::available;
     etaNextStation = 0.0;
-    currentPositionId = initialLocation;
+    latestPoint = initialLocation;
     return *this;
 }
 Point& Robot::getInitialLoc() {
     return *initialLocation;
 }
 
-Point Robot::getNextStation() {
-    if (!remainingStations.empty()) {
-        return remainingStations[0];
-    } else
-        return getInitialLoc();
+
+std::string Robot::getName() const {
+    return getfootBot()->GetId();
 }
 
 void Robot::increment(int i) { stopWatch = i; }
-void Robot::setEta(double time) { etaNextStation = time; }
-void Robot::setJob(std::vector<Point> &jobs) {
-    for (auto i = 0u; i < jobs.size(); i++) {
-        job.push_back(jobs[i]);
-    }
-}
+
 void Robot::setCurrStationTarget(){
     Map_Structure &sMap = Map_Structure::get_instance();
     currTarget = &sMap.getPointByID(remainingStations.front().getId());
@@ -59,7 +52,7 @@ double Robot::getEta() {
     }
     ////std::cout <<etaNextStation<<std::endl;
     return etaNextStation = etaNextStation/ VELOCITY *100; }
-argos::CVector3 getPositionHelper(CVector3 start, CVector3 end, argos::Real x, argos::Real y){
+argos::CVector3 getPositionHelper(argos::CVector3 start, argos::CVector3 end, argos::Real x, argos::Real y){
     argos::Real result_X, result_Y;
     result_X = start.GetX() + x;
     result_Y = start.GetY() + y;
@@ -83,7 +76,7 @@ argos::CVector3 getPositionHelper(CVector3 start, CVector3 end, argos::Real x, a
     result_Y = start.GetY() - y;
     return argos::CVector3(result_X, result_Y, 0);
 }
-argos::CVector3 Robot::getPosition(CVector3 start, CVector3 end, double distance){
+argos::CVector3 Robot::getPosition(argos::CVector3 start, argos::CVector3 end, double distance){
     double x, y, teta;
     y = start.GetY() - end.GetY();
     x = start.GetX() - end.GetX();
@@ -113,7 +106,7 @@ timeResult* Robot::getEtaHelper(std::string id, std::vector<Point> waypoints, ar
         else if(i == 0 && temp !=0) temp += argos::Distance(currPosition,waypoints.front());
         else temp += argos::Distance(waypoints[i-1], waypoints[i]);
         if(!checkDelayMatch(timeToDelay,once,temp)){
-            if(waypoints[i].getType()==Type::station) {temp+=7.5* VELOCITY /100; // addition of delay + rotation
+            if(waypoints[i].getType()==pointType::station) {temp+=7.5* VELOCITY /100; // addition of delay + rotation
                 check.station= true;
                 check.added= true;
             }//requires to convert 6 times units to distance;
@@ -138,10 +131,7 @@ timeResult* Robot::getEtaHelper(std::string id, std::vector<Point> waypoints, ar
     return new timeResult{id,temp, passedStations, passedWaypoints, position, once,allWaypoints   };
 
 }
-void Robot::addEndPoint(){
-    Map_Structure &sMap = Map_Structure::get_instance();
-    remainingStations.push_back(sMap.getPointByID(1));
-}
+
 timeResult* Robot::getEtaNextRobot(Robot r, double timeToDelay) {
     Map_Structure &sMap = Map_Structure::get_instance();
     timeToDelay = timeToDelay* VELOCITY /100; // back to distance
@@ -152,7 +142,7 @@ timeResult* Robot::getEtaNextRobot(Robot r, double timeToDelay) {
     int passedStations = 0;
     std::vector<Point> allPassedPoints;
     currPosition = r.getfootBot()->GetEmbodiedEntity().GetOriginAnchor().Position;
-    allPassedPoints.push_back(Point(currPosition,Type::via,"CurrentPosition"));
+    allPassedPoints.push_back(Point(currPosition,pointType::via,"CurrentPosition"));
     if(timeToDelay < argos::Distance(currPosition,r.getRemainingWaypoints().front())){
         argos::CVector3 position = getPosition(currPosition,r.getRemainingWaypoints().front(),timeToDelay );
         return new timeResult{r.getfootBot()->GetId(),timeToDelay, 0, passedWaypoints, position, false,allPassedPoints   };
@@ -185,11 +175,11 @@ void Robot::addSinglePickUp(Point pickup) { job.push_back(pickup); }
 void Robot::removeFirstStation() {
     remainingStations.erase(remainingStations.begin());
 }
-void Robot::removeFirstWaypoint() {
 
-    currentPositionId = &Map_Structure::get_instance().getPointByID(remainingWaypoints[0].getId());
-    remainingWaypoints.erase(remainingWaypoints.begin());
+bool Robot::hasJob() {
+    return !job.empty();
 }
+
 void Robot::cleanJob() { job.clear(); }
 
 Point *Robot::getNextWayPoint() {
@@ -223,13 +213,13 @@ std::vector<Point> Robot::setRemainingStations(std::vector<Point> allPoints) {
 }
 void Robot::addWaypoints(std::vector<Point> path) {
     for(auto& p: path){
-        remainingWaypoints.push_back(std::move(p));
+        remainingWaypoints.push_back(p);
     }
 
 
 }
 void Robot::updateCurrent(Point *target){
-    currentPositionId = target;
+    latestPoint = target;
 }
 std::vector<Point> Robot::setRemainingWaypoints(std::vector<Point> &allPoints) {
     remainingWaypoints.clear();
@@ -264,41 +254,26 @@ void Robot::converJSONStation(std::string robotId, std::string choice) {
     std::ifstream i(path);
 
     nlohmann::json js = nlohmann::json::parse(i);
-    for (long unsigned i = 0; i < js.size(); i++) {
-        SimulationExpression se;
-        se.name = js[i].value("name", "");
+    for (auto& entry : js) {
+        SimulationExpression simExpression;
+        simExpression.name = entry.value("name", "");
         SimulationTrace smt;
-        for (long unsigned j = 0; j < js[i]["run"].size(); j++) {
-            smt.number = js[i]["run"][j].value("number", 0);
-            for (long unsigned k = 0; k < js[i]["run"][j]["values"].size(); k++) {
-                TimeValuePair tvp;
-                tvp.time = js[i]["run"][j]["values"][k].value("time", 0.0);
-                tvp.value = js[i]["run"][j]["values"][k].value("value", 0);
+        for (auto& run : entry["run"]) {
+            smt.number = run.value("number", 0);
+            for (auto& values :  run["values"]) {
+                TimeValuePair tvp{};
+                tvp.time = values.value("time", 0.0);
+                tvp.value = values.value("value", 0);
                 smt.values.push_back(tvp);
             }
-            se.runs.push_back(smt);
+            simExpression.runs.push_back(smt);
         }
         if (choice == "Stations")
-            stationPath.push_back(se);
+            stationPath.push_back(simExpression);
         if (choice == "Waypoints")
-            waypointPath.push_back(se);
+            waypointPath.push_back(simExpression);
     }
 }
-/*
-std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, bool stations){
-    // What we need from the other robots are:
-    // - Their plan
-    // - Current location: either point or edge including time spend on the edge.
-    std::vector<std::vector<int>> plans{};
-
-
-
-    //Get other robots plans.
-
-
-    return "";
-}
-*/
 
 
 std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, bool stations) {
@@ -322,7 +297,7 @@ std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, b
 
     jsonObj["station_eta"] = getEta();
     jsonObj["stations_to_visit"] = stationsToVisit;
-    otherRobotsInf.clear();
+    clearRobotInf();
 
     for (auto& other_robot : robots) {
         if (other_robot.getStatus() != Status::available && other_robot != robot) {
@@ -368,17 +343,17 @@ std::string Robot::createDynamicJson(std::vector<Robot> &robots, Robot &robot, b
 }
 
 
-void Robot::sortJob(std::vector<std::vector<float>> shortestDistances)
+void Robot::sortJob(const std::vector<std::vector<float>>& shortestDistances)
 {
     for(long unsigned i=0;i<job.size()-1;i++)
     {
         int k=i;
-        float min = INF;
+        float min = std::numeric_limits<float>::infinity();
         for(long unsigned j=i;j<job.size()-1;j++)
         {
             float temp;
             if(i == 0){
-                temp =shortestDistances[currentPositionId->getId()][job[j].getId()];
+                temp =shortestDistances[latestPoint->getId()][job[j].getId()];
             }else temp=shortestDistances[job[i-1].getId()][job[j].getId()];
 
             if(temp<min){
@@ -391,4 +366,28 @@ void Robot::sortJob(std::vector<std::vector<float>> shortestDistances)
     for(auto& j : job)
         remainingStations.push_back(j);
 
+}
+
+void Robot::clearRobotInf(){
+    // It should not be necessary to explicitly delete the elements, but they were created with `new`!
+    for(auto& info : otherRobotsInf)
+        delete info;
+
+    otherRobotsInf.clear();
+}
+
+std::vector<int> Robot::getJobByIds(){
+    std::vector<int> ids{};
+    for(auto& j : job)
+        ids.push_back(j.getId());
+
+    return ids;
+}
+
+void Robot::setStationPlan(std::vector<int> plan){
+    stationPlan = plan;
+}
+
+std::vector<int> Robot::getStationPlan(){
+    return stationPlan;
 }
