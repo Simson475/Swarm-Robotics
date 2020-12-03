@@ -18,7 +18,8 @@ class Map_Structure {
 private:
     // Shortest distance between each point
     std::vector<std::vector<float>> shortestDistanceMatrix{};
-
+    //amount of endStations and normal stations on the map
+    uint amountOfStations;
 public:
     std::string folderPath;
     //storage of elements in the map
@@ -29,8 +30,6 @@ public:
     std::vector<int> stationIDs;
     std::vector<int> endStationIDs;
     std::vector<int> waypointsIDs;
-    //amount of endStations and normal stations on the map
-    uint amountOfStations;
     std::vector<Robot> Robots;
     //shortest paths between each point
     std::vector<std::vector<int>> shortestPath;

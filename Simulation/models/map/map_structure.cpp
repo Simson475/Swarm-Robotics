@@ -276,6 +276,7 @@ std::vector<Point> Map_Structure::findPath(int startId, int destinationId) {
     } while (u != v);
     return pts;
 }
+
 void Map_Structure::initializeStations() {
     // get all the points defined in JSON file
     std::cout << folderPath +"points.json" <<std::endl;
@@ -298,7 +299,6 @@ void Map_Structure::initializeStations() {
     amountOfStations = stationIDs.size() + endStationIDs.size();
 }
 
-
 void Map_Structure::createFolderForEachRobot() {
     for (long unsigned i = 0; i < Robots.size(); i++) {
 
@@ -308,6 +308,7 @@ void Map_Structure::createFolderForEachRobot() {
         }
     }
 }
+
 void Map_Structure::setFolderPath() {
     std::string fileLoc = argos::CSimulator::GetInstance().GetExperimentFileName();
     if(fileLoc.find("/") != std::string::npos) {
@@ -319,4 +320,5 @@ void Map_Structure::setFolderPath() {
     }
     std::cout << folderPath <<std::endl;
 }
+
 int Map_Structure::getAmountOfStations() {return (int)amountOfStations;}
