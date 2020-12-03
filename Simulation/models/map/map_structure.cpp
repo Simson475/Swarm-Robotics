@@ -319,3 +319,4 @@ void Map_Structure::setFolderPath() {
     }
     std::cout << folderPath <<std::endl;
 }
+int Map_Structure::getAmountOfStations() {return (int)amountOfStations;}
