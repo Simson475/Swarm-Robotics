@@ -19,6 +19,7 @@ private:
   std::string id;
   std::vector<Point> corners;
   std::vector<Point> virtualCorners;
+  std::vector<Line> virtualLines;
   std::vector<Line> boxLines;
 
 public:
@@ -32,6 +33,8 @@ public:
   Line &getBoxLine(int n) { return boxLines[n]; }
   //build box coners and extends it's virtual corners
   void setBoxCorner();
+  bool isPointInShape(Point& p);
+  std::vector<Line>& getVirtualLines() {return virtualLines;}
   const std::vector<std::tuple<float, float, float, float>> getCoordinates();
 };
 

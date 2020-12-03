@@ -131,7 +131,7 @@ void SingleThreadUppaalBot::ControlStep(){
                 setStationPlan(stationPlan);
                 log_helper("Next station is now: " + std::to_string(getNextStation()));
             } else if (stationPlan.empty() && lastLocation != initLocation && returningToInit) {
-                setStationPlan(std::vector<int>{initLocation});
+                setStationPlan(std::vector<int>{(int)initLocation});
             }
 
 
@@ -324,7 +324,7 @@ std::vector<int> SingleThreadUppaalBot::getStationPlan(std::string modelOutput) 
 
         //Needed for the initial creation of station plans.
         int tmpLastLocation;
-        if(lastLocation >= sMap.stationIDs.size() + sMap.endStationIDs.size())
+        if(lastLocation >= sMap.amountOfStations)
             tmpLastLocation = sMap.stationIDs.size() + sMap.endStationIDs.size();
         else
             tmpLastLocation = lastLocation;
@@ -399,7 +399,8 @@ void SingleThreadUppaalBot::setWaypointPlan(std::vector<int> waypointPlan){
 }
 
 std::string SingleThreadUppaalBot::runStationModel(){
-    std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
+    std::string verifyta{"~/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
+//    std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
     //std::string verifyta{"~/phd/Uppaal/uppaal64-4.1.20-stratego-7/bin-Linux/verifyta"};
     std::string model{"./station_model.xml"};
 
@@ -421,7 +422,8 @@ std::string SingleThreadUppaalBot::runStationModel(){
 }
 
 std::string SingleThreadUppaalBot::runWaypointModel(){
-    std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
+    std::string verifyta{"~/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
+    //std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
     std::string model{"./waypoint_model.xml"};
 
     std::string terminalCommand = verifyta + " " + model;
@@ -526,7 +528,8 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::string line;
     int numOfStations;
     std::string matrix;
-    if(lastLocation >= sMap.stationIDs.size() + sMap.endStationIDs.size()){
+
+    if(lastLocation >= sMap.amountOfStations){
         matrix = get_expanded_distance_matrix(sMap, lastLocation);
         numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size() + 1;
     }
@@ -549,9 +552,10 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
         if(pos != std::string::npos){
             //@todo: Make proper functions to encapsulate the number written!
             // The id matches the last index of the expanded DistMatrix.
-            if(lastLocation >= sMap.stationIDs.size() + sMap.endStationIDs.size()){
+
+            if(lastLocation >= sMap.amountOfStations){
                 line.replace(pos, std::string{"#CUR_STATION#"}.size(),
-                             std::to_string(sMap.stationIDs.size() + sMap.endStationIDs.size()));
+                             std::to_string(sMap.amountOfStations));
             }
             else
                 line.replace(pos, std::string{"#CUR_STATION#"}.size(),

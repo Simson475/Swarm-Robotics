@@ -62,13 +62,11 @@ void CTrajectoryLoopFunctions::PostExperiment() {
 void CTrajectoryLoopFunctions::initJobGenerator(){
     Map_Structure &sMap = Map_Structure::get_instance();
 
-    int numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size();
-
     std::set<int> endStationIDs{};
     for(auto id : sMap.endStationIDs)
         endStationIDs.insert(id);
 
-    jobGenerator = std::make_shared<JobGenerator>(JobGenerator(numOfStations, endStationIDs, 2));
+    jobGenerator = std::make_shared<JobGenerator>(JobGenerator(sMap.amountOfStations, endStationIDs, 2));
 };
 
 void CTrajectoryLoopFunctions::assignJobGeneratorToControllers() {

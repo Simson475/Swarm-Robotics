@@ -43,5 +43,21 @@ void Box::setBoxCorner() {
   boxLines.push_back(Line(&corners[1], &corners[2]));
   boxLines.push_back(Line(&corners[2], &corners[3]));
   boxLines.push_back(Line(&corners[3], &corners[0]));
+  virtualLines.push_back(Line(&virtualCorners[0], &virtualCorners[1]));
+  virtualLines.push_back(Line(&virtualCorners[1], &virtualCorners[2]));
+  virtualLines.push_back(Line(&virtualCorners[2], &virtualCorners[3]));
+  virtualLines.push_back(Line(&virtualCorners[3], &virtualCorners[0]));
   //std::cout << "--------------------------------------------------------------------------------------------------------"<<std::endl;
+}
+bool Box::isPointInShape(Point& p) {
+    bool inX = false;
+    bool inY = false;
+    std::cout <<virtualCorners[2].getX() << "  " << virtualCorners[2].getY() <<std::endl;
+    if (p.getX() > virtualCorners[2].getX() && p.getX() < virtualCorners[0].getX())
+        inX = true;
+
+    if (p.getY() > virtualCorners[2].getY() && p.getY() < virtualCorners[0].getY())
+        inY = true;
+
+    return (inX && inY);
 }

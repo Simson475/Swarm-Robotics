@@ -29,11 +29,13 @@ public:
     std::vector<int> stationIDs;
     std::vector<int> endStationIDs;
     std::vector<int> waypointsIDs;
+    //amount of endStations and normal stations on the map
+    uint amountOfStations;
     std::vector<Robot> Robots;
     //shortest paths between each point
     std::vector<std::vector<int>> shortestPath;
 
-    //ensurance that the class is created only once
+    //ensures that the class is created only once
     static Map_Structure &get_instance() {
         static Map_Structure instance;
         return instance;

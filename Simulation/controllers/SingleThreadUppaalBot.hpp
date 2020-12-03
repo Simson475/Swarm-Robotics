@@ -111,8 +111,8 @@ private:
     std::vector<int> waypointPlan{};
     std::vector<std::reference_wrapper<SingleThreadUppaalBot>> otherBots{};
     int nextLocation;
-    int lastLocation;
-    int initLocation;
+    uint lastLocation;
+    uint initLocation;
     bool returningToInit = false;
 
     // Used as a clock counter for when working at stations
