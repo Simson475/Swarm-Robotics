@@ -1,5 +1,5 @@
 #include "box.hpp"
-
+#include <bits/stdc++.h>
 Box::Box(std::string id, argos::CVector3 center, argos::CVector3 size) {
   this->center = center;
   this->id = id;
@@ -39,36 +39,43 @@ void Box::setBoxCorner() {
                           id + "corner3"));
   corners.push_back(Point(x + w / 2, y - h / 2, center.GetZ(), pointType::realCorner,
                           id + "corner4"));
-  boxLines.push_back(Line(&corners[0], &corners[1]));
-  boxLines.push_back(Line(&corners[1], &corners[2]));
-  boxLines.push_back(Line(&corners[2], &corners[3]));
-  boxLines.push_back(Line(&corners[3], &corners[0]));
-  virtualLines.push_back(Line(&virtualCorners[0], &virtualCorners[1]));
-  virtualLines.push_back(Line(&virtualCorners[1], &virtualCorners[2]));
-  virtualLines.push_back(Line(&virtualCorners[2], &virtualCorners[3]));
-  virtualLines.push_back(Line(&virtualCorners[3], &virtualCorners[0]));
-  //std::cout << "--------------------------------------------------------------------------------------------------------"<<std::endl;
+  boxLines.emplace_back(&corners[0], &corners[1]);
+  boxLines.emplace_back(&corners[1], &corners[2]);
+  boxLines.emplace_back(&corners[2], &corners[3]);
+  boxLines.emplace_back(&corners[3], &corners[0]);
+  virtualLines.emplace_back(&virtualCorners[0], &virtualCorners[1]);
+  virtualLines.emplace_back(&virtualCorners[1], &virtualCorners[2]);
+  virtualLines.emplace_back(&virtualCorners[2], &virtualCorners[3]);
+  virtualLines.emplace_back(&virtualCorners[3], &virtualCorners[0]);
 }
-//bool Box::isPointOnShape(Point& p) {
-//    if (p.getX() == virtualCorners[2].getX() || p.getX() == virtualCorners[0].getX())
-//        if (p.getY() > virtualCorners[2].getY() && p.getY() < virtualCorners[0].getY())
-//            return true;
-//
-//    if (p.getY() == virtualCorners[2].getX() || p.getY() == virtualCorners[0].getY())
-//        if (p.getX() > virtualCorners[2].getY() && p.getX() < virtualCorners[0].getX())
-//            return true;
-//
-//
-//}
+
 bool Box::isPointInShape(Point& p) {
     bool inX = false;
     bool inY = false;
-    std::cout <<virtualCorners[2].getX() << "  " << virtualCorners[2].getY() <<std::endl;
+
     if (p.getX() > virtualCorners[2].getX() && p.getX() < virtualCorners[0].getX())
         inX = true;
 
     if (p.getY() > virtualCorners[2].getY() && p.getY() < virtualCorners[0].getY())
         inY = true;
-    //isPointOnShape(p);
+
     return (inX && inY);
+}
+
+Line& Box::getClosestLineToAPoint(Point &p){
+    double distance = INT_MIN;
+    Line* closestLine = &virtualLines[0];
+    for(auto& line : virtualLines){
+        double temp = line.distanceToLine(p);
+        if (temp > distance){
+
+            distance = temp;
+            closestLine = &line;
+        }
+    }
+    return *closestLine;
+}
+
+bool Box::isPointPartOfTheBox(Point& p){
+    return (std::find(virtualCorners.begin(), virtualCorners.end(), p) != virtualCorners.end());
 }

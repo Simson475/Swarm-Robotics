@@ -3,9 +3,9 @@
 unsigned int Point::id_counter = 0;
 Point::Point(float x, float y, float z, pointType type, std::string name)
     : argos::CVector3(x, y, z) {
-      
+
   id = id_counter++;
-  
+
   this->pType = type;
   this->name = name;
 }
@@ -32,7 +32,7 @@ argos::CVector3(obj.GetX(), obj.GetY(), obj.GetZ()){
   id = obj.id;
   name = obj.name;
   adjIDs = obj.adjIDs;
-  
+
 }
 Point& Point::operator=(const Point &obj){
   argos::CVector3(obj.GetX(), obj.GetY(), obj.GetZ());
@@ -56,3 +56,8 @@ void Point::setAdjIDs(std::vector<int> adjID) {
 }
 void Point::pushAdjID(int adjID) { adjIDs.push_back(adjID); }
 void Point::resetIdCount() { id_counter = 0; }
+
+double Point::magnitude()
+{
+    return sqrt(pow(getX(), 2) + pow(getY(), 2) + pow(getZ(), 2));
+}

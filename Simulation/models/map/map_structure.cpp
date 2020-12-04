@@ -225,11 +225,31 @@ void Map_Structure::eliminateBadLines() {
         //TODO move to previous loop ? Need map visualisation working
         for(auto& box : boxes){
             for(auto& vLines : box.getVirtualLines()){
-                if (box.isPointInShape(vLines.Geta()) || box.isPointInShape(vLines.Getb())){
-                    std::cout << "inside the box " <<std::endl;
-                    continue;
+                //TODO create extra function in order to remove code duplication
+                //check if a point is inside the virtual box
+                if (box.isPointInShape(line.Geta())){
+                    //If such point is connected to one of the boxes virtual corners - eliminate
+                    if(box.isPointPartOfTheBox(line.Getb())){
+                        line.setFailureline();
+                        break;
+                    }
+                    //Once inside the box check if we are comparing with the closest line, if so skip
+                    Line l = box.getClosestLineToAPoint(line.Geta());
+                    if(vLines.Geta().getName() == l.Geta().getName() && vLines.Getb().getName() == l.Getb().getName())
+                        continue;
                 }
-
+                if (box.isPointInShape(line.Getb())){
+                    //If such point is connected to one of the boxes virtual corners - eliminate
+                    if(box.isPointPartOfTheBox(line.Geta())){
+                        line.setFailureline();
+                        break;
+                    }
+                    //Once inside the box check if we are comparing with the closest line, if so skip
+                    Line l = box.getClosestLineToAPoint(line.Getb());
+                    if(vLines.Geta().getName() == l.Geta().getName() && vLines.Getb().getName() == l.Getb().getName())
+                        continue;
+                }
+                //if normal line intersects with any of the virtual lines, we mark it as incorrect line
                 if(line.Geta().getId() != vLines.Geta().getId() && line.Getb().getId() != vLines.Getb().getId()) {
                     if (intersectionInterest(line.Geta(), line.Getb(), vLines.Geta(), vLines.Getb())) {
                         line.setFailureline();
@@ -237,28 +257,6 @@ void Map_Structure::eliminateBadLines() {
                     }
                 }
             }
-        }
-
-        if(line.Geta().getName() == "P0" && line.Getb().getName() == "P5"){
-            std::cout << "P0 - P5 Distance : " << line.GetDistance() <<std::endl;
-        }
-        if(line.Geta().getName() == "P4" && line.Getb().getName() == "Ob1Vc2"){
-            std::cout << "P4 - Ob1Vc2 Distance : " << line.GetDistance() <<std::endl;
-        }
-        if(line.Geta().getName() == "P4" && line.Getb().getName() == "P9"){
-            std::cout << "P4 - P9 Distance : " << line.GetDistance() <<std::endl;
-        }
-        if(line.Geta().getName() == "P1" && line.Getb().getName() == "P0"){
-            std::cout << "P1 - P0 Distance : " << line.GetDistance() <<std::endl;
-        }
-        if(line.Geta().getName() == "P1" && line.Getb().getName() == "Ob1Vc3"){
-            std::cout << "P1 - Ob1Vc3 Distance : " << line.GetDistance() <<std::endl;
-        }
-        if(line.Geta().getName() == "P9" && line.Getb().getName() == "P5"){
-            std::cout << "P9 - P5 Distance : " << line.GetDistance() <<std::endl;
-        }
-        if(line.Geta().getName() == "P9" && line.Getb().getName() == "P6"){
-            std::cout << "P9 - P6 Distance : " << line.GetDistance() <<std::endl;
         }
     }
 }

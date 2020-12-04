@@ -11,7 +11,7 @@
 enum pointType { via, endpoint, station, realCorner, cStation };
 
 class Point : public argos::CVector3 {
-    unsigned int id;
+    unsigned int id{};
     pointType pType;
     static unsigned int id_counter;
     std::vector<int> adjIDs;
@@ -21,6 +21,7 @@ class Point : public argos::CVector3 {
 
 public:
     Point(float x, float y, float z, pointType type, std::string name);
+    Point(float x, float y, float z);
     Point(CVector3 c, pointType type, std::string name);
     ~Point();
     Point(Point && p);
@@ -37,8 +38,7 @@ public:
     bool isOccupied(){return occupied;}
     void setOccupied(bool occupied){this->occupied = occupied;}
     std::vector<int> getAdjIDs() const { return adjIDs; }
-
-
+    double magnitude();
 
     double getX(){
         return GetX();
