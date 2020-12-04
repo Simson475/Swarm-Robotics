@@ -30,7 +30,7 @@ public:
   double distanceToLine(Point& point);
   //Get coordinates for drawing in the simulation.
   const std::tuple<float, float, float, float> getCoordinates();
-
+  bool operator==(const Line &l);
 };
 
 #endif

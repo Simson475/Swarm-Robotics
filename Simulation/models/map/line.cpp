@@ -28,9 +28,15 @@ float Line::GetFloydDistance(){
   else
     return std::numeric_limits<float>::infinity();
 }
+
 double Line::distanceToLine(Point& point)
 {
     double normalLength = hypot(b->getX() - a->getX(), b->getY() - a->getY());
     double d = (point.getX() - a->getX()) * (b->getY() - a->getY()) - (point.getY() - a->getY()) * (b->getX() - a->getX()) / normalLength;
     return d;
+}
+
+bool Line::operator==(const Line &l)
+{
+    return l.a->getId() == a->getId() && l.b->getId() == b->getId();
 }

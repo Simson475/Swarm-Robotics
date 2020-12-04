@@ -67,6 +67,9 @@ public:
     // functions eliminates all lines which have intersection with any of the hard lines
     void eliminateBadLines();
 
+    //Helper function for eliminateBadLines
+    void compareWithVirtualLines(Line& line);
+
     Point& getPointByID(int id);
 
     //finds the shortest path of vias from startId to destinationId
