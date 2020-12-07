@@ -518,6 +518,10 @@ void SingleThreadUppaalBot::advanceClock(){
         throw std::logic_error("Working clock exceeds the limit of work to do.");
 }
 
+bool SingleThreadUppaalBot::isActive(){
+    return hasJob() && !returningToInit;
+}
+
 void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/planning_blueprint.xml"};
     std::ofstream full_model{std::string{std::filesystem::current_path()} + "/station_model.xml"};
