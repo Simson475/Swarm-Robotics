@@ -188,8 +188,14 @@ std::string formatOtherStationDistances(const std::vector<std::reference_wrapper
 
     for(auto& bot: otherBots){
         if(bot.get().isActive()) {
-            double dist = getDistanceToNextPoint(bot.get(), map_structure, bot.get().getNextWaypoint());
-            dist += getDistanceBetweenPoints(map_structure, bot.get().getWaypointPlan());
+            double dist;
+            if(bot.get().isWorking()){
+                dist = 0;
+            }
+            else {
+                dist = getDistanceToNextPoint(bot.get(), map_structure, bot.get().getNextWaypoint());
+                dist += getDistanceBetweenPoints(map_structure, bot.get().getWaypointPlan());
+            }
             distances.push_back(dist);
         }
     }
@@ -202,7 +208,13 @@ std::string formatOtherWaypointDistances(const std::vector<std::reference_wrappe
 
     for(auto& bot: otherBots){
         if(bot.get().isActive()) {
-            double dist = getDistanceToNextPoint(bot.get(), map_structure, bot.get().getNextWaypoint());
+            double dist;
+            if(bot.get().isWorking()){
+                dist = 0;
+            }
+            else {
+                dist = getDistanceToNextPoint(bot.get(), map_structure, bot.get().getNextWaypoint());
+            }
             distances.push_back(dist);
         }
     }

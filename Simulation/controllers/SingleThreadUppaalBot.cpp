@@ -522,6 +522,10 @@ bool SingleThreadUppaalBot::isActive(){
     return hasJob() && !returningToInit;
 }
 
+bool SingleThreadUppaalBot::isWorking(){
+    return currentState == state::working;
+}
+
 void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/planning_blueprint.xml"};
     std::ofstream full_model{std::string{std::filesystem::current_path()} + "/station_model.xml"};

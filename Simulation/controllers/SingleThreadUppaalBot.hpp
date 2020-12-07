@@ -65,6 +65,7 @@ public:
     int getNextStation();
     int getNextWaypoint();
     bool isActive();
+    bool isWorking();
 
 
 private:
