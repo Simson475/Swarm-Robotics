@@ -526,6 +526,10 @@ bool SingleThreadUppaalBot::isWorking(){
     return currentState == state::working;
 }
 
+int SingleThreadUppaalBot::getClockCount(){
+    return clock;
+}
+
 void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/planning_blueprint.xml"};
     std::ofstream full_model{std::string{std::filesystem::current_path()} + "/station_model.xml"};
@@ -699,7 +703,13 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
                              formatOtherWorking(otherBots));
             }
 
+            pos = line.find("#OTHER_WORKED#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_WORKED#"}.size(),
+                             formatWorkedTime(otherBots));
+            }
         }
+
         full_model << line << std::endl;
 
     }
@@ -863,6 +873,12 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
             if (pos != std::string::npos) {
                 line.replace(pos, std::string{"#OTHER_WORKING#"}.size(),
                              formatOtherWorking(otherBots));
+            }
+
+            pos = line.find("#OTHER_WORKED#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_WORKED#"}.size(),
+                             formatWorkedTime(otherBots));
             }
         }
 

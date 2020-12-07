@@ -66,6 +66,7 @@ public:
     int getNextWaypoint();
     bool isActive();
     bool isWorking();
+    int getClockCount();
 
 
 private:

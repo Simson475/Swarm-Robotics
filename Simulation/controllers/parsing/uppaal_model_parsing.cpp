@@ -247,6 +247,18 @@ std::string formatOtherWorking(const std::vector<std::reference_wrapper<SingleTh
     return element_joiner(robotWorking, ", ", "{", "}");
 }
 
+std::string formatWorkedTime(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots){
+    std::vector<int> robotWorkedTime{};
+
+    for (auto& robot : otherBots) {
+        if (robot.get().isActive()) {
+            robot.get().isWorking() ? robotWorkedTime.push_back(robot.get().getClockCount()) : robotWorkedTime.push_back(0);
+        }
+    }
+
+    return element_joiner(robotWorkedTime, ", ", "{", "}");
+}
+
 std::string format_query(unsigned numOfPoint){
     std::vector<int> points(numOfPoint);
     std::iota(std::begin(points), std::end(points), 0);

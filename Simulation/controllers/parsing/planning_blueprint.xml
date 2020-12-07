@@ -82,6 +82,7 @@ const bool other_robots_real_orders[other_bots_t][MAX_STATIONS] = #OTHER_ORDERS#
 
 const double other_robots_distances[other_bots_t] = #OTHER_DISTANCES#;
 const bool other_robots_working[other_bots_t] = #OTHER_WORKING#;
+const int other_robots_worked_time[other_bots_t] = #OTHER_WORKED#;
 
 #CODE_COMMENT_END#
 </declaration>
