@@ -13,20 +13,9 @@
 class CTrajectoryLoopFunctions : public argos::CLoopFunctions {
 
 public:
-    typedef std::map<argos::CFootBotEntity *, std::vector<argos::CVector3>> TWaypointMap;
-    typedef std::vector<argos::CBoxEntity> BoxMap;
-
-    TWaypointMap m_tWaypoints;
-    BoxMap m_box_map;
-
-public:
     virtual ~CTrajectoryLoopFunctions() = default;
 
     inline void Init(argos::TConfigurationNode &t_tree) override;
-
-    inline const TWaypointMap &GetWaypoints() const { return m_tWaypoints; }
-
-    inline const BoxMap &GetBoxMap() const { return m_box_map; }
 
     bool IsExperimentFinished() override;
 
