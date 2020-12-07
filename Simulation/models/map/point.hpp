@@ -38,7 +38,13 @@ public:
     void setOccupied(bool occupied){this->occupied = occupied;}
     std::vector<int> getAdjIDs() const { return adjIDs; }
 
+    void setAsOccupied(){
+        this->occupied = true;
+    }
 
+    void setAsAvailable(){
+        this->occupied = false;
+    }
 
     double getX(){
         return GetX();

@@ -80,6 +80,11 @@ public:
     // Sets up the distance matrix for all paths
     void setDistanceMatrix();
 
+    // For occupying a point
+    bool isPointAvailable(int id);
+    void setPointAsOccupied(int id);
+    void setPointAsAvailable(int id);
+
 private:
 //private constructor ensuring that only one instance is being created of the class
     Map_Structure() = default;

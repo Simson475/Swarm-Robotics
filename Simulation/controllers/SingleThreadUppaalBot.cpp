@@ -99,6 +99,7 @@ void SingleThreadUppaalBot::ControlStep(){
                 log_helper("Arrived at a work station");
 
                 startWorking(50);
+                sMap.setPointAsOccupied(lastLocation);
             } else if (isStationNextInPlan(lastLocation)) {
                 resetStationPlan();
             }
@@ -160,6 +161,7 @@ void SingleThreadUppaalBot::ControlStep(){
                 log_helper(std::to_string(j) + " ", false, false);
             }
             log_helper("", true, false);
+            sMap.setPointAsAvailable(lastLocation);
         }
         else {
             advanceClock();
@@ -245,7 +247,11 @@ void SingleThreadUppaalBot::movementLogic(){
     double per = newOri.GetX()*Ori.GetY() - newOri.GetY()*Ori.GetX() ;
     double dotProd = newOri.GetX()*Ori.GetX() + newOri.GetY()*Ori.GetY();
 
-    if(Distance(tPosReads.Position,nextPoint) <= 1.0 ){ // acceptance radius between point and robot
+
+    if (Distance(tPosReads.Position,nextPoint)<= 2 && !sMap.isPointAvailable(nextPoint.getId())) {
+        m_pcWheels->SetLinearVelocity(0.0f, 0.0f);
+    }
+    else if(Distance(tPosReads.Position,nextPoint) <= 0.30 ){ // acceptance radius between point and robot
         movementHelper(per, dotProd, Distance(tPosReads.Position, nextPoint) * 60);
     }
     else {

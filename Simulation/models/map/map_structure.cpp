@@ -1,5 +1,4 @@
 #include "map_structure.hpp"
-#include "controllers/parsing/uppaal_model_parsing.hpp"
 
 void Map_Structure::collectAllWayPoints() {
 
@@ -45,6 +44,7 @@ void Map_Structure::collectAllWayPoints() {
         }
     }
 }
+
 int Map_Structure::getRobotIdByName(std::string name) {
     for (long unsigned i = 0; i < Robots.size(); i++) {
         if (Robots[i].getfootBot()->GetId() == name) {
@@ -128,7 +128,17 @@ Point& Map_Structure::getPointByID(int id){
     throw std::invalid_argument("Point not found");
 }
 
+bool Map_Structure::isPointAvailable(int id){
+    return !getPointByID(id).isOccupied();
+}
 
+void Map_Structure::setPointAsOccupied(int id){
+    getPointByID(id).setAsOccupied();
+}
+
+void Map_Structure::setPointAsAvailable(int id){
+    getPointByID(id).setAsAvailable();
+}
 
 // Combines from all the points all possibleMap_Structure::lines
 void Map_Structure::setAllPossibleLines() {
