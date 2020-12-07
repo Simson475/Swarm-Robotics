@@ -114,10 +114,11 @@ std::string formatOrthersStartLocs(const std::vector<std::reference_wrapper<Sing
     std::vector<int> otherLocations{};
 
     for(auto& bot: otherBots) {
-        //@todo: Must be fixed when they can work at stations.
         if (bot.get().isActive()){
-            //otherLocations.push_back(bot.get().getLastLocation());
-            otherLocations.push_back(0);
+            if (bot.get().isWorking())
+                otherLocations.push_back(bot.get().getLastLocation());
+            else
+                otherLocations.push_back(0);
         }
     }
 
