@@ -184,19 +184,19 @@ std::string formatOtherOrders(const std::vector<std::reference_wrapper<SingleThr
 }
 
 std::string formatOtherStationDistances(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, Map_Structure map_structure){
-    std::vector<double> distances{};
+    std::vector<std::string> distances{};
 
     for(auto& bot: otherBots){
         if(bot.get().isActive()) {
             double dist;
             if(bot.get().isWorking()){
-                dist = 0;
+                dist = 0.0;
             }
             else {
                 dist = getDistanceToNextPoint(bot.get(), map_structure, bot.get().getNextWaypoint());
                 dist += getDistanceBetweenPoints(map_structure, bot.get().getWaypointPlan());
             }
-            distances.push_back(dist);
+            distances.push_back(std::to_string(dist));
         }
     }
 
@@ -204,18 +204,18 @@ std::string formatOtherStationDistances(const std::vector<std::reference_wrapper
 }
 
 std::string formatOtherWaypointDistances(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, Map_Structure map_structure){
-    std::vector<double> distances{};
+    std::vector<std::string> distances{};
 
     for(auto& bot: otherBots){
         if(bot.get().isActive()) {
             double dist;
             if(bot.get().isWorking()){
-                dist = 0;
+                dist = 0.0;
             }
             else {
                 dist = getDistanceToNextPoint(bot.get(), map_structure, bot.get().getNextWaypoint());
             }
-            distances.push_back(dist);
+            distances.push_back(std::to_string(dist));
         }
     }
 
