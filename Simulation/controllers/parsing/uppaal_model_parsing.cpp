@@ -235,6 +235,18 @@ std::string formatOtherWaypointOrders(const std::vector<std::reference_wrapper<S
     return formatMatrix(orders);
 }
 
+std::string formatOtherWorking(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots){
+    std::vector<bool> robotWorking{};
+
+    for (auto& robot : otherBots) {
+        if (robot.get().isActive()) {
+            robot.get().isWorking() ? robotWorking.push_back(true) : robotWorking.push_back(false);
+        }
+    }
+
+    return element_joiner(robotWorking, ", ", "{", "}");
+}
+
 std::string format_query(unsigned numOfPoint){
     std::vector<int> points(numOfPoint);
     std::iota(std::begin(points), std::end(points), 0);

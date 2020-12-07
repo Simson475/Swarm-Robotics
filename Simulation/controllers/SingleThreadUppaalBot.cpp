@@ -693,6 +693,12 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
                              formatOtherStationDistances(otherBots, sMap));
             }
 
+            pos = line.find("#OTHER_WORKING#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_WORKING#"}.size(),
+                             formatOtherWorking(otherBots));
+            }
+
         }
         full_model << line << std::endl;
 
@@ -851,6 +857,12 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
             if (pos != std::string::npos) {
                 line.replace(pos, std::string{"#OTHER_DISTANCES#"}.size(),
                              formatOtherWaypointDistances(otherBots, sMap));
+            }
+
+            pos = line.find("#OTHER_WORKING#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_WORKING#"}.size(),
+                             formatOtherWorking(otherBots));
             }
         }
 
