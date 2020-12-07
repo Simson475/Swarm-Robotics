@@ -846,7 +846,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
             pos = line.find("#OTHER_DISTANCES#");
             if (pos != std::string::npos) {
                 line.replace(pos, std::string{"#OTHER_DISTANCES#"}.size(),
-                             formatOtherStationDistances(otherBots, sMap));
+                             formatOtherWaypointDistances(otherBots, sMap));
             }
         }
 
