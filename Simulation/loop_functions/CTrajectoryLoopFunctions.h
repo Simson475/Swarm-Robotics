@@ -3,6 +3,7 @@
 
 #include "models/map/map_structure.hpp"
 #include "../models/jobs/JobGenerator.hpp"
+#include "../models/jobs/PredefinedJobGenerator.hpp"
 
 #include "argos3/core/simulator/loop_functions.h"
 #include "argos3/plugins/robots/foot-bot/simulator/footbot_entity.h"
