@@ -68,7 +68,7 @@ void CTrajectoryLoopFunctions::initJobGenerator(){
     for(auto id : sMap.endStationIDs)
         endStationIDs.insert(id);
 
-    jobGenerator = std::make_shared<JobGenerator>(JobGenerator(numOfStations, endStationIDs, 2));
+    jobGenerator = std::make_shared<JobGenerator>(JobGenerator(numOfStations, endStationIDs, 3));
 };
 
 void CTrajectoryLoopFunctions::assignJobGeneratorToControllers() {

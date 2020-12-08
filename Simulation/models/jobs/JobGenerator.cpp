@@ -21,15 +21,12 @@ std::unique_ptr<Job> JobGenerator::generateJob() {
     std::uniform_int_distribution<> distr(numOfEndStations, numOfStations - 1);   // define the range of stations ids
     std::uniform_int_distribution<> distrEnd(2, 4); // define the range of how many stations to visit
 
-    //int amountPickups = distrEnd(eng);
+    int amountPickups = distrEnd(eng);
     std::set<int> stationsToVisit{};
-    /*
+
     while (stationsToVisit.size() < amountPickups){
         stationsToVisit.insert(distr(eng));
     }
-     */
-    stationsToVisit.insert(3);
-    stationsToVisit.insert(10);
 
     jobsGenerated++;
     return std::make_unique<Job>(Job{stationsToVisit, endStations, std::bind(&JobGenerator::completedJob, this)});
