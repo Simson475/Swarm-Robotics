@@ -22,7 +22,7 @@ const std::tuple<float, float, float, float> Line::getCoordinates(){
     return coordinates;
 }
 
-float Line::GetFloydDistance(){
+float Line::GetFloydDistance() const{
   if (distance != -1)
     return distance;
   else
@@ -38,5 +38,7 @@ double Line::distanceToLine(Point& point)
 
 bool Line::operator==(const Line &l)
 {
-    return l.a->getId() == a->getId() && l.b->getId() == b->getId();
+
+    return (l.a->getId() == a->getId() && l.b->getId() == b->getId()) ||
+            (l.a->getId() == b->getId() && l.a->getId() == b->getId());
 }

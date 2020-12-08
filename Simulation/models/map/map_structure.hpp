@@ -64,6 +64,9 @@ public:
     // function which sets all possible lines between all the points
     void setAllPossibleLines();
 
+    // eliminates a line if it crosses any of the points
+    void doesLineCrossPoint(Line& line);
+
     // functions eliminates all lines which have intersection with any of the hard lines
     void eliminateBadLines();
 

@@ -24,7 +24,7 @@ public:
   void setFailureline();
   //getters
   float GetDistance() const { return distance; }
-  float GetFloydDistance();
+  float GetFloydDistance() const;
   Point& Geta() { return *a; }
   Point& Getb() { return *b; }
   double distanceToLine(Point& point);

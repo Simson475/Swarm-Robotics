@@ -176,7 +176,21 @@ double dot(argos::CVector3 a, argos::CVector3 b) {
     return a.GetX() * b.GetX() + a.GetY() * b.GetY();
 }
 
+bool areLinesParallel(const argos::CVector3 &m1, const argos::CVector3 &m2, const argos::CVector3 &n1,
+                      const argos::CVector3 &n2) {
+    double a1 = m2.GetY() - m1.GetY();
+    double b1 = m1.GetX() - m2.GetX();
+
+    double a2 = n2.GetY() - n1.GetY();
+    double b2 = n2.GetX() - n1.GetX();
+
+    return 0 == a1 * b2 - a2 * b1;
+}
+
 bool intersectionInterest(argos::CVector3 m1, argos::CVector3 m2, argos::CVector3 n1, argos::CVector3 n2) {
+    //If lines are parallel, stop the check and return false
+    if (areLinesParallel(m1, m2, n1, n2)) return false;
+
     if (cross((n1 - n2), (m1 - n2)) * cross((n1 - n2), (m2 - n2)) < 0 &&
         cross((m1 - m2), (n1 - m2)) * cross((m1 - m2), (n2 - m2)) < 0) {
         return true;
@@ -192,19 +206,42 @@ bool intersectionInterest(argos::CVector3 m1, argos::CVector3 m2, argos::CVector
     return false;
 }
 
+
 bool checkIfPointIsInShapeHelper(Box &box, Line &line, Line &vLine, bool isA) {
     if (box.isPointInShape(isA ? line.Geta() : line.Getb())) {
         //If such point is connected to one of the boxes virtual corners - eliminate
-        if (box.isPointPartOfTheBox(isA ? line.Getb() : line.Geta())) {
-            line.setFailureline();
-            return true;
-        }
+//        if (box.isPointPartOfTheBox(isA ? line.Getb() : line.Geta())) {
+//            line.setFailureline();
+//            return true;
+//        }
         //Once inside the box check if we are comparing with the closest line, if so skip
         Line l = box.getClosestLineToAPoint(isA ? line.Geta() : line.Getb());
-        if(vLine== l)
+        if (vLine == l)
             return true;
     }
     return false;
+}
+
+//threshold used for determining if the point is on the line or not
+const float threshold = 0.2f;
+
+bool cross2(Point &p, Point &q, Point &r) {
+    double dxc = r.getX() - p.getX();
+    double dyc = r.getY() - p.getY();
+
+    double dxl = q.getX() - p.getX();
+    double dyl = q.getY() - p.getY();
+    double cross = dxc * dyl - dyc * dxl;
+    if (abs(cross) > threshold) return false;
+
+    if (abs(dxl) >= abs(dyl))
+        return dxl > 0 ?
+               p.getX() <= r.getX() && r.getX() <= q.getX() :
+               q.getX() <= r.getX() && r.getX() <= p.getX();
+    else
+        return dyl > 0 ?
+               p.getY() <= r.getY() && r.getY() <= q.getY() :
+               q.getY() <= r.getY() && r.getY() <= r.getY();
 }
 
 void Map_Structure::compareWithVirtualLines(Line &line) {
@@ -216,7 +253,7 @@ void Map_Structure::compareWithVirtualLines(Line &line) {
                 continue;
             }
             //if normal line intersects with any of the virtual lines, we mark it as incorrect line
-            if(!(line == vLines)){
+            if (!(line == vLines)) {
                 if (intersectionInterest(line.Geta(), line.Getb(), vLines.Geta(), vLines.Getb())) {
                     line.setFailureline();
                     break;
@@ -226,21 +263,41 @@ void Map_Structure::compareWithVirtualLines(Line &line) {
     }
 }
 
+//Loop through all points and if they do not belong to the line checks if
+//any of the points fall under the line segment, if so sets such line as a "bad" line
+void Map_Structure::doesLineCrossPoint(Line &line) {
+    for (auto &point : points) {
+        if (point != line.Getb() && point != line.Geta())
+            if (cross2(line.Geta(), line.Getb(), point)) {
+                std::cout << line.Geta().getName() << " with " << line.Getb().getName() << " cross " << point.getName()
+                          << std::endl;
+                line.setFailureline();
+                break;
+            }
+    }
+}
+
 // Functions eliminates all theMap_Structure::lines which have intersection
 void Map_Structure::eliminateBadLines() {
     std::vector<int> adjIDs;
     for (long unsigned i = 0; i < Map_Structure::lines.size(); i++) {
-        for (long unsigned j = 0; j < Map_Structure::hardLines.size(); j++) {
+        for (auto &hardLine : hardLines) {
             if (intersectionInterest(Map_Structure::lines[i].Geta(),
                                      Map_Structure::lines[i].Getb(),
-                                     Map_Structure::hardLines[j].Geta(),
-                                     Map_Structure::hardLines[j].Getb())) {
+                                     hardLine.Geta(), hardLine.Getb())) {
                 Map_Structure::lines[i].setFailureline();
                 break;
             }
         }
         //Checks if any of the lines intersect with the virtual lines
-        compareWithVirtualLines(Map_Structure::lines[i]);
+        if (Map_Structure::lines[i].GetDistance() > 0)
+            compareWithVirtualLines(Map_Structure::lines[i]);
+        //Check if any of the lines overlap with other line
+        if (Map_Structure::lines[i].GetDistance() > 0)
+            doesLineCrossPoint(Map_Structure::lines[i]);
+
+        //This part of the code responsible for adjID's
+        //If one decides that they are not needed can be freely removed
         if (i != 0) {
             if (Map_Structure::lines[i].GetDistance() != -1) {
                 if (Map_Structure::lines[i].Geta().getId() ==
@@ -256,6 +313,7 @@ void Map_Structure::eliminateBadLines() {
         } else {
             adjIDs.push_back(Map_Structure::lines[i].Getb().getId());
         }
+        //End of adjID's
     }
 }
 
