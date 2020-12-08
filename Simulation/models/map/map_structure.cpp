@@ -89,8 +89,9 @@ void Map_Structure::setDistanceMatrix() {
     }
 
     float inf = std::numeric_limits<float>::infinity();
-
-    for (long unsigned k = 0; k < shortestDistanceMatrix.size(); k++) {
+    //We start with k being amountOfStations in order to avoid having
+    //a station in between two points being threated as a via
+    for (long unsigned k = amountOfStations; k < shortestDistanceMatrix.size(); k++) {
         for (long unsigned i = 0; i < shortestDistanceMatrix.size(); i++) {
             for (long unsigned j = 0; j < shortestDistanceMatrix.size(); j++) {
                 float temp = shortestDistanceMatrix[i][k] + shortestDistanceMatrix[k][j];
@@ -100,38 +101,10 @@ void Map_Structure::setDistanceMatrix() {
                     temp < shortestDistanceMatrix[i][j]) {
                     shortestDistanceMatrix[i][j] = (shortestDistanceMatrix[i][k] + shortestDistanceMatrix[k][j]);
                     shortestPath[i][j] = shortestPath[i][k];
-
-
-//                    if(i < amountOfStations && j < amountOfStations && k >= amountOfStations){
-//                        shortestDistanceMatrix[i][j] = (shortestDistanceMatrix[i][k] + shortestDistanceMatrix[k][j]);
-//                        shortestPath[i][j] = shortestPath[i][k];
-//                    }
-//                    else
-//                    if(i >= amountOfStations && j >= amountOfStations){
-//                        shortestDistanceMatrix[i][j] = (shortestDistanceMatrix[i][k] + shortestDistanceMatrix[k][j]);
-//                        shortestPath[i][j] = shortestPath[i][k];
-//                    }else {
-//                        std::cout << "from "  << i << " to " << j <<"  || " << "from "  << i << " to " << k <<std::endl;
-//                    }
                 }
             }
         }
     }
-    //DEBUG
-//    for(int i = 0; i < 12; i ++){
-//        for(int j = 0; j < 12; j ++){
-//            if(i != j) {
-//                auto result = findPath(i, j);
-//                std::cout << "------Path ------" << std::endl;
-//                std::cout << "from : " << getPointByID(i).getName() << std::endl;
-//                for (auto &p : result) {
-//                    std::cout << "ID: " << p.getName() << " -> ";
-//                }
-//                std::cout << "to : " << getPointByID(j).getName() << std::endl;
-//            }
-//        }
-//    }
-    //END DEBUG
 }
 
 // @Todo: Could use a refactor as this code is much more complex than the pseudo-code for
@@ -269,8 +242,6 @@ void Map_Structure::doesLineCrossPoint(Line &line) {
     for (auto &point : points) {
         if (point != line.Getb() && point != line.Geta())
             if (cross2(line.Geta(), line.Getb(), point)) {
-                std::cout << line.Geta().getName() << " with " << line.Getb().getName() << " cross " << point.getName()
-                          << std::endl;
                 line.setFailureline();
                 break;
             }
