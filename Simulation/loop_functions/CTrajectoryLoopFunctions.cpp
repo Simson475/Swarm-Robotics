@@ -42,6 +42,9 @@ void CTrajectoryLoopFunctions::Init(argos::TConfigurationNode &t_tree) {
 
     std::cout << "Deletes old log file" << std::endl;
     removeOldLogFile();
+
+    std::cout << "Prepare csv-file for data collection" << std::endl;
+    setUpDataCollection();
     std::cout << "Setup complete" << std::endl;
 }
 
@@ -111,6 +114,14 @@ void CTrajectoryLoopFunctions::haveControllersAccessEachOther(){
 void CTrajectoryLoopFunctions::removeOldLogFile() {
     std::string fileName = std::string{std::filesystem::current_path()} + "/log.txt";
     remove(fileName.c_str());
+}
+
+void CTrajectoryLoopFunctions::setUpDataCollection(){
+    std::ofstream logFile;
+    logFile.open(std::string{std::filesystem::current_path()} + "/data.csv");
+
+    logFile << "Robot, Type, Time, pointsToVisit, pointsInPlan" << std::endl;
+    logFile.close();
 }
 /****************************************/
 /****************************************/

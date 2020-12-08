@@ -145,6 +145,7 @@ private:
     void resetWaypointPlan();
     void resetStationPlan();
     void log_helper(std::string message, bool newLine=true, bool printName=true);
+    void experiment_helper(std::string type, double time, int pointsToVisit, int pointsInPlan);
 
     //Clock/working functionality
     bool isDoneWorking();
