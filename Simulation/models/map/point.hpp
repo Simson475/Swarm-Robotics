@@ -68,10 +68,6 @@ public:
     Point operator+(const Point &l) const;
 
     Point operator-(const Point &l) const;
-
-    Point operator*(const Point &l) const;
-
-    Point operator/(const Point &l) const;
 };
 
 #endif

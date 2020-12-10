@@ -82,17 +82,9 @@ double Point::getZ() const {
 }
 
 Point Point::operator+(const Point &l) const {
-    return Point(*this + l, pointType::tempCalculation, "");
+    return Point(static_cast<argos::CVector3>(*this) + static_cast<argos::CVector3>(l), pointType::tempCalculation, "");
 }
 
 Point Point::operator-(const Point &l) const {
-    return Point(*this - l, pointType::tempCalculation, "");
-}
-
-Point Point::operator*(const Point &l) const {
-    return Point(*this * l, pointType::tempCalculation, "");
-}
-
-Point Point::operator/(const Point &l) const {
-    return Point(*this / l, pointType::tempCalculation, "");
+    return Point(static_cast<argos::CVector3>(*this) - static_cast<argos::CVector3>(l), pointType::tempCalculation, "");
 }
