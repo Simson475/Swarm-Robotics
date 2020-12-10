@@ -63,7 +63,7 @@ bool Box::isPointInShape(Point& p) const {
 }
 
 Line& Box::getClosestLineToAPoint(const Point &p){
-    double distance = INT_MIN;
+    double distance = std::numeric_limits<int>::min();
     Line* closestLine = &virtualLines[0];
     for(auto& line : virtualLines){
         double temp = line.distanceToLine(p);
