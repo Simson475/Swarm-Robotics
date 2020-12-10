@@ -30,42 +30,49 @@ public:
 
     ~Point();
 
-    Point(Point &&p);
-
-    Point &operator=(Point const &obj);
+    Point(Point &&p) noexcept ;
 
     Point(const Point &obj);
 
     Point();
 
+    //Getters
     //returns the type of a point, for more info check enum pointType
-    int getType() const { return pType; }
+    [[nodiscard]] int getType() const;
 
-    std::string getName() const { return name; }
+    [[nodiscard]] std::string getName() const;
 
-    int getId() const { return id; }
+    [[nodiscard]] int getId() const;
 
-    void setAdjIDs(std::vector<int> adjID);
+    [[nodiscard]] double getX() const;
+
+    [[nodiscard]] double getY() const;
+
+    [[nodiscard]] double getZ() const;
+
+    [[nodiscard]] std::vector<int> getAdjIDs() const;
+
+    [[nodiscard]] bool isOccupied() const;
+    //End of Getters
+
+    //Setters
+    void setAdjIDs(const std::vector<int>& adjID);
 
     void pushAdjID(int adjID);
 
     static void resetIdCount();
 
-    bool isOccupied() { return occupied; }
+    void setOccupied(bool occupation);
+    //End of Setters
 
-    void setOccupied(bool occupation) { this->occupied = occupation; }
+    //Calculations
+    double magnitude() const;
+    //End Calculations
 
-    std::vector<int> getAdjIDs() const { return adjIDs; }
-
-    double magnitude();
-
-    double getX() const;
-
-    double getY() const;
-
-    double getZ() const;
-
+    //Operators
     Point operator+(const Point &l) const;
+
+    Point &operator=(Point const &obj);
 
     Point operator-(const Point &l) const;
 };
