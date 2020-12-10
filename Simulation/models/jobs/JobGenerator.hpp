@@ -9,7 +9,7 @@
 
 
 class JobGenerator {
-private:
+protected:
     const int numOfStations;
     const std::set<int> endStations;
     const int numOfEndStations;
@@ -20,16 +20,18 @@ private:
 
     std::vector<Job> jobs{};
 
-    std::unique_ptr<Job> generateJob();
+    virtual std::unique_ptr<Job> generateJob();
 
 
 
 public:
     JobGenerator(int numOfStations, std::set<int> endStations, int numOfJobs);
 
+    virtual ~JobGenerator() = default;
+
     bool anyJobsLeft();
     bool allJobsCompleted();
-    std::unique_ptr<Job> getNextJob();
+    virtual std::unique_ptr<Job> getNextJob();
     std::unique_ptr<Job> generateGetHomeJob(int location);
     void completedJob();
 };

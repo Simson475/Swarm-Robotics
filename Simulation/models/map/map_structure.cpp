@@ -76,7 +76,6 @@ void Map_Structure::setDistanceMatrix() {
     }
     shortestPath.clear();
     shortestPath.resize(size, std::vector<int>(size));
-    std::cout << "Size of shortestDistanceMatrix: " << size << std::endl;
     for (unsigned i = 0; i < size; ++i) {
         for (unsigned j = 0; j < size; ++j) {
             shortestPath[i][j] = 0;
@@ -114,7 +113,6 @@ std::vector<std::vector<float>> Map_Structure::floydShortestOfStations() {
     for (long unsigned i = 0; i < amountOfStations; i++) {
         for (long unsigned j = 0; j < amountOfStations; j++) {
             shortestDistance[i].push_back(shortestDistanceMatrix[i][j]);
-            std::cout << "i : " << i << " | j : " << j << " | distance : " << shortestDistanceMatrix[i][j] << std::endl;
         }
     }
     return shortestDistance;
@@ -129,6 +127,17 @@ Point &Map_Structure::getPointByID(int id) {
     throw std::invalid_argument("Point not found");
 }
 
+bool Map_Structure::isPointAvailable(int id){
+    return !getPointByID(id).isOccupied();
+}
+
+void Map_Structure::setPointAsOccupied(int id){
+    getPointByID(id).setAsOccupied();
+}
+
+void Map_Structure::setPointAsAvailable(int id){
+    getPointByID(id).setAsAvailable();
+}
 
 // Combines from all the points all possibleMap_Structure::lines
 void Map_Structure::setAllPossibleLines() {
@@ -310,7 +319,7 @@ void Map_Structure::initializeStations() {
 
     nlohmann::json j = nlohmann::json::parse(i);
     for (long unsigned i = 0; i < j.size(); i++) {
-        if (j[i].value("x", 0.0) != 0.0) {
+        if(j[i].value("x", 0.0)!= 0.0){
             Point p = Point(
                 argos::CVector3(j[i].value("x", 0.0), j[i].value("y", 0.0), j[i].value("z", 0.0)),
                 static_cast<pointType>(j[i].value("type", 0)), j[i].value("name", ""));

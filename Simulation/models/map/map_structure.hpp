@@ -87,6 +87,11 @@ public:
     // Sets up the distance matrix for all paths
     void setDistanceMatrix();
 
+    // For occupying a point
+    bool isPointAvailable(int id);
+    void setPointAsOccupied(int id);
+    void setPointAsAvailable(int id);
+
     int getAmountOfStations();
 
 private:

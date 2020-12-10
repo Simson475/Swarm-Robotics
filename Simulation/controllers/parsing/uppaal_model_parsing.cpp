@@ -26,7 +26,7 @@ std::size_t numOfOtherActiveRobots(const std::vector<std::reference_wrapper<Sing
     std::size_t robots_with_jobs = 0;
 
     for(auto& bot : otherBots){
-        if (bot.get().hasJob()){
+        if (bot.get().isActive()){
             robots_with_jobs++;
         }
     }
@@ -92,7 +92,7 @@ std::string formatStationOrderLenghts(const std::vector<std::reference_wrapper<S
     std::vector<unsigned> orderLenghts{};
 
     for(auto& bot: otherBots){
-        if(bot.get().hasJob())
+        if(bot.get().isActive())
             orderLenghts.push_back(bot.get().sizeOfStationPlan());
     }
 
@@ -103,7 +103,7 @@ std::string formatWaypointOrderLenghts(const std::vector<std::reference_wrapper<
     std::vector<unsigned> orderLenghts{};
 
     for(auto& bot: otherBots){
-        if(bot.get().hasJob())
+        if(bot.get().isActive())
             orderLenghts.push_back(1);
     }
 
@@ -114,10 +114,11 @@ std::string formatOrthersStartLocs(const std::vector<std::reference_wrapper<Sing
     std::vector<int> otherLocations{};
 
     for(auto& bot: otherBots) {
-        //@todo: Must be fixed when they can work at stations.
-        if (bot.get().hasJob()){
-            //otherLocations.push_back(bot.get().getLastLocation());
-            otherLocations.push_back(0);
+        if (bot.get().isActive()){
+            if (bot.get().isWorking())
+                otherLocations.push_back(bot.get().getLastLocation());
+            else
+                otherLocations.push_back(0);
         }
     }
 
@@ -128,7 +129,7 @@ std::string formatOrtherWaypointStartLocs(const std::vector<std::reference_wrapp
     std::vector<int> otherLocations{};
 
     for(auto& bot: otherBots) {
-        if (bot.get().hasJob()){
+        if (bot.get().isActive()){
             otherLocations.push_back(bot.get().getLastLocation());
         }
     }
@@ -140,7 +141,7 @@ std::string formatOtherStationPlan(const std::vector<std::reference_wrapper<Sing
     std::vector<std::vector<int>> plans{};
 
     for(auto& bot: otherBots){
-        if(bot.get().hasJob()) {
+        if(bot.get().isActive()) {
             std::vector<int> stationPlan{};
             for (int station : bot.get().getStationPlan()) {
                 stationPlan.push_back(station);
@@ -157,7 +158,7 @@ std::string formatOtherWaypointPlan(const std::vector<std::reference_wrapper<Sin
     std::vector<std::vector<int>> plans{};
 
     for(auto& bot: otherBots){
-        if(bot.get().hasJob()) {
+        if(bot.get().isActive()) {
             std::vector<int> waypointPlan{};
             for (int pointID : bot.get().getWaypointPlan()) {
                 waypointPlan.push_back(pointID);
@@ -174,7 +175,7 @@ std::string formatOtherOrders(const std::vector<std::reference_wrapper<SingleThr
     std::vector<std::vector<int>> orders{};
 
     for(auto& bot: otherBots){
-        if(bot.get().hasJob()) {
+        if(bot.get().isActive()) {
             std::vector<int> order = convertIDsToBools(numOfStations, bot.get().getOrder());
             orders.push_back(order);
         }
@@ -184,13 +185,19 @@ std::string formatOtherOrders(const std::vector<std::reference_wrapper<SingleThr
 }
 
 std::string formatOtherStationDistances(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, Map_Structure map_structure){
-    std::vector<double> distances{};
+    std::vector<std::string> distances{};
 
     for(auto& bot: otherBots){
-        if(bot.get().hasJob()) {
-            double dist = getDistanceToNextPoint(bot.get(), map_structure, bot.get().getNextWaypoint());
-            dist += getDistanceBetweenPoints(map_structure, bot.get().getWaypointPlan());
-            distances.push_back(dist);
+        if(bot.get().isActive()) {
+            double dist;
+            if(bot.get().isWorking()){
+                dist = 0.0;
+            }
+            else {
+                dist = getDistanceToNextPoint(bot.get(), map_structure, bot.get().getNextWaypoint());
+                dist += getDistanceBetweenPoints(map_structure, bot.get().getWaypointPlan());
+            }
+            distances.push_back(std::to_string(dist));
         }
     }
 
@@ -198,12 +205,18 @@ std::string formatOtherStationDistances(const std::vector<std::reference_wrapper
 }
 
 std::string formatOtherWaypointDistances(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, Map_Structure map_structure){
-    std::vector<double> distances{};
+    std::vector<std::string> distances{};
 
     for(auto& bot: otherBots){
-        if(bot.get().hasJob()) {
-            double dist = getDistanceToNextPoint(bot.get(), map_structure, bot.get().getNextWaypoint());
-            distances.push_back(dist);
+        if(bot.get().isActive()) {
+            double dist;
+            if(bot.get().isWorking()){
+                dist = 0.0;
+            }
+            else {
+                dist = getDistanceToNextPoint(bot.get(), map_structure, bot.get().getNextWaypoint());
+            }
+            distances.push_back(std::to_string(dist));
         }
     }
 
@@ -214,13 +227,37 @@ std::string formatOtherWaypointOrders(const std::vector<std::reference_wrapper<S
     std::vector<std::vector<int>> orders{};
 
     for(auto& bot: otherBots){
-        if(bot.get().hasJob()) {
+        if(bot.get().isActive()) {
             std::vector<int> order = convertIDsToBools(numOfStations, std::vector<int>(1, bot.get().getNextStation()));
             orders.push_back(order);
         }
     }
 
     return formatMatrix(orders);
+}
+
+std::string formatOtherWorking(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots){
+    std::vector<bool> robotWorking{};
+
+    for (auto& robot : otherBots) {
+        if (robot.get().isActive()) {
+            robot.get().isWorking() ? robotWorking.push_back(true) : robotWorking.push_back(false);
+        }
+    }
+
+    return element_joiner(robotWorking, ", ", "{", "}");
+}
+
+std::string formatWorkedTime(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots){
+    std::vector<int> robotWorkedTime{};
+
+    for (auto& robot : otherBots) {
+        if (robot.get().isActive()) {
+            robot.get().isWorking() ? robotWorkedTime.push_back(robot.get().getClockCount()) : robotWorkedTime.push_back(0);
+        }
+    }
+
+    return element_joiner(robotWorkedTime, ", ", "{", "}");
 }
 
 std::string format_query(unsigned numOfPoint){

@@ -99,6 +99,7 @@ void SingleThreadUppaalBot::ControlStep(){
                 log_helper("Arrived at a work station");
 
                 startWorking(50);
+                sMap.setPointAsOccupied(lastLocation);
             } else if (isStationNextInPlan(lastLocation)) {
                 resetStationPlan();
             }
@@ -160,6 +161,7 @@ void SingleThreadUppaalBot::ControlStep(){
                 log_helper(std::to_string(j) + " ", false, false);
             }
             log_helper("", true, false);
+            sMap.setPointAsAvailable(lastLocation);
         }
         else {
             advanceClock();
@@ -245,7 +247,11 @@ void SingleThreadUppaalBot::movementLogic(){
     double per = newOri.GetX()*Ori.GetY() - newOri.GetY()*Ori.GetX() ;
     double dotProd = newOri.GetX()*Ori.GetX() + newOri.GetY()*Ori.GetY();
 
-    if(Distance(tPosReads.Position,nextPoint) <= 1.0 ){ // acceptance radius between point and robot
+
+    if (Distance(tPosReads.Position,nextPoint)<= 2 && !sMap.isPointAvailable(nextPoint.getId())) {
+        m_pcWheels->SetLinearVelocity(0.0f, 0.0f);
+    }
+    else if(Distance(tPosReads.Position,nextPoint) <= 0.30 ){ // acceptance radius between point and robot
         movementHelper(per, dotProd, Distance(tPosReads.Position, nextPoint) * 60);
     }
     else {
@@ -520,6 +526,18 @@ void SingleThreadUppaalBot::advanceClock(){
         throw std::logic_error("Working clock exceeds the limit of work to do.");
 }
 
+bool SingleThreadUppaalBot::isActive(){
+    return hasJob() && !returningToInit;
+}
+
+bool SingleThreadUppaalBot::isWorking(){
+    return currentState == state::working;
+}
+
+int SingleThreadUppaalBot::getClockCount(){
+    return clock;
+}
+
 void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/planning_blueprint.xml"};
     std::ofstream full_model{std::string{std::filesystem::current_path()} + "/station_model.xml"};
@@ -689,7 +707,19 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
                              formatOtherStationDistances(otherBots, sMap));
             }
 
+            pos = line.find("#OTHER_WORKING#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_WORKING#"}.size(),
+                             formatOtherWorking(otherBots));
+            }
+
+            pos = line.find("#OTHER_WORKED#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_WORKED#"}.size(),
+                             formatWorkedTime(otherBots));
+            }
         }
+
         full_model << line << std::endl;
 
     }
@@ -846,7 +876,19 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
             pos = line.find("#OTHER_DISTANCES#");
             if (pos != std::string::npos) {
                 line.replace(pos, std::string{"#OTHER_DISTANCES#"}.size(),
-                             formatOtherStationDistances(otherBots, sMap));
+                             formatOtherWaypointDistances(otherBots, sMap));
+            }
+
+            pos = line.find("#OTHER_WORKING#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_WORKING#"}.size(),
+                             formatOtherWorking(otherBots));
+            }
+
+            pos = line.find("#OTHER_WORKED#");
+            if (pos != std::string::npos) {
+                line.replace(pos, std::string{"#OTHER_WORKED#"}.size(),
+                             formatWorkedTime(otherBots));
             }
         }
 

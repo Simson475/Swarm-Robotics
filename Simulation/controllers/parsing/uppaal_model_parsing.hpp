@@ -23,6 +23,8 @@ std::string formatOrthersStartLocs(const std::vector<std::reference_wrapper<Sing
 std::string formatOtherStationPlan(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations);
 std::string formatOtherOrders(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations);
 std::string formatOtherStationDistances(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, Map_Structure map_structure);
+std::string formatOtherWorking(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
+std::string formatWorkedTime(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
 
 // Waypoint planning helper functions
 std::string formatWaypointOrderLenghts(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);

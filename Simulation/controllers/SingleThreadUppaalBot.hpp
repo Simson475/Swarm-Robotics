@@ -64,6 +64,9 @@ public:
     std::vector<int> getWaypointPlan();
     int getNextStation();
     int getNextWaypoint();
+    bool isActive();
+    bool isWorking();
+    int getClockCount();
 
 
 private:

@@ -62,9 +62,13 @@ public:
 
     static void resetIdCount();
 
-    void setOccupied(bool occupation);
-    //End of Setters
+    void setAsOccupied(){
+        this->occupied = true;
+    }
 
+    void setAsAvailable(){
+        this->occupied = false;
+    }
     //Calculations
     double magnitude() const;
     //End Calculations

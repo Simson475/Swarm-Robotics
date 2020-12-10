@@ -82,7 +82,7 @@
                 distances="1,1,0"
                 layout="5,2,1" />
       <orientation method="constant" values="-45,0,0" />
-      <entity quantity="2" max_trials="1">
+      <entity quantity="3" max_trials="1">
         <foot-bot id="fb">
           <controller config="fdc" />
         </foot-bot>

@@ -13,8 +13,8 @@ if (GetDependencies)
             )
 
     ExternalProject_add(argos-ext
-            URL https://github.com/ilpincy/argos3/archive/3.0.0-beta54.zip
-            URL_HASH SHA512=cbce91291e1c3d622c094a6186c31ff236f9e60f7b17dd1ba19685f360b9fe33d27d7225e6233f702dfc190ba8fb0cee8c3c352e6460b1f507295f782a78836c
+            URL https://github.com/GameMonkey/argos3/archive/v1.0.0.zip
+            URL_HASH SHA512=211f3dc64aff3af210c1ad9a0732de8188b2fb505d6e040f6155ffcbda551594a6a5726b00c149a0937a9916529d590be31bd7e307de2cb7cf307516fc4db2a2
             SOURCE_SUBDIR = ../argos-ext/src
             CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DARGOS_INSTALL_LDSOCONF=OFF -DARGOS_DOCUMENTATION=OFF
             )
