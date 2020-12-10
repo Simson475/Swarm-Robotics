@@ -30,7 +30,7 @@ public:
 
     ~Point();
 
-    Point(Point &&p) noexcept ;
+    Point(Point &&p) noexcept;
 
     Point(const Point &obj);
 
@@ -56,7 +56,7 @@ public:
     //End of Getters
 
     //Setters
-    void setAdjIDs(const std::vector<int>& adjID);
+    void setAdjIDs(const std::vector<int> &adjID);
 
     void pushAdjID(int adjID);
 

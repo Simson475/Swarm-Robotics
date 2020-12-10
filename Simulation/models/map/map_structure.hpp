@@ -44,7 +44,7 @@ public:
     void setFolderPath();
 
     // Get shortest Distances
-    const std::vector<std::vector<float>>& getShortestDistanceMatrix() const {
+    const std::vector<std::vector<float>> &getShortestDistanceMatrix() const {
         return shortestDistanceMatrix;
     };
 
@@ -59,21 +59,21 @@ public:
 
 
     //usage of Floyd-Warshall Algorithm for shortest paths between each via
-    std::vector<std::vector<float>> floydShortestOfStations() ;
+    std::vector<std::vector<float>> floydShortestOfStations();
 
     // function which sets all possible lines between all the points
     void setAllPossibleLines();
 
     // eliminates a line if it crosses any of the points
-    bool doesLineCrossPoint(Line& line);
+    bool doesLineCrossPoint(Line &line);
 
     // functions eliminates all lines which have intersection with any of the hard lines
     void eliminateBadLines();
 
     //Helper function for eliminateBadLines
-    bool intersectWithVirtualLines(Line& line);
+    bool intersectWithVirtualLines(Line &line);
 
-    Point& getPointByID(int id);
+    Point &getPointByID(int id);
 
     //finds the shortest path of vias from startId to destinationId
     std::vector<Point> findPath(int startId, int destinationId);
@@ -88,8 +88,10 @@ public:
     void setDistanceMatrix();
 
     int getAmountOfStations();
+
 private:
 //private constructor ensuring that only one instance is being created of the class
     Map_Structure() = default;
 };
+
 #endif

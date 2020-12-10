@@ -4,7 +4,7 @@
 void Map_Structure::collectAllWayPoints() {
 
     argos::CSpace::TMapPerType &tBotMap =
-            argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
+        argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
     for (auto it = tBotMap.begin(); it != tBotMap.end();
          ++it) {
         argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(it->second);
@@ -17,7 +17,7 @@ void Map_Structure::collectAllWayPoints() {
     }
     std::vector<Box> walls;
     argos::CSpace::TMapPerType &tBoxMap =
-            argos::CLoopFunctions().GetSpace().GetEntitiesByType("box");
+        argos::CLoopFunctions().GetSpace().GetEntitiesByType("box");
     for (auto &boxMap : tBoxMap) {
         argos::CBoxEntity *pcBox = argos::any_cast<argos::CBoxEntity *>(boxMap.second);
         argos::CVector3 pos = pcBox->GetEmbodiedEntity().GetOriginAnchor().Position;
@@ -135,21 +135,21 @@ void Map_Structure::setAllPossibleLines() {
     for (auto &point_a : Map_Structure::points) {
         for (long unsigned j = 0; j < Map_Structure::points.size(); j++) {
             Map_Structure::lines.push_back(
-                    Line(&point_a, &Map_Structure::points[j]));
+                Line(&point_a, &Map_Structure::points[j]));
         }
     }
     eliminateBadLines();
 }
 
-double cross(const Point& a, const Point& b) {
+double cross(const Point &a, const Point &b) {
     return a.GetX() * b.GetY() - a.GetY() * b.GetX();
 }
 
-double dot(const Point& a, const Point& b) {
+double dot(const Point &a, const Point &b) {
     return a.GetX() * b.GetX() + a.GetY() * b.GetY();
 }
 
-bool areLinesParallel(const Point &m1, const Point &m2, const Point &n1, const Point& n2) {
+bool areLinesParallel(const Point &m1, const Point &m2, const Point &n1, const Point &n2) {
     double a1 = m2.GetY() - m1.GetY();
     double b1 = m1.GetX() - m2.GetX();
 
@@ -159,7 +159,7 @@ bool areLinesParallel(const Point &m1, const Point &m2, const Point &n1, const P
     return 0 == a1 * b2 - a2 * b1;
 }
 
-bool intersectionInterest(const Point& m1, const Point& m2, const Point& n1, const Point& n2) {
+bool intersectionInterest(const Point &m1, const Point &m2, const Point &n1, const Point &n2) {
     //If lines are parallel, stop the check and return false
     if (areLinesParallel(m1, m2, n1, n2)) return false;
 
@@ -261,11 +261,11 @@ void Map_Structure::eliminateBadLines() {
         }
         //Checks if any of the lines intersect with the virtual lines
         if (Map_Structure::lines[i].GetDistance() > 0)
-            if(intersectWithVirtualLines(Map_Structure::lines[i]))
+            if (intersectWithVirtualLines(Map_Structure::lines[i]))
                 Map_Structure::lines[i].setFailureline();
         //Check if any of the lines overlap with other line
         if (Map_Structure::lines[i].GetDistance() > 0)
-            if(doesLineCrossPoint(Map_Structure::lines[i]))
+            if (doesLineCrossPoint(Map_Structure::lines[i]))
                 Map_Structure::lines[i].setFailureline();
 
         //This part of the code responsible for adjID's
@@ -312,8 +312,8 @@ void Map_Structure::initializeStations() {
     for (long unsigned i = 0; i < j.size(); i++) {
         if (j[i].value("x", 0.0) != 0.0) {
             Point p = Point(
-                    argos::CVector3(j[i].value("x", 0.0), j[i].value("y", 0.0), j[i].value("z", 0.0)),
-                    static_cast<pointType>(j[i].value("type", 0)), j[i].value("name", ""));
+                argos::CVector3(j[i].value("x", 0.0), j[i].value("y", 0.0), j[i].value("z", 0.0)),
+                static_cast<pointType>(j[i].value("type", 0)), j[i].value("name", ""));
 
             points.push_back(p);
         }

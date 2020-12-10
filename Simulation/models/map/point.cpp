@@ -5,7 +5,7 @@
 unsigned int Point::id_counter = 0;
 
 Point::Point(float x, float y, float z, pointType type, std::string name)
-        : argos::CVector3(x, y, z) {
+    : argos::CVector3(x, y, z) {
 
     id = id_counter++;
     this->pType = type;
@@ -13,7 +13,7 @@ Point::Point(float x, float y, float z, pointType type, std::string name)
 }
 
 Point::Point(CVector3 c, pointType type, std::string name)
-        : CVector3(c.GetX(), c.GetY(), c.GetZ()) {
+    : CVector3(c.GetX(), c.GetY(), c.GetZ()) {
     if (pointType::tempCalculation != type)
         id = id_counter++;
     else id = std::numeric_limits<int>::max();
@@ -26,16 +26,16 @@ Point::Point() : CVector3() {
     this->pType = via;
 }
 
-Point::Point(Point &&p) noexcept :
-        argos::CVector3(p.GetX(), p.GetY(), p.GetZ()),
-        id(p.id),
-        pType(p.pType),
-        adjIDs(std::move(p.adjIDs)),
-        name(std::move(p.name)) {
+Point::Point(Point &&p) noexcept:
+    argos::CVector3(p.GetX(), p.GetY(), p.GetZ()),
+    id(p.id),
+    pType(p.pType),
+    adjIDs(std::move(p.adjIDs)),
+    name(std::move(p.name)) {
 }
 
 Point::Point(const Point &obj) :
-        argos::CVector3(obj.GetX(), obj.GetY(), obj.GetZ()) {
+    argos::CVector3(obj.GetX(), obj.GetY(), obj.GetZ()) {
     pType = obj.pType;
     id = obj.id;
     name = obj.name;
@@ -58,7 +58,7 @@ Point &Point::operator=(const Point &obj) {
 
 Point::~Point() = default;
 
-void Point::setAdjIDs(const std::vector<int>& adjID) {
+void Point::setAdjIDs(const std::vector<int> &adjID) {
     for (auto &aID : adjID) {
         adjIDs.push_back(aID);
     }
@@ -91,6 +91,7 @@ Point Point::operator+(const Point &l) const {
 Point Point::operator-(const Point &l) const {
     return Point(static_cast<argos::CVector3>(*this) - static_cast<argos::CVector3>(l), pointType::tempCalculation, "");
 }
+
 int Point::getType() const { return pType; }
 
 std::string Point::getName() const { return name; }
@@ -101,7 +102,7 @@ std::vector<int> Point::getAdjIDs() const { return adjIDs; }
 
 bool Point::isOccupied() const { return occupied; }
 
-Point::Point(float x, float y, float z)  : argos::CVector3(x, y, z){
+Point::Point(float x, float y, float z) : argos::CVector3(x, y, z) {
     id = std::numeric_limits<int>::max();
     this->pType = pointType::tempCalculation;
     this->name = "";
