@@ -27,7 +27,7 @@ public:
   float GetFloydDistance() const;
   Point& Geta() { return *a; }
   Point& Getb() { return *b; }
-  double distanceToLine(Point& point);
+  double distanceToLine(const Point& point);
   //Get coordinates for drawing in the simulation.
   const std::tuple<float, float, float, float> getCoordinates();
   bool operator==(const Line &l);

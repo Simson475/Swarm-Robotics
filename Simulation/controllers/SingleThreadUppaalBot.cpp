@@ -239,7 +239,7 @@ void SingleThreadUppaalBot::movementLogic(){
     double oy = sin(a.GetValue());
     double ox = cos(a.GetValue());
     argos::CVector3 Ori(ox,oy,0);
-    argos::CVector3 newOri = nextPoint - tPosReads.Position; // Direct Access to Map
+    argos::CVector3 newOri = nextPoint - Point(tPosReads.Position, pointType::tempCalculation, ""); // Direct Access to Map
     newOri.Normalize();
 
     double per = newOri.GetX()*Ori.GetY() - newOri.GetY()*Ori.GetX() ;

@@ -29,7 +29,7 @@ float Line::GetFloydDistance() const{
     return std::numeric_limits<float>::infinity();
 }
 
-double Line::distanceToLine(Point& point)
+double Line::distanceToLine(const Point& point)
 {
     double normalLength = hypot(b->getX() - a->getX(), b->getY() - a->getY());
     double d = (point.getX() - a->getX()) * (b->getY() - a->getY()) - (point.getY() - a->getY()) * (b->getX() - a->getX()) / normalLength;

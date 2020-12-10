@@ -49,7 +49,7 @@ void Box::setBoxCorner() {
   virtualLines.emplace_back(&virtualCorners[3], &virtualCorners[0]);
 }
 
-bool Box::isPointInShape(Point& p) {
+bool Box::isPointInShape(Point& p) const {
     bool inX = false;
     bool inY = false;
 
@@ -62,7 +62,7 @@ bool Box::isPointInShape(Point& p) {
     return (inX && inY);
 }
 
-Line& Box::getClosestLineToAPoint(Point &p){
+Line& Box::getClosestLineToAPoint(const Point &p){
     double distance = INT_MIN;
     Line* closestLine = &virtualLines[0];
     for(auto& line : virtualLines){

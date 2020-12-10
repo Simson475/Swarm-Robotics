@@ -33,9 +33,9 @@ public:
   Line &getBoxLine(int n) { return boxLines[n]; }
   //build box corners and extends it's virtual corners
   void setBoxCorner();
-  bool isPointInShape(Point& p);
+  bool isPointInShape(Point& p) const;
   bool isPointPartOfTheBox(Point& p);
-  Line& getClosestLineToAPoint(Point &p);
+  Line& getClosestLineToAPoint(const Point &p);
   std::vector<Line>& getVirtualLines() {return virtualLines;}
   const std::vector<std::tuple<float, float, float, float>> getCoordinates();
 };

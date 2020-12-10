@@ -141,16 +141,15 @@ void Map_Structure::setAllPossibleLines() {
     eliminateBadLines();
 }
 
-double cross(argos::CVector3 a, argos::CVector3 b) {
+double cross(const Point& a, const Point& b) {
     return a.GetX() * b.GetY() - a.GetY() * b.GetX();
 }
 
-double dot(argos::CVector3 a, argos::CVector3 b) {
+double dot(const Point& a, const Point& b) {
     return a.GetX() * b.GetX() + a.GetY() * b.GetY();
 }
 
-bool areLinesParallel(const argos::CVector3 &m1, const argos::CVector3 &m2, const argos::CVector3 &n1,
-                      const argos::CVector3 &n2) {
+bool areLinesParallel(const Point &m1, const Point &m2, const Point &n1, const Point& n2) {
     double a1 = m2.GetY() - m1.GetY();
     double b1 = m1.GetX() - m2.GetX();
 
@@ -160,7 +159,7 @@ bool areLinesParallel(const argos::CVector3 &m1, const argos::CVector3 &m2, cons
     return 0 == a1 * b2 - a2 * b1;
 }
 
-bool intersectionInterest(argos::CVector3 m1, argos::CVector3 m2, argos::CVector3 n1, argos::CVector3 n2) {
+bool intersectionInterest(const Point& m1, const Point& m2, const Point& n1, const Point& n2) {
     //If lines are parallel, stop the check and return false
     if (areLinesParallel(m1, m2, n1, n2)) return false;
 
@@ -198,7 +197,7 @@ bool checkIfPointIsInShapeHelper(Box &box, Line &line, Line &vLine, bool isA) {
 //threshold used for determining if the point is on the line or not
 const float threshold = 0.2f;
 
-bool cross2(Point &p, Point &q, Point &r) {
+bool cross2(const Point &p, const Point &q, const Point &r) {
     double dxc = r.getX() - p.getX();
     double dyc = r.getY() - p.getY();
 
