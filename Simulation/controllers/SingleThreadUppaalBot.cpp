@@ -13,6 +13,8 @@
 #include <set>
 #include <iostream>
 #include <filesystem>
+#include <ctime>
+#include <chrono>
 
 SingleThreadUppaalBot::SingleThreadUppaalBot():
     m_pcWheels(NULL),
@@ -45,6 +47,13 @@ void SingleThreadUppaalBot::log_helper(std::string message, bool newLine, bool p
         argos::LOG << std::endl;
         logFile << std::endl;
     }
+}
+
+void SingleThreadUppaalBot::experiment_helper(std::string type, double time, int pointsToVisit, int pointsInPlan){
+    std::ofstream dataFile;
+    dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
+
+    dataFile << m_strId << ", " << type << ", " << std::to_string(time) << ", " << pointsToVisit << "," << pointsInPlan << std::endl;
 }
 
 void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
@@ -126,7 +135,12 @@ void SingleThreadUppaalBot::ControlStep(){
                 log_helper("Constructs Station model");
                 constructStationUppaalModel();
                 log_helper("Constructed Station model");
+
+                auto t_start = std::chrono::high_resolution_clock::now();
                 std::vector<int> stationPlan = getStationPlan(runStationModel());
+                auto t_end = std::chrono::high_resolution_clock::now();
+                auto time_elapsed_s = std::chrono::duration<double, std::milli>(t_end-t_start).count() / 1000;
+                experiment_helper("StationPlan", time_elapsed_s, currentJob->getRemainingStations().size(), stationPlan.size());
                 log_helper("Station plan has size " + std::to_string(stationPlan.size()));
 
                 setStationPlan(stationPlan);
@@ -141,7 +155,13 @@ void SingleThreadUppaalBot::ControlStep(){
                 log_helper("Constructs Waypoint model");
                 constructWaypointUppaalModel();
                 log_helper("Constructed Waypoint model");
+
+                auto t_start = std::chrono::high_resolution_clock::now();
                 std::vector<int> waypointPlan = getWaypointPlan(runWaypointModel());
+                auto t_end = std::chrono::high_resolution_clock::now();
+                auto time_elapsed_s = std::chrono::duration<double, std::milli>(t_end-t_start).count() / 1000;
+                experiment_helper("WaypointPlan", time_elapsed_s, 1, waypointPlan.size());
+
                 log_helper("Waypoint plan has size " + std::to_string(waypointPlan.size()));
                 setWaypointPlan(waypointPlan);
                 setNextLocation(waypointPlan.front());

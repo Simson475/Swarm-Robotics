@@ -30,6 +30,8 @@ private:
     void removeOldLogFile();
     void setInitLocationOnControllers(Map_Structure&);
     void haveControllersAccessEachOther();
+
+    void setUpDataCollection();
 };
 
 #endif
