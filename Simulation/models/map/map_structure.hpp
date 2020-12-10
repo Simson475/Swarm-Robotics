@@ -65,13 +65,13 @@ public:
     void setAllPossibleLines();
 
     // eliminates a line if it crosses any of the points
-    void doesLineCrossPoint(Line& line);
+    bool doesLineCrossPoint(Line& line);
 
     // functions eliminates all lines which have intersection with any of the hard lines
     void eliminateBadLines();
 
     //Helper function for eliminateBadLines
-    void compareWithVirtualLines(Line& line);
+    bool intersectWithVirtualLines(Line& line);
 
     Point& getPointByID(int id);
 

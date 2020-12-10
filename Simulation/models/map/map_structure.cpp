@@ -216,7 +216,7 @@ bool cross2(const Point &p, const Point &q, const Point &r) {
                q.getY() <= r.getY() && r.getY() <= r.getY();
 }
 
-void Map_Structure::compareWithVirtualLines(Line &line) {
+bool Map_Structure::intersectWithVirtualLines(Line &line) {
     for (auto &box : boxes) {
         for (auto &vLines : box.getVirtualLines()) {
             //check if a point is inside the virtual box
@@ -227,24 +227,24 @@ void Map_Structure::compareWithVirtualLines(Line &line) {
             //if normal line intersects with any of the virtual lines, we mark it as incorrect line
             if (!(line == vLines)) {
                 if (intersectionInterest(line.Geta(), line.Getb(), vLines.Geta(), vLines.Getb())) {
-                    line.setFailureline();
-                    break;
+                    return true;
                 }
             }
         }
     }
+    return false;
 }
 
 //Loop through all points and if they do not belong to the line checks if
 //any of the points fall under the line segment, if so sets such line as a "bad" line
-void Map_Structure::doesLineCrossPoint(Line &line) {
+bool Map_Structure::doesLineCrossPoint(Line &line) {
     for (auto &point : points) {
         if (point != line.Getb() && point != line.Geta())
             if (cross2(line.Geta(), line.Getb(), point)) {
-                line.setFailureline();
-                break;
+                return true;
             }
     }
+    return false;
 }
 
 // Functions eliminates all theMap_Structure::lines which have intersection
@@ -261,10 +261,12 @@ void Map_Structure::eliminateBadLines() {
         }
         //Checks if any of the lines intersect with the virtual lines
         if (Map_Structure::lines[i].GetDistance() > 0)
-            compareWithVirtualLines(Map_Structure::lines[i]);
+            if(intersectWithVirtualLines(Map_Structure::lines[i]))
+                Map_Structure::lines[i].setFailureline();
         //Check if any of the lines overlap with other line
         if (Map_Structure::lines[i].GetDistance() > 0)
-            doesLineCrossPoint(Map_Structure::lines[i]);
+            if(doesLineCrossPoint(Map_Structure::lines[i]))
+                Map_Structure::lines[i].setFailureline();
 
         //This part of the code responsible for adjID's
         //If one decides that they are not needed can be freely removed
