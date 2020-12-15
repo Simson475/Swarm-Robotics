@@ -427,7 +427,7 @@ void SingleThreadUppaalBot::setWaypointPlan(std::vector<int> waypointPlan){
 std::string SingleThreadUppaalBot::runStationModel(){
     std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
     //std::string verifyta{"~/phd/Uppaal/uppaal64-4.1.20-stratego-7/bin-Linux/verifyta"};
-    std::string model{"./station_model.xml"};
+    std::string model{"./" + GetId() + "/station_model.xml"};
 
     std::string terminalCommand = verifyta + " " + model;
 
@@ -448,7 +448,7 @@ std::string SingleThreadUppaalBot::runStationModel(){
 
 std::string SingleThreadUppaalBot::runWaypointModel(){
     std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
-    std::string model{"./waypoint_model.xml"};
+    std::string model{"./" + GetId() + "/waypoint_model.xml"};
 
     std::string terminalCommand = verifyta + " " + model;
 
@@ -558,7 +558,7 @@ int SingleThreadUppaalBot::getClockCount(){
 
 void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/planning_blueprint.xml"};
-    std::ofstream full_model{std::string{std::filesystem::current_path()} + "/station_model.xml"};
+    std::ofstream full_model{"./" + GetId() + "/station_model.xml"};
 
     // This is the Uppaal model for the initial strategy.
     std::string line;
@@ -745,7 +745,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
 
 void SingleThreadUppaalBot::constructWaypointUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/planning_blueprint.xml"};
-    std::ofstream waypoint_model{std::string{std::filesystem::current_path()} + "/waypoint_model.xml"};
+    std::ofstream waypoint_model{"./" + GetId() + "/waypoint_model.xml"};
 
     // This is the Uppaal model for the initial strategy.
     std::string line;

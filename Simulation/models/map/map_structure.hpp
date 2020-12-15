@@ -74,9 +74,6 @@ public:
     //collects all the stations from experiment/scene2/points.json
     void initializeStations();
 
-    //creates for each simulated robot a folder, where one stores it's config files
-    void createFolderForEachRobot();
-
     // Sets up the distance matrix for all paths
     void setDistanceMatrix();
 

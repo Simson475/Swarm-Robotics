@@ -240,16 +240,6 @@ void Map_Structure::initializeStations() {
     }
 }
 
-
-void Map_Structure::createFolderForEachRobot() {
-    for (long unsigned i = 0; i < Robots.size(); i++) {
-
-        std::string temp = folderPath + Robots[i].getfootBot()->GetId();
-
-        if (mkdir(temp.c_str(), 0777) == -1) {
-        }
-    }
-}
 void Map_Structure::setFolderPath() {
     std::string fileLoc = argos::CSimulator::GetInstance().GetExperimentFileName();
     if(fileLoc.find("/") != std::string::npos) {
