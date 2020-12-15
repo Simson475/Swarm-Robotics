@@ -14,6 +14,9 @@ protected:
     const std::set<int> endStations;
     const int numOfEndStations;
     const int numOfJobs;
+    int jobID = 0;
+
+    int getNextJobID();
 
     int jobsGenerated = 0;
     int jobsCompleted = 0;

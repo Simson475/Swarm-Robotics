@@ -56,6 +56,13 @@ void SingleThreadUppaalBot::experiment_helper(std::string type, double time, int
     dataFile << m_strId << ", " << type << ", " << std::to_string(time) << ", " << pointsToVisit << ", " << pointsInPlan << std::endl;
 }
 
+void SingleThreadUppaalBot::experiment_job_data(std::string type, int id, int logicalTime){
+    std::ofstream dataFile;
+    dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
+
+    dataFile << m_strId << ", " << type << ", " << std::to_string(logicalTime) << ", " << id << "," << std::endl;
+}
+
 void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
     /*
      * Get sensor/actuator handles
@@ -119,11 +126,13 @@ void SingleThreadUppaalBot::ControlStep(){
             if (!hasJob() || jobCompleted()) {
                 if (jobCompleted()) {
                     currentJob->markAsCompleted();
+                    experiment_job_data("EndedJob", currentJob->getID(), argos::CSimulator::GetInstance().GetSpace().GetSimulationClock());
                     clearJob();
                 }
                 if (jobGenerator->anyJobsLeft()) {
                     log_helper("Sets job");
                     setJob();
+                    experiment_job_data("StartedJob", currentJob->getID(), argos::CSimulator::GetInstance().GetSpace().GetSimulationClock());
                 } else if (lastLocation != initLocation) {
                     log_helper("Sets final job");
                     setFinalJob();

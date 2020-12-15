@@ -146,6 +146,7 @@ private:
     void resetStationPlan();
     void log_helper(std::string message, bool newLine=true, bool printName=true);
     void experiment_helper(std::string type, double time, int pointsToVisit, int pointsInPlan);
+    void experiment_job_data(std::string type, int id, int logicalTime);
 
     //Clock/working functionality
     bool isDoneWorking();

@@ -147,7 +147,7 @@ void CTrajectoryLoopFunctions::setUpDataCollection(){
     std::ofstream logFile;
     logFile.open(std::string{std::filesystem::current_path()} + "/data.csv");
 
-    logFile << "Robot, Type, Time, pointsToVisit, pointsInPlan" << std::endl;
+    logFile << "Robot, Type, Time, pointsToVisit/jobID, pointsInPlan" << std::endl;
     logFile.close();
 }
 /****************************************/
