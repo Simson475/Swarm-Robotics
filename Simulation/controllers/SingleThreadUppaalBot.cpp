@@ -53,7 +53,7 @@ void SingleThreadUppaalBot::experiment_helper(std::string type, double time, int
     std::ofstream dataFile;
     dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
 
-    dataFile << m_strId << ", " << type << ", " << std::to_string(time) << ", " << pointsToVisit << "," << pointsInPlan << std::endl;
+    dataFile << m_strId << ", " << type << ", " << std::to_string(time) << ", " << pointsToVisit << ", " << pointsInPlan << std::endl;
 }
 
 void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
