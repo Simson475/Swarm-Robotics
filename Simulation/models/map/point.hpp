@@ -85,6 +85,10 @@ public:
     Point &operator=(Point const &obj);
 
     Point operator-(const Point &l) const;
+
+    //Given second point p adjust the current point coordinates to be in a middle
+    //And changes name to match better
+    void adjustPointToMid(const Point &p);
 };
 
 #endif

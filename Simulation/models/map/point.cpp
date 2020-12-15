@@ -115,3 +115,9 @@ double Point::getDistance(const Point& p){
 void Point::setID(const int newID) {id = newID;}
 
 void Point::setName(const std::string& newName) {name = newName;}
+
+void Point::adjustPointToMid(const Point& p) {
+    this->SetX((this->getX() + p.getX()) / 2);
+    this->SetY((this->getY() + p.getY()) / 2);
+    this->setName(getName() + "Merged" + p.getName());
+}

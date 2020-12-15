@@ -268,15 +268,23 @@ void Map_Structure::eliminateBadLines() {
                 break;
             }
         }
+        if(Map_Structure::lines[i].Geta().getName() == "obstacle19Vcorner3" && Map_Structure::lines[i].Getb().getName().find("obstacle17Vcorner3M") != std::string::npos){
+            std::cout << Map_Structure::lines[i].GetDistance() <<std::endl;
+        }
         //Checks if any of the lines intersect with the virtual lines
         if (Map_Structure::lines[i].GetDistance() > 0)
             if (intersectWithVirtualLines(Map_Structure::lines[i]))
                 Map_Structure::lines[i].setFailureline();
+        if(Map_Structure::lines[i].Geta().getName() == "obstacle19Vcorner3" && Map_Structure::lines[i].Getb().getName().find("obstacle17Vcorner3M") != std::string::npos){
+            std::cout << Map_Structure::lines[i].GetDistance() <<std::endl;
+        }
         //Check if any of the lines overlap with other line
         if (Map_Structure::lines[i].GetDistance() > 0)
             if (doesLineCrossPoint(Map_Structure::lines[i]))
                 Map_Structure::lines[i].setFailureline();
-
+        if(Map_Structure::lines[i].Geta().getName() == "obstacle19Vcorner3" && Map_Structure::lines[i].Getb().getName().find("obstacle17Vcorner3M") != std::string::npos){
+            std::cout << Map_Structure::lines[i].GetDistance() <<std::endl;
+        }
         //This part of the code responsible for adjID's
         //If one decides that they are not needed can be freely removed
         if (i != 0) {
@@ -377,8 +385,7 @@ void Map_Structure::eliminateBadPoints() {
     for (auto itr = points.begin(); itr < points.end(); itr++) {
         for (auto itr2 = points.begin(); itr2 < points.end(); itr2++) {
             if (itr != itr2 && itr->getDistance(*itr2) < thresholdPointsBeingTooClose) {
-                //TODO find center of two points and add it instead of taking one of them points in order to get more precision
-                itr->setName(itr->getName() + "Merged" + itr2->getName());
+                itr->adjustPointToMid(*itr2);
                 points.erase(itr2);
                 fixPointsIDs(points);
                 break;

@@ -81,7 +81,9 @@
         </foot-bot>
       </entity>
     </distribute>
-
+    <!-- ********************************* -->
+    <!-- * Distribution of obstacles * -->
+    <!-- ********************************* -->
     <distribute>
       <position method="grid"
                 center="0,0,0"
