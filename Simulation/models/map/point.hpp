@@ -42,6 +42,8 @@ public:
 
     [[nodiscard]] std::string getName() const;
 
+    double getDistance(const Point &p);
+
     [[nodiscard]] int getId() const;
 
     [[nodiscard]] double getX() const;
@@ -56,6 +58,10 @@ public:
     //End of Getters
 
     //Setters
+    void setID(const int newID);
+
+    void setName(const std::string& newName);
+
     void setAdjIDs(const std::vector<int> &adjID);
 
     void pushAdjID(int adjID);

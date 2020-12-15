@@ -108,4 +108,10 @@ Point::Point(float x, float y, float z) : argos::CVector3(x, y, z) {
     this->name = "";
 }
 
-void Point::setOccupied(bool occupation) { this->occupied = occupation; }
+double Point::getDistance(const Point& p){
+    return argos::Distance(*this, p);
+}
+
+void Point::setID(const int newID) {id = newID;}
+
+void Point::setName(const std::string& newName) {name = newName;}

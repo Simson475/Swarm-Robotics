@@ -87,6 +87,9 @@ public:
     // Sets up the distance matrix for all paths
     void setDistanceMatrix();
 
+    //Removes points which are too close to each other
+    void eliminateBadPoints();
+
     // For occupying a point
     bool isPointAvailable(int id);
     void setPointAsOccupied(int id);

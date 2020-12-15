@@ -10,7 +10,7 @@ JobGenerator(numOfStations, endStations, numOfJobs) {
 }
 
 std::unique_ptr<Job> PredefinedJobGenerator::generateJob() {
-    int amountPickups = distrEnd(eng);
+    long unsigned int amountPickups = distrEnd(eng);
     std::set<int> stationsToVisit{};
 
     while (stationsToVisit.size() < amountPickups){

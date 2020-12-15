@@ -25,6 +25,8 @@ void CTrajectoryLoopFunctions::Init(argos::TConfigurationNode &t_tree) {
     sMap.collectAllWayPoints();
     std::cout << "Set Robot Folder" << std::endl;
     sMap.createFolderForEachRobot();
+    std::cout << "Remove bad points" << std::endl;
+    sMap.eliminateBadPoints();
     std::cout << "Set Lines" << std::endl;
     sMap.setAllPossibleLines();
     std::cout << "Calculating Distance Matrix" << std::endl;

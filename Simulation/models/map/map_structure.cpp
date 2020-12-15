@@ -127,15 +127,15 @@ Point &Map_Structure::getPointByID(int id) {
     throw std::invalid_argument("Point not found");
 }
 
-bool Map_Structure::isPointAvailable(int id){
+bool Map_Structure::isPointAvailable(int id) {
     return !getPointByID(id).isOccupied();
 }
 
-void Map_Structure::setPointAsOccupied(int id){
+void Map_Structure::setPointAsOccupied(int id) {
     getPointByID(id).setAsOccupied();
 }
 
-void Map_Structure::setPointAsAvailable(int id){
+void Map_Structure::setPointAsAvailable(int id) {
     getPointByID(id).setAsAvailable();
 }
 
@@ -319,7 +319,7 @@ void Map_Structure::initializeStations() {
 
     nlohmann::json j = nlohmann::json::parse(i);
     for (long unsigned i = 0; i < j.size(); i++) {
-        if(j[i].value("x", 0.0)!= 0.0){
+        if (j[i].value("x", 0.0) != 0.0) {
             Point p = Point(
                 argos::CVector3(j[i].value("x", 0.0), j[i].value("y", 0.0), j[i].value("z", 0.0)),
                 static_cast<pointType>(j[i].value("type", 0)), j[i].value("name", ""));
@@ -356,3 +356,33 @@ void Map_Structure::setFolderPath() {
 }
 
 int Map_Structure::getAmountOfStations() { return (int) amountOfStations; }
+
+//Helper function for elimination of bad points
+//When point is removed the ID's must be aligned
+void fixPointsIDs(std::vector<Point> &points) {
+    int id = 0;
+    for (auto &p : points) {
+        if (p.getId() == id)
+            id++;
+        else {
+            p.setID(id);
+            id++;
+        }
+    }
+}
+
+const float thresholdPointsBeingTooClose = 0.2;
+
+void Map_Structure::eliminateBadPoints() {
+    for (auto itr = points.begin(); itr < points.end(); itr++) {
+        for (auto itr2 = points.begin(); itr2 < points.end(); itr2++) {
+            if (itr != itr2 && itr->getDistance(*itr2) < thresholdPointsBeingTooClose) {
+                //TODO find center of two points and add it instead of taking one of them points in order to get more precision
+                itr->setName(itr->getName() + "Merged" + itr2->getName());
+                points.erase(itr2);
+                fixPointsIDs(points);
+                break;
+            }
+        }
+    }
+}
