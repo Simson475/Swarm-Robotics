@@ -206,23 +206,23 @@ bool checkIfPointIsInShapeHelper(Box &box, Line &line, Line &vLine, bool isA) {
 //threshold used for determining if the point is on the line or not
 const float threshold = 0.2f;
 
-bool cross2(const Point &p, const Point &q, const Point &r) {
-    double dxc = r.getX() - p.getX();
-    double dyc = r.getY() - p.getY();
+bool doesLineCrossPointHelper(Line& l, const Point &r) {
+    double dxc = r.getX() - l.Geta().getX();
+    double dyc = r.getY() - l.Geta().getY();
 
-    double dxl = q.getX() - p.getX();
-    double dyl = q.getY() - p.getY();
+    double dxl = l.Getb().getX() - l.Geta().getX();
+    double dyl = l.Getb().getY() - l.Geta().getY();
     double cross = dxc * dyl - dyc * dxl;
     if (abs(cross) > threshold) return false;
 
     if (abs(dxl) >= abs(dyl))
         return dxl > 0 ?
-               p.getX() <= r.getX() && r.getX() <= q.getX() :
-               q.getX() <= r.getX() && r.getX() <= p.getX();
+               l.Geta().getX() <= r.getX() && r.getX() <= l.Getb().getX() :
+               l.Getb().getX() <= r.getX() && r.getX() <= l.Geta().getX();
     else
         return dyl > 0 ?
-               p.getY() <= r.getY() && r.getY() <= q.getY() :
-               q.getY() <= r.getY() && r.getY() <= r.getY();
+               l.Geta().getY() <= r.getY() && r.getY() <= l.Getb().getY() :
+               l.Getb().getY() <= r.getY() && r.getY() <= r.getY();
 }
 
 bool Map_Structure::intersectWithVirtualLines(Line &line) {
@@ -249,7 +249,7 @@ bool Map_Structure::intersectWithVirtualLines(Line &line) {
 bool Map_Structure::doesLineCrossPoint(Line &line) {
     for (auto &point : points) {
         if (point != line.Getb() && point != line.Geta())
-            if (cross2(line.Geta(), line.Getb(), point)) {
+            if (doesLineCrossPointHelper(line, point)) {
                 return true;
             }
     }
