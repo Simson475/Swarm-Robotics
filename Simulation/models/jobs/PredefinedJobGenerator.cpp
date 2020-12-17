@@ -18,7 +18,7 @@ std::unique_ptr<Job> PredefinedJobGenerator::generateJob() {
     }
 
     jobsGenerated++;
-    return std::make_unique<Job>(Job{stationsToVisit, endStations, std::bind(&JobGenerator::completedJob, this)});
+    return std::make_unique<Job>(Job{getNextJobID(), stationsToVisit, endStations, std::bind(&JobGenerator::completedJob, this)});
 }
 
 std::unique_ptr<Job> PredefinedJobGenerator::getNextJob() {

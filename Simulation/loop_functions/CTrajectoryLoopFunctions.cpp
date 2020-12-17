@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cstdio>
 #include <filesystem>
+#include <exception>
 
 /****************************************/
 /****************************************/
@@ -24,7 +25,7 @@ void CTrajectoryLoopFunctions::Init(argos::TConfigurationNode &t_tree) {
     std::cout << "Set Waypoints" << std::endl;
     sMap.collectAllWayPoints();
     std::cout << "Set Robot Folder" << std::endl;
-    sMap.createFolderForEachRobot();
+    setRobotFolders();
     std::cout << "Remove bad points" << std::endl;
     sMap.eliminateBadPoints();
     std::cout << "Set Lines" << std::endl;
@@ -81,6 +82,25 @@ void CTrajectoryLoopFunctions::initJobGenerator(){
     jobGenerator = std::make_shared<PredefinedJobGenerator>(PredefinedJobGenerator(sMap.getAmountOfStations(), endStationIDs, 3));
 };
 
+void CTrajectoryLoopFunctions::setRobotFolders(){
+    std::string currentFolder = std::filesystem::current_path();
+
+    argos::CSpace::TMapPerType &tBotMap =
+        argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
+    for (auto& botPair : tBotMap) {
+        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
+        auto &controller = dynamic_cast<SingleThreadUppaalBot &>(pcBot->GetControllableEntity().GetController());
+
+        std::string temp = currentFolder + "/" + controller.GetId();
+
+        std::filesystem::remove_all(temp);
+
+        if (mkdir(temp.c_str(), 0777) == -1) {
+            throw std::runtime_error("Cannot write folder");
+        }
+    }
+}
+
 void CTrajectoryLoopFunctions::assignJobGeneratorToControllers() {
     argos::CSpace::TMapPerType &tBotMap =
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
@@ -127,7 +147,7 @@ void CTrajectoryLoopFunctions::setUpDataCollection(){
     std::ofstream logFile;
     logFile.open(std::string{std::filesystem::current_path()} + "/data.csv");
 
-    logFile << "Robot, Type, Time, pointsToVisit, pointsInPlan" << std::endl;
+    logFile << "Robot, Type, Time, pointsToVisit/jobID, pointsInPlan" << std::endl;
     logFile.close();
 }
 /****************************************/

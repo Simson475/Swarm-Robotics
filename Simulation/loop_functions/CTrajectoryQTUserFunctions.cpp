@@ -52,7 +52,7 @@ void CTrajectoryQTUserFunctions::DrawInWorld() {
     DrawText(argos::CVector3(0,1,1), "Y=1", argos::CColor::ORANGE);
     DrawText(argos::CVector3(0,-1,1), "Y=-1", argos::CColor::ORANGE);
     for (auto element : sMap.points) {
-        DrawText(element, element.getName());
+        DrawText(element, element.getName() + "/" + std::to_string(element.getId()));
         element.SetZ(0.1);
         DrawPoint(element, argos::CColor::BLACK, 5);
     }

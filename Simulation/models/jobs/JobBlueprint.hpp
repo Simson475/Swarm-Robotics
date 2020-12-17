@@ -7,7 +7,8 @@
 class JobBlueprint {
 public:
 
-    JobBlueprint(std::set<int> stationsToVisit, std::set<int> endStations) :
+    JobBlueprint(int id, std::set<int> stationsToVisit, std::set<int> endStations) :
+        id(id),
         stationsToVisit(std::move(stationsToVisit)),
         endStations(std::move(endStations)) {}
 
@@ -42,7 +43,13 @@ public:
         return endStations;
     }
 
+    int getID() {
+        return id;
+    }
+
 protected:
+    int id;
+
     std::set<int> stationsToVisit;
     const std::set<int> endStations;
 

@@ -53,7 +53,14 @@ void SingleThreadUppaalBot::experiment_helper(std::string type, double time, int
     std::ofstream dataFile;
     dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
 
-    dataFile << m_strId << ", " << type << ", " << std::to_string(time) << ", " << pointsToVisit << "," << pointsInPlan << std::endl;
+    dataFile << m_strId << ", " << type << ", " << std::to_string(time) << ", " << pointsToVisit << ", " << pointsInPlan << std::endl;
+}
+
+void SingleThreadUppaalBot::experiment_job_data(std::string type, int id, int logicalTime){
+    std::ofstream dataFile;
+    dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
+
+    dataFile << m_strId << ", " << type << ", " << std::to_string(logicalTime) << ", " << id << "," << std::endl;
 }
 
 void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
@@ -119,11 +126,13 @@ void SingleThreadUppaalBot::ControlStep(){
             if (!hasJob() || jobCompleted()) {
                 if (jobCompleted()) {
                     currentJob->markAsCompleted();
+                    experiment_job_data("EndedJob", currentJob->getID(), argos::CSimulator::GetInstance().GetSpace().GetSimulationClock());
                     clearJob();
                 }
                 if (jobGenerator->anyJobsLeft()) {
                     log_helper("Sets job");
                     setJob();
+                    experiment_job_data("StartedJob", currentJob->getID(), argos::CSimulator::GetInstance().GetSpace().GetSimulationClock());
                 } else if (lastLocation != initLocation) {
                     log_helper("Sets final job");
                     setFinalJob();
@@ -428,7 +437,7 @@ std::string SingleThreadUppaalBot::runStationModel(){
     std::string verifyta{"~/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
 //    std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
     //std::string verifyta{"~/phd/Uppaal/uppaal64-4.1.20-stratego-7/bin-Linux/verifyta"};
-    std::string model{"./station_model.xml"};
+    std::string model{"./" + GetId() + "/station_model.xml"};
 
     std::string terminalCommand = verifyta + " " + model;
 
@@ -448,9 +457,8 @@ std::string SingleThreadUppaalBot::runStationModel(){
 }
 
 std::string SingleThreadUppaalBot::runWaypointModel(){
-    std::string verifyta{"~/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
-    //std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
-    std::string model{"./waypoint_model.xml"};
+    std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
+    std::string model{"./" + GetId() + "/waypoint_model.xml"};
 
     std::string terminalCommand = verifyta + " " + model;
 
@@ -560,7 +568,7 @@ int SingleThreadUppaalBot::getClockCount(){
 
 void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/planning_blueprint.xml"};
-    std::ofstream full_model{std::string{std::filesystem::current_path()} + "/station_model.xml"};
+    std::ofstream full_model{"./" + GetId() + "/station_model.xml"};
 
     // This is the Uppaal model for the initial strategy.
     std::string line;
@@ -749,7 +757,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
 
 void SingleThreadUppaalBot::constructWaypointUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/planning_blueprint.xml"};
-    std::ofstream waypoint_model{std::string{std::filesystem::current_path()} + "/waypoint_model.xml"};
+    std::ofstream waypoint_model{"./" + GetId() + "/waypoint_model.xml"};
 
     // This is the Uppaal model for the initial strategy.
     std::string line;

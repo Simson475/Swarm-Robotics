@@ -2,8 +2,8 @@
 
 #include <exception>
 
-Job::Job(std::set<int> stationsToVisit, std::set<int> endStations, std::function<void()> callBack) :
-    JobBlueprint(std::move(stationsToVisit), std::move(endStations)) {
+Job::Job(int id, std::set<int> stationsToVisit, std::set<int> endStations, std::function<void()> callBack) :
+    JobBlueprint(id, std::move(stationsToVisit), std::move(endStations)) {
     this->callBackFunction = callBack;
 }
 

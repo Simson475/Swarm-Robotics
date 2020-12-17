@@ -28,7 +28,11 @@ std::unique_ptr<Job> JobGenerator::generateJob() {
     }
 
     jobsGenerated++;
-    return std::make_unique<Job>(Job{stationsToVisit, endStations, std::bind(&JobGenerator::completedJob, this)});
+    return std::make_unique<Job>(Job{getNextJobID(), stationsToVisit, endStations, std::bind(&JobGenerator::completedJob, this)});
+}
+
+int JobGenerator::getNextJobID(){
+    return jobID++;
 }
 
 std::unique_ptr<Job> JobGenerator::generateGetHomeJob(int location){
@@ -36,7 +40,7 @@ std::unique_ptr<Job> JobGenerator::generateGetHomeJob(int location){
     std::set<int> endLocation{};
     endLocation.insert(location);
 
-    return std::make_unique<Job>(Job{stationsToVisit, endLocation, [](){}});
+    return std::make_unique<Job>(Job{-1, stationsToVisit, endLocation, [](){}});
 }
 
 bool JobGenerator::anyJobsLeft() {
