@@ -16,8 +16,11 @@ unset(ARGOS_WITH_LUA CACHE)
 
 ## ********************************* SingleThreadUppaalBot
 add_library(SingleThreadUppaalBot MODULE
-        SingleThreadUppaalBot.hpp
-        SingleThreadUppaalBot.cpp)
+        #SingleThreadUppaalBot.hpp
+        #SingleThreadUppaalBot.cpp
+        SingleThreadBotGreedy.cpp
+        SingleThreadBotGreedy.hpp
+        )
 
 add_dependencies(SingleThreadUppaalBot argos-ext)
 
