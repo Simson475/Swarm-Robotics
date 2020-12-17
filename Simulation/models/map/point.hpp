@@ -28,6 +28,8 @@ public:
 
     Point(CVector3 c, pointType type, std::string name);
 
+    Point(CVector3 c);
+
     ~Point();
 
     Point(Point &&p) noexcept;
@@ -60,7 +62,7 @@ public:
     //Setters
     void setID(const int newID);
 
-    void setName(const std::string& newName);
+    void setName(const std::string &newName);
 
     void setAdjIDs(const std::vector<int> &adjID);
 
@@ -68,13 +70,14 @@ public:
 
     static void resetIdCount();
 
-    void setAsOccupied(){
+    void setAsOccupied() {
         this->occupied = true;
     }
 
-    void setAsAvailable(){
+    void setAsAvailable() {
         this->occupied = false;
     }
+
     //Calculations
     double magnitude() const;
     //End Calculations

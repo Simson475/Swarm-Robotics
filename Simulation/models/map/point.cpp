@@ -14,11 +14,16 @@ Point::Point(float x, float y, float z, pointType type, std::string name)
 
 Point::Point(CVector3 c, pointType type, std::string name)
     : CVector3(c.GetX(), c.GetY(), c.GetZ()) {
-    if (pointType::tempCalculation != type)
-        id = id_counter++;
-    else id = std::numeric_limits<int>::max();
+    id = id_counter++;
     this->pType = type;
     this->name = std::move(name);
+}
+
+Point::Point(CVector3 c)
+    : CVector3(c.GetX(), c.GetY(), c.GetZ()) {
+    this->id = std::numeric_limits<int>::max();
+    this->pType = pointType::tempCalculation;
+    this->name = "";
 }
 
 Point::Point() : CVector3() {
@@ -85,11 +90,11 @@ double Point::getZ() const {
 }
 
 Point Point::operator+(const Point &l) const {
-    return Point(static_cast<argos::CVector3>(*this) + static_cast<argos::CVector3>(l), pointType::tempCalculation, "");
+    return Point(static_cast<argos::CVector3>(*this) + static_cast<argos::CVector3>(l));
 }
 
 Point Point::operator-(const Point &l) const {
-    return Point(static_cast<argos::CVector3>(*this) - static_cast<argos::CVector3>(l), pointType::tempCalculation, "");
+    return Point(static_cast<argos::CVector3>(*this) - static_cast<argos::CVector3>(l));
 }
 
 int Point::getType() const { return pType; }
@@ -108,15 +113,15 @@ Point::Point(float x, float y, float z) : argos::CVector3(x, y, z) {
     this->name = "";
 }
 
-double Point::getDistance(const Point& p){
+double Point::getDistance(const Point &p) {
     return argos::Distance(*this, p);
 }
 
-void Point::setID(const int newID) {id = newID;}
+void Point::setID(const int newID) { id = newID; }
 
-void Point::setName(const std::string& newName) {name = newName;}
+void Point::setName(const std::string &newName) { name = newName; }
 
-void Point::adjustPointToMid(const Point& p) {
+void Point::adjustPointToMid(const Point &p) {
     this->SetX((this->getX() + p.getX()) / 2);
     this->SetY((this->getY() + p.getY()) / 2);
     this->setName(getName() + "Merged" + p.getName());
