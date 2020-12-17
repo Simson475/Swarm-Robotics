@@ -190,11 +190,6 @@ bool intersectionInterest(const Point &m1, const Point &m2, const Point &n1, con
 
 bool checkIfPointIsInShapeHelper(Box &box, Line &line, Line &vLine, bool isA) {
     if (box.isPointInShape(isA ? line.Geta() : line.Getb())) {
-        //If such point is connected to one of the boxes virtual corners - eliminate
-//        if (box.isPointPartOfTheBox(isA ? line.Getb() : line.Geta())) {
-//            line.setFailureline();
-//            return true;
-//        }
         //Once inside the box check if we are comparing with the closest line, if so skip
         Line l = box.getClosestLineToAPoint(isA ? line.Geta() : line.Getb());
         if (vLine == l)
@@ -206,7 +201,7 @@ bool checkIfPointIsInShapeHelper(Box &box, Line &line, Line &vLine, bool isA) {
 //threshold used for determining if the point is on the line or not
 const float threshold = 0.2f;
 
-bool doesLineCrossPointHelper(Line& l, const Point &r) {
+bool doesLineCrossPointHelper(Line &l, const Point &r) {
     double dxc = r.getX() - l.Geta().getX();
     double dyc = r.getY() - l.Geta().getY();
 
