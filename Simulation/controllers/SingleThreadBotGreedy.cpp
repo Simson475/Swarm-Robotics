@@ -142,7 +142,7 @@ void SingleThreadBotGreedy::ControlStep(){
             if (hasJob() && stationPlan.empty() && !returningToInit) //@todo: Have proper boolean function
             {
                 log_helper("Constructs Station model");
-                constructStationUppaalModel();
+                //constructStationUppaalModel();
                 log_helper("Constructed Station model");
 
                 auto t_start = std::chrono::high_resolution_clock::now();
@@ -162,7 +162,7 @@ void SingleThreadBotGreedy::ControlStep(){
             if (hasJob() && waypointPlan.empty()) //@todo: Have proper boolean function
             {
                 log_helper("Constructs Waypoint model");
-                constructWaypointUppaalModel();
+                //constructWaypointUppaalModel();
                 log_helper("Constructed Waypoint model");
 
                 auto t_start = std::chrono::high_resolution_clock::now();
