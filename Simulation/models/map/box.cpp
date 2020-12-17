@@ -1,4 +1,5 @@
 #include "box.hpp"
+#include <limits>
 
 Box::Box(std::string id, argos::CVector3 center, argos::CVector3 size) {
     this->center = center;
@@ -10,14 +11,14 @@ Box::Box(std::string id, argos::CVector3 center, argos::CVector3 size) {
     h = size.GetY();
     w = size.GetX();
 
-    virtualCorners.push_back(Point(x + w / 2 + offset_for_obstacles, y + h / 2 + offset_for_obstacles,
-                                   center.GetZ(), pointType::via, id + "Vcorner1"));
-    virtualCorners.push_back(Point(x - w / 2 - offset_for_obstacles, y + h / 2 + offset_for_obstacles,
-                                   center.GetZ(), pointType::via, id + "Vcorner2"));
-    virtualCorners.push_back(Point(x - w / 2 - offset_for_obstacles, y - h / 2 - offset_for_obstacles,
-                                   center.GetZ(), pointType::via, id + "Vcorner3"));
-    virtualCorners.push_back(Point(x + w / 2 + offset_for_obstacles, y - h / 2 - offset_for_obstacles,
-                                   center.GetZ(), pointType::via, id + "Vcorner4"));
+    virtualCorners.emplace_back(x + w / 2 + offset_for_obstacles, y + h / 2 + offset_for_obstacles,
+                                   center.GetZ(), pointType::via, id + "Vcorner1");
+    virtualCorners.emplace_back(x - w / 2 - offset_for_obstacles, y + h / 2 + offset_for_obstacles,
+                                   center.GetZ(), pointType::via, id + "Vcorner2");
+    virtualCorners.emplace_back(x - w / 2 - offset_for_obstacles, y - h / 2 - offset_for_obstacles,
+                                   center.GetZ(), pointType::via, id + "Vcorner3");
+    virtualCorners.emplace_back(x + w / 2 + offset_for_obstacles, y - h / 2 - offset_for_obstacles,
+                                   center.GetZ(), pointType::via, id + "Vcorner4");
 }
 
 const std::vector<std::tuple<float, float, float, float>> Box::getCoordinates() {
@@ -31,14 +32,14 @@ const std::vector<std::tuple<float, float, float, float>> Box::getCoordinates() 
 }
 
 void Box::setBoxCorner() {
-    corners.push_back(Point(x + w / 2, y + h / 2, center.GetZ(), pointType::realCorner,
-                            id + "corner1"));
-    corners.push_back(Point(x - w / 2, y + h / 2, center.GetZ(), pointType::realCorner,
-                            id + "corner2"));
-    corners.push_back(Point(x - w / 2, y - h / 2, center.GetZ(), pointType::realCorner,
-                            id + "corner3"));
-    corners.push_back(Point(x + w / 2, y - h / 2, center.GetZ(), pointType::realCorner,
-                            id + "corner4"));
+    corners.emplace_back(x + w / 2, y + h / 2, center.GetZ(), pointType::realCorner,
+                            id + "corner1");
+    corners.emplace_back(x - w / 2, y + h / 2, center.GetZ(), pointType::realCorner,
+                            id + "corner2");
+    corners.emplace_back(x - w / 2, y - h / 2, center.GetZ(), pointType::realCorner,
+                            id + "corner3");
+    corners.emplace_back(x + w / 2, y - h / 2, center.GetZ(), pointType::realCorner,
+                            id + "corner4");
     boxLines.emplace_back(&corners[0], &corners[1]);
     boxLines.emplace_back(&corners[1], &corners[2]);
     boxLines.emplace_back(&corners[2], &corners[3]);
