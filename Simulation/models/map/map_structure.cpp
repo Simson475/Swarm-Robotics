@@ -158,6 +158,8 @@ double dot(const Point &a, const Point &b) {
     return a.GetX() * b.GetX() + a.GetY() * b.GetY();
 }
 
+const double parallelThreshold = 0.1;
+
 bool areLinesParallel(const Point &m1, const Point &m2, const Point &n1, const Point &n2) {
     double a1 = m2.GetY() - m1.GetY();
     double b1 = m1.GetX() - m2.GetX();
@@ -165,9 +167,10 @@ bool areLinesParallel(const Point &m1, const Point &m2, const Point &n1, const P
     double a2 = n2.GetY() - n1.GetY();
     double b2 = n2.GetX() - n1.GetX();
 
-    return 0 == a1 * b2 - a2 * b1;
+    return parallelThreshold > abs(a1 * b2 - a2 * b1);
 }
 
+//Function responsible to check if two lines intersect
 bool intersectionInterest(const Point &m1, const Point &m2, const Point &n1, const Point &n2) {
     //If lines are parallel, stop the check and return false
     if (areLinesParallel(m1, m2, n1, n2)) return false;
@@ -187,7 +190,7 @@ bool intersectionInterest(const Point &m1, const Point &m2, const Point &n1, con
     return false;
 }
 
-
+//isA determines if we should check for point A of the line or point B
 bool checkIfPointIsInShapeHelper(Box &box, Line &line, Line &vLine, bool isA) {
     if (box.isPointInShape(isA ? line.Geta() : line.Getb())) {
         //Once inside the box check if we are comparing with the closest line, if so skip
