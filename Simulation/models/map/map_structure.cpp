@@ -268,23 +268,14 @@ void Map_Structure::eliminateBadLines() {
                 break;
             }
         }
-        if(Map_Structure::lines[i].Geta().getName() == "obstacle19Vcorner3" && Map_Structure::lines[i].Getb().getName().find("obstacle17Vcorner3M") != std::string::npos){
-            std::cout << Map_Structure::lines[i].GetDistance() <<std::endl;
-        }
         //Checks if any of the lines intersect with the virtual lines
         if (Map_Structure::lines[i].GetDistance() > 0)
             if (intersectWithVirtualLines(Map_Structure::lines[i]))
                 Map_Structure::lines[i].setFailureline();
-        if(Map_Structure::lines[i].Geta().getName() == "obstacle19Vcorner3" && Map_Structure::lines[i].Getb().getName().find("obstacle17Vcorner3M") != std::string::npos){
-            std::cout << Map_Structure::lines[i].GetDistance() <<std::endl;
-        }
         //Check if any of the lines overlap with other line
         if (Map_Structure::lines[i].GetDistance() > 0)
             if (doesLineCrossPoint(Map_Structure::lines[i]))
                 Map_Structure::lines[i].setFailureline();
-        if(Map_Structure::lines[i].Geta().getName() == "obstacle19Vcorner3" && Map_Structure::lines[i].Getb().getName().find("obstacle17Vcorner3M") != std::string::npos){
-            std::cout << Map_Structure::lines[i].GetDistance() <<std::endl;
-        }
         //This part of the code responsible for adjID's
         //If one decides that they are not needed can be freely removed
         if (i != 0) {
