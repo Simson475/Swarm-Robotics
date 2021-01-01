@@ -16,7 +16,7 @@
 #include <ctime>
 #include <chrono>
 
-SingleThreadBotGreedy::SingleThreadBotGreedy():
+SingleThreadBotGreedy::SingleThreadBotGreedy() :
     m_pcWheels(nullptr),
     m_pcProximity(nullptr),
     m_pcPosition(nullptr),
@@ -27,7 +27,7 @@ SingleThreadBotGreedy::SingleThreadBotGreedy():
                             ToRadians(m_cAlpha)) {}
 
 
-void print_string(const std::string& text, const std::string& fileName="/debug.txt"){
+void print_string(const std::string &text, const std::string &fileName = "/debug.txt") {
     std::ofstream debug{std::string{std::filesystem::current_path()} + fileName};
 
     debug << text;
@@ -35,7 +35,7 @@ void print_string(const std::string& text, const std::string& fileName="/debug.t
     debug.close();
 }
 
-void SingleThreadBotGreedy::log_helper(const std::string& message, bool newLine, bool printName){
+void SingleThreadBotGreedy::log_helper(const std::string &message, bool newLine, bool printName) {
     std::ofstream logFile;
     logFile.open(std::string{std::filesystem::current_path()} + "/log.txt", std::ofstream::app);
     std::string name = printName ? m_strId + ": " : "";
@@ -43,27 +43,29 @@ void SingleThreadBotGreedy::log_helper(const std::string& message, bool newLine,
     argos::LOG << name << message;
     logFile << name << message;
 
-    if(newLine) {
+    if (newLine) {
         argos::LOG << std::endl;
         logFile << std::endl;
     }
 }
 
-void SingleThreadBotGreedy::experiment_helper(const std::string& type, double time, int pointsToVisit, int pointsInPlan){
+void
+SingleThreadBotGreedy::experiment_helper(const std::string &type, double time, int pointsToVisit, int pointsInPlan) {
     std::ofstream dataFile;
     dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
 
-    dataFile << m_strId << ", " << type << ", " << std::to_string(time) << ", " << pointsToVisit << ", " << pointsInPlan << std::endl;
+    dataFile << m_strId << ", " << type << ", " << std::to_string(time) << ", " << pointsToVisit << ", " << pointsInPlan
+             << std::endl;
 }
 
-void SingleThreadBotGreedy::experiment_job_data(const std::string& type, int id, int logicalTime){
+void SingleThreadBotGreedy::experiment_job_data(const std::string &type, int id, int logicalTime) {
     std::ofstream dataFile;
     dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
 
     dataFile << m_strId << ", " << type << ", " << std::to_string(logicalTime) << ", " << id << "," << std::endl;
 }
 
-void SingleThreadBotGreedy::Init(argos::TConfigurationNode& t_node) {
+void SingleThreadBotGreedy::Init(argos::TConfigurationNode &t_node) {
     /*
      * Get sensor/actuator handles
      *
@@ -86,9 +88,9 @@ void SingleThreadBotGreedy::Init(argos::TConfigurationNode& t_node) {
      * list a device in the XML and then you request it here, an error
      * occurs.
      */
-    m_pcWheels    = GetActuator<argos::CCI_DifferentialSteeringActuator>("differential_steering");
-    m_pcProximity = GetSensor  <argos::CCI_FootBotProximitySensor      >("footbot_proximity"    );
-    m_pcPosition  = GetSensor  <argos::CCI_PositioningSensor>("positioning");
+    m_pcWheels = GetActuator<argos::CCI_DifferentialSteeringActuator>("differential_steering");
+    m_pcProximity = GetSensor<argos::CCI_FootBotProximitySensor>("footbot_proximity");
+    m_pcPosition = GetSensor<argos::CCI_PositioningSensor>("positioning");
     /*
      * Parse the configuration file
      *
@@ -104,14 +106,15 @@ void SingleThreadBotGreedy::Init(argos::TConfigurationNode& t_node) {
     currentState = state::moving;
 }
 
-void SingleThreadBotGreedy::ControlStep(){
-    if(currentState == state::moving) {
+void SingleThreadBotGreedy::ControlStep() {
+    if (currentState == state::moving) {
         if (!stationPlan.empty() && isAtStation()) { // If we have a plan and we are at a point
 
             log_helper("Pre-reset");
             lastLocation = nextLocation;
             resetWaypointPlan();
-            if (currentJob->isStationInJob(lastLocation)) { // Then we have reached the station @todo: Proper function for checking
+            if (currentJob->isStationInJob(
+                lastLocation)) { // Then we have reached the station @todo: Proper function for checking
                 log_helper("Arrived at a work station");
 
                 startWorking(50);
@@ -122,17 +125,19 @@ void SingleThreadBotGreedy::ControlStep(){
             log_helper("Post-reset");
         }
 
-        if(currentState == state::moving) {
+        if (currentState == state::moving) {
             if (!hasJob() || jobCompleted()) {
                 if (jobCompleted()) {
                     currentJob->markAsCompleted();
-                    experiment_job_data("EndedJob", currentJob->getID(), argos::CSimulator::GetInstance().GetSpace().GetSimulationClock());
+                    experiment_job_data("EndedJob", currentJob->getID(),
+                                        argos::CSimulator::GetInstance().GetSpace().GetSimulationClock());
                     clearJob();
                 }
                 if (jobGenerator->anyJobsLeft()) {
                     log_helper("Sets job");
                     setJob();
-                    experiment_job_data("StartedJob", currentJob->getID(), argos::CSimulator::GetInstance().GetSpace().GetSimulationClock());
+                    experiment_job_data("StartedJob", currentJob->getID(),
+                                        argos::CSimulator::GetInstance().GetSpace().GetSimulationClock());
                 } else if (lastLocation != initLocation) {
                     log_helper("Sets final job");
                     setFinalJob();
@@ -146,10 +151,11 @@ void SingleThreadBotGreedy::ControlStep(){
                 log_helper("Constructed Station model");
 
                 auto t_start = std::chrono::high_resolution_clock::now();
-                std::vector<int> stationPlan = getStationPlan(runStationModel());
+                std::vector<int> stationPlan = getStationPlan("");
                 auto t_end = std::chrono::high_resolution_clock::now();
-                auto time_elapsed_s = std::chrono::duration<double, std::milli>(t_end-t_start).count() / 1000;
-                experiment_helper("StationPlan", time_elapsed_s, currentJob->getRemainingStations().size(), stationPlan.size());
+                auto time_elapsed_s = std::chrono::duration<double, std::milli>(t_end - t_start).count() / 1000;
+                experiment_helper("StationPlan", time_elapsed_s, currentJob->getRemainingStations().size(),
+                                  stationPlan.size());
                 log_helper("Station plan has size " + std::to_string(stationPlan.size()));
 
                 setStationPlan(stationPlan);
@@ -166,9 +172,9 @@ void SingleThreadBotGreedy::ControlStep(){
                 log_helper("Constructed Waypoint model");
 
                 auto t_start = std::chrono::high_resolution_clock::now();
-                std::vector<int> waypointPlan = getWaypointPlan(runWaypointModel());
+                std::vector<int> waypointPlan = getWaypointPlan("");
                 auto t_end = std::chrono::high_resolution_clock::now();
-                auto time_elapsed_s = std::chrono::duration<double, std::milli>(t_end-t_start).count() / 1000;
+                auto time_elapsed_s = std::chrono::duration<double, std::milli>(t_end - t_start).count() / 1000;
                 experiment_helper("WaypointPlan", time_elapsed_s, 1, waypointPlan.size());
 
                 log_helper("Waypoint plan has size " + std::to_string(waypointPlan.size()));
@@ -177,9 +183,8 @@ void SingleThreadBotGreedy::ControlStep(){
                 log_helper("Going towards " + std::to_string(nextLocation));
             }
         }
-    }
-    else if(currentState == state::working){
-        if(isDoneWorking()){
+    } else if (currentState == state::working) {
+        if (isDoneWorking()) {
             setWorkingClockAsComplete();
 
             currentJob->visitedStation(lastLocation);
@@ -191,8 +196,7 @@ void SingleThreadBotGreedy::ControlStep(){
             }
             log_helper("", true, false);
             sMap.setPointAsAvailable(lastLocation);
-        }
-        else {
+        } else {
             advanceClock();
         }
     }
@@ -201,98 +205,96 @@ void SingleThreadBotGreedy::ControlStep(){
 }
 
 //Sets the vector of references of all the other robots in the system.
-void SingleThreadBotGreedy::obtainOtherBots(Map_Structure& sMap){
+void SingleThreadBotGreedy::obtainOtherBots(Map_Structure &sMap) {
     argos::CSpace::TMapPerType &tBotMap =
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
-    for (auto& botPair : tBotMap) {
+    for (auto &botPair : tBotMap) {
         argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
-        auto& controller = dynamic_cast<SingleThreadBotGreedy&>(pcBot->GetControllableEntity().GetController());
+        auto &controller = dynamic_cast<SingleThreadBotGreedy &>(pcBot->GetControllableEntity().GetController());
 
-        if(GetId() != controller.GetId())
+        if (GetId() != controller.GetId())
             otherBots.push_back(controller);
     }
 }
 
-void SingleThreadBotGreedy::resetWaypointPlan(){
+void SingleThreadBotGreedy::resetWaypointPlan() {
     waypointPlan.clear();
 }
 
-void SingleThreadBotGreedy::resetStationPlan(){
+void SingleThreadBotGreedy::resetStationPlan() {
     log_helper("Clearing station plan");
     stationPlan.clear();
 }
 
-int SingleThreadBotGreedy::getNextStation(){
+int SingleThreadBotGreedy::getNextStation() {
     return stationPlan.front();
 }
 
-int SingleThreadBotGreedy::getNextWaypoint(){
+int SingleThreadBotGreedy::getNextWaypoint() {
     return waypointPlan.front();
 }
 
-void SingleThreadBotGreedy::setJobGenerator(std::shared_ptr<JobGenerator> jobGenerator){
+void SingleThreadBotGreedy::setJobGenerator(std::shared_ptr<JobGenerator> jobGenerator) {
     this->jobGenerator = std::move(jobGenerator);
 }
 
-bool SingleThreadBotGreedy::jobCompleted(){
-    if(currentJob == nullptr)
+bool SingleThreadBotGreedy::jobCompleted() {
+    if (currentJob == nullptr)
         return false;
 
     return currentJob->isCompleted();
 }
 
-void SingleThreadBotGreedy::clearJob(){
+void SingleThreadBotGreedy::clearJob() {
     currentJob = nullptr;
 }
 
-bool SingleThreadBotGreedy::isAtStation(){
-    const argos::CCI_PositioningSensor::SReading& tPosReads  = m_pcPosition->GetReading();
+bool SingleThreadBotGreedy::isAtStation() {
+    const argos::CCI_PositioningSensor::SReading &tPosReads = m_pcPosition->GetReading();
     Point nextPoint = sMap.getPointByID(nextLocation);
 
-    if (Distance(tPosReads.Position,nextPoint) <= 0.15){
+    if (Distance(tPosReads.Position, nextPoint) <= 0.15) {
         log_helper("Has arrived at station " + std::to_string(nextLocation));
         return true;
     }
     return false;
 }
 
-bool SingleThreadBotGreedy::isStationNextInPlan(int stationId){
+bool SingleThreadBotGreedy::isStationNextInPlan(int stationId) {
     return stationId == stationPlan.front();
 }
 
-void SingleThreadBotGreedy::movementLogic(){
-    const argos::CCI_PositioningSensor::SReading& tPosReads  = m_pcPosition->GetReading();
+void SingleThreadBotGreedy::movementLogic() {
+    const argos::CCI_PositioningSensor::SReading &tPosReads = m_pcPosition->GetReading();
 
     Point nextPoint = sMap.getPointByID(nextLocation);
-    argos::CRadians a,c,b;
-    tPosReads.Orientation.ToEulerAngles(a,b,c);
+    argos::CRadians a, c, b;
+    tPosReads.Orientation.ToEulerAngles(a, b, c);
 
     double oy = sin(a.GetValue());
     double ox = cos(a.GetValue());
-    argos::CVector3 Ori(ox,oy,0);
+    argos::CVector3 Ori(ox, oy, 0);
     argos::CVector3 newOri = nextPoint - tPosReads.Position; // Direct Access to Map
     newOri.Normalize();
 
-    double per = newOri.GetX()*Ori.GetY() - newOri.GetY()*Ori.GetX() ;
-    double dotProd = newOri.GetX()*Ori.GetX() + newOri.GetY()*Ori.GetY();
+    double per = newOri.GetX() * Ori.GetY() - newOri.GetY() * Ori.GetX();
+    double dotProd = newOri.GetX() * Ori.GetX() + newOri.GetY() * Ori.GetY();
 
 
-    if (Distance(tPosReads.Position,nextPoint)<= 2 && !sMap.isPointAvailable(nextPoint.getId())) {
+    if (Distance(tPosReads.Position, nextPoint) <= 2 && !sMap.isPointAvailable(nextPoint.getId())) {
         m_pcWheels->SetLinearVelocity(0.0f, 0.0f);
-    }
-    else if(Distance(tPosReads.Position,nextPoint) <= 0.30 ){ // acceptance radius between point and robot
+    } else if (Distance(tPosReads.Position, nextPoint) <= 0.30) { // acceptance radius between point and robot
         movementHelper(per, dotProd, Distance(tPosReads.Position, nextPoint) * 60);
-    }
-    else {
+    } else {
         movementHelper(per, dotProd, m_fWheelVelocity);
     }
 
 }
 
-void SingleThreadBotGreedy::movementHelper(double per, double dotProd, double velocity){
-    const argos::CCI_FootBotProximitySensor::TReadings& tProxReads = m_pcProximity->GetReadings();
+void SingleThreadBotGreedy::movementHelper(double per, double dotProd, double velocity) {
+    const argos::CCI_FootBotProximitySensor::TReadings &tProxReads = m_pcProximity->GetReadings();
     argos::CVector2 cAccumulator;
-    for(size_t i = 0; i < tProxReads.size(); ++i){
+    for (size_t i = 0; i < tProxReads.size(); ++i) {
         cAccumulator += argos::CVector2(tProxReads[i].Value, tProxReads[i].Angle);
     }
     cAccumulator /= tProxReads.size();
@@ -300,204 +302,108 @@ void SingleThreadBotGreedy::movementHelper(double per, double dotProd, double ve
      * is far enough, continue going straight, otherwise curve a little
     */
     argos::Real turnRate;
-    if(per>0.5 || per<-0.5) {turnRate = 10.0f;} else {turnRate = 3.0f;}// while the angle is big our turn rate is fast
-    if(per<0.1 && per>-0.1) {turnRate = 1.0f;} //if the angle is small then our turn rate is reduced to 1
+    if (per > 0.5 || per < -0.5) { turnRate = 10.0f; }
+    else { turnRate = 3.0f; }// while the angle is big our turn rate is fast
+    if (per < 0.1 && per > -0.1) { turnRate = 1.0f; } //if the angle is small then our turn rate is reduced to 1
     argos::CRadians cAngle = cAccumulator.Angle();
-    if(m_cGoStraightAngleRange.WithinMinBoundIncludedMaxBoundIncluded(cAngle) &&
-       cAccumulator.Length() < m_fDelta ){
-        if( per > 0.1 ){
-            m_pcWheels->SetLinearVelocity(turnRate, -turnRate );
-        }
-        else if ( per < -0.1 ){
+    if (m_cGoStraightAngleRange.WithinMinBoundIncludedMaxBoundIncluded(cAngle) &&
+        cAccumulator.Length() < m_fDelta) {
+        if (per > 0.1) {
+            m_pcWheels->SetLinearVelocity(turnRate, -turnRate);
+        } else if (per < -0.1) {
             m_pcWheels->SetLinearVelocity(-turnRate, turnRate);
-        }
-        else{
-            if (dotProd > 0){
+        } else {
+            if (dotProd > 0) {
                 m_pcWheels->SetLinearVelocity(velocity, velocity);
-            }
-            else{
+            } else {
                 m_pcWheels->SetLinearVelocity(velocity, 0.0f);
             }
         }
-    }
-    else{
+    } else {
 
 
         /* Turn, depending on the sign of the angle */
-        if(cAngle.GetValue() > 0.0f) {
+        if (cAngle.GetValue() > 0.0f) {
             m_pcWheels->SetLinearVelocity(10.0f, 0.0f); // right
-        }
-        else {
-            m_pcWheels->SetLinearVelocity( 0.0f, 10.0f); // left
+        } else {
+            m_pcWheels->SetLinearVelocity(0.0f, 10.0f); // left
         }
     }
 }
 
+void SingleThreadBotGreedy::sortJob(const std::vector<std::vector<float>> &shortestDistances, std::vector<int> &job) {
+    for (size_t i = 0; i < job.size() - 1; i++) {
+        int k = i;
+        float min = std::numeric_limits<float>::infinity();
+        for (size_t j = i; j < job.size() - 1; j++) {
+            float temp;
+            if (i == 0) {
+                temp = shortestDistances[nextLocation][job[j]];
+            } else temp = shortestDistances[job[i - 1]][job[j]];
+
+            if (temp < min) {
+                min = temp;
+                k = j;
+            }
+        }
+        std::swap(job[i], job[k]);
+    }
+}
 
 std::vector<int> SingleThreadBotGreedy::getStationPlan(std::string modelOutput) {
-    std::smatch m;
-    std::regex queryForm ("cur_station:\n");
-    std::regex_search(modelOutput, m, queryForm);
-
-
-    std::string queryResult = modelOutput.substr(m.position());
-    std::ofstream debug2{std::string{std::filesystem::current_path()} + "/debug2.txt"};
-
-    debug2 << modelOutput << "\n\n";
-    debug2 << queryResult;
-
-    std::set<int> stationsVisited{};
-    std::vector<int> stationPlan{};
-
-
-    std::regex queryPart(R"(([0-9]+)([.][0-9])?,([0-9]+))");
-    std::regex_search(queryResult, m, queryPart);
-    for (auto it = std::sregex_iterator(queryResult.begin(), queryResult.end(), queryPart);
-         it != std::sregex_iterator(); it++){
-        m = *it;
-        debug2 << m[0] << ": ->  "  << m[3] << std::endl;
-
-        //Needed for the initial creation of station plans.
-        int tmpLastLocation;
-
-        if((long unsigned int)lastLocation >= sMap.stationIDs.size() + sMap.endStationIDs.size())
-            tmpLastLocation = sMap.stationIDs.size() + sMap.endStationIDs.size();
-        else
-            tmpLastLocation = lastLocation;
-
-        if(m[1] != "0" && stationsVisited.find(std::stoi(m[3])) == stationsVisited.end()){
-            if(stationPlan.empty() && std::stoi(m[3]) == tmpLastLocation) {
-                continue;
-            }
-            stationPlan.push_back(std::stoi(m[3]));
-            stationsVisited.insert(std::stoi(m[3]));
-        }
+    std::vector<int> tempPlan{};
+    if (!currentJob->getRemainingStations().empty()) {
+        for (auto &job : currentJob->getRemainingStations())
+            tempPlan.push_back(job);
+        sortJob(sMap.getShortestDistanceMatrix(), tempPlan);
+    } else {
+        for (auto &job : currentJob->getEndStations())
+            tempPlan.push_back(job);
     }
-
-    debug2 << "Station plan:\n";
-    for(int s : stationPlan)
-        debug2 << s << std::endl;
-
-
-    debug2.close();
-    return stationPlan;
+    return tempPlan;
 }
 
 std::vector<int> SingleThreadBotGreedy::getWaypointPlan(std::string modelOutput) {
-    std::smatch m;
-    std::regex queryForm ("cur_station:\n");
-    std::regex_search(modelOutput, m, queryForm);
+    std::vector<int> tempPlan{};
 
+    auto plan = sMap.findPath(lastLocation, stationPlan.front());
 
-    std::string queryResult = modelOutput.substr(m.position());
-    std::ofstream debug4{std::string{std::filesystem::current_path()} + "/debug4.txt"};
-
-    debug4 << modelOutput << "\n\n";
-    debug4 << queryResult;
-
-    std::set<int> stationsVisited{};
-    std::vector<int> stationPlan{};
-
-
-    std::regex queryPart(R"(([0-9]+)([.][0-9])?,([0-9]+))");
-    std::regex_search(queryResult, m, queryPart);
-    for (auto it = std::sregex_iterator(queryResult.begin(), queryResult.end(), queryPart);
-         it != std::sregex_iterator(); it++){
-        m = *it;
-        debug4 << m[0] << ": ->  "  << m[3] << std::endl;
-
-        int currentPosition = lastLocation; //Needs to be generalized to the current position in the given matrix.
-
-        if(m[1] != "0" && stationsVisited.find(std::stoi(m[3])) == stationsVisited.end()){
-            if(stationPlan.empty() && std::stoi(m[3]) == currentPosition) {
-                continue;
-            }
-            stationPlan.push_back(std::stoi(m[3]));
-            stationsVisited.insert(std::stoi(m[3]));
-        }
+    for (auto &p : plan) {
+        tempPlan.emplace_back(p.getId());
     }
 
-    debug4 << "Station plan:\n";
-    for(int s : stationPlan)
-        debug4 << s << std::endl;
-
-
-    debug4.close();
-    return stationPlan;
+    return tempPlan;
 }
 
-void SingleThreadBotGreedy::setStationPlan(std::vector<int> stationPlan){
+void SingleThreadBotGreedy::setStationPlan(std::vector<int> stationPlan) {
     this->stationPlan = std::move(stationPlan);
 }
 
-void SingleThreadBotGreedy::setWaypointPlan(std::vector<int> waypointPlan){
+void SingleThreadBotGreedy::setWaypointPlan(std::vector<int> waypointPlan) {
     this->waypointPlan = std::move(waypointPlan);
-}
-
-std::string SingleThreadBotGreedy::runStationModel(){
-    std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
-    //std::string verifyta{"~/phd/Uppaal/uppaal64-4.1.20-stratego-7/bin-Linux/verifyta"};
-    std::string model{"./" + GetId() + "/station_model.xml"};
-
-    std::string terminalCommand = verifyta + " " + model;
-
-    std::string result;
-    FILE * stream;
-    const int max_buffer = 256;
-    char buffer[max_buffer];
-    stream = popen(terminalCommand.c_str(), "r");
-    if (stream) {
-        while (!feof(stream))
-            if (fgets(buffer, max_buffer, stream) != nullptr) result.append(buffer);
-        pclose(stream);
-    }
-
-    print_string(result);
-    return result;
-}
-
-std::string SingleThreadBotGreedy::runWaypointModel(){
-    std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
-    std::string model{"./" + GetId() + "/waypoint_model.xml"};
-
-    std::string terminalCommand = verifyta + " " + model;
-
-    std::string result;
-    FILE * stream;
-    const int max_buffer = 256;
-    char buffer[max_buffer];
-    stream = popen(terminalCommand.c_str(), "r");
-    if (stream) {
-        while (!feof(stream))
-            if (fgets(buffer, max_buffer, stream) != nullptr) result.append(buffer);
-        pclose(stream);
-    }
-
-    print_string(result);
-    return result;
 }
 
 bool SingleThreadBotGreedy::hasJob() {
     return currentJob != nullptr;
 }
 
-unsigned int SingleThreadBotGreedy::sizeOfStationPlan(){
-    return (unsigned)stationPlan.size();
+unsigned int SingleThreadBotGreedy::sizeOfStationPlan() {
+    return (unsigned) stationPlan.size();
 }
 
-int SingleThreadBotGreedy::getLastLocation() const{
+int SingleThreadBotGreedy::getLastLocation() const {
     return lastLocation;
 }
 
-std::vector<int> SingleThreadBotGreedy::getStationPlan(){
+std::vector<int> SingleThreadBotGreedy::getStationPlan() {
     return stationPlan;
 }
 
-std::vector<int> SingleThreadBotGreedy::getWaypointPlan(){
+std::vector<int> SingleThreadBotGreedy::getWaypointPlan() {
     return waypointPlan;
 }
 
-std::set<int> SingleThreadBotGreedy::getOrder(){
+std::set<int> SingleThreadBotGreedy::getOrder() {
     return currentJob->getRemainingStations();
 }
 
@@ -505,7 +411,7 @@ void SingleThreadBotGreedy::setJob() {
     currentJob = jobGenerator->getNextJob();
 
     log_helper("Job is now: ", false);
-    for(int j : currentJob->getRemainingStations()){
+    for (int j : currentJob->getRemainingStations()) {
         log_helper(std::to_string(j) + " ", false, false);
     }
     log_helper("", true, false);
@@ -518,51 +424,51 @@ void SingleThreadBotGreedy::setFinalJob() {
     log_helper("Final job set");
 
     log_helper("Job is now: ", false);
-    for(int j : currentJob->getRemainingStations()){
+    for (int j : currentJob->getRemainingStations()) {
         log_helper(std::to_string(j) + " ", false, false);
     }
     log_helper("", true, false);
 }
 
-void SingleThreadBotGreedy::setNextLocation(int locationID){
+void SingleThreadBotGreedy::setNextLocation(int locationID) {
     nextLocation = locationID;
 }
 
-void SingleThreadBotGreedy::setInitLocation(int locationID){
+void SingleThreadBotGreedy::setInitLocation(int locationID) {
     lastLocation = locationID;
     initLocation = locationID;
 }
 
-bool SingleThreadBotGreedy::isDoneWorking() const{
+bool SingleThreadBotGreedy::isDoneWorking() const {
     return clock >= clockLimit;
 }
 
-void SingleThreadBotGreedy::startWorking(int clockLimit){
+void SingleThreadBotGreedy::startWorking(int clockLimit) {
     clock = 0;
     this->clockLimit = clockLimit;
     currentState = state::working;
 }
 
-void SingleThreadBotGreedy::setWorkingClockAsComplete(){
+void SingleThreadBotGreedy::setWorkingClockAsComplete() {
     currentState = state::moving;
 }
 
-void SingleThreadBotGreedy::advanceClock(){
+void SingleThreadBotGreedy::advanceClock() {
     clock++;
 
     if (clock > clockLimit)
         throw std::logic_error("Working clock exceeds the limit of work to do.");
 }
 
-bool SingleThreadBotGreedy::isActive(){
+bool SingleThreadBotGreedy::isActive() {
     return hasJob() && !returningToInit;
 }
 
-bool SingleThreadBotGreedy::isWorking(){
+bool SingleThreadBotGreedy::isWorking() {
     return currentState == state::working;
 }
 
-int SingleThreadBotGreedy::getClockCount() const{
+int SingleThreadBotGreedy::getClockCount() const {
     return clock;
 }
 

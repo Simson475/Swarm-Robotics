@@ -128,8 +128,6 @@ private:
     int clockLimit;
 
     //**************** ControlStep functionality
-    std::string runStationModel();
-    std::string runWaypointModel();
     std::vector<int> getStationPlan(std::string modelOutput);
     std::vector<int> getWaypointPlan(std::string modelOutput);
     void setStationPlan(std::vector<int>);
@@ -156,6 +154,8 @@ private:
     void startWorking(int clockLimit);
     void setWorkingClockAsComplete();
     void advanceClock();
+
+    void sortJob(const std::vector<std::vector<float>> &shortestDistances, std::vector<int>& job);
 };
 
 
