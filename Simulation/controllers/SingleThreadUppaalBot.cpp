@@ -105,6 +105,25 @@ void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
 }
 
 void SingleThreadUppaalBot::ControlStep(){
+    if(currentState == state::working){
+        if(isDoneWorking()){
+            setWorkingClockAsComplete();
+
+            currentJob->visitedStation(lastLocation);
+            resetStationPlan();
+
+            log_helper("Job is reduced: ", false);
+            for (int j : currentJob->getRemainingStations()) {
+                log_helper(std::to_string(j) + " ", false, false);
+            }
+            log_helper("", true, false);
+            sMap.setPointAsAvailable(lastLocation);
+        }
+        else {
+            advanceClock();
+        }
+    }
+
     if(currentState == state::moving) {
         if (!stationPlan.empty() && isAtStation()) { // If we have a plan and we are at a point
 
@@ -176,24 +195,6 @@ void SingleThreadUppaalBot::ControlStep(){
                 setNextLocation(waypointPlan.front());
                 log_helper("Going towards " + std::to_string(nextLocation));
             }
-        }
-    }
-    else if(currentState == state::working){
-        if(isDoneWorking()){
-            setWorkingClockAsComplete();
-
-            currentJob->visitedStation(lastLocation);
-            resetStationPlan();
-
-            log_helper("Job is reduced: ", false);
-            for (int j : currentJob->getRemainingStations()) {
-                log_helper(std::to_string(j) + " ", false, false);
-            }
-            log_helper("", true, false);
-            sMap.setPointAsAvailable(lastLocation);
-        }
-        else {
-            advanceClock();
         }
     }
 
