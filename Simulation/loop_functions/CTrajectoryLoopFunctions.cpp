@@ -68,7 +68,7 @@ void CTrajectoryLoopFunctions::PostExperiment() {
     std::ofstream dataFile;
     dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
 
-    dataFile << ", " << "LogicalTotal, " << argos::CSimulator::GetInstance().GetSpace().GetSimulationClock() << ", ," << std::endl;
+    dataFile << ", " << "LogicalTotal, " << argos::CSimulator::GetInstance().GetSpace().GetSimulationClock() << ", , ," << std::endl;
     dataFile.close();
 }
 

@@ -60,7 +60,7 @@ void SingleThreadUppaalBot::experiment_job_data(std::string type, int id, int lo
     std::ofstream dataFile;
     dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
 
-    dataFile << m_strId << ", " << type << ", " << std::to_string(logicalTime) << ", " << id << "," << std::endl;
+    dataFile << m_strId << ", " << type << ", " << std::to_string(logicalTime) << ", " << getLastLocation() << ", " << id << "," << std::endl;
 }
 
 void SingleThreadUppaalBot::Init(argos::TConfigurationNode& t_node) {
