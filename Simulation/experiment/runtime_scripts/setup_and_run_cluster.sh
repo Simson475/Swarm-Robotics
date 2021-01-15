@@ -2,7 +2,6 @@
 #SBATCH --time=1:00:00
 #SBATCH --mail-user=mk@cs.aau.dk
 #SBATCH --mail-type=FAIL
-#SBATCH --mail-type=TIME_LIMIT
 #SBATCH --partition=dhabi
 #SBATCH --mem=1500
 
@@ -25,11 +24,14 @@ ln -s $(realpath experiment/trajectory.argos) ${new_folder}/trajectory.argos
 
 # Enters the folder and run the argos simulation
 cd $new_folder
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./argos3-lib && ./argos3 -c ./trajectory.argos
-cd ..
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./argos3-lib && ./argos3 -c ./trajectory.argos && {
+    cd ..
 
-# Moves the results and giving it a proper name
-mv ${new_folder}/data.csv results/${new_folder}.csv
+    # Moves the results and giving it a proper name
+    mv ${new_folder}/data.csv results/${new_folder}.csv
 
-# Remove all the data.
-rm -r $new_folder
+    # Remove all the data.
+    rm -r $new_folder
+} || {
+    echo "The execution of ARGOS failed. See log-files for more details."; exit -10;
+}
