@@ -27,3 +27,7 @@ double getDistanceBetweenPoints(Map_Structure& map_structure, std::vector<int> p
 
     return path_distance;
 }
+
+int getLogicalTime(){
+    return argos::CSimulator::GetInstance().GetSpace().GetSimulationClock();
+}

@@ -11,5 +11,6 @@
 
 double getDistanceToNextPoint(const argos::CCI_Controller& controller, Map_Structure& map_structure, int nextPoint);
 double getDistanceBetweenPoints(Map_Structure& map_structure, std::vector<int> points);
+int getLogicalTime();
 
 #endif //SWARMSIMULATOR_ARGOS_WRAPPER_H

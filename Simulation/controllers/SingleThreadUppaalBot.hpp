@@ -68,6 +68,9 @@ public:
     bool isWorking();
     int getClockCount();
 
+    // Is the robot in a live deadlock
+    bool isInLiveDeadlock();
+
 
 private:
     //Internal state for when to move and when to move
@@ -121,6 +124,9 @@ private:
     // Used as a clock counter for when working at stations
     int clock;
     int clockLimit;
+
+    // Clock for checking if robot is in a live deadlock
+    int lastModification = 0;
 
     //**************** ControlStep functionality
     void constructStationUppaalModel();

@@ -243,6 +243,11 @@ bool SingleThreadUppaalBot::jobCompleted(){
 }
 
 void SingleThreadUppaalBot::clearJob(){
+    if (returningToInit) {
+        log_helper("Robot's state is now 'done'");
+        currentState = state::done;
+    }
+
     currentJob = nullptr;
 }
 
@@ -431,12 +436,14 @@ void SingleThreadUppaalBot::setStationPlan(std::vector<int> stationPlan){
 }
 
 void SingleThreadUppaalBot::setWaypointPlan(std::vector<int> waypointPlan){
+    lastModification = getLogicalTime();
     this->waypointPlan = std::move(waypointPlan);
 }
 
 std::string SingleThreadUppaalBot::runStationModel(){
     //std::string verifyta{"~/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
-    std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
+    //std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
+    std::string verifyta{"./bin-Linux/verifyta.bin"};
     //std::string verifyta{"~/phd/Uppaal/uppaal64-4.1.20-stratego-7/bin-Linux/verifyta"};
     std::string model{"./" + GetId() + "/station_model.xml"};
 
@@ -458,7 +465,8 @@ std::string SingleThreadUppaalBot::runStationModel(){
 }
 
 std::string SingleThreadUppaalBot::runWaypointModel(){
-    std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
+    //std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
+    std::string verifyta{"./bin-Linux/verifyta.bin"};
     std::string model{"./" + GetId() + "/waypoint_model.xml"};
 
     std::string terminalCommand = verifyta + " " + model;
@@ -567,6 +575,14 @@ int SingleThreadUppaalBot::getClockCount(){
     return clock;
 }
 
+// If the robot is active and there has been no activity for 10 logical minutes, the robot is in a deadlock.
+bool SingleThreadUppaalBot::isInLiveDeadlock() {
+    if(currentState == state::done)
+        return false;
+
+    return lastModification + 10 * 60 * 10 < getLogicalTime();
+}
+
 void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/planning_blueprint.xml"};
     std::ofstream full_model{"./" + GetId() + "/station_model.xml"};
@@ -599,7 +615,6 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
         if(pos != std::string::npos){
             //@todo: Make proper functions to encapsulate the number written!
             // The id matches the last index of the expanded DistMatrix.
-
             if(lastLocation >= sMap.getAmountOfStations()){
                 line.replace(pos, std::string{"#CUR_STATION#"}.size(),
                              std::to_string(sMap.getAmountOfStations()));

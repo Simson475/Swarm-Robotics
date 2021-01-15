@@ -20,6 +20,8 @@ public:
 
     bool IsExperimentFinished() override;
 
+    void PreStep() override;
+
     void PostExperiment() override;
 
 private:

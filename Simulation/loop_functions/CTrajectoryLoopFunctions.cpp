@@ -55,6 +55,20 @@ bool CTrajectoryLoopFunctions::IsExperimentFinished() {
     return jobGenerator->allJobsCompleted();
 }
 
+void CTrajectoryLoopFunctions::PreStep() {
+    argos::CSpace::TMapPerType &tBotMap =
+        argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
+    for (auto& botPair : tBotMap) {
+        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
+        auto& controller = dynamic_cast<SingleThreadUppaalBot&>(pcBot->GetControllableEntity().GetController());
+
+        if(controller.isInLiveDeadlock()) {
+            fprintf(stderr,"Robot %s is in a live deadlock", controller.GetId().c_str());
+            exit(EXIT_FAILURE);
+        }
+    }
+}
+
 void CTrajectoryLoopFunctions::PostExperiment() {
     std::ofstream logFile;
     logFile.open(std::string{std::filesystem::current_path()} + "/log.txt", std::ofstream::app);
@@ -79,7 +93,7 @@ void CTrajectoryLoopFunctions::initJobGenerator(){
     for(auto id : sMap.endStationIDs)
         endStationIDs.insert(id);
 
-    jobGenerator = std::make_shared<PredefinedJobGenerator>(PredefinedJobGenerator(sMap.getAmountOfStations(), endStationIDs, 3));
+    jobGenerator = std::make_shared<PredefinedJobGenerator>(PredefinedJobGenerator(sMap.getAmountOfStations(), endStationIDs, 30));
 };
 
 void CTrajectoryLoopFunctions::setRobotFolders(){
