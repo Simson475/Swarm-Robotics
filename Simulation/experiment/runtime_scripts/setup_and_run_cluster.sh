@@ -2,6 +2,7 @@
 #SBATCH --time=1:00:00
 #SBATCH --mail-user=mk@cs.aau.dk
 #SBATCH --mail-type=FAIL
+#SBATCH --mail-type=TIME_LIMIT
 #SBATCH --partition=dhabi
 #SBATCH --mem=1500
 
@@ -10,15 +11,17 @@ new_folder=exp_${1}
 mkdir $new_folder
 
 # Copies all the files needed. Needs to be updated to use sym-links
-cp -r experiment/argos3-lib ${new_folder}/argos3-lib
-cp -r experiment/bin-Linux ${new_folder}/bin-Linux
-cp experiment/argos3 ${new_folder}/argos3
-cp experiment/libCTrajectoryLoopFunctions.so ${new_folder}/libCTrajectoryLoopFunctions.so
-cp experiment/libSingleThreadUppaalBot.so ${new_folder}/libSingleThreadUppaalBot.so
-cp experiment/planning_blueprint.xml ${new_folder}/planning_blueprint.xml
-cp experiment/points.json ${new_folder}/points.json
-cp experiment/run_a_scene.sh ${new_folder}/run_a_scene.sh
-cp experiment/trajectory.argos ${new_folder}/trajectory.argos
+ln -s $(realpath experiment/trajectory.argos) test/trajectory.argos
+
+ln -s $(realpath experiment/argos3-lib) ${new_folder}/argos3-lib
+ln -s $(realpath experiment/bin-Linux) ${new_folder}/bin-Linux
+ln -s $(realpath experiment/argos3) ${new_folder}/argos3
+ln -s $(realpath experiment/libCTrajectoryLoopFunctions.so) ${new_folder}/libCTrajectoryLoopFunctions.so
+ln -s $(realpath experiment/libSingleThreadUppaalBot.so) ${new_folder}/libSingleThreadUppaalBot.so
+ln -s $(realpath experiment/planning_blueprint.xml) ${new_folder}/planning_blueprint.xml
+ln -s $(realpath experiment/points.json) ${new_folder}/points.json
+ln -s $(realpath experiment/run_a_scene.sh) ${new_folder}/run_a_scene.sh
+ln -s $(realpath experiment/trajectory.argos) ${new_folder}/trajectory.argos
 
 # Enters the folder and run the argos simulation
 cd $new_folder
