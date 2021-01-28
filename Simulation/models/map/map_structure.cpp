@@ -190,11 +190,10 @@ bool intersectionInterest(const Point &m1, const Point &m2, const Point &n1, con
     return false;
 }
 
-//isA determines if we should check for point A of the line or point B
-bool checkIfPointIsInShapeHelper(Box &box, Line &line, Line &vLine, bool isA) {
-    if (box.isPointInShape(isA ? line.Geta() : line.Getb())) {
+bool checkIfPointIsInShapeHelper(Box &box, Point &p, Line &vLine) {
+    if (box.isPointInShape(p)) {
         //Once inside the box check if we are comparing with the closest line, if so skip
-        Line l = box.getClosestLineToAPoint(isA ? line.Geta() : line.Getb());
+        Line l = box.getClosestLineToAPoint(p);
         if (vLine == l)
             return true;
     }
@@ -227,8 +226,8 @@ bool Map_Structure::intersectWithVirtualLines(Line &line) {
     for (auto &box : boxes) {
         for (auto &vLines : box.getVirtualLines()) {
             //check if a point is inside the virtual box
-            if (checkIfPointIsInShapeHelper(box, line, vLines, true) ||
-                checkIfPointIsInShapeHelper(box, line, vLines, false)) {
+            if (checkIfPointIsInShapeHelper(box, line.Geta(), vLines) ||
+                checkIfPointIsInShapeHelper(box, line.Getb(), vLines)) {
                 continue;
             }
             //if normal line intersects with any of the virtual lines, we mark it as incorrect line

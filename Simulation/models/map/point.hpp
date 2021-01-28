@@ -40,23 +40,23 @@ public:
 
     //Getters
     //returns the type of a point, for more info check enum pointType
-    [[nodiscard]] int getType() const;
+    int getType() const;
 
-    [[nodiscard]] std::string getName() const;
+    std::string getName() const;
 
     double getDistance(const Point &p);
 
-    [[nodiscard]] int getId() const;
+    int getId() const;
 
-    [[nodiscard]] double getX() const;
+    double getX() const;
 
-    [[nodiscard]] double getY() const;
+    double getY() const;
 
-    [[nodiscard]] double getZ() const;
+    double getZ() const;
 
-    [[nodiscard]] std::vector<int> getAdjIDs() const;
+    std::vector<int> getAdjIDs() const;
 
-    [[nodiscard]] bool isOccupied() const;
+    bool isOccupied() const;
     //End of Getters
 
     //Setters
