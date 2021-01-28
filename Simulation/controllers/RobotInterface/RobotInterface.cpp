@@ -317,7 +317,7 @@ void RobotInterface::sortJob(const std::vector<std::vector<float>> &shortestDist
         for (size_t j = i; j < job.size() - 1; j++) {
             float temp;
             if (i == 0) {
-                temp = shortestDistances[nextLocation][job[j]];
+                temp = shortestDistances[lastLocation][job[j]];
             } else temp = shortestDistances[job[i - 1]][job[j]];
 
             if (temp < min) {
