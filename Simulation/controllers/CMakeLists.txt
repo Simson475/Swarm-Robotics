@@ -16,6 +16,9 @@ unset(ARGOS_WITH_LUA CACHE)
 
 ## ********************************* SingleThreadUppaalBot
 add_library(SingleThreadUppaalBot MODULE
+        ./RobotInterface/RobotInterface.hpp
+        ./RobotInterface/RobotInterface.cpp
+
         #SingleThreadUppaalBot.hpp
         #SingleThreadUppaalBot.cpp
         SingleThreadBotGreedy.cpp
