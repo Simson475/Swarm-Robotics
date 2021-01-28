@@ -3,7 +3,7 @@
 #include "controllers/SingleThreadBotGreedy.hpp"
 #include "controllers/SingleThreadUppaalBot.hpp"
 
-typedef SingleThreadUppaalBot currentBotType;
+typedef SingleThreadBotGreedy currentBotType;
 
 #include <set>
 #include <fstream>

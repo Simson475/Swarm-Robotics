@@ -15,7 +15,7 @@ unset(ARGOS_WITH_LUA CACHE)
 
 
 ## ********************************* SingleThreadUppaalBot
-add_library(SingleThreadUppaalBot MODULE
+add_library(BotImplementations MODULE
         ./RobotInterface/RobotInterface.hpp
         ./RobotInterface/RobotInterface.cpp
 
@@ -26,12 +26,12 @@ add_library(SingleThreadUppaalBot MODULE
         SingleThreadBotGreedy.hpp
         )
 
-add_dependencies(SingleThreadUppaalBot argos-ext)
+add_dependencies(BotImplementations argos-ext)
 
 #Because argos3 installation puts in its own folder.
-target_link_directories(SingleThreadUppaalBot PRIVATE ${EXTERNAL_INSTALL_LOCATION}/lib/argos3)
+target_link_directories(BotImplementations PRIVATE ${EXTERNAL_INSTALL_LOCATION}/lib/argos3)
 
-target_link_libraries(SingleThreadUppaalBot
+target_link_libraries(BotImplementations
         Qt5::Widgets
         argos3core_simulator
         argos3plugin_simulator_entities
@@ -40,13 +40,13 @@ target_link_libraries(SingleThreadUppaalBot
         argos3plugin_simulator_qtopengl
         )
 
-add_custom_command(TARGET SingleThreadUppaalBot POST_BUILD
+add_custom_command(TARGET BotImplementations POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-        ./libSingleThreadUppaalBot.so
-        ../external/bin/libSingleThreadUppaalBot.so
+        ./libBotImplementations.so
+        ../external/bin/libBotImplementations.so
         )
 
-add_custom_command(TARGET SingleThreadUppaalBot POST_BUILD
+add_custom_command(TARGET BotImplementations POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
         ../../controllers/parsing/planning_blueprint.xml
         ${CMAKE_BINARY_DIR}/external/bin/planning_blueprint.xml
