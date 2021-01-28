@@ -23,7 +23,7 @@ std::unique_ptr<Job> JobGenerator::generateJob() {
     int amountPickups = distrEnd(eng);
     std::set<int> stationsToVisit{};
 
-    while (stationsToVisit.size() < (long unsigned int)amountPickups){
+    while (stationsToVisit.size() < amountPickups){
         stationsToVisit.insert(distr(eng));
     }
 
