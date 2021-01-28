@@ -17,4 +17,4 @@ SingleThreadBotGreedy::SingleThreadBotGreedy() : RobotInterface{}
 
 
 
-REGISTER_CONTROLLER(SingleThreadBotGreedy, "SingleThreadUppaalBot_controller")
+REGISTER_CONTROLLER(SingleThreadBotGreedy, "SingleThreadBotGreedy_controller")

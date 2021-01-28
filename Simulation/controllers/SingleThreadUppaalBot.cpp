@@ -360,7 +360,7 @@ std::vector<int> SingleThreadUppaalBot::getStationPlan(std::string modelOutput) 
         //Needed for the initial creation of station plans.
         int tmpLastLocation;
 
-        if((long unsigned int)lastLocation >= sMap.stationIDs.size() + sMap.endStationIDs.size())
+        if(lastLocation >= sMap.stationIDs.size() + sMap.endStationIDs.size())
             tmpLastLocation = sMap.stationIDs.size() + sMap.endStationIDs.size();
         else
             tmpLastLocation = lastLocation;
@@ -574,7 +574,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::string line;
     int numOfStations;
     std::string matrix;
-    if((long unsigned int)lastLocation >= sMap.stationIDs.size() + sMap.endStationIDs.size()){
+    if(lastLocation >= sMap.stationIDs.size() + sMap.endStationIDs.size()){
         matrix = get_expanded_distance_matrix(sMap, lastLocation);
         numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size() + 1;
     }
@@ -597,7 +597,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
         if(pos != std::string::npos){
             //@todo: Make proper functions to encapsulate the number written!
             // The id matches the last index of the expanded DistMatrix.
-            if((long unsigned int)lastLocation >= sMap.stationIDs.size() + sMap.endStationIDs.size()){
+            if(lastLocation >= sMap.stationIDs.size() + sMap.endStationIDs.size()){
                 line.replace(pos, std::string{"#CUR_STATION#"}.size(),
                              std::to_string(sMap.stationIDs.size() + sMap.endStationIDs.size()));
             }
