@@ -1,7 +1,3 @@
-//
-// Created by napalys on 12/16/20.
-//
-
 #ifndef SWARMSIMULATOR_SINGLETHREADBOTGREEDY_HPP
 #define SWARMSIMULATOR_SINGLETHREADBOTGREEDY_HPP
 
@@ -128,8 +124,8 @@ private:
     int clockLimit;
 
     //**************** ControlStep functionality
-    std::vector<int> getStationPlan(std::string modelOutput);
-    std::vector<int> getWaypointPlan(std::string modelOutput);
+    std::vector<int> constructStationPlan();
+    std::vector<int> constructWaypointPlan();
     void setStationPlan(std::vector<int>);
     void setWaypointPlan(std::vector<int> waypointPlan);
 

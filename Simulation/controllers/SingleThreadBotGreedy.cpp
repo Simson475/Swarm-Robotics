@@ -1,9 +1,4 @@
-//
-// Created by napalys on 12/16/20.
-//
-
 #include "SingleThreadBotGreedy.hpp"
-#include "parsing/uppaal_model_parsing.hpp"
 #include "argos_wrapper/argos_wrapper.hpp"
 
 #include <exception>
@@ -49,8 +44,7 @@ void SingleThreadBotGreedy::log_helper(const std::string &message, bool newLine,
     }
 }
 
-void
-SingleThreadBotGreedy::experiment_helper(const std::string &type, double time, int pointsToVisit, int pointsInPlan) {
+void SingleThreadBotGreedy::experiment_helper(const std::string &type, double time, int pointsToVisit, int pointsInPlan) {
     std::ofstream dataFile;
     dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
 
@@ -146,36 +140,19 @@ void SingleThreadBotGreedy::ControlStep() {
 
             if (hasJob() && stationPlan.empty() && !returningToInit) //@todo: Have proper boolean function
             {
-                log_helper("Constructs Station model");
-                //constructStationUppaalModel();
-                log_helper("Constructed Station model");
+                std::vector<int> stationPlan = constructStationPlan();
 
-                auto t_start = std::chrono::high_resolution_clock::now();
-                std::vector<int> stationPlan = getStationPlan("");
-                auto t_end = std::chrono::high_resolution_clock::now();
-                auto time_elapsed_s = std::chrono::duration<double, std::milli>(t_end - t_start).count() / 1000;
-                experiment_helper("StationPlan", time_elapsed_s, currentJob->getRemainingStations().size(),
-                                  stationPlan.size());
                 log_helper("Station plan has size " + std::to_string(stationPlan.size()));
-
                 setStationPlan(stationPlan);
                 log_helper("Next station is now: " + std::to_string(getNextStation()));
+
             } else if (stationPlan.empty() && lastLocation != initLocation && returningToInit) {
                 setStationPlan(std::vector<int>{initLocation});
             }
 
-
             if (hasJob() && waypointPlan.empty()) //@todo: Have proper boolean function
             {
-                log_helper("Constructs Waypoint model");
-                //constructWaypointUppaalModel();
-                log_helper("Constructed Waypoint model");
-
-                auto t_start = std::chrono::high_resolution_clock::now();
-                std::vector<int> waypointPlan = getWaypointPlan("");
-                auto t_end = std::chrono::high_resolution_clock::now();
-                auto time_elapsed_s = std::chrono::duration<double, std::milli>(t_end - t_start).count() / 1000;
-                experiment_helper("WaypointPlan", time_elapsed_s, 1, waypointPlan.size());
+                std::vector<int> waypointPlan = constructWaypointPlan();
 
                 log_helper("Waypoint plan has size " + std::to_string(waypointPlan.size()));
                 setWaypointPlan(waypointPlan);
@@ -350,7 +327,7 @@ void SingleThreadBotGreedy::sortJob(const std::vector<std::vector<float>> &short
     }
 }
 
-std::vector<int> SingleThreadBotGreedy::getStationPlan(std::string modelOutput) {
+std::vector<int> SingleThreadBotGreedy::constructStationPlan() {
     std::vector<int> tempPlan{};
     if (!currentJob->getRemainingStations().empty()) {
         for (auto &job : currentJob->getRemainingStations())
@@ -363,7 +340,7 @@ std::vector<int> SingleThreadBotGreedy::getStationPlan(std::string modelOutput) 
     return tempPlan;
 }
 
-std::vector<int> SingleThreadBotGreedy::getWaypointPlan(std::string modelOutput) {
+std::vector<int> SingleThreadBotGreedy::constructWaypointPlan() {
     std::vector<int> tempPlan{};
 
     auto plan = sMap.findPath(lastLocation, stationPlan.front());
