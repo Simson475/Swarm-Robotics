@@ -365,6 +365,7 @@ std::vector<int> SingleThreadUppaalBot::getStationPlan(std::string modelOutput) 
 
         //Needed for the initial creation of station plans.
         int tmpLastLocation;
+
         if(lastLocation >= sMap.getAmountOfStations())
             tmpLastLocation = sMap.stationIDs.size() + sMap.endStationIDs.size();
         else
