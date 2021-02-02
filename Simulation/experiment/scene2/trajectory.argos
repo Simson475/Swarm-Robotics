@@ -15,8 +15,7 @@
   <framework>
     <system threads="0" />
     <experiment length="0"
-                ticks_per_second="10"
-                random_seed="127" />
+                ticks_per_second="10" />
   </framework>
 
   <!-- *************** -->
@@ -82,7 +81,7 @@
                 distances="1,1,0"
                 layout="5,2,1" />
       <orientation method="constant" values="-45,0,0" />
-      <entity quantity="3" max_trials="1">
+      <entity quantity="6" max_trials="1">
         <foot-bot id="fb">
           <controller config="fdc" />
         </foot-bot>
@@ -118,7 +117,7 @@
   <!-- ****************** -->
   <!-- * Visualization * -->
   <!-- ****************** -->
-  <visualization>
+  <!--visualization>
 
     <qt-opengl autoplay="false">
       <user_functions library="./libCTrajectoryLoopFunctions"
@@ -132,6 +131,6 @@
       </camera>
     </qt-opengl>
 
-  </visualization>
+  </visualization-->
 
 </argos-configuration>

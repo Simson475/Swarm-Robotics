@@ -67,6 +67,7 @@ public:
     bool isActive();
     bool isWorking();
     int getClockCount() const;
+    bool isInLiveDeadlock();
 
 
 protected:
@@ -122,6 +123,9 @@ protected:
     // Used as a clock counter for when working at stations
     int clock;
     int clockLimit;
+
+    // Clock for checking if robot is in a live deadlock
+    int lastModification = 0;
 
     //**************** ControlStep functionality
     std::vector<int> constructStationPlan();

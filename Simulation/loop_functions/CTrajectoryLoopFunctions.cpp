@@ -63,7 +63,7 @@ void CTrajectoryLoopFunctions::PreStep() {
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
     for (auto& botPair : tBotMap) {
         argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
-        auto& controller = dynamic_cast<SingleThreadUppaalBot&>(pcBot->GetControllableEntity().GetController());
+        auto& controller = dynamic_cast<currentBotType&>(pcBot->GetControllableEntity().GetController());
 
         if(controller.isInLiveDeadlock()) {
             fprintf(stderr,"Robot %s is in a live deadlock", controller.GetId().c_str());
@@ -96,7 +96,7 @@ void CTrajectoryLoopFunctions::initJobGenerator(){
     for(auto id : sMap.endStationIDs)
         endStationIDs.insert(id);
 
-    jobGenerator = std::make_shared<PredefinedJobGenerator>(PredefinedJobGenerator(sMap.getAmountOfStations(), endStationIDs, 30));
+    jobGenerator = std::make_shared<PredefinedJobGenerator>(PredefinedJobGenerator(sMap.getAmountOfStations(), endStationIDs, 100));
 };
 
 void CTrajectoryLoopFunctions::setRobotFolders(){

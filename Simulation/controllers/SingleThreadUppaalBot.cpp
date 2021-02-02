@@ -443,9 +443,7 @@ void SingleThreadUppaalBot::setWaypointPlan(std::vector<int> waypointPlan){
 
 std::string SingleThreadUppaalBot::runStationModel(){
     //std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
-    //std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
     std::string verifyta{"./bin-Linux/verifyta.bin"};
-    //std::string verifyta{"~/phd/Uppaal/uppaal64-4.1.20-stratego-7/bin-Linux/verifyta"};
     std::string model{"./" + GetId() + "/station_model.xml"};
 
     std::string terminalCommand = verifyta + " " + model;

@@ -225,6 +225,10 @@ bool RobotInterface::jobCompleted() {
 }
 
 void RobotInterface::clearJob() {
+    if (returningToInit) {
+        log_helper("Robot's state is now 'done'");
+        currentState = state::done;
+    }
     currentJob = nullptr;
 }
 
@@ -359,6 +363,7 @@ void RobotInterface::setStationPlan(std::vector<int> stationPlan) {
 }
 
 void RobotInterface::setWaypointPlan(std::vector<int> waypointPlan) {
+    lastModification = getLogicalTime();
     this->waypointPlan = std::move(waypointPlan);
 }
 
@@ -449,4 +454,12 @@ bool RobotInterface::isWorking() {
 
 int RobotInterface::getClockCount() const {
     return clock;
+}
+
+// If the robot is active and there has been no activity for 10 logical minutes, the robot is in a deadlock.
+bool RobotInterface::isInLiveDeadlock() {
+    if(currentState == state::done)
+        return false;
+
+    return lastModification + 10 * 60 * 10 < getLogicalTime();
 }
