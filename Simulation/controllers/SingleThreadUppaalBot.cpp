@@ -27,7 +27,7 @@ SingleThreadUppaalBot::SingleThreadUppaalBot():
                             ToRadians(m_cAlpha)) {}
 
 
-void print_string(std::string text, std::string fileName="/debug.txt"){
+void SingleThreadUppaalBot::print_string(const std::string &text, const std::string &fileName){
     std::ofstream debug{std::string{std::filesystem::current_path()} + fileName};
 
     debug << text;
@@ -493,7 +493,7 @@ unsigned int SingleThreadUppaalBot::sizeOfStationPlan(){
     return (unsigned)stationPlan.size();
 }
 
-int SingleThreadUppaalBot::getLastLocation(){
+int SingleThreadUppaalBot::getLastLocation() const {
     return lastLocation;
 }
 
@@ -570,7 +570,7 @@ bool SingleThreadUppaalBot::isWorking(){
     return currentState == state::working;
 }
 
-int SingleThreadUppaalBot::getClockCount(){
+int SingleThreadUppaalBot::getClockCount() const {
     return clock;
 }
 

@@ -58,7 +58,7 @@ public:
     // Functions the other controllers need
     bool hasJob();
     unsigned int sizeOfStationPlan();
-    int getLastLocation();
+    int getLastLocation() const;
     std::vector<int> getStationPlan();
     std::set<int> getOrder();
     std::vector<int> getWaypointPlan();
@@ -66,7 +66,7 @@ public:
     int getNextWaypoint();
     bool isActive();
     bool isWorking();
-    int getClockCount();
+    int getClockCount() const;
 
     // Is the robot in a live deadlock
     bool isInLiveDeadlock();
@@ -129,15 +129,18 @@ private:
     int lastModification = 0;
 
     //**************** ControlStep functionality
-    void constructStationUppaalModel();
-    std::string runStationModel();
-    std::string runWaypointModel();
-    std::vector<int> getStationPlan(std::string modelOutput);
-    std::vector<int> getWaypointPlan(std::string modelOutput);
+    void constructStationUppaalModel(); // Must become an override
+    void constructWaypointUppaalModel(); // Must become an override
+    std::string runStationModel(); // Private
+    std::string runWaypointModel(); // Private
+
+
+    std::vector<int> getStationPlan(std::string modelOutput); // Private
+    std::vector<int> getWaypointPlan(std::string modelOutput); // Private
+
     void setStationPlan(std::vector<int>);
     void setWaypointPlan(std::vector<int> waypointPlan);
 
-    void constructWaypointUppaalModel();
     void setJob();
     void setFinalJob();
     void clearJob();
@@ -150,6 +153,9 @@ private:
     bool isStationNextInPlan(int);
     void resetWaypointPlan();
     void resetStationPlan();
+
+    // Helper functions for debug and data printing.
+    void print_string(const std::string &text, const std::string &fileName = "/debug.txt");
     void log_helper(std::string message, bool newLine=true, bool printName=true);
     void experiment_helper(std::string type, double time, int pointsToVisit, int pointsInPlan);
     void experiment_job_data(std::string type, int id, int logicalTime);

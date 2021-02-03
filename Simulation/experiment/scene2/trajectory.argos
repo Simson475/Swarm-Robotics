@@ -117,7 +117,7 @@
   <!-- ****************** -->
   <!-- * Visualization * -->
   <!-- ****************** -->
-  <!--visualization>
+  <visualization>
 
     <qt-opengl autoplay="false">
       <user_functions library="./libCTrajectoryLoopFunctions"
@@ -131,6 +131,6 @@
       </camera>
     </qt-opengl>
 
-  </visualization-->
+  </visualization>
 
 </argos-configuration>

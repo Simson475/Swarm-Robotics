@@ -67,6 +67,8 @@ public:
     bool isActive();
     bool isWorking();
     int getClockCount() const;
+
+    // Is the robot in a live deadlock
     bool isInLiveDeadlock();
 
 
@@ -128,8 +130,10 @@ protected:
     int lastModification = 0;
 
     //**************** ControlStep functionality
-    std::vector<int> constructStationPlan();
-    std::vector<int> constructWaypointPlan();
+    virtual std::vector<int> constructStationPlan() = 0;
+    virtual std::vector<int> constructWaypointPlan() = 0;
+
+
     void setStationPlan(std::vector<int>);
     void setWaypointPlan(std::vector<int> waypointPlan);
 
@@ -145,6 +149,8 @@ protected:
     bool isStationNextInPlan(int);
     void resetWaypointPlan();
     void resetStationPlan();
+
+    // Helper functions for debug and data printing.
     void print_string(const std::string &text, const std::string &fileName = "/debug.txt");
     void log_helper(const std::string& message, bool newLine=true, bool printName=true);
     void experiment_helper(const std::string& type, double time, int pointsToVisit, int pointsInPlan);
@@ -156,7 +162,6 @@ protected:
     void setWorkingClockAsComplete();
     void advanceClock();
 
-    void sortJob(const std::vector<std::vector<float>> &shortestDistances, std::vector<int>& job);
 };
 
 
