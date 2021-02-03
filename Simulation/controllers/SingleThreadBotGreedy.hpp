@@ -29,7 +29,7 @@
 class SingleThreadBotGreedy : public RobotInterface {
 
 public:
-    /* Class constructor. */
+    /* Class constructors. */
     using RobotInterface::RobotInterface;
 
 protected:

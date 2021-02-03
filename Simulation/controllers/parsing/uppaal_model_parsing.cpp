@@ -22,7 +22,7 @@ std::string combineMatrixLines(const std::vector<std::vector<std::string>> &dist
     return final_matrix;
 }
 
-std::size_t numOfOtherActiveRobots(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>>& otherBots){
+std::size_t numOfOtherActiveRobots(const std::vector<std::reference_wrapper<RobotInterface>>& otherBots){
     std::size_t robots_with_jobs = 0;
 
     for(auto& bot : otherBots){
@@ -88,7 +88,7 @@ std::vector<std::vector<float>> getDistanceMatrix(Map_Structure &map_structure){
     return waypointsDistances;
 }
 
-std::string formatStationOrderLenghts(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots){
+std::string formatStationOrderLenghts(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots){
     std::vector<unsigned> orderLenghts{};
 
     for(auto& bot: otherBots){
@@ -99,7 +99,7 @@ std::string formatStationOrderLenghts(const std::vector<std::reference_wrapper<S
     return element_joiner(orderLenghts, ", ", "{", "}");
 }
 
-std::string formatWaypointOrderLenghts(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots){
+std::string formatWaypointOrderLenghts(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots){
     std::vector<unsigned> orderLenghts{};
 
     for(auto& bot: otherBots){
@@ -110,7 +110,7 @@ std::string formatWaypointOrderLenghts(const std::vector<std::reference_wrapper<
     return element_joiner(orderLenghts, ", ", "{", "}");
 }
 
-std::string formatOrthersStartLocs(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots){
+std::string formatOrthersStartLocs(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots){
     std::vector<int> otherLocations{};
 
     for(auto& bot: otherBots) {
@@ -125,7 +125,7 @@ std::string formatOrthersStartLocs(const std::vector<std::reference_wrapper<Sing
     return element_joiner(otherLocations, ", ", "{", "}");
 }
 
-std::string formatOrtherWaypointStartLocs(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots){
+std::string formatOrtherWaypointStartLocs(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots){
     std::vector<int> otherLocations{};
 
     for(auto& bot: otherBots) {
@@ -137,7 +137,7 @@ std::string formatOrtherWaypointStartLocs(const std::vector<std::reference_wrapp
     return element_joiner(otherLocations, ", ", "{", "}");
 }
 
-std::string formatOtherStationPlan(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations){
+std::string formatOtherStationPlan(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots, int numOfStations){
     std::vector<std::vector<int>> plans{};
 
     for(auto& bot: otherBots){
@@ -154,7 +154,7 @@ std::string formatOtherStationPlan(const std::vector<std::reference_wrapper<Sing
     return formatMatrix(plans);
 }
 
-std::string formatOtherWaypointPlan(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations){
+std::string formatOtherWaypointPlan(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots, int numOfStations){
     std::vector<std::vector<int>> plans{};
 
     for(auto& bot: otherBots){
@@ -171,7 +171,7 @@ std::string formatOtherWaypointPlan(const std::vector<std::reference_wrapper<Sin
     return formatMatrix(plans);
 }
 
-std::string formatOtherOrders(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations){
+std::string formatOtherOrders(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots, int numOfStations){
     std::vector<std::vector<int>> orders{};
 
     for(auto& bot: otherBots){
@@ -184,7 +184,7 @@ std::string formatOtherOrders(const std::vector<std::reference_wrapper<SingleThr
     return formatMatrix(orders);
 }
 
-std::string formatOtherStationDistances(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, Map_Structure map_structure){
+std::string formatOtherStationDistances(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots, Map_Structure map_structure){
     std::vector<std::string> distances{};
 
     for(auto& bot: otherBots){
@@ -204,7 +204,7 @@ std::string formatOtherStationDistances(const std::vector<std::reference_wrapper
     return element_joiner(distances, ", ", "{", "}");
 }
 
-std::string formatOtherWaypointDistances(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, Map_Structure map_structure){
+std::string formatOtherWaypointDistances(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots, Map_Structure map_structure){
     std::vector<std::string> distances{};
 
     for(auto& bot: otherBots){
@@ -223,7 +223,7 @@ std::string formatOtherWaypointDistances(const std::vector<std::reference_wrappe
     return element_joiner(distances, ", ", "{", "}");
 }
 
-std::string formatOtherWaypointOrders(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations){
+std::string formatOtherWaypointOrders(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots, int numOfStations){
     std::vector<std::vector<int>> orders{};
 
     for(auto& bot: otherBots){
@@ -236,7 +236,7 @@ std::string formatOtherWaypointOrders(const std::vector<std::reference_wrapper<S
     return formatMatrix(orders);
 }
 
-std::string formatOtherWorking(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots){
+std::string formatOtherWorking(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots){
     std::vector<bool> robotWorking{};
 
     for (auto& robot : otherBots) {
@@ -248,7 +248,7 @@ std::string formatOtherWorking(const std::vector<std::reference_wrapper<SingleTh
     return element_joiner(robotWorking, ", ", "{", "}");
 }
 
-std::string formatWorkedTime(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots){
+std::string formatWorkedTime(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots){
     std::vector<int> robotWorkedTime{};
 
     for (auto& robot : otherBots) {

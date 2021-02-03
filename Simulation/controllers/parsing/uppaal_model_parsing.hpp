@@ -6,7 +6,7 @@
 #define SWARMSIMULATOR_UPPAAL_MODEL_PARSING_H
 
 #include "models/map/map_structure.hpp"
-#include "controllers/SingleThreadUppaalBot.hpp"
+#include "controllers/RobotInterface/RobotInterface.hpp"
 
 #include <string>
 #include <vector>
@@ -15,23 +15,23 @@
 #include <set>
 
 // Helper_functions
-std::size_t numOfOtherActiveRobots(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>>&);
+std::size_t numOfOtherActiveRobots(const std::vector<std::reference_wrapper<RobotInterface>>&);
 std::string get_expanded_distance_matrix(Map_Structure &map_structure, int p_id);
 std::vector<std::vector<float>> getDistanceMatrix(Map_Structure &map_structure);
-std::string formatStationOrderLenghts(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
-std::string formatOrthersStartLocs(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
-std::string formatOtherStationPlan(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations);
-std::string formatOtherOrders(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations);
-std::string formatOtherStationDistances(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, Map_Structure map_structure);
-std::string formatOtherWorking(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
-std::string formatWorkedTime(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
+std::string formatStationOrderLenghts(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots);
+std::string formatOrthersStartLocs(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots);
+std::string formatOtherStationPlan(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots, int numOfStations);
+std::string formatOtherOrders(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots, int numOfStations);
+std::string formatOtherStationDistances(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots, Map_Structure map_structure);
+std::string formatOtherWorking(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots);
+std::string formatWorkedTime(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots);
 
 // Waypoint planning helper functions
-std::string formatWaypointOrderLenghts(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
-std::string formatOrtherWaypointStartLocs(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots);
-std::string formatOtherWaypointPlan(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations);
-std::string formatOtherWaypointOrders(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, int numOfStations);
-std::string formatOtherWaypointDistances(const std::vector<std::reference_wrapper<SingleThreadUppaalBot>> &otherBots, Map_Structure map_structure);
+std::string formatWaypointOrderLenghts(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots);
+std::string formatOrtherWaypointStartLocs(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots);
+std::string formatOtherWaypointPlan(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots, int numOfStations);
+std::string formatOtherWaypointOrders(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots, int numOfStations);
+std::string formatOtherWaypointDistances(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots, Map_Structure map_structure);
 
 //********************************* Formatting functions:
 // Help-function for delimiter

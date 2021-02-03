@@ -32,7 +32,7 @@ void RobotInterface::print_string(const std::string &text, const std::string &fi
     debug.close();
 }
 
-void RobotInterface::log_helper(const std::string &message, bool newLine, bool printName) {
+void RobotInterface::log_helper(const std::string &message, bool newLine, bool printName){
     std::ofstream logFile;
     logFile.open(std::string{std::filesystem::current_path()} + "/log.txt", std::ofstream::app);
     std::string name = printName ? m_strId + ": " : "";
@@ -40,25 +40,24 @@ void RobotInterface::log_helper(const std::string &message, bool newLine, bool p
     argos::LOG << name << message;
     logFile << name << message;
 
-    if (newLine) {
+    if(newLine) {
         argos::LOG << std::endl;
         logFile << std::endl;
     }
 }
 
-void RobotInterface::experiment_helper(const std::string &type, double time, int pointsToVisit, int pointsInPlan) {
+void RobotInterface::experiment_helper(const std::string &type, double time, int pointsToVisit, int pointsInPlan){
     std::ofstream dataFile;
     dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
 
-    dataFile << m_strId << ", " << type << ", " << std::to_string(time) << ", " << pointsToVisit << ", " << pointsInPlan
-             << std::endl;
+    dataFile << m_strId << ", " << type << ", " << std::to_string(time) << ", " << getLastLocation() << ", " << pointsToVisit << ", " << pointsInPlan << std::endl;
 }
 
-void RobotInterface::experiment_job_data(const std::string &type, int id, int logicalTime) {
+void RobotInterface::experiment_job_data(const std::string &type, int id, int logicalTime){
     std::ofstream dataFile;
     dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
 
-    dataFile << m_strId << ", " << type << ", " << std::to_string(logicalTime) << ", " << id << "," << std::endl;
+    dataFile << m_strId << ", " << type << ", " << std::to_string(logicalTime) << ", " << getLastLocation() << ", " << id << "," << std::endl;
 }
 
 void RobotInterface::Init(argos::TConfigurationNode &t_node) {
@@ -103,6 +102,24 @@ void RobotInterface::Init(argos::TConfigurationNode &t_node) {
 }
 
 void RobotInterface::ControlStep() {
+    if (currentState == state::working) {
+        if (isDoneWorking()) {
+            setWorkingClockAsComplete();
+
+            currentJob->visitedStation(lastLocation);
+            resetStationPlan();
+
+            log_helper("Job is reduced: ", false);
+            for (int j : currentJob->getRemainingStations()) {
+                log_helper(std::to_string(j) + " ", false, false);
+            }
+            log_helper("", true, false);
+            sMap.setPointAsAvailable(lastLocation);
+        } else {
+            advanceClock();
+        }
+    }
+
     if (currentState == state::moving) {
         if (!stationPlan.empty() && isAtStation()) { // If we have a plan and we are at a point
 
@@ -142,6 +159,7 @@ void RobotInterface::ControlStep() {
 
             if (hasJob() && stationPlan.empty() && !returningToInit) //@todo: Have proper boolean function
             {
+                /// Abstract function
                 std::vector<int> stationPlan = constructStationPlan();
 
                 log_helper("Station plan has size " + std::to_string(stationPlan.size()));
@@ -154,6 +172,7 @@ void RobotInterface::ControlStep() {
 
             if (hasJob() && waypointPlan.empty()) //@todo: Have proper boolean function
             {
+                /// Abstract function
                 std::vector<int> waypointPlan = constructWaypointPlan();
 
                 log_helper("Waypoint plan has size " + std::to_string(waypointPlan.size()));
@@ -161,22 +180,6 @@ void RobotInterface::ControlStep() {
                 setNextLocation(waypointPlan.front());
                 log_helper("Going towards " + std::to_string(nextLocation));
             }
-        }
-    } else if (currentState == state::working) {
-        if (isDoneWorking()) {
-            setWorkingClockAsComplete();
-
-            currentJob->visitedStation(lastLocation);
-            resetStationPlan();
-
-            log_helper("Job is reduced: ", false);
-            for (int j : currentJob->getRemainingStations()) {
-                log_helper(std::to_string(j) + " ", false, false);
-            }
-            log_helper("", true, false);
-            sMap.setPointAsAvailable(lastLocation);
-        } else {
-            advanceClock();
         }
     }
 
