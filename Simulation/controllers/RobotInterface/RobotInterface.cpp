@@ -24,7 +24,7 @@ RobotInterface::RobotInterface() :
                             ToRadians(m_cAlpha)) {}
 
 
-void print_string(const std::string &text, const std::string &fileName = "/debug.txt") {
+void RobotInterface::print_string(const std::string &text, const std::string &fileName) {
     std::ofstream debug{std::string{std::filesystem::current_path()} + fileName};
 
     debug << text;

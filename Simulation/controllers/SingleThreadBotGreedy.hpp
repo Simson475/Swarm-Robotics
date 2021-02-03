@@ -30,10 +30,7 @@ class SingleThreadBotGreedy : public RobotInterface {
 
 public:
     /* Class constructor. */
-    SingleThreadBotGreedy();
-
-    /* Class destructor. */
-    ~SingleThreadBotGreedy() override = default;
+    using RobotInterface::RobotInterface;
 
 };
 
