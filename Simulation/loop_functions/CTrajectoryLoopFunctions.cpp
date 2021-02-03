@@ -3,8 +3,6 @@
 #include "controllers/SingleThreadBotGreedy.hpp"
 #include "controllers/SingleThreadUppaalBot.hpp"
 
-typedef RobotInterface currentBotType;
-
 #include <set>
 #include <fstream>
 #include <iostream>
@@ -63,7 +61,7 @@ void CTrajectoryLoopFunctions::PreStep() {
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
     for (auto& botPair : tBotMap) {
         argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
-        auto& controller = dynamic_cast<currentBotType&>(pcBot->GetControllableEntity().GetController());
+        auto& controller = dynamic_cast<RobotInterface&>(pcBot->GetControllableEntity().GetController());
 
         if(controller.isInLiveDeadlock()) {
             fprintf(stderr,"Robot %s is in a live deadlock", controller.GetId().c_str());
@@ -106,7 +104,7 @@ void CTrajectoryLoopFunctions::setRobotFolders(){
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
     for (auto& botPair : tBotMap) {
         argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
-        auto &controller = dynamic_cast<currentBotType &>(pcBot->GetControllableEntity().GetController());
+        auto &controller = dynamic_cast<RobotInterface &>(pcBot->GetControllableEntity().GetController());
 
         std::string temp = currentFolder + "/" + controller.GetId();
 
@@ -123,7 +121,7 @@ void CTrajectoryLoopFunctions::assignJobGeneratorToControllers() {
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
     for (auto& botPair : tBotMap) {
         argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
-        auto& controller = dynamic_cast<currentBotType&>(pcBot->GetControllableEntity().GetController());
+        auto& controller = dynamic_cast<RobotInterface&>(pcBot->GetControllableEntity().GetController());
 
         controller.setJobGenerator(jobGenerator);
     }
@@ -134,7 +132,7 @@ void CTrajectoryLoopFunctions::setInitLocationOnControllers(Map_Structure& sMap)
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
     for (auto& botPair : tBotMap) {
         argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
-        auto& controller = dynamic_cast<currentBotType&>(pcBot->GetControllableEntity().GetController());
+        auto& controller = dynamic_cast<RobotInterface&>(pcBot->GetControllableEntity().GetController());
 
         Robot robot = sMap.getRobotByName(controller.GetId());
 
@@ -149,7 +147,7 @@ void CTrajectoryLoopFunctions::haveControllersAccessEachOther(){
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
     for (auto& botPair : tBotMap) {
         argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
-        auto &controller = dynamic_cast<currentBotType &>(pcBot->GetControllableEntity().GetController());
+        auto &controller = dynamic_cast<RobotInterface &>(pcBot->GetControllableEntity().GetController());
 
         controller.obtainOtherBots(sMap);
     }
