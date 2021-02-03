@@ -60,6 +60,13 @@ void RobotInterface::experiment_job_data(const std::string &type, int id, int lo
     dataFile << m_strId << ", " << type << ", " << std::to_string(logicalTime) << ", " << getLastLocation() << ", " << id << "," << std::endl;
 }
 
+void RobotInterface::store_data(const std::string &type, const std::string& value_1, const std::string& value_2){
+    std::ofstream dataFile;
+    dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
+
+    dataFile << m_strId << ", " << type << ", " << "" << ", " << getLastLocation() << ", " << value_1 << "," <<  value_2 <<std::endl;
+}
+
 void RobotInterface::Init(argos::TConfigurationNode &t_node) {
     /*
      * Get sensor/actuator handles

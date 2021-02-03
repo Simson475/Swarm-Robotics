@@ -141,9 +141,20 @@ std::vector<int> SingleThreadUppaalBot::getWaypointPlan(std::string modelOutput)
 std::string SingleThreadUppaalBot::runStationModel(){
     std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
     //std::string verifyta{"./bin-Linux/verifyta.bin"};
-    std::string model{"./" + GetId() + "/station_model.xml"};
+    std::string old_model_path{"./" + GetId() + "/station_model.xml"};
 
-    std::string terminalCommand = verifyta + " " + model;
+    long seed = generateSeed();
+    std::string folder_path = "./" + GetId() + "/" + std::to_string(seed);
+    std::string new_model_path = folder_path + "/station_model.xml";
+
+    if (mkdir(folder_path.c_str(), 0777) == -1) {
+        throw std::runtime_error("Cannot write seed folder");
+    }
+    std::filesystem::copy(old_model_path, new_model_path);
+    std::filesystem::remove(old_model_path);
+
+    store_data("StationPlanSeed", std::to_string(seed));
+    std::string terminalCommand = verifyta + " -r " + std::to_string(seed) + " " + new_model_path;
 
     std::string result;
     FILE * stream;
@@ -163,9 +174,20 @@ std::string SingleThreadUppaalBot::runStationModel(){
 std::string SingleThreadUppaalBot::runWaypointModel(){
     std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
     //std::string verifyta{"./bin-Linux/verifyta.bin"};
-    std::string model{"./" + GetId() + "/waypoint_model.xml"};
+    std::string old_model_path{"./" + GetId() + "/waypoint_model.xml"};
 
-    std::string terminalCommand = verifyta + " " + model;
+    long seed = generateSeed();
+    std::string folder_path = "./" + GetId() + "/" + std::to_string(seed);
+    std::string new_model_path = folder_path + "/waypoint_model.xml";
+
+    if (mkdir(folder_path.c_str(), 0777) == -1) {
+        throw std::runtime_error("Cannot write seed folder");
+    }
+    std::filesystem::copy(old_model_path, new_model_path);
+    std::filesystem::remove(old_model_path);
+
+    store_data("WaypointPlanSeed", std::to_string(seed));
+    std::string terminalCommand = verifyta + " -r " + std::to_string(seed) + " " + new_model_path;
 
     std::string result;
     FILE * stream;
@@ -182,6 +204,11 @@ std::string SingleThreadUppaalBot::runWaypointModel(){
     return result;
 }
 
+long SingleThreadUppaalBot::generateSeed() {
+    auto now = std::chrono::high_resolution_clock::now();
+
+    return now.time_since_epoch().count();
+}
 
 void SingleThreadUppaalBot::constructStationUppaalModel(){
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/planning_blueprint.xml"};

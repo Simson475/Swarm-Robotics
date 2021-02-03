@@ -155,6 +155,7 @@ protected:
     void log_helper(const std::string& message, bool newLine=true, bool printName=true);
     void experiment_helper(const std::string& type, double time, int pointsToVisit, int pointsInPlan);
     void experiment_job_data(const std::string& type, int id, int logicalTime);
+    void store_data(const std::string &type, const std::string& value_1, const std::string& value_2 = "");
 
     //Clock/working functionality
     bool isDoneWorking() const;

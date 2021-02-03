@@ -39,14 +39,13 @@ protected:
 private:
 
     //**************** ControlStep functionality
-    void constructStationUppaalModel(); // Must become an override
-    void constructWaypointUppaalModel(); // Must become an override
-    std::string runStationModel(); // Private
-    std::string runWaypointModel(); // Private
-
-
+    void constructStationUppaalModel();
+    void constructWaypointUppaalModel();
+    std::string runStationModel();
+    std::string runWaypointModel();
     std::vector<int> getStationPlan(std::string modelOutput); // Private
     std::vector<int> getWaypointPlan(std::string modelOutput); // Private
+    long generateSeed();
 };
 
 
