@@ -343,7 +343,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
         pos = line.find("#QUERY_TIME#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
-                         "2000");
+                         "5000");
         }
 
         //********************* Helper functions for when there are other active robots
@@ -514,7 +514,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
         pos = line.find("#QUERY_TIME#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
-                         "500");
+                         "5000");
         }
 
         //********************* Helper functions for when there are other active robots
