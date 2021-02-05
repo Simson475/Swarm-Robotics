@@ -18,7 +18,7 @@ RobotInterface::RobotInterface() :
     m_pcProximity(nullptr),
     m_pcPosition(nullptr),
     m_cAlpha(7.5f),
-    m_fDelta(0.1f),
+    m_fDelta(0.5f),
     m_fWheelVelocity(100),
     m_cGoStraightAngleRange(-ToRadians(m_cAlpha),
                             ToRadians(m_cAlpha)) {}
