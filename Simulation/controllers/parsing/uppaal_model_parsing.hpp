@@ -84,7 +84,9 @@ std::string format_order(int numOfStations, std::set<int> order);
 // Endstations formatting
 std::string format_endstations(int numOfStations, std::set<int> endstationIDs);
 // Get the right number of entries in the query
-std::string format_query(unsigned numOfPoint);
+std::string format_state_vars(unsigned numOfPoint);
+// Formats the right number of pointvars in the query
+std::string format_point_vars(unsigned numOfPoint);
 
 // Function for formatting an arbitrary matrix where the type has a std::to_string(C) function.
 template <typename C>

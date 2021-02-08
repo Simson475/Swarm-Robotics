@@ -334,10 +334,16 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
 
         }
 
-        pos = line.find("#QUERY#");
+        pos = line.find("#STATE_VARS#");
         if(pos != std::string::npos){
-            line.replace(pos, std::string{"#QUERY#"}.size(),
-                         format_query(numOfStations));
+            line.replace(pos, std::string{"#STATE_VARS#"}.size(),
+                         format_state_vars(numOfStations));
+        }
+
+        pos = line.find("#POINT_VARS#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#STATE_VARS#"}.size(),
+                         format_point_vars(numOfStations));
         }
 
         pos = line.find("#QUERY_TIME#");
@@ -523,10 +529,16 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
             }
         }
 
-        pos = line.find("#QUERY#");
+        pos = line.find("#STATE_VARS#");
         if(pos != std::string::npos){
-            line.replace(pos, std::string{"#QUERY#"}.size(),
-                         format_query(sMap.points.size())); //@todo: Make proper getter!
+            line.replace(pos, std::string{"#STATE_VARS#"}.size(),
+                         format_state_vars(sMap.points.size())); //@todo: Make proper getter!
+        }
+
+        pos = line.find("#POINT_VARS#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#STATE_VARS#"}.size(),
+                         format_point_vars(sMap.points.size()));
         }
 
         pos = line.find("#QUERY_TIME#");
@@ -538,7 +550,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
         pos = line.find("#NUM_OF_STATIONS#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#NUM_OF_STATIONS#"}.size(),
-                         std::to_string(sMap.getAmountOfStations()));
+                         std::to_string(sMap.getAmountOfStations() + 1 + numOfOtherActiveRobots(otherBots))); //Must be fixed to the the number of robots on the map, not just the active ones.
         }
         /*
         pos = line.find("#NUM_OF_STATIONS_AND_WAYPOINTS#");

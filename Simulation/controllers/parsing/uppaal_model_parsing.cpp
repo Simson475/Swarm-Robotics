@@ -260,9 +260,16 @@ std::string formatWorkedTime(const std::vector<std::reference_wrapper<RobotInter
     return element_joiner(robotWorkedTime, ", ", "{", "}");
 }
 
-std::string format_query(unsigned numOfPoint){
+std::string format_state_vars(unsigned numOfPoint){
     std::vector<int> points(numOfPoint);
     std::iota(std::begin(points), std::end(points), 0);
 
     return element_joiner(points, "],\nvisited[", "visited[", "]\n");
+}
+
+std::string format_point_vars(unsigned numOfPoint){
+    std::vector<int> points(numOfPoint);
+    std::iota(std::begin(points), std::end(points), 0);
+
+    return element_joiner(points, "],\npoint_touched[", "point_touched[", "]\n");
 }
