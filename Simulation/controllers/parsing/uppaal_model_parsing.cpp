@@ -104,7 +104,7 @@ std::string formatWaypointOrderLenghts(const std::vector<std::reference_wrapper<
 
     for(auto& bot: otherBots){
         if(bot.get().isActive())
-            orderLenghts.push_back(1);
+            orderLenghts.push_back(bot.get().getWaypointPlan().size());
     }
 
     return element_joiner(orderLenghts, ", ", "{", "}");
