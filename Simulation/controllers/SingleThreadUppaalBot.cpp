@@ -139,7 +139,7 @@ std::vector<int> SingleThreadUppaalBot::getWaypointPlan(std::string modelOutput)
 }
 
 std::string SingleThreadUppaalBot::runStationModel(){
-    std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
+    std::string verifyta{"/home/martin/phd/Uppaal/uppaal64-4.1.20-stratego-8-beta6/bin-Linux/verifyta"};
     //std::string verifyta{"./bin-Linux/verifyta.bin"};
     std::string old_model_path{"./" + GetId() + "/station_model.xml"};
 
@@ -154,7 +154,7 @@ std::string SingleThreadUppaalBot::runStationModel(){
     std::filesystem::remove(old_model_path);
 
     store_data("StationPlanSeed", std::to_string(seed));
-    std::string terminalCommand = verifyta + " -r " + std::to_string(seed) + " " + new_model_path;
+    std::string terminalCommand = verifyta + " --max-iterations 5 --reset-no-better 5 -r " + std::to_string(seed) + " " + new_model_path;
 
     std::string result;
     FILE * stream;
@@ -172,7 +172,7 @@ std::string SingleThreadUppaalBot::runStationModel(){
 }
 
 std::string SingleThreadUppaalBot::runWaypointModel(){
-    std::string verifyta{"/home/martin/Desktop/uppaalStratego/bin-Linux/verifyta.bin"};
+    std::string verifyta{"/home/martin/phd/Uppaal/uppaal64-4.1.20-stratego-8-beta6/bin-Linux/verifyta"};
     //std::string verifyta{"./bin-Linux/verifyta.bin"};
     std::string old_model_path{"./" + GetId() + "/waypoint_model.xml"};
 
@@ -187,7 +187,7 @@ std::string SingleThreadUppaalBot::runWaypointModel(){
     std::filesystem::remove(old_model_path);
 
     store_data("WaypointPlanSeed", std::to_string(seed));
-    std::string terminalCommand = verifyta + " -r " + std::to_string(seed) + " " + new_model_path;
+    std::string terminalCommand = verifyta + " --max-iterations 5 --reset-no-better 5 -r " + std::to_string(seed) + " " + new_model_path;
 
     std::string result;
     FILE * stream;
@@ -344,6 +344,24 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
                          "5000");
+        }
+
+        pos = line.find("#NUM_OF_STATIONS#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#NUM_OF_STATIONS#"}.size(),
+                         std::to_string(sMap.getAmountOfStations() + 1 + numOfOtherActiveRobots(otherBots)));
+        }
+        /*
+        pos = line.find("#NUM_OF_STATIONS_AND_WAYPOINTS#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#NUM_OF_STATIONS_AND_WAYPOINTS#"}.size(),
+                         std::to_string(sMap.points.size() - (1 + numOfOtherActiveRobots(otherBots))));
+        }
+        */
+        pos = line.find("#CAN_GO#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#CAN_GO#"}.size(),
+                         "");
         }
 
         //********************* Helper functions for when there are other active robots
@@ -515,6 +533,24 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
                          "5000");
+        }
+
+        pos = line.find("#NUM_OF_STATIONS#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#NUM_OF_STATIONS#"}.size(),
+                         std::to_string(sMap.getAmountOfStations()));
+        }
+        /*
+        pos = line.find("#NUM_OF_STATIONS_AND_WAYPOINTS#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#NUM_OF_STATIONS_AND_WAYPOINTS#"}.size(),
+                         std::to_string(sMap.points.size() - (1 + numOfOtherActiveRobots(otherBots))));
+        }
+        */
+        pos = line.find("#CAN_GO#");
+        if(pos != std::string::npos){
+            line.replace(pos, std::string{"#CAN_GO#"}.size(),
+                         "&amp;&amp;\ncan_go_to(s)");
         }
 
         //********************* Helper functions for when there are other active robots

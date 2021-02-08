@@ -110,7 +110,6 @@ int max_travel;
 int min_travel;
 bool finished;
 
-
 bool is_at_desc(stations_t station){
     return cur_station == station;
 }
@@ -123,6 +122,16 @@ bool is_done(){
     }
 
     return true;
+}
+
+bool can_go_to(stations_t s){
+    if(order[s])
+        return true;
+    if(is_done() &amp;&amp; end_stations[s])
+        return true;
+    if(s &gt;= #NUM_OF_STATIONS# )
+        return true;
+    return false;
 }
 
 bool must_visit(stations_t station) {
@@ -198,7 +207,7 @@ bool is_connected(stations_t station){
 			<target ref="id1"/>
 			<label kind="select" x="221" y="-51">s : stations_t</label>
 			<label kind="guard" x="221" y="-34">is_connected(s) &amp;&amp;
-!finished</label>
+!finished #CAN_GO#</label>
 			<label kind="assignment" x="221" y="17">dest_station = s</label>
 		</transition>
 		<transition controllable="false">
@@ -213,7 +222,7 @@ bool is_connected(stations_t station){
 			<label kind="select" x="34" y="-34">s : stations_t</label>
 			<label kind="guard" x="34" y="-17">s == cur_station &amp;&amp;
 must_visit(s) &amp;&amp;
-!finished</label>
+!finished </label>
 			<label kind="synchronisation" x="34" y="34">arrival[s][0]!</label>
 			<nail x="-8" y="68"/>
 		</transition>
