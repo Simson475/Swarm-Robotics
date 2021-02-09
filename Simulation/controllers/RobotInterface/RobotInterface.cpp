@@ -287,11 +287,13 @@ void RobotInterface::movementLogic() {
 void RobotInterface::movementHelper(double per, double dotProd, double velocity) {
     const argos::CCI_FootBotProximitySensor::TReadings &tProxReads = m_pcProximity->GetReadings();
     argos::CVector2 cAccumulator;
+    argos::CVector2 cAccumulator_rear;
     for (size_t i = 0; i < tProxReads.size(); ++i) {
         // We onlt care about the sensor values in the front of the robot.
         if(i > 8 && i < 25)
-            continue;
-        cAccumulator += argos::CVector2(tProxReads[i].Value, tProxReads[i].Angle);
+            cAccumulator_rear += argos::CVector2(tProxReads[i].Value, tProxReads[i].Angle);
+        else
+            cAccumulator += argos::CVector2(tProxReads[i].Value, tProxReads[i].Angle);
     }
     cAccumulator /= tProxReads.size();
     /* If the angle of the vector is small enough and the closest obstacle
@@ -304,12 +306,19 @@ void RobotInterface::movementHelper(double per, double dotProd, double velocity)
     if (per < 0.1 && per > -0.1) { turnRate = 1.0f; } //if the angle is small then our turn rate is reduced to 1
 
     argos::CRadians cAngle = cAccumulator.Angle();
+    //argos::CRadians cAngle_rear = cAccumulator_rear.Angle();
     if (m_cGoStraightAngleRange.WithinMinBoundIncludedMaxBoundIncluded(cAngle) &&
         cAccumulator.Length() < m_fDelta) {
         if (per > 0.1) {
-            m_pcWheels->SetLinearVelocity(turnRate, -turnRate);
+            if (cAccumulator_rear.Length() < m_fDelta)
+                m_pcWheels->SetLinearVelocity(turnRate, turnRate * 0.25);
+            else
+                m_pcWheels->SetLinearVelocity(turnRate, -turnRate);
         } else if (per < -0.1) {
-            m_pcWheels->SetLinearVelocity(-turnRate, turnRate);
+            if (cAccumulator_rear.Length() < m_fDelta)
+                m_pcWheels->SetLinearVelocity(turnRate * 0.25, turnRate);
+            else
+                m_pcWheels->SetLinearVelocity(-turnRate, turnRate);
         } else {
             if (dotProd > 0) {
                 m_pcWheels->SetLinearVelocity(velocity, velocity);
