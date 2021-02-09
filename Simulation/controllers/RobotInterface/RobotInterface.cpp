@@ -288,6 +288,9 @@ void RobotInterface::movementHelper(double per, double dotProd, double velocity)
     const argos::CCI_FootBotProximitySensor::TReadings &tProxReads = m_pcProximity->GetReadings();
     argos::CVector2 cAccumulator;
     for (size_t i = 0; i < tProxReads.size(); ++i) {
+        // We onlt care about the sensor values in the front of the robot.
+        if(i > 8 && i < 25)
+            continue;
         cAccumulator += argos::CVector2(tProxReads[i].Value, tProxReads[i].Angle);
     }
     cAccumulator /= tProxReads.size();
@@ -295,9 +298,11 @@ void RobotInterface::movementHelper(double per, double dotProd, double velocity)
      * is far enough, continue going straight, otherwise curve a little
     */
     argos::Real turnRate;
+
     if (per > 0.5 || per < -0.5) { turnRate = 10.0f; }
     else { turnRate = 3.0f; }// while the angle is big our turn rate is fast
     if (per < 0.1 && per > -0.1) { turnRate = 1.0f; } //if the angle is small then our turn rate is reduced to 1
+
     argos::CRadians cAngle = cAccumulator.Angle();
     if (m_cGoStraightAngleRange.WithinMinBoundIncludedMaxBoundIncluded(cAngle) &&
         cAccumulator.Length() < m_fDelta) {
@@ -317,9 +322,9 @@ void RobotInterface::movementHelper(double per, double dotProd, double velocity)
 
         /* Turn, depending on the sign of the angle */
         if (cAngle.GetValue() > 0.0f) {
-            m_pcWheels->SetLinearVelocity(10.0f, 0.0f); // right
+            m_pcWheels->SetLinearVelocity(10.0f, 1.0f); // right
         } else {
-            m_pcWheels->SetLinearVelocity(0.0f, 10.0f); // left
+            m_pcWheels->SetLinearVelocity(1.0f, 10.0f); // left
         }
     }
 }
