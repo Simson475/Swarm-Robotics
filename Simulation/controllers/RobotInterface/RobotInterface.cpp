@@ -17,7 +17,7 @@ RobotInterface::RobotInterface() :
     m_pcWheels(nullptr),
     m_pcProximity(nullptr),
     m_pcPosition(nullptr),
-    m_cAlpha(7.5f),
+    m_cAlpha(10.0f),
     m_fDelta(0.5f),
     m_fWheelVelocity(100),
     m_cGoStraightAngleRange(-ToRadians(m_cAlpha),
@@ -290,7 +290,7 @@ void RobotInterface::movementHelper(double per, double dotProd, double velocity)
     argos::CVector2 cAccumulator_rear;
     for (size_t i = 0; i < tProxReads.size(); ++i) {
         // We onlt care about the sensor values in the front of the robot.
-        if(i > 8 && i < 25)
+        if(i > 7 && i < 16)
             cAccumulator_rear += argos::CVector2(tProxReads[i].Value, tProxReads[i].Angle);
         else
             cAccumulator += argos::CVector2(tProxReads[i].Value, tProxReads[i].Angle);
@@ -310,13 +310,13 @@ void RobotInterface::movementHelper(double per, double dotProd, double velocity)
     if (m_cGoStraightAngleRange.WithinMinBoundIncludedMaxBoundIncluded(cAngle) &&
         cAccumulator.Length() < m_fDelta) {
         if (per > 0.1) {
-            if (cAccumulator_rear.Length() < m_fDelta)
-                m_pcWheels->SetLinearVelocity(turnRate, turnRate * 0.25);
+            if (cAccumulator_rear.Length() > m_fDelta)
+                m_pcWheels->SetLinearVelocity(turnRate, turnRate);
             else
-                m_pcWheels->SetLinearVelocity(turnRate, -turnRate);
+                m_pcWheels->SetLinearVelocity(turnRate, -turnRate * 0.8);
         } else if (per < -0.1) {
-            if (cAccumulator_rear.Length() < m_fDelta)
-                m_pcWheels->SetLinearVelocity(turnRate * 0.25, turnRate);
+            if (cAccumulator_rear.Length() > m_fDelta)
+                m_pcWheels->SetLinearVelocity(turnRate, turnRate);
             else
                 m_pcWheels->SetLinearVelocity(-turnRate, turnRate);
         } else {
@@ -331,9 +331,9 @@ void RobotInterface::movementHelper(double per, double dotProd, double velocity)
 
         /* Turn, depending on the sign of the angle */
         if (cAngle.GetValue() > 0.0f) {
-            m_pcWheels->SetLinearVelocity(10.0f, 1.0f); // right
+            m_pcWheels->SetLinearVelocity(10.0f, 0.0f); // right
         } else {
-            m_pcWheels->SetLinearVelocity(1.0f, 10.0f); // left
+            m_pcWheels->SetLinearVelocity(0.0f, 10.0f); // left
         }
     }
 }
