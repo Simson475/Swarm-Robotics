@@ -106,6 +106,44 @@ void Map_Structure::setDistanceMatrix() {
     }
 }
 
+void Map_Structure::setRealDistanceMatrix() {
+    auto size = (unsigned) sqrt(Map_Structure::lines.size());
+
+    realShortestDistanceMatrix.resize(size, std::vector<float>(size));
+    for (auto &line: Map_Structure::lines) {
+        realShortestDistanceMatrix[line.Geta().getId()][line.Getb().getId()] = line.GetFloydDistance();
+    }
+    realShortestPath.clear();
+    realShortestPath.resize(size, std::vector<int>(size));
+    for (unsigned i = 0; i < size; ++i) {
+        for (unsigned j = 0; j < size; ++j) {
+            realShortestPath[i][j] = 0;
+        }
+        for (unsigned j = 0; j < size; ++j) {
+            if (i != j) {
+                realShortestPath[i][j] = j + 1;
+            }
+        }
+    }
+
+    float inf = std::numeric_limits<float>::infinity();
+
+    for (long unsigned k = 0; k < realShortestDistanceMatrix.size(); k++) {
+        for (long unsigned i = 0; i < realShortestDistanceMatrix.size(); i++) {
+            for (long unsigned j = 0; j < realShortestDistanceMatrix.size(); j++) {
+                float temp = realShortestDistanceMatrix[i][k] + realShortestDistanceMatrix[k][j];
+                if (realShortestDistanceMatrix[i][k] == inf || realShortestDistanceMatrix[k][j] == inf)
+                    temp = inf;
+                if (realShortestDistanceMatrix[i][k] != inf && realShortestDistanceMatrix[k][j] != inf &&
+                    temp < realShortestDistanceMatrix[i][j]) {
+                    realShortestDistanceMatrix[i][j] = (realShortestDistanceMatrix[i][k] + realShortestDistanceMatrix[k][j]);
+                    realShortestPath[i][j] = realShortestPath[i][k];
+                }
+            }
+        }
+    }
+}
+
 // @Todo: Could use a refactor as this code is much more complex than the pseudo-code for
 // the Floyd-Warshall Algorithm.
 std::vector<std::vector<float>> Map_Structure::floydShortestOfStations() {
@@ -302,7 +340,7 @@ std::vector<Point> Map_Structure::findPath(int startId, int destinationId) {
     auto u = startId + 1;
     auto v = destinationId + 1;
     do {
-        u = shortestPath[u - 1][v - 1];
+        u = realShortestPath[u - 1][v - 1];
         pts.push_back(getPointByID(u - 1));
     } while (u != v);
     return pts;

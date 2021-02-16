@@ -144,7 +144,7 @@ protected:
 
     void setNextLocation(int);
     void movementLogic();
-    void movementHelper(double per, double dotProd, double velocity);
+    void movementHelper(double crossProd, double dotProd, double velocity);
     bool isAtStation();
     bool isStationNextInPlan(int);
     void resetWaypointPlan();

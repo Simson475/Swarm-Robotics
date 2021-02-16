@@ -18,6 +18,7 @@ class Map_Structure {
 private:
     // Shortest distance between each point
     std::vector<std::vector<float>> shortestDistanceMatrix{};
+    std::vector<std::vector<float>> realShortestDistanceMatrix{};
     //amount of endStations and normal stations on the map
     uint amountOfStations;
 public:
@@ -33,6 +34,8 @@ public:
     std::vector<Robot> Robots;
     //shortest paths between each point
     std::vector<std::vector<int>> shortestPath;
+    std::vector<std::vector<int>> realShortestPath;
+
 
     //ensures that the class is created only once
     static Map_Structure &get_instance() {
@@ -45,6 +48,10 @@ public:
 
     // Get shortest Distances
     const std::vector<std::vector<float>> &getShortestDistanceMatrix() const {
+        return shortestDistanceMatrix;
+    };
+
+    const std::vector<std::vector<float>> &getRealShortestDistanceMatrix() const {
         return shortestDistanceMatrix;
     };
 
@@ -83,6 +90,7 @@ public:
 
     // Sets up the distance matrix for all paths
     void setDistanceMatrix();
+    void setRealDistanceMatrix();
 
     //Removes points which are too close to each other
     void eliminateBadPoints();

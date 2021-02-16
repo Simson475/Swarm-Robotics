@@ -16,7 +16,7 @@ std::vector<int> SingleThreadBotGreedy::constructStationPlan() {
     if (!currentJob->getRemainingStations().empty()) {
         for (auto &job : currentJob->getRemainingStations())
             tempPlan.push_back(job);
-        sortJob(sMap.getShortestDistanceMatrix(), tempPlan);
+        sortJob(sMap.getRealShortestDistanceMatrix(), tempPlan);
     } else {
         for (auto &job : currentJob->getEndStations())
             tempPlan.push_back(job);

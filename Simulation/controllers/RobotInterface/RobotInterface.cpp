@@ -270,21 +270,21 @@ void RobotInterface::movementLogic() {
     argos::CVector3 newOri = nextPoint - tPosReads.Position; // Direct Access to Map
     newOri.Normalize();
 
-    double per = newOri.GetX() * Ori.GetY() - newOri.GetY() * Ori.GetX();
+    double crossProd = newOri.GetX() * Ori.GetY() - newOri.GetY() * Ori.GetX();
     double dotProd = newOri.GetX() * Ori.GetX() + newOri.GetY() * Ori.GetY();
 
 
     if (Distance(tPosReads.Position, nextPoint) <= 2 && !sMap.isPointAvailable(nextPoint.getId())) {
         m_pcWheels->SetLinearVelocity(0.0f, 0.0f);
     } else if (Distance(tPosReads.Position, nextPoint) <= 0.30) { // acceptance radius between point and robot
-        movementHelper(per, dotProd, Distance(tPosReads.Position, nextPoint) * 60);
+        movementHelper(crossProd, dotProd, Distance(tPosReads.Position, nextPoint) * 60);
     } else {
-        movementHelper(per, dotProd, m_fWheelVelocity);
+        movementHelper(crossProd, dotProd, m_fWheelVelocity);
     }
 
 }
 
-void RobotInterface::movementHelper(double per, double dotProd, double velocity) {
+void RobotInterface::movementHelper(double crossProd, double dotProd, double velocity) {
     const argos::CCI_FootBotProximitySensor::TReadings &tProxReads = m_pcProximity->GetReadings();
     argos::CVector2 cAccumulator;
     argos::CVector2 cAccumulator_rear;
@@ -301,24 +301,28 @@ void RobotInterface::movementHelper(double per, double dotProd, double velocity)
     */
     argos::Real turnRate;
 
-    if (per > 0.5 || per < -0.5) { turnRate = 10.0f; }
-    else { turnRate = 3.0f; }// while the angle is big our turn rate is fast
-    if (per < 0.1 && per > -0.1) { turnRate = 1.0f; } //if the angle is small then our turn rate is reduced to 1
+    // Sets the turn speed based on the difference on the angle between robot's front and direction of dest
+    if (crossProd > 0.5 || crossProd < -0.5)
+        turnRate = 10.0f;
+    else if (crossProd < 0.1 && crossProd > -0.1)
+        turnRate = 1.0f;
+    else
+        turnRate = 3.0f;
 
     argos::CRadians cAngle = cAccumulator.Angle();
     //argos::CRadians cAngle_rear = cAccumulator_rear.Angle();
     if (m_cGoStraightAngleRange.WithinMinBoundIncludedMaxBoundIncluded(cAngle) &&
         cAccumulator.Length() < m_fDelta) {
-        if (per > 0.1) {
+        if (crossProd > 0.1) {
             if (cAccumulator_rear.Length() > m_fDelta)
-                m_pcWheels->SetLinearVelocity(turnRate, turnRate);
+                m_pcWheels->SetLinearVelocity(velocity, velocity);
             else
-                m_pcWheels->SetLinearVelocity(turnRate, -turnRate * 0.8);
-        } else if (per < -0.1) {
+                m_pcWheels->SetLinearVelocity(turnRate, -turnRate * 0.6);
+        } else if (crossProd < -0.1) {
             if (cAccumulator_rear.Length() > m_fDelta)
-                m_pcWheels->SetLinearVelocity(turnRate, turnRate);
+                m_pcWheels->SetLinearVelocity(velocity, velocity);
             else
-                m_pcWheels->SetLinearVelocity(-turnRate, turnRate);
+                m_pcWheels->SetLinearVelocity(-turnRate * 0.4, turnRate);
         } else {
             if (dotProd > 0) {
                 m_pcWheels->SetLinearVelocity(velocity, velocity);

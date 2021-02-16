@@ -22,7 +22,7 @@
   <!-- * Controllers * -->
   <!-- *************** -->
   <controllers>
-    <SingleThreadUppaalBot_controller id="fdc"
+    <SingleThreadBotGreedy_controller id="fdc"
                                   library="./libBotImplementations">
       <actuators>
         <differential_steering implementation="default" />
@@ -42,7 +42,7 @@
       </params>
 
       <params alpha="7.5" delta="0.1" />
-    </SingleThreadUppaalBot_controller>
+    </SingleThreadBotGreedy_controller>
 
   </controllers>
 
@@ -81,7 +81,7 @@
                 distances="1,1,0"
                 layout="5,2,1" />
       <orientation method="constant" values="-45,0,0" />
-      <entity quantity="2" max_trials="1">
+      <entity quantity="6" max_trials="1">
         <foot-bot id="fb">
           <controller config="fdc" />
         </foot-bot>
@@ -117,7 +117,7 @@
   <!-- ****************** -->
   <!-- * Visualization * -->
   <!-- ****************** -->
-  <visualization>
+  <!--visualization>
 
     <qt-opengl autoplay="false">
       <user_functions library="./libCTrajectoryLoopFunctions"
@@ -131,6 +131,6 @@
       </camera>
     </qt-opengl>
 
-  </visualization>
+  </visualization-->
 
 </argos-configuration>

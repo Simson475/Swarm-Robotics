@@ -33,6 +33,7 @@ void CTrajectoryLoopFunctions::Init(argos::TConfigurationNode &t_tree) {
     sMap.setAllPossibleLines();
     std::cout << "Calculating Distance Matrix" << std::endl;
     sMap.setDistanceMatrix();
+    sMap.setRealDistanceMatrix();
 
     std::cout << "Setting JobGenerator in controllers" << std::endl;
     initJobGenerator();
