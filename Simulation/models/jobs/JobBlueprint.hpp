@@ -2,7 +2,7 @@
 #define SWARMSIMULATOR_JOBBLUEPRINT_HPP
 
 #include <set>
-#include <exception>
+#include <stdexcept>
 
 class JobBlueprint {
 public:

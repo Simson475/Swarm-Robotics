@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.7)
 include(ExternalProject)
 
+project(SwarmSimulator)
+
+#set(CMAKE_C_COMPILER    "/usr/bin/clang")
+#set(CMAKE_CXX_COMPILER  "/usr/bin/clang++")
+
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -31,7 +36,6 @@ if (GetDependencies)
 
 unset(ARGOS_WITH_LUA CACHE)
 
-project(SwarmSimulator)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(${CMAKE_SOURCE_DIR})

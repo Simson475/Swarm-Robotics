@@ -15,6 +15,8 @@
 #include "argos3/core/simulator/loop_functions.h"
 //  ???, this was added in order to get  GetID() robot
 #include "argos3/plugins/robots/foot-bot/simulator/footbot_entity.h"
+// For getting the vector for the robots position
+#include "argos3/core/utility/math/vector3.h"
 
 #include <vector>
 #include <string>
@@ -67,6 +69,7 @@ public:
     bool isActive();
     bool isWorking();
     int getClockCount() const;
+    argos::CVector3 getPositionVector();
 
     // Is the robot in a live deadlock
     bool isInLiveDeadlock();
@@ -143,16 +146,30 @@ protected:
     bool jobCompleted();
 
     void setNextLocation(int);
-    void movementLogic();
-    void movementHelper(double crossProd, double dotProd, double velocity);
-    bool isAtStation();
     bool isStationNextInPlan(int);
     void resetWaypointPlan();
     void resetStationPlan();
 
+    // Movement Logic
+    void movementLogic();
+    void movementHelper(double crossProd, double dotProd, double velocity);
+    bool isAtStation();
+    bool isPathBlocked(); //New
+    bool isRobotInFront(); //New
+    argos::CVector3 getOrientation(); //New
+    argos::CVector2 getOrientation2D(); //New
+    argos::CVector3 getDestDirection(); // New
+    argos::CVector2 getDestDirection2D(); // New
+    argos::CRadians radianBetweenDirections(argos::CVector2, argos::CVector2); //New
+    bool isBlockageOnTheSide(); //New
+    double angleOfBlock();
+    argos::CRadians radianOfBlock();
+
     // Helper functions for debug and data printing.
     void print_string(const std::string &text, const std::string &fileName = "/debug.txt");
     void log_helper(const std::string& message, bool newLine=true, bool printName=true);
+    void log_helper(const argos::CVector3& position);
+    void log_helper(const argos::CVector2& direction);
     void experiment_helper(const std::string& type, double time, int pointsToVisit, int pointsInPlan);
     void experiment_job_data(const std::string& type, int id, int logicalTime);
     void store_data(const std::string &type, const std::string& value_1, const std::string& value_2 = "");
