@@ -46,20 +46,6 @@ void RobotInterface::log_helper(const std::string &message, bool newLine, bool p
     }
 }
 
-void RobotInterface::log_helper(const argos::CVector3 &position){
-    std::ofstream logFile;
-    logFile.open(std::string{std::filesystem::current_path()} + "/log.txt", std::ofstream::app);
-
-    logFile << position << std::endl;
-}
-
-void RobotInterface::log_helper(const argos::CVector2 &direction){
-    std::ofstream logFile;
-    logFile.open(std::string{std::filesystem::current_path()} + "/log.txt", std::ofstream::app);
-
-    logFile << direction << std::endl;
-}
-
 void RobotInterface::experiment_helper(const std::string &type, double time, int pointsToVisit, int pointsInPlan){
     std::ofstream dataFile;
     dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
@@ -344,25 +330,15 @@ void RobotInterface::movementHelper(double crossProd, double dotProd, double vel
         }
     } else {
         //There is no block and the robot corrects its orientation according to the destination
-        argos::CRadians cAngle = cAccumulator.Angle();
-        if (m_cGoStraightAngleRange.WithinMinBoundIncludedMaxBoundIncluded(cAngle)) {
-            if (crossProd > 0.1) {
-                m_pcWheels->SetLinearVelocity(turnRate, -turnRate);
-            } else if (crossProd < -0.1) {
-                m_pcWheels->SetLinearVelocity(-turnRate, turnRate);
-            } else {
-                if (dotProd > 0) {
-                    m_pcWheels->SetLinearVelocity(velocity, velocity);
-                } else {
-                    m_pcWheels->SetLinearVelocity(velocity, 0.0f);
-                }
-            }
+        if (crossProd > 0.1) {
+            m_pcWheels->SetLinearVelocity(turnRate, -turnRate);
+        } else if (crossProd < -0.1) {
+            m_pcWheels->SetLinearVelocity(-turnRate, turnRate);
         } else {
-            /* Turn, depending on the sign of the angle */
-            if (cAngle.GetValue() > 0.0f) {
-                m_pcWheels->SetLinearVelocity(turnRate, 0); // right
+            if (dotProd > 0) {
+                m_pcWheels->SetLinearVelocity(velocity, velocity);
             } else {
-                m_pcWheels->SetLinearVelocity(0, turnRate); // left
+                m_pcWheels->SetLinearVelocity(velocity, 0.0f);
             }
         }
     }
@@ -412,27 +388,15 @@ bool RobotInterface::isPathBlocked(){
 bool RobotInterface::isRobotInFront() {
     argos::CVector3 ownPos = getPositionVector();
 
-    if(m_strId == "fb0"){
-        log_helper(ownPos);
-    }
-
     for(auto bot : otherBots){
         argos::CVector3 othersPos = bot.get().getPositionVector();
 
         argos::CVector2 direction(othersPos.GetX() - ownPos.GetX(), othersPos.GetY() - ownPos.GetY());
 
-        if(m_strId == "fb0"){
-            log_helper("Pos and direction for robot: " + bot.get().m_strId, true, false);
-            log_helper(othersPos);
-            log_helper(direction);
-        }
-
         if(direction.Length() < 0.25){
             argos::CVector2 orientation = getOrientation2D();
             orientation.Rotate(radianOfBlock());
-            log_helper("RobotInProximity");
             if(radianBetweenDirections(direction, orientation).GetAbsoluteValue() < 0.2){
-                log_helper("RobotInFront");
                 return true;
             }
         }
