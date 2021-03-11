@@ -12,6 +12,7 @@
 #include <filesystem>
 #include <ctime>
 #include <chrono>
+#include <experimental/iterator>
 
 RobotInterface::RobotInterface() :
     m_pcWheels(nullptr),
@@ -170,6 +171,7 @@ void RobotInterface::ControlStep() {
                 std::vector<int> stationPlan = constructStationPlan();
 
                 log_helper("Station plan has size " + std::to_string(stationPlan.size()));
+                storePlan(stationPlan, "Station");
                 setStationPlan(stationPlan);
                 log_helper("Next station is now: " + std::to_string(getNextStation()));
 
@@ -183,6 +185,7 @@ void RobotInterface::ControlStep() {
                 std::vector<int> waypointPlan = constructWaypointPlan();
 
                 log_helper("Waypoint plan has size " + std::to_string(waypointPlan.size()));
+                storePlan(waypointPlan, "Waypoint");
                 setWaypointPlan(waypointPlan);
                 setNextLocation(waypointPlan.front());
                 log_helper("Going towards " + std::to_string(nextLocation));
@@ -191,6 +194,21 @@ void RobotInterface::ControlStep() {
     }
 
     movementLogic();
+}
+
+void RobotInterface::storePlan(std::vector<int> plan, std::string type) {
+    std::ofstream planFile;
+    planFile.open(std::string{std::filesystem::current_path()} + "/" + GetId() +"_plans.csv", std::ofstream::app);
+
+    std::stringstream formatted_elements{};
+
+    std::copy(plan.begin(),
+              plan.end(),
+              std::experimental::make_ostream_joiner(formatted_elements, ", "));
+    formatted_elements << std::endl;
+
+    planFile << type << "; ";
+    planFile << formatted_elements.str();
 }
 
 //Sets the vector of references of all the other robots in the system.

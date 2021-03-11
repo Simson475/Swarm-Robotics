@@ -114,8 +114,10 @@ void CTrajectoryLoopFunctions::setRobotFolders(){
         auto &controller = dynamic_cast<RobotInterface &>(pcBot->GetControllableEntity().GetController());
 
         std::string temp = currentFolder + "/" + controller.GetId();
-
         std::filesystem::remove_all(temp);
+
+        std::string plans = currentFolder + "/" + controller.GetId() + "_plans.txt";
+        std::filesystem::remove_all(plans);
 
         if (mkdir(temp.c_str(), 0777) == -1) {
             throw std::runtime_error("Cannot write folder");

@@ -144,6 +144,7 @@ protected:
     void setFinalJob();
     void clearJob();
     bool jobCompleted();
+    void storePlan(std::vector<int>, std::string);
 
     void setNextLocation(int);
     bool isStationNextInPlan(int);
