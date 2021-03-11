@@ -68,10 +68,10 @@ void CTrajectoryLoopFunctions::PreStep() {
             std::ofstream logFile;
             logFile.open(std::string{std::filesystem::current_path()} + "/log.txt", std::ofstream::app);
 
-            logFile << "Robot in live deadlock: " + controller.GetId() << std::endl;
+            logFile << "Robot in livelock: " + controller.GetId() << std::endl;
             logFile.close();
 
-            fprintf(stderr,"Robot %s is in a live deadlock", controller.GetId().c_str());
+            fprintf(stderr,"Robot %s is in a livelock", controller.GetId().c_str());
             exit(EXIT_FAILURE);
         }
     }
