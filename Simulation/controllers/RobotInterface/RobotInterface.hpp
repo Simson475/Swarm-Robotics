@@ -72,7 +72,7 @@ public:
     argos::CVector3 getPositionVector();
 
     // Is the robot in a live deadlock
-    bool isInLiveDeadlock();
+    bool isInLivelock();
 
 
 protected:

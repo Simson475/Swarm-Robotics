@@ -627,7 +627,7 @@ int RobotInterface::getClockCount() const {
 }
 
 // If the robot is active and there has been no activity for 10 logical minutes, the robot is in a deadlock.
-bool RobotInterface::isInLiveDeadlock() {
+bool RobotInterface::isInLivelock() {
     if(currentState == state::done)
         return false;
 

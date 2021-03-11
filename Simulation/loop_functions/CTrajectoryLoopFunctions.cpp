@@ -64,7 +64,7 @@ void CTrajectoryLoopFunctions::PreStep() {
         argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
         auto& controller = dynamic_cast<RobotInterface&>(pcBot->GetControllableEntity().GetController());
 
-        if(controller.isInLiveDeadlock()) {
+        if(controller.isInLivelock()) {
             std::ofstream logFile;
             logFile.open(std::string{std::filesystem::current_path()} + "/log.txt", std::ofstream::app);
 
