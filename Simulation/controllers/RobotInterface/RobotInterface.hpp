@@ -155,6 +155,8 @@ protected:
     void movementLogic();
     void movementHelper(double crossProd, double dotProd, double velocity);
     bool isAtStation();
+    bool isFacingDest();
+    argos::CVector2 getProximityVector(); // New
     bool isPathBlocked(); //New
     bool isRobotInFront(); //New
     argos::CVector3 getOrientation(); //New
@@ -172,6 +174,7 @@ protected:
     void experiment_helper(const std::string& type, double time, int pointsToVisit, int pointsInPlan);
     void experiment_job_data(const std::string& type, int id, int logicalTime);
     void store_data(const std::string &type, const std::string& value_1, const std::string& value_2 = "");
+    void print_help_debug(std::string message);
 
     //Clock/working functionality
     bool isDoneWorking() const;

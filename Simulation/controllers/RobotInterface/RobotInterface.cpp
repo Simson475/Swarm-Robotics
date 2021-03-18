@@ -20,7 +20,7 @@ RobotInterface::RobotInterface() :
     m_pcPosition(nullptr),
     m_cAlpha(10.0f),
     m_fDelta(0.05f),
-    m_fWheelVelocity(100),
+    m_fWheelVelocity(10),
     m_cGoStraightAngleRange(-ToRadians(m_cAlpha),
                             ToRadians(m_cAlpha)) {}
 
@@ -31,6 +31,16 @@ void RobotInterface::print_string(const std::string &text, const std::string &fi
     debug << text;
 
     debug.close();
+}
+
+void RobotInterface::print_help_debug(std::string message){
+    if(GetId() != "fb3")
+        return;
+
+    std::ofstream logFile;
+    logFile.open(std::string{std::filesystem::current_path()} + "/angles.txt", std::ofstream::app);
+
+    logFile << message << std::endl;
 }
 
 void RobotInterface::log_helper(const std::string &message, bool newLine, bool printName){
@@ -107,6 +117,15 @@ void RobotInterface::Init(argos::TConfigurationNode &t_node) {
     argos::GetNodeAttributeOrDefault(t_node, "velocity", m_fWheelVelocity, m_fWheelVelocity);
 
     currentState = state::moving;
+
+
+    if(GetId() =="fb1"){
+        const argos::CCI_FootBotProximitySensor::TReadings &tProxReads = m_pcProximity->GetReadings();
+
+        for(auto reading : tProxReads){
+            log_helper(std::to_string(reading.Angle.GetValue()));
+        }
+    }
 }
 
 void RobotInterface::ControlStep() {
@@ -302,21 +321,6 @@ void RobotInterface::movementLogic() {
 }
 
 void RobotInterface::movementHelper(double crossProd, double dotProd, double velocity) {
-    const argos::CCI_FootBotProximitySensor::TReadings &tProxReads = m_pcProximity->GetReadings();
-    argos::CVector2 cAccumulator;
-    argos::CVector2 cAccumulator_rear;
-    size_t frontMeasurements = 0;
-    for (size_t i = 0; i < tProxReads.size(); ++i) {
-        // We onlt care about the sensor values in the front of the robot.
-        if(i > 6 && i < 17)
-            cAccumulator_rear += argos::CVector2(tProxReads[i].Value, tProxReads[i].Angle);
-        else {
-            frontMeasurements++;
-            cAccumulator += argos::CVector2(tProxReads[i].Value, tProxReads[i].Angle);
-        }
-    }
-    cAccumulator /= frontMeasurements;
-    cAccumulator_rear /= tProxReads.size() - frontMeasurements;
     /* If the angle of the vector is small enough and the closest obstacle
      * is far enough, continue going straight, otherwise curve a little
     */
@@ -325,28 +329,41 @@ void RobotInterface::movementHelper(double crossProd, double dotProd, double vel
     // Sets the turn speed based on the difference on the angle between robot's front and direction of dest
     if (crossProd > 0.5 || crossProd < -0.5)
         turnRate = 10.0f;
-    else if (crossProd < 0.1 && crossProd > -0.1)
-        turnRate = 1.0f;
+    else if (crossProd < 0.1 && crossProd > -0.1) {
+        if (m_strId == "fb6" && argos::CSimulator::GetInstance().GetSpace().GetSimulationClock() > 600)
+            turnRate = 3.0;
+        else
+            turnRate = 1.0f;
+    }
     else
         turnRate = 3.0f;
 
 
-    if(isPathBlocked()){
+    if(isPathBlocked() && isFacingDest()){
+        print_help_debug("Path Blocked!");
         if(isRobotInFront() && !isBlockageOnTheSide()){
+            print_help_debug("Robot in front");
             // Makes sure that robots turn to the right around each other.
-            m_pcWheels->SetLinearVelocity(velocity, 0);
+            //if(m_strId == "fb6" && argos::CSimulator::GetInstance().GetSpace().GetSimulationClock() > 600)
+             //   m_pcWheels->SetLinearVelocity(velocity, -velocity);
+            //else
+                m_pcWheels->SetLinearVelocity(turnRate, 0);
         } else if (isBlockageOnTheSide()) {
+            print_help_debug("Blocked on the side!");
             // Robot continues as long blockage is on its side.
             m_pcWheels->SetLinearVelocity(velocity, velocity);
         } else {
             // The robot change direction depending on the sign of the blockage
-            if(angleOfBlock() > 0.0){
-                m_pcWheels->SetLinearVelocity(velocity, -velocity);
+            print_help_debug("Angle is: " + std::to_string(angleOfBlock()));
+            double angle = angleOfBlock();
+            if((angle >= 0.0 && angle <= ARGOS_PI/2) || (angle <= -ARGOS_PI/2 && angle >= -ARGOS_PI)){
+                m_pcWheels->SetLinearVelocity(turnRate, 0);
             } else {
-                m_pcWheels->SetLinearVelocity(-velocity, velocity);
+                m_pcWheels->SetLinearVelocity(0, turnRate);
             }
         }
     } else {
+        print_help_debug("Path Not Blocked!");
         //There is no block and the robot corrects its orientation according to the destination
         if (crossProd > 0.1) {
             m_pcWheels->SetLinearVelocity(turnRate, -turnRate);
@@ -363,21 +380,14 @@ void RobotInterface::movementHelper(double crossProd, double dotProd, double vel
 }
 
 
-//@todo: The angle between the reading and the direction of dest must be between -0.5 and 0.5. In that way,
-// we are sure that we only check for blocks on the path to dest. The angle can be accessed through "tProxReads[i].Angle".
-// The  thing to compare to the direction is the CVector3 vector where x and y are rotated with the given angle.
-//@todo: We only need to make sure that the angle between the direction of the robot and the block is not greater that 90 degress
-// as the robot needs to turn before that is a issue.
-// If we implement both above points, we do not care if there are anything that goes away from the point. we are about what is
-// ontogonal to it and that goes towards the dest.
-bool RobotInterface::isPathBlocked(){
+argos::CVector2 RobotInterface::getProximityVector(){
     // Get Robot's normalized direction vector
     argos::CVector2 orientation = getOrientation2D();
     argos::CVector2 destDirection = getDestDirection2D();
 
     //Sets up for getting readings
     const argos::CCI_FootBotProximitySensor::TReadings &tProxReads = m_pcProximity->GetReadings();
-    argos::CVector2 cAccumulator;
+    argos::CVector2 cAccumulator{};
     size_t numOfReadings = 0;
 
 
@@ -385,7 +395,8 @@ bool RobotInterface::isPathBlocked(){
         argos::CVector2 sensorOrientation = orientation;
         sensorOrientation.Rotate(reading.Angle);
 
-        //log_helper("Angle Value:" + std::to_string(radianBetweenDirections(destDirection, sensorOrientation).GetAbsoluteValue()));
+        if(m_strId == "fb6" && argos::CSimulator::GetInstance().GetSpace().GetSimulationClock() > 600)
+            print_help_debug("Angle Value:" + std::to_string(reading.Value));
 
         if(radianBetweenDirections(destDirection, sensorOrientation).GetAbsoluteValue() < ARGOS_PI/2) {
             cAccumulator += argos::CVector2(reading.Value, reading.Angle);
@@ -394,10 +405,23 @@ bool RobotInterface::isPathBlocked(){
     }
 
     assert(numOfReadings > 0); // Otherwise, no readings are used.
-
     cAccumulator /= numOfReadings;
-    //log_helper(std::to_string(cAccumulator.Length()));
-    return cAccumulator.Length() >= m_fDelta;
+    //print_help_debug("Number of")
+
+    return cAccumulator;
+}
+
+
+bool RobotInterface::isPathBlocked(){
+    print_help_debug("Lenght: " + std::to_string(getProximityVector().Length()));
+    return getProximityVector().Length() >= m_fDelta;
+}
+
+bool RobotInterface::isFacingDest(){
+    argos::CVector2 orientation = getOrientation2D();
+    argos::CVector2 destDirection = getDestDirection2D();
+
+    return radianBetweenDirections(orientation, destDirection).GetAbsoluteValue() < ARGOS_PI / 2;
 }
 
 // Checks if there is a other robot in robot by checking if the robot is very close AND the robot's position
@@ -412,9 +436,12 @@ bool RobotInterface::isRobotInFront() {
         argos::CVector2 direction(othersPos.GetX() - ownPos.GetX(), othersPos.GetY() - ownPos.GetY());
 
         if(direction.Length() < 0.25){
+            //log_helper(std::to_string(getProximityVector().Angle().GetValue()));
             argos::CVector2 orientation = getOrientation2D();
             orientation.Rotate(radianOfBlock());
-            if(radianBetweenDirections(direction, orientation).GetAbsoluteValue() < 0.2){
+
+            print_help_debug("Radian between Robot and block: " + std::to_string(radianBetweenDirections(direction, orientation).GetAbsoluteValue()));
+            if(radianBetweenDirections(direction, orientation).GetAbsoluteValue() < 0.5){
                 return true;
             }
         }
@@ -465,57 +492,30 @@ argos::CVector2 RobotInterface::getOrientation2D() {
 }
 
 bool RobotInterface::isBlockageOnTheSide() {
-    const argos::CCI_FootBotProximitySensor::TReadings &tProxReads = m_pcProximity->GetReadings();
-    size_t highest = 0;
-    double tmpMax = 0;
+    // Get Robot's normalized direction vector
+    argos::CVector2 destDirection = getDestDirection2D();
 
-    for (size_t i = 0; i < tProxReads.size(); ++i) {
-        // We only care about the sensor values in the front of the robot.
-        if(i <= 6 || i >= 17){
-            if (tProxReads[i].Value > tmpMax){
-                tmpMax = tProxReads[i].Value;
-                highest = i;
-            }
-        }
+    argos::CVector2 blockDirection = getProximityVector();
+
+    if (blockDirection.Angle().GetAbsoluteValue() > ARGOS_PI/2 - 0.2){
+        print_help_debug("Is block on side? Absolute: " + std::to_string(blockDirection.Angle().GetAbsoluteValue()));
+        argos::CVector2 orientation = getOrientation2D();
+        orientation.Rotate(blockDirection.Angle());
+        print_help_debug("Is block on side? Diff: " + std::to_string(radianBetweenDirections(orientation, destDirection).GetAbsoluteValue()));
+        return radianBetweenDirections(orientation, destDirection).GetAbsoluteValue() < ARGOS_PI/2;
     }
 
-    return highest == 5 || highest == 6 || highest == 17 || highest == 18;
+    return false;
 }
 
 double RobotInterface::angleOfBlock() {
-    const argos::CCI_FootBotProximitySensor::TReadings &tProxReads = m_pcProximity->GetReadings();
-    size_t highest = 0;
-    double tmpMax = 0;
+    argos::CVector2 blockDirection = getProximityVector();
 
-    for (size_t i = 0; i < tProxReads.size(); ++i) {
-        // We only care about the sensor values in the front of the robot.
-        if(i <= 6 || i >= 17){
-            if (tProxReads[i].Value > tmpMax){
-                tmpMax = tProxReads[i].Value;
-                highest = i;
-            }
-        }
-    }
-
-    return tProxReads[highest].Angle.GetValue();
+    return blockDirection.Angle().GetValue();
 }
 
 argos::CRadians RobotInterface::radianOfBlock() {
-    const argos::CCI_FootBotProximitySensor::TReadings &tProxReads = m_pcProximity->GetReadings();
-    size_t highest = 0;
-    double tmpMax = 0;
-
-    for (size_t i = 0; i < tProxReads.size(); ++i) {
-        // We only care about the sensor values in the front of the robot.
-        if(i <= 6 || i >= 17){
-            if (tProxReads[i].Value > tmpMax){
-                tmpMax = tProxReads[i].Value;
-                highest = i;
-            }
-        }
-    }
-
-    return tProxReads[highest].Angle;
+    return getProximityVector().Angle();
 }
 
 argos::CVector3 RobotInterface::getDestDirection() {
