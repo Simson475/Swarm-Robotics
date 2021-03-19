@@ -33,16 +33,6 @@ void RobotInterface::print_string(const std::string &text, const std::string &fi
     debug.close();
 }
 
-void RobotInterface::print_help_debug(std::string message){
-    if(GetId() != "fb0" &&  GetId() != "fb7")
-        return;
-
-    std::ofstream logFile;
-    logFile.open(std::string{std::filesystem::current_path()} + "/angles.txt", std::ofstream::app);
-
-    logFile << m_strId <<  ": " << message << std::endl;
-}
-
 void RobotInterface::log_helper(const std::string &message, bool newLine, bool printName){
     std::ofstream logFile;
     logFile.open(std::string{std::filesystem::current_path()} + "/log.txt", std::ofstream::app);
@@ -348,14 +338,11 @@ void RobotInterface::movementHelper(double crossProd, double dotProd, double vel
 
 
     if(isPathBlocked() && isFacingDest()){
-        print_help_debug("Path Blocked!");
         if (isBlockageOnTheSide()) {
-            print_help_debug("Blocked on the side!");
             // Robot continues as long blockage is on its side.
             m_pcWheels->SetLinearVelocity(velocity, velocity);
         } else {
-            // The robot change direction depending on the sign of the blockage
-            print_help_debug("Angle is: " + std::to_string(angleOfBlock()));
+            // The robot change direction depending on the sign of the blockage concerning dest orientation
             argos::CVector2 blockOrientation = getBlockOrientation();
             if(radianBetweenDirections(getDestDirection2D(), blockOrientation).GetValue() > 0){
                 m_pcWheels->SetLinearVelocity(m_fWheelVelocity, 0);
@@ -364,7 +351,6 @@ void RobotInterface::movementHelper(double crossProd, double dotProd, double vel
             }
         }
     } else {
-        print_help_debug("Path Not Blocked!");
         //There is no block and the robot corrects its orientation according to the destination
         if (crossProd > 0.1) {
             m_pcWheels->SetLinearVelocity(turnRate, -turnRate);
@@ -396,8 +382,6 @@ argos::CVector2 RobotInterface::getProximityVector(){
         argos::CVector2 sensorOrientation = orientation;
         sensorOrientation.Rotate(reading.Angle);
 
-        if(m_strId == "fb6" && argos::CSimulator::GetInstance().GetSpace().GetSimulationClock() > 600)
-            print_help_debug("Angle Value:" + std::to_string(reading.Value));
 
         if(radianBetweenDirections(destDirection, sensorOrientation).GetAbsoluteValue() < ARGOS_PI/2) {
             cAccumulator += argos::CVector2(reading.Value, reading.Angle);
@@ -414,7 +398,6 @@ argos::CVector2 RobotInterface::getProximityVector(){
 
 
 bool RobotInterface::isPathBlocked(){
-    print_help_debug("Lenght: " + std::to_string(getProximityVector().Length()));
     return getProximityVector().Length() >= m_fDelta;
 }
 
@@ -425,56 +408,6 @@ bool RobotInterface::isFacingDest(){
     return radianBetweenDirections(orientation, destDirection).GetAbsoluteValue() < ARGOS_PI / 2;
 }
 
-// Checks if there is a other robot in robot by checking if the robot is very close AND the robot's position
-// matches the direction that the current robot is oriented.
-// @todo: Double-check if the other Robot is on the path to the dest.
-bool RobotInterface::isRobotInFront() {
-    argos::CVector3 ownPos = getPositionVector();
-
-    for(auto bot : otherBots){
-        argos::CVector3 othersPos = bot.get().getPositionVector();
-
-        argos::CVector2 direction(othersPos.GetX() - ownPos.GetX(), othersPos.GetY() - ownPos.GetY());
-
-        if(direction.Length() < 0.25){
-            //log_helper(std::to_string(getProximityVector().Angle().GetValue()));
-            argos::CVector2 orientation = getOrientation2D();
-            orientation.Rotate(radianOfBlock());
-
-            print_help_debug("Radian between Robot and block: " + std::to_string(radianBetweenDirections(direction, orientation).GetAbsoluteValue()));
-            if(radianBetweenDirections(direction, orientation).GetAbsoluteValue() < 0.5){
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-
-argos::CVector3 RobotInterface::getPositionVector() {
-    const argos::CCI_PositioningSensor::SReading &tPosReads = m_pcPosition->GetReading();
-
-    return tPosReads.Position;
-}
-
-
-
-// Gets a vector that returns the robot's orientation.
-argos::CVector3 RobotInterface::getOrientation() {
-    const argos::CCI_PositioningSensor::SReading &tPosReads = m_pcPosition->GetReading();
-
-    argos::CVector2 test;
-
-    argos::CRadians a, c, b;
-    tPosReads.Orientation.ToEulerAngles(a, b, c);
-
-    double oy = sin(a.GetValue());
-    double ox = cos(a.GetValue());
-    argos::CVector3 orientation = argos::CVector3(ox, oy, 0);
-    orientation.Normalize();
-    return orientation;
-}
 
 // Gets a vector that returns the robot's orientation.
 argos::CVector2 RobotInterface::getOrientation2D() {
@@ -499,20 +432,12 @@ bool RobotInterface::isBlockageOnTheSide() {
     argos::CVector2 blockDirection = getProximityVector();
 
     if (blockDirection.Angle().GetAbsoluteValue() > ARGOS_PI/2 - 0.2){
-        print_help_debug("Is block on side? Absolute: " + std::to_string(blockDirection.Angle().GetAbsoluteValue()));
         argos::CVector2 orientation = getOrientation2D();
         orientation.Rotate(blockDirection.Angle());
-        print_help_debug("Is block on side? Diff: " + std::to_string(radianBetweenDirections(orientation, destDirection).GetAbsoluteValue()));
         return radianBetweenDirections(orientation, destDirection).GetAbsoluteValue() < ARGOS_PI/2;
     }
 
     return false;
-}
-
-double RobotInterface::angleOfBlock() {
-    argos::CVector2 blockDirection = getProximityVector();
-
-    return blockDirection.Angle().GetValue();
 }
 
 argos::CVector2 RobotInterface::getBlockOrientation(){

@@ -116,7 +116,7 @@ void CTrajectoryLoopFunctions::setRobotFolders(){
         std::string temp = currentFolder + "/" + controller.GetId();
         std::filesystem::remove_all(temp);
 
-        std::string plans = currentFolder + "/" + controller.GetId() + "_plans.txt";
+        std::string plans = currentFolder + "/" + controller.GetId() + "_plans.csv";
         std::filesystem::remove_all(plans);
 
         if (mkdir(temp.c_str(), 0777) == -1) {

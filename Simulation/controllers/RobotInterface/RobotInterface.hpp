@@ -69,7 +69,6 @@ public:
     bool isActive();
     bool isWorking();
     int getClockCount() const;
-    argos::CVector3 getPositionVector();
 
     // Is the robot in a live deadlock
     bool isInLivelock();
@@ -159,14 +158,11 @@ protected:
     argos::CVector2 getProximityVector(); // New
     bool isPathBlocked(); //New
     argos::CVector2 getBlockOrientation();
-    bool isRobotInFront(); //New
-    argos::CVector3 getOrientation(); //New
     argos::CVector2 getOrientation2D(); //New
     argos::CVector3 getDestDirection(); // New
     argos::CVector2 getDestDirection2D(); // New
     argos::CRadians radianBetweenDirections(argos::CVector2, argos::CVector2); //New
     bool isBlockageOnTheSide(); //New
-    double angleOfBlock();
     argos::CRadians radianOfBlock();
 
     // Helper functions for debug and data printing.
@@ -175,7 +171,6 @@ protected:
     void experiment_helper(const std::string& type, double time, int pointsToVisit, int pointsInPlan);
     void experiment_job_data(const std::string& type, int id, int logicalTime);
     void store_data(const std::string &type, const std::string& value_1, const std::string& value_2 = "");
-    void print_help_debug(std::string message);
 
     //Clock/working functionality
     bool isDoneWorking() const;
