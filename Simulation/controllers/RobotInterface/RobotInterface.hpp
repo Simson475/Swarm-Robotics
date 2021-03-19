@@ -158,6 +158,7 @@ protected:
     bool isFacingDest();
     argos::CVector2 getProximityVector(); // New
     bool isPathBlocked(); //New
+    argos::CVector2 getBlockOrientation();
     bool isRobotInFront(); //New
     argos::CVector3 getOrientation(); //New
     argos::CVector2 getOrientation2D(); //New
