@@ -13,6 +13,7 @@
 #include <ctime>
 #include <chrono>
 #include <experimental/iterator>
+#include <limits>
 
 RobotInterface::RobotInterface() :
     m_pcWheels(nullptr),
@@ -108,22 +109,7 @@ void RobotInterface::Init(argos::TConfigurationNode &t_node) {
 
     currentState = state::moving;
 
-
-    if(GetId() =="fb1"){
-        const argos::CCI_FootBotProximitySensor::TReadings &tProxReads = m_pcProximity->GetReadings();
-
-        for(auto reading : tProxReads){
-            log_helper(std::to_string(reading.Angle.GetValue()));
-        }
-
-
-        argos::CVector2 dest{0, 1};
-        argos::CVector2 block{1, 0};
-        argos::CVector2 block_2{-1, 0};
-
-        log_helper(std::to_string(radianBetweenDirections(dest, block).GetValue()));
-        log_helper(std::to_string(radianBetweenDirections(dest, block_2).GetValue()));
-    }
+    specialInit();
 }
 
 void RobotInterface::ControlStep() {
@@ -209,7 +195,6 @@ void RobotInterface::ControlStep() {
             }
         }
     }
-
     movementLogic();
 }
 
@@ -307,7 +292,6 @@ void RobotInterface::movementLogic() {
     double crossProd = newOri.GetX() * Ori.GetY() - newOri.GetY() * Ori.GetX(); // @todo: Use newOri.CrossProduct(..) when merge is accepted.
     double dotProd = Ori.DotProduct(newOri);
 
-
     if (Distance(tPosReads.Position, nextPoint) <= 1.3 && !sMap.isPointAvailable(nextPoint.getId())) {
         m_pcWheels->SetLinearVelocity(0.0f, 0.0f);
     } else if (Distance(tPosReads.Position, nextPoint) <= 0.30) { // acceptance radius between point and robot
@@ -315,7 +299,6 @@ void RobotInterface::movementLogic() {
     } else {
         movementHelper(crossProd, dotProd, m_fWheelVelocity);
     }
-
 }
 
 void RobotInterface::movementHelper(double crossProd, double dotProd, double velocity) {
@@ -327,17 +310,20 @@ void RobotInterface::movementHelper(double crossProd, double dotProd, double vel
     // Sets the turn speed based on the difference on the angle between robot's front and direction of dest
     if (crossProd > 0.5 || crossProd < -0.5)
         turnRate = 10.0f;
-    else if (crossProd < 0.1 && crossProd > -0.1) {
-        if (m_strId == "fb6" && argos::CSimulator::GetInstance().GetSpace().GetSimulationClock() > 600)
-            turnRate = 3.0;
-        else
-            turnRate = 1.0f;
-    }
     else
         turnRate = 3.0f;
 
+    if(otherBotIsTooClose() && !isPathBlocked()){
+        argos::CVector2 orientation = getOrientation2D();
+        argos::CVector2 others_orientation = getCloseRobotsDirection();
 
-    if(isPathBlocked() && isFacingDest()){
+        if(radianBetweenDirections(orientation, others_orientation).GetValue() > 0){
+            m_pcWheels->SetLinearVelocity(m_fWheelVelocity, 0);
+        } else {
+            m_pcWheels->SetLinearVelocity(0, m_fWheelVelocity*0.8);
+        }
+    }
+    else if(isPathBlocked() && isFacingDest()){
         if (isBlockageOnTheSide()) {
             // Robot continues as long blockage is on its side.
             m_pcWheels->SetLinearVelocity(velocity, velocity);
@@ -391,9 +377,54 @@ argos::CVector2 RobotInterface::getProximityVector(){
 
     assert(numOfReadings > 0); // Otherwise, no readings are used.
     cAccumulator /= numOfReadings;
-    //print_help_debug("Number of")
 
     return cAccumulator;
+}
+
+argos::CVector2 RobotInterface::getPosition() {
+    const argos::CCI_PositioningSensor::SReading &tPosReads = m_pcPosition->GetReading();
+
+    return argos::CVector2{tPosReads.Position.GetX(), tPosReads.Position.GetY()};
+}
+
+bool RobotInterface::otherBotIsTooClose(){
+    argos::CVector2 pos = getPosition();
+
+    for (auto& other_bot : otherBots) {
+        if(other_bot.get().isActive()) {
+            argos::CVector2 others_pos = other_bot.get().getPosition();
+
+            if ((pos - others_pos).Length() < 0.085036758f * 2 &&
+                radianBetweenDirections(others_pos - pos, getOrientation2D()).GetAbsoluteValue() <
+                ARGOS_PI / 2) { //Value is the radius of robots and is in "footbot_entity.cpp"
+                log_helper(other_bot.get().GetId() + " is " + std::to_string((pos - others_pos).Length()) + " away");
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+argos::CVector2 RobotInterface::getCloseRobotsDirection(){
+    argos::CVector2 pos = getPosition();
+
+
+    double tmp_dist = std::numeric_limits<double>::infinity();
+    argos::CVector2 tmp_pos{};
+
+
+    for (auto& other_bot : otherBots) {
+
+        argos::CVector2 others_pos = other_bot.get().getPosition();
+
+        if((pos - others_pos).Length() < tmp_dist) { //Value is the radius of robots and is in "footbot_entity.cpp"
+            tmp_dist = (pos - others_pos).Length();
+            tmp_pos = others_pos;
+        }
+    }
+
+    return argos::CVector2{tmp_pos - pos};
 }
 
 

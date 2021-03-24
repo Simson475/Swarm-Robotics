@@ -56,7 +56,6 @@ public:
     // Obtain references for the other robots for information extraction when creating Uppaal models.
     void obtainOtherBots(Map_Structure&);
 
-
     // Functions the other controllers need
     bool hasJob();
     unsigned int sizeOfStationPlan();
@@ -79,6 +78,10 @@ protected:
     enum class state {working, moving, done};
 
     state currentState;
+
+    // Function for any special setup of bots the derive from this class.
+    // Is called at the last thing in the Init function.
+    virtual void specialInit(){}
 
     /* Pointer to the differential steering actuator */
     argos::CCI_DifferentialSteeringActuator *m_pcWheels;
@@ -157,6 +160,7 @@ protected:
     bool isFacingDest();
     argos::CVector2 getProximityVector(); // New
     bool isPathBlocked(); //New
+    argos::CVector2 getPosition();
     argos::CVector2 getBlockOrientation();
     argos::CVector2 getOrientation2D(); //New
     argos::CVector3 getDestDirection(); // New
@@ -164,6 +168,9 @@ protected:
     argos::CRadians radianBetweenDirections(argos::CVector2, argos::CVector2); //New
     bool isBlockageOnTheSide(); //New
     argos::CRadians radianOfBlock();
+
+    bool otherBotIsTooClose();
+    argos::CVector2 getCloseRobotsDirection();
 
     // Helper functions for debug and data printing.
     void print_string(const std::string &text, const std::string &fileName = "/debug.txt");

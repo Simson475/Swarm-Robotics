@@ -139,8 +139,8 @@ std::vector<int> SingleThreadUppaalBot::getWaypointPlan(std::string modelOutput)
 }
 
 std::string SingleThreadUppaalBot::runStationModel(){
-    std::string verifyta{"/home/martin/phd/Uppaal/stratego-fixed/verifyta"};
-    //std::string verifyta{"./bin-Linux/verifyta"};
+    //std::string verifyta{"/home/martin/phd/Uppaal/stratego-fixed/verifyta"};
+    std::string verifyta{"./bin-Linux/verifyta"};
     std::string old_model_path{"./" + GetId() + "/station_model.xml"};
 
     long seed = generateSeed();
@@ -172,8 +172,8 @@ std::string SingleThreadUppaalBot::runStationModel(){
 }
 
 std::string SingleThreadUppaalBot::runWaypointModel(){
-    std::string verifyta{"/home/martin/phd/Uppaal/stratego-fixed/verifyta"};
-    //std::string verifyta{"./bin-Linux/verifyta"};
+    //std::string verifyta{"/home/martin/phd/Uppaal/stratego-fixed/verifyta"};
+    std::string verifyta{"./bin-Linux/verifyta"};
     std::string old_model_path{"./" + GetId() + "/waypoint_model.xml"};
 
     long seed = generateSeed();

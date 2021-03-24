@@ -24,6 +24,9 @@ add_library(BotImplementations MODULE
 
         SingleThreadBotGreedy.cpp
         SingleThreadBotGreedy.hpp
+
+        DebugBot.cpp
+        DebugBot.hpp
         )
 
 add_dependencies(BotImplementations argos-ext)
