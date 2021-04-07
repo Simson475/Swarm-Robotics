@@ -41,8 +41,8 @@ private:
     //**************** ControlStep functionality
     void constructStationUppaalModel();
     void constructWaypointUppaalModel();
-    std::string runStationModel();
-    std::string runWaypointModel();
+    std::string runStationModel(int failed = 0);
+    std::string runWaypointModel(int failed = 0);
     std::vector<int> getStationPlan(std::string modelOutput); // Private
     std::vector<int> getWaypointPlan(std::string modelOutput); // Private
     long generateSeed();

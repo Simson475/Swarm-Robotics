@@ -52,7 +52,7 @@ public:
     };
 
     const std::vector<std::vector<float>> &getRealShortestDistanceMatrix() const {
-        return shortestDistanceMatrix;
+        return realShortestDistanceMatrix;
     };
 
     // finds a robot's ID by name

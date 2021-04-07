@@ -138,12 +138,12 @@ std::vector<int> SingleThreadUppaalBot::getWaypointPlan(std::string modelOutput)
     return stationPlan;
 }
 
-std::string SingleThreadUppaalBot::runStationModel(){
-    //std::string verifyta{"/home/martin/phd/Uppaal/stratego-fixed/verifyta"};
-    std::string verifyta{"./bin-Linux/verifyta"};
+std::string SingleThreadUppaalBot::runStationModel(int failed){
+    std::string verifyta{"/home/martin/phd/Uppaal/stratego-fixed/verifyta"};
+    //std::string verifyta{"./bin-Linux/verifyta"};
     std::string old_model_path{"./" + GetId() + "/station_model.xml"};
 
-    long seed = generateSeed();
+    long seed = generateSeed() + failed;
     std::string folder_path = "./" + GetId() + "/" + std::to_string(seed);
     std::string new_model_path = folder_path + "/station_model.xml";
 
@@ -151,10 +151,9 @@ std::string SingleThreadUppaalBot::runStationModel(){
         throw std::runtime_error("Cannot write seed folder");
     }
     std::filesystem::copy(old_model_path, new_model_path);
-    std::filesystem::remove(old_model_path);
 
     store_data("StationPlanSeed", std::to_string(seed));
-    std::string terminalCommand = verifyta + " --max-iterations 5 --reset-no-better 5 -r " + std::to_string(seed) + " " + new_model_path;
+    std::string terminalCommand = verifyta + " --max-iterations 1 --reset-no-better 1 --good-runs 1000 --total-runs 1000 --runs-pr-stat 1000 -r " + std::to_string(seed) + " " + new_model_path;
 
     std::string result;
     FILE * stream;
@@ -168,15 +167,24 @@ std::string SingleThreadUppaalBot::runStationModel(){
     }
 
     print_string(result);
-    return result;
+    if(result.find("Failed to learn strategy") != std::string::npos){
+        log_helper("Failed to find station strategy");
+        store_data("FailedStationStategyGeneration", std::to_string(getLogicalTime()));
+        return runStationModel(failed++);
+    }
+    else {
+        // Must only be removed when we have a result
+        std::filesystem::remove(old_model_path);
+        return result;
+    }
 }
 
-std::string SingleThreadUppaalBot::runWaypointModel(){
-    //std::string verifyta{"/home/martin/phd/Uppaal/stratego-fixed/verifyta"};
-    std::string verifyta{"./bin-Linux/verifyta"};
+std::string SingleThreadUppaalBot::runWaypointModel(int failed){
+    std::string verifyta{"/home/martin/phd/Uppaal/stratego-fixed/verifyta"};
+    //std::string verifyta{"./bin-Linux/verifyta"};
     std::string old_model_path{"./" + GetId() + "/waypoint_model.xml"};
 
-    long seed = generateSeed();
+    long seed = generateSeed() + failed;
     std::string folder_path = "./" + GetId() + "/" + std::to_string(seed);
     std::string new_model_path = folder_path + "/waypoint_model.xml";
 
@@ -184,10 +192,9 @@ std::string SingleThreadUppaalBot::runWaypointModel(){
         throw std::runtime_error("Cannot write seed folder");
     }
     std::filesystem::copy(old_model_path, new_model_path);
-    std::filesystem::remove(old_model_path);
 
     store_data("WaypointPlanSeed", std::to_string(seed));
-    std::string terminalCommand = verifyta + " --max-iterations 5 --reset-no-better 5 -r " + std::to_string(seed) + " " + new_model_path;
+    std::string terminalCommand = verifyta + " --max-iterations 1 --reset-no-better 1 --good-runs 1000 --total-runs 1000 --runs-pr-stat 1000  -r " + std::to_string(seed) + " " + new_model_path;
 
     std::string result;
     FILE * stream;
@@ -201,7 +208,16 @@ std::string SingleThreadUppaalBot::runWaypointModel(){
     }
 
     print_string(result);
-    return result;
+    if(result.find("Failed to learn strategy") != std::string::npos){
+        log_helper("Failed to find waypoint strategy");
+        store_data("FailedWaypointStategyGeneration", std::to_string(getLogicalTime()));
+        return runWaypointModel(failed++);
+    }
+    else {
+        // Must only be removed when we have a result
+        std::filesystem::remove(old_model_path);
+        return result;
+    }
 }
 
 long SingleThreadUppaalBot::generateSeed() {
