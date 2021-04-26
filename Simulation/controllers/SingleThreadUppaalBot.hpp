@@ -25,7 +25,7 @@
 
 #include <functional>
 
-class SingleThreadUppaalBot : public RobotInterface {
+class SingleThreadUppaalBot : public virtual RobotInterface {
 
 public:
     /* Class constructors. */

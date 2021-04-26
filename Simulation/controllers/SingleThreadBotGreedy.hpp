@@ -26,7 +26,7 @@
 
 #include <functional>
 
-class SingleThreadBotGreedy : public RobotInterface {
+class SingleThreadBotGreedy : public virtual RobotInterface {
 
 public:
     /* Class constructors. */

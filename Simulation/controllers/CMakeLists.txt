@@ -27,6 +27,9 @@ add_library(BotImplementations MODULE
 
         DebugBot.cpp
         DebugBot.hpp
+
+        GreedyStationUppaalWaypoint.cpp
+        GreedyStationUppaalWaypoint.hpp
         )
 
 add_dependencies(BotImplementations argos-ext)
