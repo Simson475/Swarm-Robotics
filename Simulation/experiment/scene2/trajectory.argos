@@ -22,7 +22,7 @@
   <!-- * Controllers * -->
   <!-- *************** -->
   <controllers>
-    <SingleThreadUppaalBot_controller id="fdc"
+    <GreedyStationUppaalWaypoint id="fdc"
                                   library="./libBotImplementations">
       <actuators>
         <differential_steering implementation="default" />
@@ -42,7 +42,7 @@
         <state num_of_runs="10000" working_time="300" />
       </params>
 
-    </SingleThreadUppaalBot_controller>
+    </GreedyStationUppaalWaypoint>
 
   </controllers>
 
@@ -86,7 +86,7 @@
       </entity>
     </distribute>
 
-    <!--distribute>
+    <distribute>
       <position method="grid"
                 center="6,-9,0"
                 distances="1,1,0"
@@ -97,7 +97,7 @@
           <controller config="fdc" />
         </foot-bot>
       </entity>
-    </distribute-->
+    </distribute>
 
     <box id="obstacle1"size="4,6,0.4" movable="false" >
       <body position="-3,3,0" orientation="0,0,0" />

@@ -30,6 +30,9 @@ add_library(BotImplementations MODULE
 
         GreedyStationUppaalWaypoint.cpp
         GreedyStationUppaalWaypoint.hpp
+
+        UppaalStationGreedyWaypoint.cpp
+        UppaalStationGreedyWaypoint.hpp
         )
 
 add_dependencies(BotImplementations argos-ext)
