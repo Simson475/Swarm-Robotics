@@ -495,7 +495,7 @@ int pop_duration(){
     working_lenght--;
     working[working_lenght] = false;
 
-    return tmp ? 7 : 2;
+    return tmp ? 32 : 2;
 }
 </declaration>
 		<location id="id14" x="-85" y="8">
@@ -533,7 +533,7 @@ duration = 2</label>
 			<label kind="synchronisation" x="42" y="-204">setWork[id]?</label>
 			<label kind="assignment" x="42" y="-187">work = global_work,
 global_work = 0,
-duration = 7</label>
+duration = 32</label>
 			<nail x="144" y="-119"/>
 		</transition>
 		<transition controllable="false">
@@ -584,7 +584,7 @@ duration = 0</label>
 			<label kind="select" x="17" y="-93">b : bots_t</label>
 			<label kind="synchronisation" x="17" y="-76">arrival[id][b]?</label>
 			<label kind="assignment" x="17" y="-59">cur_bot = b,
-duration = 7</label>
+duration = 32</label>
 			<nail x="59" y="-17"/>
 		</transition>
 	</template>
