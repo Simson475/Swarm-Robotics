@@ -128,12 +128,6 @@ void Map_Structure::setRealDistanceMatrix() {
             }
         }
     }
-
-    argos::LOG << "Dist to 10: " <<  realShortestDistanceMatrix[15][10] << std::endl;
-    argos::LOG << "Dist to 2: " <<  realShortestDistanceMatrix[15][2] << std::endl;
-
-    argos::LOG << "Dist to 0: " <<  realShortestDistanceMatrix[8][0] << std::endl;
-    argos::LOG << "Dist to 1: " <<  realShortestDistanceMatrix[8][1] << std::endl;
 }
 
 // @Todo: Could use a refactor as this code is much more complex than the pseudo-code for
