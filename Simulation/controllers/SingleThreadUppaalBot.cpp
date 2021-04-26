@@ -147,8 +147,8 @@ std::vector<int> SingleThreadUppaalBot::getWaypointPlan(std::string modelOutput)
 }
 
 std::string SingleThreadUppaalBot::runStationModel(int failed){
-    std::string verifyta{"/home/martin/phd/Uppaal/stratego-fixed/verifyta"};
-    //std::string verifyta{"./bin-Linux/verifyta"};
+    //std::string verifyta{"/home/martin/phd/Uppaal/stratego-fixed/verifyta"};
+    std::string verifyta{"./bin-Linux/verifyta"};
     std::string old_model_path{"./" + GetId() + "/station_model.xml"};
 
     long seed = generateSeed() + failed;
@@ -189,8 +189,8 @@ std::string SingleThreadUppaalBot::runStationModel(int failed){
 }
 
 std::string SingleThreadUppaalBot::runWaypointModel(int failed){
-    std::string verifyta{"/home/martin/phd/Uppaal/stratego-fixed/verifyta"};
-    //std::string verifyta{"./bin-Linux/verifyta"};
+    //std::string verifyta{"/home/martin/phd/Uppaal/stratego-fixed/verifyta"};
+    std::string verifyta{"./bin-Linux/verifyta"};
     std::string old_model_path{"./" + GetId() + "/waypoint_model.xml"};
 
     long seed = generateSeed() + failed;
@@ -377,6 +377,15 @@ void SingleThreadUppaalBot::constructStationUppaalModel(){
             line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
                          "5000");
         }
+
+        pos = line.find("#SIMULATION#");
+        if(pos != std::string::npos){
+            std::string timeframe = std::to_string((working_time / 10) * 20);
+
+            line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
+                         timeframe);
+        }
+
 
         pos = line.find("#NUM_OF_STATIONS#");
         if(pos != std::string::npos){
@@ -571,6 +580,14 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(){
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
                          "5000");
+        }
+
+        pos = line.find("#SIMULATION#");
+        if(pos != std::string::npos){
+            std::string timeframe = std::to_string((working_time / 10) * 10);
+
+            line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
+                         timeframe);
         }
 
         pos = line.find("#NUM_OF_STATIONS#");

@@ -615,7 +615,7 @@ reentry_cost,
 			<comment/>
 		</query>
 		<query>
-			<formula>simulate 1 [&lt;=150]{
+			<formula>simulate 1 [&lt;=#SIMULATION#]{
 	cur_station
 } under plan</formula>
 			<comment/>

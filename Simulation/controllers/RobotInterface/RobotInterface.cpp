@@ -107,6 +107,10 @@ void RobotInterface::Init(argos::TConfigurationNode &t_node) {
     argos::GetNodeAttributeOrDefault(t_node, "delta", m_fDelta, m_fDelta);
     argos::GetNodeAttributeOrDefault(t_node, "velocity", m_fWheelVelocity, m_fWheelVelocity);
 
+
+    argos::TConfigurationNode& params = argos::GetNode(t_node, "state");
+    argos::GetNodeAttribute(params, "working_time", working_time);
+
     currentState = state::moving;
 
     specialInit();
@@ -141,7 +145,7 @@ void RobotInterface::ControlStep() {
                 lastLocation)) { // Then we have reached the station @todo: Proper function for checking
                 log_helper("Arrived at a work station");
 
-                startWorking(50);
+                startWorking(working_time);
                 sMap.setPointAsOccupied(lastLocation);
             } else if (isStationNextInPlan(lastLocation)) {
                 resetStationPlan();
