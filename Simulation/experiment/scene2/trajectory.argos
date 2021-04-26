@@ -22,7 +22,7 @@
   <!-- * Controllers * -->
   <!-- *************** -->
   <controllers>
-    <SingleThreadBotGreedy_controller id="fdc"
+    <SingleThreadUppaalBot_controller id="fdc"
                                   library="./libBotImplementations">
       <actuators>
         <differential_steering implementation="default" />
@@ -31,30 +31,28 @@
         <footbot_proximity implementation="default" show_rays="true" />
         <positioning implementation="default"/>
       </sensors>
-            <params>
+      <params>
         <wheel_turning hard_turn_angle_threshold="90"
-                       soft_turn_angle_threshold="70"
-                       no_turn_angle_threshold="10"
-                       max_speed="10" />
+            soft_turn_angle_threshold="70"
+            no_turn_angle_threshold="10"
+            max_speed="10" />
         <flocking target_distance="75"
-                  gain="1000"
-                  exponent="2" />
+          gain="1000"
+          exponent="2" />
+        <num_of_runs="1000" />
       </params>
 
-      <params alpha="7.5" delta="0.1" />
-    </SingleThreadBotGreedy_controller>
+    </SingleThreadUppaalBot_controller>
 
   </controllers>
 
   <!-- ****************** -->
   <!-- * Loop functions * -->
   <!-- ****************** -->
-  <!-- <loop_functions library="build/loop_functions/id_loop_functions/libid_loop_functions"
-                  label="id_qtuser_functions" /> -->
-
-
   <loop_functions library="./libCTrajectoryLoopFunctions"
-                  label="CTrajectoryLoopFunctions" />
+                  label="CTrajectoryLoopFunctions">
+    <experiment_setup runs="1000" />
+  </loop_functions>
 
   <!-- *********************** -->
   <!-- * Arena configuration * -->
@@ -88,7 +86,7 @@
       </entity>
     </distribute>
 
-    <distribute>
+    <!--distribute>
       <position method="grid"
                 center="6,-9,0"
                 distances="1,1,0"
@@ -99,7 +97,7 @@
           <controller config="fdc" />
         </foot-bot>
       </entity>
-    </distribute>
+    </distribute-->
 
     <box id="obstacle1"size="4,6,0.4" movable="false" >
       <body position="-3,3,0" orientation="0,0,0" />

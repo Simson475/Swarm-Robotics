@@ -30,6 +30,7 @@ class SingleThreadUppaalBot : public RobotInterface {
 public:
     /* Class constructors. */
     using RobotInterface::RobotInterface;
+    void Init(argos::TConfigurationNode &t_node) override;
 
 protected:
 
@@ -37,6 +38,8 @@ protected:
     std::vector<int> constructWaypointPlan() override;
 
 private:
+    size_t num_of_runs{};
+
 
     //**************** ControlStep functionality
     void constructStationUppaalModel();

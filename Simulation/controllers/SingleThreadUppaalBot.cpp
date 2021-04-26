@@ -16,6 +16,14 @@
 #include <ctime>
 #include <chrono>
 
+
+void SingleThreadUppaalBot::Init(argos::TConfigurationNode &t_node){
+    RobotInterface::Init(t_node);
+
+    argos::TConfigurationNode& params = argos::GetNode(t_node, "state");
+    argos::GetNodeAttribute(params, "num_of_runs", num_of_runs);
+}
+
 std::vector<int> SingleThreadUppaalBot::constructStationPlan(){
     log_helper("Constructs Station model");
     constructStationUppaalModel();
@@ -152,8 +160,9 @@ std::string SingleThreadUppaalBot::runStationModel(int failed){
     }
     std::filesystem::copy(old_model_path, new_model_path);
 
+    std::string runs = std::to_string(num_of_runs);
     store_data("StationPlanSeed", std::to_string(seed));
-    std::string terminalCommand = verifyta + " --max-iterations 1 --reset-no-better 1 --good-runs 1000 --total-runs 1000 --runs-pr-stat 1000 -r " + std::to_string(seed) + " " + new_model_path;
+    std::string terminalCommand = verifyta + " --max-iterations 1 --reset-no-better 1 --good-runs " + runs  + " --total-runs " + runs + " --runs-pr-stat " + runs + " -r " + std::to_string(seed) + " " + new_model_path;
 
     std::string result;
     FILE * stream;
@@ -193,8 +202,9 @@ std::string SingleThreadUppaalBot::runWaypointModel(int failed){
     }
     std::filesystem::copy(old_model_path, new_model_path);
 
+    std::string runs = std::to_string(num_of_runs);
     store_data("WaypointPlanSeed", std::to_string(seed));
-    std::string terminalCommand = verifyta + " --max-iterations 1 --reset-no-better 1 --good-runs 1000 --total-runs 1000 --runs-pr-stat 1000  -r " + std::to_string(seed) + " " + new_model_path;
+    std::string terminalCommand = verifyta + " --max-iterations 1 --reset-no-better 1 --good-runs " + runs  + " --total-runs " + runs + " --runs-pr-stat " + runs + " -r " + std::to_string(seed) + " " + new_model_path;
 
     std::string result;
     FILE * stream;
