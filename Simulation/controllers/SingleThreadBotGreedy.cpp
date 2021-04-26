@@ -20,6 +20,7 @@ std::vector<int> SingleThreadBotGreedy::constructStationPlan() {
     } else {
         for (auto &job : currentJob->getEndStations())
             tempPlan.push_back(job);
+        sortJob(sMap.getRealShortestDistanceMatrix(), tempPlan);
     }
     return tempPlan;
 }
@@ -37,22 +38,28 @@ std::vector<int> SingleThreadBotGreedy::constructWaypointPlan() {
 }
 
 void SingleThreadBotGreedy::sortJob(const std::vector<std::vector<float>> &shortestDistances, std::vector<int> &job) {
-    for (size_t i = 0; i < job.size() - 1; i++) {
-        int k = i;
-        float min = std::numeric_limits<float>::infinity();
-        for (size_t j = i; j < job.size() - 1; j++) {
-            float temp;
-            if (i == 0) {
-                temp = shortestDistances[lastLocation][job[j]];
-            } else temp = shortestDistances[job[i - 1]][job[j]];
+    std::set<int> stations{};
+    std::vector<int> newPlan{};
 
-            if (temp < min) {
-                min = temp;
-                k = j;
+    for (auto station : job){
+        stations.insert(station);
+    }
+
+    int location = lastLocation;
+    while(!stations.empty()){
+        int tmp_station = 0;
+        double tmp_dist = std::numeric_limits<double>::infinity();
+        for (auto station : stations){
+            if(shortestDistances[location][station] < tmp_dist){
+                tmp_dist = shortestDistances[location][station];
+                tmp_station = station;
             }
         }
-        std::swap(job[i], job[k]);
+        location = tmp_station;
+        newPlan.push_back(tmp_station);
+        stations.erase(tmp_station);
     }
+    job = newPlan;
 }
 
 

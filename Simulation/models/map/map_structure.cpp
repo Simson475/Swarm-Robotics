@@ -74,18 +74,6 @@ void Map_Structure::setDistanceMatrix() {
     for (auto &line: Map_Structure::lines) {
         shortestDistanceMatrix[line.Geta().getId()][line.Getb().getId()] = line.GetFloydDistance();
     }
-    shortestPath.clear();
-    shortestPath.resize(size, std::vector<int>(size));
-    for (unsigned i = 0; i < size; ++i) {
-        for (unsigned j = 0; j < size; ++j) {
-            shortestPath[i][j] = 0;
-        }
-        for (unsigned j = 0; j < size; ++j) {
-            if (i != j) {
-                shortestPath[i][j] = j + 1;
-            }
-        }
-    }
 
     float inf = std::numeric_limits<float>::infinity();
     //We start with k being amountOfStations in order to avoid having
@@ -94,12 +82,9 @@ void Map_Structure::setDistanceMatrix() {
         for (long unsigned i = 0; i < shortestDistanceMatrix.size(); i++) {
             for (long unsigned j = 0; j < shortestDistanceMatrix.size(); j++) {
                 float temp = shortestDistanceMatrix[i][k] + shortestDistanceMatrix[k][j];
-                if (shortestDistanceMatrix[i][k] == inf || shortestDistanceMatrix[k][j] == inf)
-                    temp = inf;
                 if (shortestDistanceMatrix[i][k] != inf && shortestDistanceMatrix[k][j] != inf &&
                     temp < shortestDistanceMatrix[i][j]) {
                     shortestDistanceMatrix[i][j] = (shortestDistanceMatrix[i][k] + shortestDistanceMatrix[k][j]);
-                    shortestPath[i][j] = shortestPath[i][k];
                 }
             }
         }
@@ -108,40 +93,47 @@ void Map_Structure::setDistanceMatrix() {
 
 void Map_Structure::setRealDistanceMatrix() {
     auto size = (unsigned) sqrt(Map_Structure::lines.size());
-
-    realShortestDistanceMatrix.resize(size, std::vector<float>(size));
-    for (auto &line: Map_Structure::lines) {
-        realShortestDistanceMatrix[line.Geta().getId()][line.Getb().getId()] = line.GetFloydDistance();
-    }
+    argos::LOG << "Size: " << size << std::endl;
+    argos::LOG << "point: " << points.size() << std::endl;
     realShortestPath.clear();
     realShortestPath.resize(size, std::vector<int>(size));
     for (unsigned i = 0; i < size; ++i) {
         for (unsigned j = 0; j < size; ++j) {
-            realShortestPath[i][j] = 0;
-        }
-        for (unsigned j = 0; j < size; ++j) {
-            if (i != j) {
-                realShortestPath[i][j] = j + 1;
-            }
+            if (i != j)
+                realShortestPath[i][j] = -1;
+            else
+                realShortestPath[i][j] = i;
         }
     }
 
-    float inf = std::numeric_limits<float>::infinity();
+
+    realShortestDistanceMatrix.resize(size, std::vector<float>(size));
+    for (auto &line: Map_Structure::lines) {
+        realShortestDistanceMatrix[line.Geta().getId()][line.Getb().getId()] = line.GetFloydDistance();
+
+        if (line.GetFloydDistance() != std::numeric_limits<float>::infinity()){
+            realShortestPath[line.Geta().getId()][line.Getb().getId()] = line.Getb().getId();
+            realShortestPath[line.Getb().getId()][line.Geta().getId()] = line.Geta().getId();
+        }
+    }
+
 
     for (long unsigned k = 0; k < realShortestDistanceMatrix.size(); k++) {
         for (long unsigned i = 0; i < realShortestDistanceMatrix.size(); i++) {
             for (long unsigned j = 0; j < realShortestDistanceMatrix.size(); j++) {
-                float temp = realShortestDistanceMatrix[i][k] + realShortestDistanceMatrix[k][j];
-                if (realShortestDistanceMatrix[i][k] == inf || realShortestDistanceMatrix[k][j] == inf)
-                    temp = inf;
-                if (realShortestDistanceMatrix[i][k] != inf && realShortestDistanceMatrix[k][j] != inf &&
-                    temp < realShortestDistanceMatrix[i][j]) {
-                    realShortestDistanceMatrix[i][j] = (realShortestDistanceMatrix[i][k] + realShortestDistanceMatrix[k][j]);
+                if (realShortestDistanceMatrix[i][j] > realShortestDistanceMatrix[i][k] + realShortestDistanceMatrix[k][j]) {
+                    realShortestDistanceMatrix[i][j] = realShortestDistanceMatrix[i][k] + realShortestDistanceMatrix[k][j];
                     realShortestPath[i][j] = realShortestPath[i][k];
                 }
             }
         }
     }
+
+    argos::LOG << "Dist to 10: " <<  realShortestDistanceMatrix[15][10] << std::endl;
+    argos::LOG << "Dist to 2: " <<  realShortestDistanceMatrix[15][2] << std::endl;
+
+    argos::LOG << "Dist to 0: " <<  realShortestDistanceMatrix[8][0] << std::endl;
+    argos::LOG << "Dist to 1: " <<  realShortestDistanceMatrix[8][1] << std::endl;
 }
 
 // @Todo: Could use a refactor as this code is much more complex than the pseudo-code for
@@ -162,6 +154,7 @@ Point &Map_Structure::getPointByID(int id) {
             return p;
         }
     }
+    //exit(-1);
     throw std::invalid_argument("Point not found");
 }
 
@@ -238,26 +231,33 @@ bool checkIfPointIsInShapeHelper(Box &box, Point &p, Line &vLine) {
     return false;
 }
 
-//threshold used for determining if the point is on the line or not
-const float threshold = 0.2f;
-
+//@todo: Only check other waypoints! And see if the point is in the range of the x and y values with a slight offset.
+// If yes, calculate the distance to the point.
 bool doesLineCrossPointHelper(Line &l, const Point &r) {
-    double dxc = r.getX() - l.Geta().getX();
-    double dyc = r.getY() - l.Geta().getY();
+    double offset = 0.05;
 
-    double dxl = l.Getb().getX() - l.Geta().getX();
-    double dyl = l.Getb().getY() - l.Geta().getY();
-    double cross = dxc * dyl - dyc * dxl;
-    if (abs(cross) > threshold) return false;
+    if(r.getName().at(0) == 'S' ||
+        l.Geta().getName().at(0) == 'S' ||
+        l.Getb().getName().at(0) == 'S') {
+        return false;
+    }
 
-    if (abs(dxl) >= abs(dyl))
-        return dxl > 0 ?
-               l.Geta().getX() <= r.getX() && r.getX() <= l.Getb().getX() :
-               l.Getb().getX() <= r.getX() && r.getX() <= l.Geta().getX();
-    else
-        return dyl > 0 ?
-               l.Geta().getY() <= r.getY() && r.getY() <= l.Getb().getY() :
-               l.Getb().getY() <= r.getY() && r.getY() <= r.getY();
+    double x_high = l.Geta().getX() >= l.Getb().getX() ? l.Geta().getX() : l.Getb().getX();
+    double x_low = l.Geta().getX() < l.Getb().getX() ? l.Geta().getX() : l.Getb().getX();
+
+    double y_high = l.Geta().getY() >= l.Getb().getY() ? l.Geta().getY() : l.Getb().getY();
+    double y_low = l.Geta().getY() < l.Getb().getY() ? l.Geta().getY() : l.Getb().getY();
+
+    if (x_high + offset >= r.getX() &&
+        r.getX() >= x_low - offset &&
+        y_high + offset >= r.getY() &&
+        r.getY() >= y_low - offset) {
+            double dist = abs((l.Getb().getX() - l.Geta().getX()) * (l.Geta().getY() - r.getY()) - (l.Geta().getX() - r.getX()) * (l.Getb().getY() - l.Geta().getY())) / sqrt(pow((l.Getb().getX() - l.Geta().getX() ),2) + pow((l.Getb().getY() - l.Geta().getY() ),2));
+            return dist <= offset;
+    }
+    else {
+        return false;
+    }
 }
 
 bool Map_Structure::intersectWithVirtualLines(Line &line) {
@@ -285,6 +285,8 @@ bool Map_Structure::doesLineCrossPoint(Line &line) {
     for (auto &point : points) {
         if (point != line.Getb() && point != line.Geta())
             if (doesLineCrossPointHelper(line, point)) {
+                if(line.Geta().getId() == 99 && line.Getb().getId() == 102 )
+                    argos::LOG << "Error point: " << point.getId() << std::endl;
                 return true;
             }
     }
@@ -337,11 +339,12 @@ std::vector<Point> Map_Structure::findPath(int startId, int destinationId) {
     if (startId == destinationId) {
         return pts;
     }
-    auto u = startId + 1;
-    auto v = destinationId + 1;
+    auto u = startId;
+    auto v = destinationId;
     do {
-        u = realShortestPath[u - 1][v - 1];
-        pts.push_back(getPointByID(u - 1));
+        u = realShortestPath[u][v];
+        //argos::LOG << "ID: " <<
+        pts.push_back(getPointByID(u));
     } while (u != v);
     return pts;
 }

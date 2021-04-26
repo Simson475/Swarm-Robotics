@@ -191,6 +191,11 @@ void RobotInterface::ControlStep() {
                 storePlan(waypointPlan, "Waypoint");
                 setWaypointPlan(waypointPlan);
                 setNextLocation(waypointPlan.front());
+                log_helper("Waypoint plan: ", false);
+                for (int j : waypointPlan) {
+                    log_helper(std::to_string(j) + " ", false, false);
+                }
+                log_helper("", true, false);
                 log_helper("Going towards " + std::to_string(nextLocation));
             }
         }

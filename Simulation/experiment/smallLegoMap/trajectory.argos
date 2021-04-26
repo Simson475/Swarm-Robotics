@@ -17,8 +17,8 @@
   <!-- *************** -->
 
   <controllers>
-    <SingleThreadUppaalBot_controller id="fdc"
-                                      library="./libSingleThreadUppaalBot">
+    <SingleThreadBotGreedy_controller id="fdc"
+                                      library="./libBotImplementations">
       <actuators>
         <differential_steering implementation="default" />
       </actuators>
@@ -37,7 +37,7 @@
       </params>
 
       <params alpha="7.5" delta="0.1" />
-    </SingleThreadUppaalBot_controller>
+    </SingleThreadBotGreedy_controller>
 
   </controllers>
 
@@ -91,7 +91,7 @@
                 layout="2,10,1" />
       <orientation method="constant" values="0,0,0" />
       <entity quantity="20" max_trials="1">
-    <box id="obstacle" size="8,1,1" movable="false" >
+    <box id="ob" size="8,1,1" movable="false" >
     </box>
       </entity>
   </distribute>

@@ -17,8 +17,8 @@
   <!-- *************** -->
 
   <controllers>
-    <SingleThreadUppaalBot_controller id="fdc"
-                                      library="./libSingleThreadUppaalBot">
+    <SingleThreadBotGreedy_controller id="fdc"
+                                      library="./libBotImplementations">
       <actuators>
         <differential_steering implementation="default" />
       </actuators>
@@ -37,7 +37,7 @@
       </params>
 
       <params alpha="7.5" delta="0.1" />
-    </SingleThreadUppaalBot_controller>
+    </SingleThreadBotGreedy_controller>
 
   </controllers>
 
@@ -51,17 +51,17 @@
   <!-- *********************** -->
   <!-- * Arena configuration * -->
   <!-- *********************** -->
-  <arena size="24, 50, 2" center="0,0,0.5">
+  <arena size="24, 60, 2" center="0,0,0.5">
     <box id="wall_north" size="24,0.1,0.5" movable="false">
-      <body position="0,25,0" orientation="0,0,0" />
+      <body position="0,30,0" orientation="0,0,0" />
     </box>
     <box id="wall_south" size="24,0.1,0.5" movable="false">
-      <body position="0,-25,0" orientation="0,0,0" />
+      <body position="0,-30,0" orientation="0,0,0" />
     </box>
-    <box id="wall_east" size="0.1,50,0.5" movable="false">
+    <box id="wall_east" size="0.1,60,0.5" movable="false">
       <body position="12,0,0" orientation="0,0,0" />
     </box>
-    <box id="wall_west" size="0.1,50,0.5" movable="false">
+    <box id="wall_west" size="0.1,60,0.5" movable="false">
       <body position="-12,0,0" orientation="0,0,0" />
     </box>
 
@@ -71,11 +71,11 @@
 
     <distribute>
       <position method="grid"
-                center="0,24,0"
+                center="0,28,0"
                 distances="1,1,0"
-                layout="23,1,1" />
+                layout="7,3,1" />
       <orientation method="constant" values="-45,0,0" />
-      <entity quantity="23" max_trials="1">
+      <entity quantity="20" max_trials="1">
         <foot-bot id="fb">
           <controller config="fdc" />
         </foot-bot>
@@ -85,10 +85,10 @@
     <distribute>
       <position method="grid"
                 center="0,0,0"
-                distances="11,1.6,0"
-                layout="2,26,1" />
+                distances="11,2,0"
+                layout="1,26,1" />
       <orientation method="constant" values="0,0,0" />
-      <entity quantity="52" max_trials="1">
+      <entity quantity="26" max_trials="1">
     <box id="obstacle" size="8,1,1" movable="false" >
     </box>
       </entity>
@@ -123,7 +123,7 @@
                       label="CTrajectoryQTUserFunctions" />
 
       <camera>
-        <placement idx="0" position="0,0,30.0" look_at="0.1,0,0" />
+        <placement idx="0" position="0,0,35.0" look_at="0.1,0,0" />
       </camera>
     </qt-opengl>
 
