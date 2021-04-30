@@ -9,7 +9,7 @@
 class StrategySynthesisError : public std::runtime_error{
 
 public:
-    explicit StrategySynthesisError(std::string msg);
+    using std::runtime_error::runtime_error;
 };
 
 
