@@ -16,8 +16,12 @@ unset(ARGOS_WITH_LUA CACHE)
 
 ## ********************************* SingleThreadUppaalBot
 add_library(BotImplementations MODULE
+        ./exceptions/StrategySynthesisError.hpp
+        ./exceptions/StrategySynthesisError.cpp
+
         ./RobotInterface/RobotInterface.hpp
         ./RobotInterface/RobotInterface.cpp
+
 
         SingleThreadUppaalBot.hpp
         SingleThreadUppaalBot.cpp
