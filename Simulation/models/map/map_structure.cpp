@@ -36,10 +36,17 @@ void Map_Structure::collectAllWayPoints() {
                 break;
         }
     }
+
+    bool include_corners = true;
+    argos::TConfigurationNode& t_node = argos::CSimulator::GetInstance().GetConfigurationRoot();
+    argos::TConfigurationNode& params = argos::GetNode(t_node, "custom");
+    argos::GetNodeAttributeOrDefault(params, "include_corners", include_corners, include_corners);
+
     for (long unsigned i = 0; i < Map_Structure::boxes.size(); i++) {
         Map_Structure::boxes[i].setBoxCorner();
         for (auto j = 0; j < 4; j++) {
-            Map_Structure::points.push_back(Map_Structure::boxes[i].getVCorner(j));
+            if (include_corners)
+                Map_Structure::points.push_back(Map_Structure::boxes[i].getVCorner(j));
             Map_Structure::hardLines.push_back(Map_Structure::boxes[i].getBoxLine(j));
         }
     }

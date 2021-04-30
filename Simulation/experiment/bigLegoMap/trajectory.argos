@@ -12,6 +12,8 @@
                 random_seed="127" />
   </framework>
 
+  <custom include_corners="false" />
+
   <!-- *************** -->
   <!-- * Controllers * -->
   <!-- *************** -->
@@ -34,6 +36,7 @@
         <flocking target_distance="75"
                   gain="1000"
                   exponent="2" />
+        <state num_of_runs="1000" working_time="300" />
       </params>
 
       <params alpha="7.5" delta="0.1" />

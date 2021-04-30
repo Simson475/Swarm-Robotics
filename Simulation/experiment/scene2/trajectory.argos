@@ -18,11 +18,13 @@
                 ticks_per_second="10" />
   </framework>
 
+  <custom />
+
   <!-- *************** -->
   <!-- * Controllers * -->
   <!-- *************** -->
   <controllers>
-    <GreedyStationUppaalWaypoint id="fdc"
+    <UppaalStationGreedyWaypoint id="fdc"
                                   library="./libBotImplementations">
       <actuators>
         <differential_steering implementation="default" />
@@ -39,10 +41,10 @@
         <flocking target_distance="75"
           gain="1000"
           exponent="2" />
-        <state num_of_runs="10000" working_time="300" />
+        <state num_of_runs="1000" working_time="300" />
       </params>
 
-    </GreedyStationUppaalWaypoint>
+    </UppaalStationGreedyWaypoint>
 
   </controllers>
 
@@ -128,7 +130,7 @@
   <!-- ****************** -->
   <!-- * Visualization * -->
   <!-- ****************** -->
-  <!--visualization>
+  <visualization>
 
     <qt-opengl autoplay="false">
       <user_functions library="./libCTrajectoryLoopFunctions"
@@ -143,6 +145,6 @@
 
     </qt-opengl>
 
-  </visualization-->
+  </visualization>
 
 </argos-configuration>
