@@ -33,7 +33,7 @@ double reentry_cost = 0.0;
 
 void update_reentry_cost(stations_t s){
     if(point_touched[s])
-    reentry_cost = reentry_cost + 50.0;
+    reentry_cost = reentry_cost + 500.0;
 }
 
 /////////// GRAPH
@@ -88,7 +88,7 @@ bool can_go_to(stations_t s){
         return true;
     if(is_done() &amp;&amp; end_stations[s])
         return true;
-    if(s &gt;= #NUM_OF_STATIONS# )
+    if(s #GRAPH_BOUND# )
         return true;
     return false;
 }
@@ -176,7 +176,8 @@ bool is_connected(stations_t station){
 			<target ref="id1"/>
 			<label kind="select" x="221" y="-136">s : stations_t</label>
 			<label kind="guard" x="221" y="-119">is_connected(s) &amp;&amp;
-!finished #CAN_GO#</label>
+!finished &amp;&amp;
+can_go_to(s)</label>
 			<label kind="assignment" x="221" y="-76">dest_station = s,
 update_reentry_cost(s),
 point_touched[s] = true,

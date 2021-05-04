@@ -15,6 +15,7 @@
 #include <set>
 
 // Helper_functions
+std::size_t numOfOtherRobots(const std::vector<std::reference_wrapper<RobotInterface>>&);
 std::size_t numOfOtherActiveRobots(const std::vector<std::reference_wrapper<RobotInterface>>&);
 std::string get_expanded_distance_matrix(Map_Structure &map_structure, int p_id);
 std::vector<std::vector<float>> getDistanceMatrix(Map_Structure &map_structure);

@@ -426,22 +426,10 @@ void SingleThreadUppaalBot::constructStationUppaalModel(uint failed){
         }
 
 
-        pos = line.find("#NUM_OF_STATIONS#");
+        pos = line.find("#GRAPH_BOUND#");
         if(pos != std::string::npos){
-            line.replace(pos, std::string{"#NUM_OF_STATIONS#"}.size(),
-                         std::to_string(sMap.getAmountOfStations() + 1 + numOfOtherActiveRobots(otherBots)));
-        }
-        /*
-        pos = line.find("#NUM_OF_STATIONS_AND_WAYPOINTS#");
-        if(pos != std::string::npos){
-            line.replace(pos, std::string{"#NUM_OF_STATIONS_AND_WAYPOINTS#"}.size(),
-                         std::to_string(sMap.points.size() - (1 + numOfOtherActiveRobots(otherBots))));
-        }
-        */
-        pos = line.find("#CAN_GO#");
-        if(pos != std::string::npos){
-            line.replace(pos, std::string{"#CAN_GO#"}.size(),
-                         "");
+            line.replace(pos, std::string{"#GRAPH_BOUND#"}.size(),
+                         "&lt; " + std::to_string(sMap.getAmountOfStations()));
         }
 
         //********************* Helper functions for when there are other active robots
@@ -634,22 +622,10 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(uint failed){
                          timeframe);
         }
 
-        pos = line.find("#NUM_OF_STATIONS#");
+        pos = line.find("#GRAPH_BOUND#");
         if(pos != std::string::npos){
-            line.replace(pos, std::string{"#NUM_OF_STATIONS#"}.size(),
-                         std::to_string(sMap.getAmountOfStations() + 1 + numOfOtherActiveRobots(otherBots))); //Must be fixed to the the number of robots on the map, not just the active ones.
-        }
-        /*
-        pos = line.find("#NUM_OF_STATIONS_AND_WAYPOINTS#");
-        if(pos != std::string::npos){
-            line.replace(pos, std::string{"#NUM_OF_STATIONS_AND_WAYPOINTS#"}.size(),
-                         std::to_string(sMap.points.size() - (1 + numOfOtherActiveRobots(otherBots))));
-        }
-        */
-        pos = line.find("#CAN_GO#");
-        if(pos != std::string::npos){
-            line.replace(pos, std::string{"#CAN_GO#"}.size(),
-                         "&amp;&amp;\ncan_go_to(s)");
+            line.replace(pos, std::string{"#GRAPH_BOUND#"}.size(),
+                         "&gt;= " + std::to_string(sMap.getAmountOfStations() + 1 + numOfOtherRobots(otherBots))); //Must be fixed to the the number of robots on the map, not just the active ones.
         }
 
         //********************* Helper functions for when there are other active robots

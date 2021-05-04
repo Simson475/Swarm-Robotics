@@ -22,6 +22,11 @@ std::string combineMatrixLines(const std::vector<std::vector<std::string>> &dist
     return final_matrix;
 }
 
+
+std::size_t numOfOtherRobots(const std::vector<std::reference_wrapper<RobotInterface>>& otherBots){
+    return otherBots.size();
+}
+
 std::size_t numOfOtherActiveRobots(const std::vector<std::reference_wrapper<RobotInterface>>& otherBots){
     std::size_t robots_with_jobs = 0;
 
