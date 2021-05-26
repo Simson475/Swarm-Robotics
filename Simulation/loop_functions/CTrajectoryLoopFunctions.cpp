@@ -1,7 +1,6 @@
 #include "CTrajectoryLoopFunctions.h"
 
-#include "controllers/SingleThreadBotGreedy.hpp"
-#include "controllers/SingleThreadUppaalBot.hpp"
+#include "controllers/RobotInterface/RobotInterface.hpp"
 
 #include <set>
 #include <fstream>

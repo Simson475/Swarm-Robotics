@@ -4,6 +4,11 @@
 #include <regex>
 #include <filesystem>
 
+/*
+ * The DebugBot will look for a file in the folder "plans" in the current dir. In that folder,
+ * there must be a file on the form "<ID>_plans.csv".
+ * If not, an exception is thrown.
+ */
 
 void DebugBot::specialInit() {
     getPlans();
@@ -23,6 +28,9 @@ std::vector<int> DebugBot::constructWaypointPlan(){
 
 void DebugBot::getPlans(){
     std::ifstream plan_file{std::string{std::filesystem::current_path()} + "/plans/" + GetId() + "_plans.csv"};
+
+    if (!plan_file)
+        throw std::runtime_error("Could not find plan file for debug bot with ID: " + m_strId);
 
     std::string line;
     while(std::getline(plan_file, line)) {
