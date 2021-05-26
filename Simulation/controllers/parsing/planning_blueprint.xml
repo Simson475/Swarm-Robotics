@@ -149,7 +149,7 @@ bool is_connected(stations_t station){
 			<name x="9" y="111">Done</name>
 		</location>
 		<location id="id5" x="212" y="255">
-			<committed/>
+			<urgent/>
 		</location>
 		<init ref="id5"/>
 		<transition>
@@ -350,7 +350,7 @@ int getWork(){
 			<committed/>
 		</location>
 		<location id="id11" x="-952" y="-348">
-			<committed/>
+			<urgent/>
 		</location>
 		<location id="id12" x="-952" y="-25">
 			<committed/>

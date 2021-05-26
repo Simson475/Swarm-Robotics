@@ -49,6 +49,9 @@ add_library(CTrajectoryLoopFunctions MODULE
         ../models/jobs/PredefinedJobGenerator.hpp
         ../models/jobs/PredefinedJobGenerator.cpp
 
+        ../models/jobs/PredefinedDescreteJobGenerator.hpp
+        ../models/jobs/PredefinedDescreteJobGenerator.cpp
+
         ../models/jobs/Job.hpp
         ../models/jobs/Job.cpp
 

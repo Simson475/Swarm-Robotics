@@ -38,9 +38,12 @@ void Map_Structure::collectAllWayPoints() {
     }
 
     bool include_corners = true;
-    argos::TConfigurationNode& t_node = argos::CSimulator::GetInstance().GetConfigurationRoot();
-    argos::TConfigurationNode& params = argos::GetNode(t_node, "custom");
-    argos::GetNodeAttributeOrDefault(params, "include_corners", include_corners, include_corners);
+    try {
+        argos::TConfigurationNode &t_node = argos::CSimulator::GetInstance().GetConfigurationRoot();
+        argos::TConfigurationNode &params = argos::GetNode(t_node, "custom");
+        argos::GetNodeAttributeOrDefault(params, "include_corners", include_corners, include_corners);
+    }
+    catch (argos::CARGoSException e){}
 
     for (long unsigned i = 0; i < Map_Structure::boxes.size(); i++) {
         Map_Structure::boxes[i].setBoxCorner();
