@@ -24,10 +24,6 @@ std::vector<int> DebugBot::constructWaypointPlan(){
 void DebugBot::getPlans(){
     std::ifstream plan_file{std::string{std::filesystem::current_path()} + "/plans/" + GetId() + "_plans.csv"};
 
-    if (GetId() == "fb0"){
-        log_helper(std::string{std::filesystem::current_path()} + "/plans/" + GetId() + "_plans.csv");
-    }
-
     std::string line;
     while(std::getline(plan_file, line)) {
         if(isStationPlan(line))
@@ -53,13 +49,6 @@ std::vector<int> DebugBot::extractPlanFromLine(std::string line) {
     while (regex_search(str, m, rx)) {
         points.push_back(std::stoi(m[0]));
         str = m.suffix().str();
-    }
-
-    if (GetId() == "fb0") {
-        for (auto p : points) {
-            log_helper(std::to_string(p) + " ", false, false);
-        }
-        log_helper(" ", true, false);
     }
 
     return points;
