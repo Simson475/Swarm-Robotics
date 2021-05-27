@@ -12,7 +12,7 @@
                 random_seed="127" />
   </framework>
 
-  <custom include_corners="false" />
+  <custom include_corners="false" jobs_per_robot="10"/>
 
   <!-- *************** -->
   <!-- * Controllers * -->
@@ -36,7 +36,7 @@
         <flocking target_distance="75"
                   gain="1000"
                   exponent="2" />
-        <state num_of_runs="1000" working_time="300" />
+        <state num_of_runs="1000" working_time="300"/>
       </params>
 
       <params alpha="7.5" delta="0.1" />
@@ -54,17 +54,17 @@
   <!-- *********************** -->
   <!-- * Arena configuration * -->
   <!-- *********************** -->
-  <arena size="24, 60, 2" center="0,0,0.5">
+  <arena size="24, 64, 2" center="0,0,0.5">
     <box id="wall_north" size="24,0.1,0.5" movable="false">
-      <body position="0,30,0" orientation="0,0,0" />
+      <body position="0,32,0" orientation="0,0,0" />
     </box>
     <box id="wall_south" size="24,0.1,0.5" movable="false">
-      <body position="0,-30,0" orientation="0,0,0" />
+      <body position="0,-32,0" orientation="0,0,0" />
     </box>
-    <box id="wall_east" size="0.1,60,0.5" movable="false">
+    <box id="wall_east" size="0.1,64,0.5" movable="false">
       <body position="12,0,0" orientation="0,0,0" />
     </box>
-    <box id="wall_west" size="0.1,60,0.5" movable="false">
+    <box id="wall_west" size="0.1,64,0.5" movable="false">
       <body position="-12,0,0" orientation="0,0,0" />
     </box>
 
@@ -74,11 +74,11 @@
 
     <distribute>
       <position method="grid"
-                center="0,28,0"
+                center="0,29,0"
                 distances="1,1,0"
-                layout="7,3,1" />
+                layout="8,5,1" />
       <orientation method="constant" values="-45,0,0" />
-      <entity quantity="20" max_trials="1">
+      <entity quantity="30" max_trials="1">
         <foot-bot id="fb">
           <controller config="fdc" />
         </foot-bot>

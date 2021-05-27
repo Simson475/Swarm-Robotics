@@ -100,7 +100,23 @@ void CTrajectoryLoopFunctions::initJobGenerator(){
     for(auto id : sMap.endStationIDs)
         endStationIDs.insert(id);
 
-    jobGenerator = std::make_shared<PredefinedDescreteJobGenerator>(PredefinedDescreteJobGenerator(sMap.getAmountOfStations(), endStationIDs, 200));
+    int jobs_per_robot = 200;
+    try {
+        argos::TConfigurationNode &t_node = argos::CSimulator::GetInstance().GetConfigurationRoot();
+        argos::TConfigurationNode &params = argos::GetNode(t_node, "custom");
+        argos::GetNodeAttributeOrDefault(params, "jobs_per_robot", jobs_per_robot, jobs_per_robot);
+
+        argos::CSpace::TMapPerType &tBotMap =
+            argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
+
+        jobs_per_robot *= tBotMap.size();
+        std::cout << "Number of jobs are: " << jobs_per_robot << std::endl;
+    }
+    catch (argos::CARGoSException &e){
+        std::cout << "Number of jobs defaulted to: " << jobs_per_robot << std::endl;
+    }
+
+    jobGenerator = std::make_shared<PredefinedDescreteJobGenerator>(PredefinedDescreteJobGenerator(sMap.getAmountOfStations(), endStationIDs, jobs_per_robot));
 };
 
 void CTrajectoryLoopFunctions::setRobotFolders(){
