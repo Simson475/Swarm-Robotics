@@ -10,7 +10,7 @@ std::vector<int> UppaalStationGreedyWaypoint::constructStationPlan() {
 }
 
 std::vector<int> UppaalStationGreedyWaypoint::constructWaypointPlan() {
-    return SingleThreadUppaalBot::constructWaypointPlan();
+    return SingleThreadBotGreedy::constructWaypointPlan();
 }
 
 REGISTER_CONTROLLER(UppaalStationGreedyWaypoint, "UppaalStationGreedyWaypoint")
