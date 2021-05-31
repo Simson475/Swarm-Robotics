@@ -106,26 +106,19 @@ std::vector<int> SingleThreadUppaalBot::getStationPlan(std::string modelOutput) 
 
     std::regex queryPart(R"(([0-9]+)([.][0-9])?,([0-9]+))");
     std::regex_search(queryResult, m, queryPart);
+
+    // We keep every other position in the sequence of steps that the robot moved through. We neglect the first
+    // since it is position 0, that the robot's model starts in.
+    bool keep = false;
     for (auto it = std::sregex_iterator(queryResult.begin(), queryResult.end(), queryPart);
         it != std::sregex_iterator(); it++){
         m = *it;
         debug2 << m[0] << ": ->  "  << m[3] << std::endl;
 
-        //Needed for the initial creation of station plans.
-        int tmpLastLocation;
-
-        if(lastLocation >= sMap.getAmountOfStations())
-            tmpLastLocation = sMap.stationIDs.size() + sMap.endStationIDs.size();
-        else
-            tmpLastLocation = lastLocation;
-
-        if(m[1] != "0" && stationsVisited.find(std::stoi(m[3])) == stationsVisited.end()){
-            if(stationPlan.empty() && std::stoi(m[3]) == tmpLastLocation) {
-                continue;
-            }
+        if(keep) {
             stationPlan.push_back(std::stoi(m[3]));
-            stationsVisited.insert(std::stoi(m[3]));
         }
+        keep = !keep;
     }
 
     debug2 << "Station plan:\n";
@@ -134,6 +127,9 @@ std::vector<int> SingleThreadUppaalBot::getStationPlan(std::string modelOutput) 
 
 
     debug2.close();
+
+    // We remove the first element as it is the location the robot is in.
+    stationPlan.erase(stationPlan.begin());
     return stationPlan;
 }
 
