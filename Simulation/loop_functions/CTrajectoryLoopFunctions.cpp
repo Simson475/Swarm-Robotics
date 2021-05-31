@@ -104,7 +104,7 @@ void CTrajectoryLoopFunctions::initJobGenerator(){
     try {
         argos::TConfigurationNode &t_node = argos::CSimulator::GetInstance().GetConfigurationRoot();
         argos::TConfigurationNode &params = argos::GetNode(t_node, "custom");
-        argos::GetNodeAttributeOrDefault(params, "jobs_per_robot", jobs_per_robot, jobs_per_robot);
+        argos::GetNodeAttribute(params, "jobs_per_robot", jobs_per_robot);
 
         argos::CSpace::TMapPerType &tBotMap =
             argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
