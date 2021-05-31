@@ -177,7 +177,7 @@ std::vector<int> SingleThreadUppaalBot::getWaypointPlan(std::string modelOutput)
 }
 
 std::string SingleThreadUppaalBot::runStationModel(){
-    //std::string verifyta{"/home/martin/phd/Uppaal/stratego-fixed/verifyta"};
+    //std::string verifyta{"/home/martin/Downloads/stratego-bin-cda374c40dd40e9c7b07c2799111d322dcdfc437/verifyta"};
     std::string verifyta{"./bin-Linux/verifyta"};
     std::string old_model_path{"./" + GetId() + "/station_model.xml"};
 
@@ -219,7 +219,7 @@ std::string SingleThreadUppaalBot::runStationModel(){
 }
 
 std::string SingleThreadUppaalBot::runWaypointModel(){
-    //std::string verifyta{"/home/martin/phd/Uppaal/stratego-fixed/verifyta"};
+    //std::string verifyta{"/home/martin/Downloads/stratego-bin-cda374c40dd40e9c7b07c2799111d322dcdfc437/verifyta"};
     std::string verifyta{"./bin-Linux/verifyta"};
     std::string old_model_path{"./" + GetId() + "/waypoint_model.xml"};
 
@@ -445,7 +445,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(uint failed){
             pos = line.find("#OTHER_PLANS#");
             if (pos != std::string::npos) {
                 line.replace(pos, std::string{"#OTHER_PLANS#"}.size(),
-                             formatOtherStationPlan(otherBots, numOfStations));
+                             formatOtherStationPlan(otherBots, numOfStations * 2));
             }
 
             pos = line.find("#OTHER_ORDERS#");
@@ -642,7 +642,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(uint failed){
             pos = line.find("#OTHER_PLANS#");
             if (pos != std::string::npos) {
                 line.replace(pos, std::string{"#OTHER_PLANS#"}.size(),
-                             formatOtherWaypointPlan(otherBots, numOfStations));
+                             formatOtherWaypointPlan(otherBots, numOfStations * 2));
             }
 
             pos = line.find("#OTHER_ORDERS#");
