@@ -124,11 +124,15 @@ void RobotInterface::ControlStep() {
             currentJob->visitedStation(lastLocation);
             resetStationPlan();
 
-            log_helper("Job is reduced: ", false);
-            for (int j : currentJob->getRemainingStations()) {
-                log_helper(std::to_string(j) + " ", false, false);
+            if (!currentJob->getRemainingStations().empty()) {
+                log_helper("Job is reduced: ", false);
+                for (int j : currentJob->getRemainingStations()) {
+                    log_helper(std::to_string(j) + " ", false, false);
+                }
+                log_helper("", true, false);
+            } else {
+                log_helper("Job completed");
             }
-            log_helper("", true, false);
             sMap.setPointAsAvailable(lastLocation);
         } else {
             advanceClock();
@@ -138,7 +142,6 @@ void RobotInterface::ControlStep() {
     if (currentState == state::moving) {
         if (!stationPlan.empty() && isAtStation()) { // If we have a plan and we are at a point
 
-            log_helper("Pre-reset");
             lastLocation = nextLocation;
             resetWaypointPlan();
             if (currentJob->isStationInJob(
@@ -150,7 +153,6 @@ void RobotInterface::ControlStep() {
             } else if (isStationNextInPlan(lastLocation)) {
                 resetStationPlan();
             }
-            log_helper("Post-reset");
         }
 
         if (currentState == state::moving) {
@@ -180,6 +182,11 @@ void RobotInterface::ControlStep() {
                 log_helper("Station plan has size " + std::to_string(stationPlan.size()));
                 storePlan(stationPlan, "Station");
                 setStationPlan(stationPlan);
+                log_helper("Station plan: ", false);
+                for (int j : stationPlan) {
+                    log_helper(std::to_string(j) + " ", false, false);
+                }
+                log_helper("", true, false);
                 log_helper("Next station is now: " + std::to_string(getNextStation()));
 
             } else if (stationPlan.empty() && lastLocation != initLocation && returningToInit) {
