@@ -29,6 +29,7 @@ private:
     std::shared_ptr<JobGenerator> jobGenerator;
 
     void initJobGenerator();
+    void removeFoldersAndPlan();
     void setRobotFolders();
     void assignJobGeneratorToControllers();
     void removeOldLogFile();

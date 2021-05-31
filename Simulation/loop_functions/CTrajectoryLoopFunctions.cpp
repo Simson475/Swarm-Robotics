@@ -25,6 +25,7 @@ void CTrajectoryLoopFunctions::Init(argos::TConfigurationNode &t_tree) {
     std::cout << "Set Waypoints" << std::endl;
     sMap.collectAllWayPoints();
     std::cout << "Set Robot Folder" << std::endl;
+    removeFoldersAndPlan();
     setRobotFolders();
     std::cout << "Remove bad points" << std::endl;
     sMap.eliminateBadPoints();
@@ -119,6 +120,15 @@ void CTrajectoryLoopFunctions::initJobGenerator(){
     jobGenerator = std::make_shared<PredefinedDescreteJobGenerator>(PredefinedDescreteJobGenerator(sMap.getAmountOfStations(), endStationIDs, jobs_per_robot));
 };
 
+
+void CTrajectoryLoopFunctions::removeFoldersAndPlan(){
+    std::string path = std::filesystem::current_path();
+    for (const auto & entry : std::filesystem::directory_iterator(path)) {
+        if (entry.path().filename().string().find("fb") != std::string::npos)
+            std::filesystem::remove_all(entry.path());
+    }
+}
+
 void CTrajectoryLoopFunctions::setRobotFolders(){
     std::string currentFolder = std::filesystem::current_path();
 
@@ -129,10 +139,6 @@ void CTrajectoryLoopFunctions::setRobotFolders(){
         auto &controller = dynamic_cast<RobotInterface &>(pcBot->GetControllableEntity().GetController());
 
         std::string temp = currentFolder + "/" + controller.GetId();
-        std::filesystem::remove_all(temp);
-
-        std::string plans = currentFolder + "/" + controller.GetId() + "_plans.csv";
-        std::filesystem::remove_all(plans);
 
         if (mkdir(temp.c_str(), 0777) == -1) {
             throw std::runtime_error("Cannot write folder");
