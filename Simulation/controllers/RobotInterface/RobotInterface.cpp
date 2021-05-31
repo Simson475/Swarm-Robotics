@@ -144,8 +144,7 @@ void RobotInterface::ControlStep() {
 
             lastLocation = nextLocation;
             resetWaypointPlan();
-            if (currentJob->isStationInJob(
-                lastLocation)) { // Then we have reached the station @todo: Proper function for checking
+            if (currentJob->isStationInJob(lastLocation) && isStationNextInPlan(lastLocation)) { // Then we have reached the station @todo: Proper function for checking
                 log_helper("Arrived at a work station");
 
                 startWorking(working_time);
