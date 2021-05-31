@@ -10,8 +10,12 @@
 #include <filesystem>
 #include <ctime>
 #include <chrono>
+#include <iterator>
 
 std::vector<int> SingleThreadBotGreedy::constructStationPlan() {
+
+
+    // First the current remaining stations in the order are sorted
     std::vector<int> tempPlan{};
     if (!currentJob->getRemainingStations().empty()) {
         for (auto &job : currentJob->getRemainingStations())
@@ -21,8 +25,34 @@ std::vector<int> SingleThreadBotGreedy::constructStationPlan() {
         for (auto &job : currentJob->getEndStations())
             tempPlan.push_back(job);
         sortJob(sMap.getRealShortestDistanceMatrix(), tempPlan);
+        tempPlan = std::vector<int>{tempPlan.front()};
     }
-    return tempPlan;
+
+    // Then a path plan that include waypoints are made:
+    std::vector<int> finegrainedPlan{};
+    int srcPoint = lastLocation;
+
+    for(int station = 0; station < tempPlan.size(); station++){
+        auto pointsBetweenStations = sMap.findPath(srcPoint, tempPlan.at(station));
+        std::vector<int> pathBetweenStations{};
+        for (auto &p : pointsBetweenStations) {
+            pathBetweenStations.emplace_back(p.getId());
+        }
+
+        finegrainedPlan.insert(finegrainedPlan.end(), pathBetweenStations.begin(), pathBetweenStations.end());
+        srcPoint = tempPlan.at(station);
+    }
+
+    //Now we remove all elements that are not a station ID.
+
+    std::vector<int> stationIDs = sMap.stationIDs;
+    stationIDs.insert(stationIDs.end(), sMap.endStationIDs.begin(), sMap.endStationIDs.end());
+    finegrainedPlan.erase(std::remove_if(finegrainedPlan.begin(),
+        finegrainedPlan.end(),
+        [stationIDs](int stationID){return std::find(stationIDs.begin(), stationIDs.end(), stationID) == stationIDs.end();}),
+                          finegrainedPlan.end());
+
+    return finegrainedPlan;
 }
 
 std::vector<int> SingleThreadBotGreedy::constructWaypointPlan() {
