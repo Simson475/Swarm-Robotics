@@ -15,7 +15,6 @@
 class Line {
     Point *a, *b;
     float distance;
-    double time;
 
 public:
     //constructors

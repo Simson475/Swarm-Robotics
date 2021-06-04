@@ -5,14 +5,11 @@ Line::Line(Point *a, Point *b) {
     this->b = b;
     //this->distance = (a - b).Length();
     this->distance = argos::Distance(*a, *b);
-    time = (distance * 100) / VELOCITY;
-
 }
 
 void Line::setFailureline() {
     if (a->getId() != b->getId()) {
         this->distance = -1;
-        this->time = -1;
     }
 }
 
