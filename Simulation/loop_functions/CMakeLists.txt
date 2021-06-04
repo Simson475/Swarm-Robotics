@@ -28,9 +28,6 @@ add_library(CTrajectoryLoopFunctions MODULE
         ../models/map/map_structure.hpp
         ../models/map/map_structure.cpp
 
-        ../models/robot/robot.hpp
-        ../models/robot/robot.cpp
-
         ../controllers/parsing/uppaal_model_parsing.hpp
         ../controllers/parsing/uppaal_model_parsing.cpp
 

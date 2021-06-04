@@ -32,7 +32,6 @@ public:
 private:
     CTrajectoryLoopFunctions &m_cTrajLF;
     Map_Structure &sMap = Map_Structure::get_instance();
-    bool drawExpected = false;
 
     void draw(std::tuple<float, float, float, float> coordinates);
     void draw(std::vector<std::tuple<float, float, float, float>> coordinates);

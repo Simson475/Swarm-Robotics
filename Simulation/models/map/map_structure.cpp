@@ -13,8 +13,8 @@ void Map_Structure::collectAllWayPoints() {
         Point *p = new Point(pos, pointType::via, "S." + pcBot->GetId());
         points.push_back(*p);
         waypointsIDs.push_back(points.end()->getId());
-        Robots.push_back(Robot(pcBot, p));
     }
+
     std::vector<Box> walls;
     argos::CSpace::TMapPerType &tBoxMap =
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("box");
@@ -53,26 +53,6 @@ void Map_Structure::collectAllWayPoints() {
             Map_Structure::hardLines.push_back(Map_Structure::boxes[i].getBoxLine(j));
         }
     }
-}
-
-int Map_Structure::getRobotIdByName(std::string name) {
-    for (long unsigned i = 0; i < Robots.size(); i++) {
-        if (Robots[i].getfootBot()->GetId() == name) {
-            return i;
-        }
-    }
-
-    throw std::invalid_argument("Robot not found by NAME");
-}
-
-Robot Map_Structure::getRobotByName(std::string name) {
-    for (auto &robot:  Robots) {
-        if (robot.getfootBot()->GetId() == name) {
-            return robot;
-        }
-    }
-
-    throw std::invalid_argument("Robot not found by NAME");
 }
 
 // Set the fields `shortestDistanceMatrix`, which gives the length of the shortest path between all points

@@ -4,7 +4,6 @@
 #include "box.hpp"
 #include "line.hpp"
 #include "point.hpp"
-#include "models/robot/robot.hpp"
 
 #include "nlohmann/json.hpp"
 #include "argos3/core/simulator/loop_functions.h"
@@ -31,7 +30,6 @@ public:
     std::vector<int> stationIDs;
     std::vector<int> endStationIDs;
     std::vector<int> waypointsIDs;
-    std::vector<Robot> Robots;
     //shortest paths between each point
     std::vector<std::vector<int>> shortestPath;
     std::vector<std::vector<int>> realShortestPath;
@@ -54,12 +52,6 @@ public:
     const std::vector<std::vector<float>> &getRealShortestDistanceMatrix() const {
         return realShortestDistanceMatrix;
     };
-
-    // finds a robot's ID by name
-    int getRobotIdByName(std::string name);
-
-    // finds a robot by an name
-    Robot getRobotByName(std::string name);
 
     //collects all waypoints from the map including station/ end point/ via/ start locations
     void collectAllWayPoints();

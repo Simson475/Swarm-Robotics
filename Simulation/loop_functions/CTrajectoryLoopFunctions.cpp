@@ -162,11 +162,18 @@ void CTrajectoryLoopFunctions::setInitLocationOnControllers(Map_Structure& sMap)
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
     for (auto& botPair : tBotMap) {
         argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
-        auto& controller = dynamic_cast<RobotInterface&>(pcBot->GetControllableEntity().GetController());
+        auto &controller = dynamic_cast<RobotInterface &>(pcBot->GetControllableEntity().GetController());
 
-        Robot robot = sMap.getRobotByName(controller.GetId());
+        //Robot robot = sMap.getRobotByName(controller.GetId());
 
-        controller.setInitLocation(robot.getInitialLoc().getId());
+        // Needs improvement!
+        for (auto &p : sMap.points) {
+            if(p.getName() == "S." + controller.GetId()) {
+                controller.setInitLocation(p.getId());
+                break;
+            }
+
+        }
     }
 }
 
