@@ -279,7 +279,6 @@ bool Map_Structure::doesLineCrossPoint(Line &line) {
 
 // Functions eliminates all theMap_Structure::lines which have intersection
 void Map_Structure::eliminateBadLines() {
-    std::vector<int> adjIDs;
     for (long unsigned i = 0; i < Map_Structure::lines.size(); i++) {
         for (auto &hardLine : hardLines) {
             if (intersectionInterest(Map_Structure::lines[i].Geta(),
@@ -298,22 +297,7 @@ void Map_Structure::eliminateBadLines() {
             if (doesLineCrossPoint(Map_Structure::lines[i]))
                 Map_Structure::lines[i].setFailureline();
         //This part of the code responsible for adjID's
-        //If one decides that they are not needed can be freely removed
-        if (i != 0) {
-            if (Map_Structure::lines[i].GetDistance() != -1) {
-                if (Map_Structure::lines[i].Geta().getId() ==
-                    Map_Structure::lines[i - 1].Geta().getId())
-                    adjIDs.push_back(Map_Structure::lines[i].Getb().getId());
-                else {
 
-                    Map_Structure::lines[i].Geta().setAdjIDs(adjIDs);
-                    adjIDs.clear();
-                    adjIDs.push_back(Map_Structure::lines[i].Getb().getId());
-                }
-            }
-        } else {
-            adjIDs.push_back(Map_Structure::lines[i].Getb().getId());
-        }
         //End of adjID's
     }
 }

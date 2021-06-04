@@ -16,7 +16,6 @@ class Point : public argos::CVector3 {
     unsigned int id{};
     pointType pType;
     static unsigned int id_counter;
-    std::vector<int> adjIDs;
     std::string name;
     //boolean used to see if anyone is occupying this station atm
     bool occupied = false;
