@@ -279,26 +279,23 @@ bool Map_Structure::doesLineCrossPoint(Line &line) {
 
 // Functions eliminates all theMap_Structure::lines which have intersection
 void Map_Structure::eliminateBadLines() {
-    for (long unsigned i = 0; i < Map_Structure::lines.size(); i++) {
+    for (auto& line : Map_Structure::lines) {
         for (auto &hardLine : hardLines) {
-            if (intersectionInterest(Map_Structure::lines[i].Geta(),
-                                     Map_Structure::lines[i].Getb(),
+            if (intersectionInterest(line.Geta(),
+                                     line.Getb(),
                                      hardLine.Geta(), hardLine.Getb())) {
-                Map_Structure::lines[i].setFailureline();
+                line.setFailureline();
                 break;
             }
         }
         //Checks if any of the lines intersect with the virtual lines
-        if (Map_Structure::lines[i].GetDistance() > 0)
-            if (intersectWithVirtualLines(Map_Structure::lines[i]))
-                Map_Structure::lines[i].setFailureline();
+        if (line.GetDistance() > 0)
+            if (intersectWithVirtualLines(line))
+                line.setFailureline();
         //Check if any of the lines overlap with other line
-        if (Map_Structure::lines[i].GetDistance() > 0)
-            if (doesLineCrossPoint(Map_Structure::lines[i]))
-                Map_Structure::lines[i].setFailureline();
-        //This part of the code responsible for adjID's
-
-        //End of adjID's
+        if (line.GetDistance() > 0)
+            if (doesLineCrossPoint(line))
+                line.setFailureline();
     }
 }
 
