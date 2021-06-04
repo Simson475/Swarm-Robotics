@@ -177,8 +177,8 @@ std::vector<int> SingleThreadUppaalBot::getWaypointPlan(std::string modelOutput)
 }
 
 std::string SingleThreadUppaalBot::runStationModel(){
-    //std::string verifyta{"/home/martin/Downloads/stratego-bin-cda374c40dd40e9c7b07c2799111d322dcdfc437/verifyta"};
-    std::string verifyta{"./bin-Linux/verifyta"};
+    std::string verifyta{"/home/martin/Downloads/stratego-bin-cda374c40dd40e9c7b07c2799111d322dcdfc437/verifyta"};
+    //std::string verifyta{"./bin-Linux/verifyta"};
     std::string old_model_path{"./" + GetId() + "/station_model.xml"};
 
     long seed = generateSeed();
@@ -209,8 +209,9 @@ std::string SingleThreadUppaalBot::runStationModel(){
     print_string(result);
 
     if(result.find("Failed to learn strategy") != std::string::npos){
-        log_helper("Failed to find waypoint strategy");
+        log_helper("Failed to find station strategy");
         store_data("FailedStationStategyGeneration", std::to_string(getLogicalTime()));
+        std::cerr << m_strId << " failed to construct Station Strategy" << std::endl;
         throw StrategySynthesisError(m_strId + " failed to construct Station Strategy");
     }
 
@@ -219,8 +220,8 @@ std::string SingleThreadUppaalBot::runStationModel(){
 }
 
 std::string SingleThreadUppaalBot::runWaypointModel(){
-    //std::string verifyta{"/home/martin/Downloads/stratego-bin-cda374c40dd40e9c7b07c2799111d322dcdfc437/verifyta"};
-    std::string verifyta{"./bin-Linux/verifyta"};
+    std::string verifyta{"/home/martin/Downloads/stratego-bin-cda374c40dd40e9c7b07c2799111d322dcdfc437/verifyta"};
+    //std::string verifyta{"./bin-Linux/verifyta"};
     std::string old_model_path{"./" + GetId() + "/waypoint_model.xml"};
 
     long seed = generateSeed();
@@ -253,6 +254,7 @@ std::string SingleThreadUppaalBot::runWaypointModel(){
     if(result.find("Failed to learn strategy") != std::string::npos){
         log_helper("Failed to find waypoint strategy");
         store_data("FailedWaypointStategyGeneration", std::to_string(getLogicalTime()));
+        std::cerr << m_strId << " failed to construct Waypoint Strategy" << std::endl;
         throw StrategySynthesisError(m_strId + " failed to construct Waypoint Strategy");
     }
 
@@ -268,7 +270,7 @@ long SingleThreadUppaalBot::generateSeed() {
 
 void SingleThreadUppaalBot::constructStationUppaalModel(uint failed){
     if(failed >= 10){
-        throw new std::runtime_error(m_strId + " have failed Waypoint plan synthesis.");
+        throw std::runtime_error(m_strId + " have failed Waypoint plan synthesis.");
     }
 
 
@@ -287,6 +289,14 @@ void SingleThreadUppaalBot::constructStationUppaalModel(uint failed){
     else {
         matrix = formatMatrix(sMap.floydShortestOfStations());
         numOfStations = sMap.stationIDs.size() + sMap.endStationIDs.size();
+    }
+
+    // Replace all the possible "inf" in the matrix.
+    size_t index = 0;
+    while((index = matrix.find("inf", index)) != std::string::npos){
+        matrix.replace(index, 3, "0.0");
+
+        index += 3;
     }
 
     while(std::getline(partial_blueprint, line)){
@@ -415,7 +425,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(uint failed){
 
         pos = line.find("#SIMULATION#");
         if(pos != std::string::npos){
-            std::string timeframe = std::to_string(((working_time / 10) * 20) * (1 + failed));
+            std::string timeframe = std::to_string(5000 * (1 + failed));
 
             line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
                          timeframe);
@@ -483,7 +493,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(uint failed){
 void SingleThreadUppaalBot::constructWaypointUppaalModel(uint failed){
 
     if(failed >= 10){
-        throw new std::runtime_error(m_strId + " have failed Waypoint plan synthesis.");
+        throw std::runtime_error(m_strId + " have failed Waypoint plan synthesis.");
     }
 
     std::ifstream partial_blueprint{std::string{std::filesystem::current_path()} + "/planning_blueprint.xml"};
@@ -612,7 +622,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(uint failed){
 
         pos = line.find("#SIMULATION#");
         if(pos != std::string::npos){
-            std::string timeframe = std::to_string(((working_time / 10) * 10) * (1 + failed));
+            std::string timeframe = std::to_string(5000 * (1 + failed));
 
             line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
                          timeframe);

@@ -601,14 +601,16 @@ system Robot, #OTHER_IN_SYSTEM# Station;
 			<comment/>
 		</query>
 		<query>
-			<formula>strategy plan = minE (global + reentry_cost) [&lt;=#QUERY_TIME#]{
+			<formula>strategy plan = minE (global + reentry_cost -
+                Robot.Done*#QUERY_TIME#)
+                [&lt;=#QUERY_TIME#]{
 cur_station,
 #STATE_VARS#
 } -&gt; {
 global,
 reentry_cost,
 #POINT_VARS#
-} : &lt;&gt; Robot.Done</formula>
+} : &lt;&gt; Robot.Done || global >= #QUERY_TIME#</formula>
 			<comment/>
 		</query>
 		<query>
