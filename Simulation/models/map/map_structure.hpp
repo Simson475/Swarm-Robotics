@@ -96,6 +96,9 @@ public:
 
     int getAmountOfStations();
 
+    int getIdOfFirstStartStation();
+    int getIdOfLastStartStation();
+
 private:
 //private constructor ensuring that only one instance is being created of the class
     Map_Structure() = default;

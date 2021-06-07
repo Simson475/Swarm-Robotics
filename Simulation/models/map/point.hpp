@@ -53,7 +53,6 @@ public:
 
     double getZ() const;
 
-    std::vector<int> getAdjIDs() const;
 
     bool isOccupied() const;
     //End of Getters
@@ -63,11 +62,6 @@ public:
 
     void setName(const std::string &newName);
 
-    void setAdjIDs(const std::vector<int> &adjID);
-
-    void pushAdjID(int adjID);
-
-    static void resetIdCount();
 
     void setAsOccupied() {
         this->occupied = true;
@@ -76,10 +70,6 @@ public:
     void setAsAvailable() {
         this->occupied = false;
     }
-
-    //Calculations
-    double magnitude() const;
-    //End Calculations
 
     //Operators
     Point operator+(const Point &l) const;

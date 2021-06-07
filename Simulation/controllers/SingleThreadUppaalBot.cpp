@@ -617,12 +617,12 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(uint failed){
         pos = line.find("#QUERY_TIME#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
-                         std::to_string(5000 * (1 + failed)));
+                         std::to_string(500 * (1 + failed)));
         }
 
         pos = line.find("#SIMULATION#");
         if(pos != std::string::npos){
-            std::string timeframe = std::to_string(5000 * (1 + failed));
+            std::string timeframe = std::to_string(500 * (1 + failed));
 
             line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
                          timeframe);
@@ -631,7 +631,8 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(uint failed){
         pos = line.find("#GRAPH_BOUND#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#GRAPH_BOUND#"}.size(),
-                         "&gt;= " + std::to_string(sMap.getAmountOfStations() + 1 + numOfOtherRobots(otherBots))); //Must be fixed to the the number of robots on the map, not just the active ones.
+                         "&gt;= " + std::to_string(sMap.getAmountOfStations() -1) + " &amp;&amp; !(s &gt;= "  +
+                         std::to_string(sMap.getIdOfFirstStartStation()) + " &amp;&amp; s &lt;= " + std::to_string(sMap.getIdOfLastStartStation()) + ")");
         }
 
         //********************* Helper functions for when there are other active robots

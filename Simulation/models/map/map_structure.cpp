@@ -1,5 +1,7 @@
 #include "map_structure.hpp"
 #include "controllers/parsing/uppaal_model_parsing.hpp"
+#include <exception>
+#include <iterator>
 
 void Map_Structure::collectAllWayPoints() {
 
@@ -12,7 +14,7 @@ void Map_Structure::collectAllWayPoints() {
 
         Point *p = new Point(pos, pointType::via, "S." + pcBot->GetId());
         points.push_back(*p);
-        waypointsIDs.push_back(points.end()->getId());
+        waypointsIDs.push_back(points.back().getId());
     }
 
     std::vector<Box> walls;
@@ -376,4 +378,20 @@ void Map_Structure::eliminateBadPoints() {
             }
         }
     }
+}
+
+int Map_Structure::getIdOfFirstStartStation(){
+    for(auto id : waypointsIDs){
+        if(points[id].getName().find("S.") != std::string::npos)
+            return id;
+    }
+    throw std::runtime_error("Could not find a start location");
+}
+
+int Map_Structure::getIdOfLastStartStation(){
+    for(auto it = waypointsIDs.rbegin(); it != waypointsIDs.rend(); it++){
+        if(points[*it].getName().find("S.") != std::string::npos)
+            return *it;
+    }
+    throw std::runtime_error("Could not find a start location");
 }
