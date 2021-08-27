@@ -19,12 +19,14 @@
                 random_seed="127" />
   </framework>
 
+  <custom />
+
   <!-- *************** -->
   <!-- * Controllers * -->
   <!-- *************** -->
   <controllers>
-    <CFootBotDiffusion_controller id="fdc"
-                                  library="./libCFootBotDiffusion">
+    <SingleThreadBotGreedy_controller id="fdc"
+                                  library="libBotImplementations">
       <actuators>
         <differential_steering implementation="default" />
       </actuators>
@@ -32,7 +34,7 @@
         <footbot_proximity implementation="default" show_rays="true" />
         <positioning implementation="default"/>
       </sensors>
-            <params>
+      <params>
         <wheel_turning hard_turn_angle_threshold="90"
                        soft_turn_angle_threshold="70"
                        no_turn_angle_threshold="10"
@@ -40,10 +42,11 @@
         <flocking target_distance="75"
                   gain="1000"
                   exponent="2" />
+        <state num_of_runs="5000" working_time="300"/>
       </params>
 
       <params alpha="7.5" delta="0.1" />
-    </CFootBotDiffusion_controller>
+    </SingleThreadBotGreedy_controller>
 
   </controllers>
 
@@ -78,12 +81,25 @@
                 distances="1,1,0"
                 layout="5,2,1" />
       <orientation method="constant" values="-45,0,0" />
-      <entity quantity="7" max_trials="1">
+      <entity quantity="10" max_trials="1">
         <foot-bot id="fb">
           <controller config="fdc" />
         </foot-bot>
       </entity>
     </distribute>
+
+        <distribute>
+          <position method="grid"
+                    center="-6,9,0"
+                    distances="1,1,0"
+                    layout="5,2,1" />
+          <orientation method="constant" values="-45,0,0" />
+          <entity quantity="10" max_trials="1">
+            <foot-bot id="fbx">
+              <controller config="fdc" />
+            </foot-bot>
+          </entity>
+        </distribute>
 
 
     <box id="obstacle0"size="2,8,0.4" movable="false" >
@@ -122,11 +138,6 @@
   <!-- * Visualization * -->
   <!-- ****************** -->
   <visualization>
-    <!--
-        This shows how to add customized drawing in the world
-        using the qt user functions.
-        Check 'argos3 -q qt-opengl' for more help.
-    -->
     <qt-opengl autoplay="false">
       <user_functions library="./libCTrajectoryLoopFunctions"
                       label="CTrajectoryQTUserFunctions" />

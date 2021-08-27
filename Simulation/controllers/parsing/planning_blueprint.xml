@@ -27,7 +27,7 @@ urgent broadcast chan complete;
 // Cost function variables
 stations_t cur_station = #CUR_STATION#; // #### PLACEHOLDER
 bool order[stations_t]  = #CUR_ORDER#; // #### Only the remaining stations are present
-bool visited[MAX_STATIONS * 2];
+bool visited[MAX_STATIONS * 3];
 bool point_touched[stations_t];
 double reentry_cost = 0.0;
 
@@ -49,7 +49,7 @@ const int order_lenghts[other_bots_t] = #OTHER_ORDER_LENGHT#;  // #### PLACEHOLD
 const stations_t start_locs[other_bots_t] = #OTHER_START_LOCS#;  // #### PLACEHOLDER
 
  // #### PLACEHOLDER
-const stations_t other_robots_plans[other_bots_t][MAX_STATIONS * 2] = #OTHER_PLANS#;
+const stations_t other_robots_plans[other_bots_t][MAX_STATIONS * 3] = #OTHER_PLANS#;
 
  // #### PLACEHOLDER
 const bool other_robots_real_orders[other_bots_t][MAX_STATIONS] = #OTHER_ORDERS#;
@@ -216,7 +216,7 @@ min_travel = 0</label>
 stations_t cur_station = 0;
 stations_t dest_station = 0;
 
-bool visited[MAX_STATIONS * 2];
+bool visited[MAX_STATIONS * 3];
 
 clock travel;
 int max_travel;
@@ -254,7 +254,7 @@ bool mustWorkAtPoint(){
 bool is_done(){
     int i;
 
-    for(i = 0; i &lt; order_lenghts[id]; i++){
+    for(i = 0; i &lt; MAX_STATIONS * 3 &amp;&amp; i &lt; order_lenghts[id]; i++){
         if(!visited[i]) {
             return false;
         }

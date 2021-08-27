@@ -10,12 +10,12 @@ PredefinedDescreteJobGenerator::PredefinedDescreteJobGenerator(int numOfStations
 
     // Push zero probability for the end stations
     std::vector<int> probabilities{};
-    for(int i = 0; i < endStations.size(); i++){
+    for(unsigned long i = 0; i < endStations.size(); i++){
         probabilities.push_back(0);
     }
 
     // Push increasing probabilities for other stations.
-    for(int i = 1; i <= numOfStations - endStations.size(); i++){
+    for(unsigned long i = 1; i <= numOfStations - endStations.size(); i++){
         probabilities.push_back(i);
     }
 

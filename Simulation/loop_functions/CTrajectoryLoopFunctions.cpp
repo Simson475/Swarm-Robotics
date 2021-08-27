@@ -117,7 +117,7 @@ void CTrajectoryLoopFunctions::initJobGenerator(){
         std::cout << "Number of jobs defaulted to: " << jobs_per_robot << std::endl;
     }
 
-    jobGenerator = std::make_shared<PredefinedDescreteJobGenerator>(PredefinedDescreteJobGenerator(sMap.getAmountOfStations(), endStationIDs, jobs_per_robot));
+    jobGenerator = std::make_shared<PredefinedJobGenerator>(PredefinedJobGenerator(sMap.getAmountOfStations(), endStationIDs, jobs_per_robot));
 };
 
 

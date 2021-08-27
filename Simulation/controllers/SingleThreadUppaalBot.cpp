@@ -455,7 +455,7 @@ void SingleThreadUppaalBot::constructStationUppaalModel(uint failed){
             pos = line.find("#OTHER_PLANS#");
             if (pos != std::string::npos) {
                 line.replace(pos, std::string{"#OTHER_PLANS#"}.size(),
-                             formatOtherStationPlan(otherBots, numOfStations * 2));
+                             formatOtherStationPlan(otherBots, numOfStations * 3));
             }
 
             pos = line.find("#OTHER_ORDERS#");
@@ -617,12 +617,12 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(uint failed){
         pos = line.find("#QUERY_TIME#");
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
-                         std::to_string(500 * (1 + failed)));
+                         std::to_string(2000 * (1 + failed)));
         }
 
         pos = line.find("#SIMULATION#");
         if(pos != std::string::npos){
-            std::string timeframe = std::to_string(500 * (1 + failed));
+            std::string timeframe = std::to_string(2000 * (1 + failed));
 
             line.replace(pos, std::string{"#QUERY_TIME#"}.size(),
                          timeframe);
@@ -632,7 +632,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(uint failed){
         if(pos != std::string::npos){
             line.replace(pos, std::string{"#GRAPH_BOUND#"}.size(),
                          "&gt;= " + std::to_string(sMap.getAmountOfStations() -1) + " &amp;&amp; !(s &gt;= "  +
-                         std::to_string(sMap.getIdOfFirstStartStation()) + " &amp;&amp; s &lt;= " + std::to_string(sMap.getIdOfLastStartStation()) + ")");
+                         std::to_string(sMap.getIdOfFirstStartStation()) + " &amp;&amp; s &lt;= " + std::to_string(sMap.getIdOfLastStartStation()) + ") || s == " + std::to_string(lastLocation));
         }
 
         //********************* Helper functions for when there are other active robots
@@ -653,7 +653,7 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(uint failed){
             pos = line.find("#OTHER_PLANS#");
             if (pos != std::string::npos) {
                 line.replace(pos, std::string{"#OTHER_PLANS#"}.size(),
-                             formatOtherWaypointPlan(otherBots, numOfStations * 2));
+                             formatOtherWaypointPlan(otherBots, numOfStations * 3));
             }
 
             pos = line.find("#OTHER_ORDERS#");

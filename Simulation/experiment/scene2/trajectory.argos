@@ -24,7 +24,7 @@
   <!-- * Controllers * -->
   <!-- *************** -->
   <controllers>
-    <UppaalStationGreedyWaypoint id="fdc"
+    <GreedyStationUppaalWaypoint id="fdc"
                                   library="./libBotImplementations">
       <actuators>
         <differential_steering implementation="default" />
@@ -44,7 +44,7 @@
         <state num_of_runs="1000" working_time="300" />
       </params>
 
-    </UppaalStationGreedyWaypoint>
+    </GreedyStationUppaalWaypoint>
 
   </controllers>
 

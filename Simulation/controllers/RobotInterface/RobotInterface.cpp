@@ -580,6 +580,7 @@ void RobotInterface::setFinalJob() {
     log_helper("", true, false);
 }
 
+
 void RobotInterface::setNextLocation(int locationID) {
     nextLocation = locationID;
 }
@@ -627,5 +628,5 @@ bool RobotInterface::isInLivelock() {
     if(currentState == state::done)
         return false;
 
-    return lastModification + 10 * 60 * 10 < getLogicalTime();
+    return lastModification + 30 * 60 * 10 < getLogicalTime();
 }

@@ -45,7 +45,7 @@ void Map_Structure::collectAllWayPoints() {
         argos::TConfigurationNode &params = argos::GetNode(t_node, "custom");
         argos::GetNodeAttributeOrDefault(params, "include_corners", include_corners, include_corners);
     }
-    catch (argos::CARGoSException e){}
+    catch (argos::CARGoSException& e){}
 
     for (long unsigned i = 0; i < Map_Structure::boxes.size(); i++) {
         Map_Structure::boxes[i].setBoxCorner();

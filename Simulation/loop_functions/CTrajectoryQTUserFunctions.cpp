@@ -45,8 +45,7 @@ void CTrajectoryQTUserFunctions::DrawInWorld() {
     }
 
     for (auto &element : sMap.lines) {
-        //if (element.GetDistance() != -1 && element.Geta().getName().at(0) != 'S' && element.Getb().getName().at(0) != 'S')
-        if (element.GetDistance() != -1)
+        if (element.GetDistance() != -1 && !(element.Geta().getName().at(0) == 'S' || element.Getb().getName().at(0) == 'S'))
             draw(element.getCoordinates());
 
     }

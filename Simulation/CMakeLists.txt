@@ -24,10 +24,10 @@ if (GetDependencies)
             CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DARGOS_INSTALL_LDSOCONF=OFF -DARGOS_DOCUMENTATION=OFF
             )
 
-    ExternalProject_add(model-utilities
-            URL https://github.com/DEIS-Tools/model-utilities/archive/1.0.1.zip
-            CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-            )
+    #ExternalProject_add(model-utilities
+    #        URL https://github.com/DEIS-Tools/model-utilities/archive/1.0.1.zip
+    #        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+    #        )
 
     include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
     link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
@@ -44,8 +44,24 @@ include_directories(${CMAKE_SOURCE_DIR})
 add_definitions(-Wall -Werror)
 
 
+add_custom_target(build-time-make-directory ALL
+        COMMAND ${CMAKE_COMMAND} -E make_directory experiments)
+
 add_subdirectory(controllers)
 
 add_subdirectory(loop_functions)
 
-add_subdirectory(server)
+#add_custom_command(OUTPUT run_a_scene.sh POST_BUILD
+#        COMMAND ${CMAKE_COMMAND} -E copy
+#        ../../experiment/runtime_scripts/run_a_scene.sh
+#       ${CMAKE_BINARY_DIR}/external/bin/run_a_scene.sh
+#        )
+
+
+
+add_custom_target(move_run_script ALL
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ../experiment/runtime_scripts/run_a_scene.sh
+        ${CMAKE_BINARY_DIR}/external/bin/run_a_scene.sh)
+
+#add_subdirectory(server)

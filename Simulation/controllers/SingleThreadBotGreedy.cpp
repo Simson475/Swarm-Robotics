@@ -32,7 +32,7 @@ std::vector<int> SingleThreadBotGreedy::constructStationPlan() {
     std::vector<int> finegrainedPlan{};
     int srcPoint = lastLocation;
 
-    for(int station = 0; station < tempPlan.size(); station++){
+    for(unsigned long station = 0; station < tempPlan.size(); station++){
         auto pointsBetweenStations = sMap.findPath(srcPoint, tempPlan.at(station));
         std::vector<int> pathBetweenStations{};
         for (auto &p : pointsBetweenStations) {
