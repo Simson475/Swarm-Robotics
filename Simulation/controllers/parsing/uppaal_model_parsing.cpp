@@ -50,7 +50,7 @@ std::string get_expanded_distance_matrix(Map_Structure &map_structure, int p_id)
         newDistMatrix[i].push_back(fullDistMatrix[i][p_id]);
     }
 
-    // Adding distances from point to stations ti the matrix.
+    // Adding distances from point to stations in the matrix.
     std::vector<float> pointToStations(newDistMatrix.size() + 1, 0);
     for(std::size_t i = 0; i < newDistMatrix.size(); i++){
         pointToStations[i] = fullDistMatrix[p_id][i];

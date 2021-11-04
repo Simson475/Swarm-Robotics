@@ -70,7 +70,9 @@ std::vector<std::vector<std::string>> formatMatrixLines(const std::vector<std::v
     for(auto& line : dist_matrix){
         std::vector<std::string> formatted_numbers{};
         for(auto& number : line) {
-            formatted_numbers.push_back(std::to_string(number));
+            std::string tmp = std::to_string(number);
+            std::replace(tmp.begin(), tmp.end(), ',', '.');
+            formatted_numbers.push_back(tmp);
         }
         matrixStr.push_back(formatted_numbers);
     }
