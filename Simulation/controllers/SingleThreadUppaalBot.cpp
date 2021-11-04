@@ -177,7 +177,7 @@ std::vector<int> SingleThreadUppaalBot::getWaypointPlan(std::string modelOutput)
 }
 
 std::string SingleThreadUppaalBot::runStationModel(){
-    std::string verifyta{"/home/martin/Downloads/stratego-bin-cda374c40dd40e9c7b07c2799111d322dcdfc437/verifyta"};
+    std::string verifyta{"/home/martin/Desktop/phd/Uppaal/uppaal-4.1.20-stratego-8-beta10-linux64/bin/verifyta.bin"};
     //std::string verifyta{"./bin-Linux/verifyta"};
     std::string old_model_path{"./" + GetId() + "/station_model.xml"};
 
@@ -210,7 +210,7 @@ std::string SingleThreadUppaalBot::runStationModel(){
 
     if(result.find("Failed to learn strategy") != std::string::npos){
         log_helper("Failed to find station strategy");
-        store_data("FailedStationStategyGeneration", std::to_string(getLogicalTime()));
+        store_data("FailedStationStrategyGeneration", std::to_string(getLogicalTime()));
         std::cerr << m_strId << " failed to construct Station Strategy" << std::endl;
         throw StrategySynthesisError(m_strId + " failed to construct Station Strategy");
     }
@@ -220,7 +220,7 @@ std::string SingleThreadUppaalBot::runStationModel(){
 }
 
 std::string SingleThreadUppaalBot::runWaypointModel(){
-    std::string verifyta{"/home/martin/Downloads/stratego-bin-cda374c40dd40e9c7b07c2799111d322dcdfc437/verifyta"};
+    std::string verifyta{"//home/martin/Desktop/phd/Uppaal/uppaal-4.1.20-stratego-8-beta10-linux64/bin/verifyta.bin"};
     //std::string verifyta{"./bin-Linux/verifyta"};
     std::string old_model_path{"./" + GetId() + "/waypoint_model.xml"};
 
@@ -253,7 +253,7 @@ std::string SingleThreadUppaalBot::runWaypointModel(){
 
     if(result.find("Failed to learn strategy") != std::string::npos){
         log_helper("Failed to find waypoint strategy");
-        store_data("FailedWaypointStategyGeneration", std::to_string(getLogicalTime()));
+        store_data("FailedWaypointStrategyGeneration", std::to_string(getLogicalTime()));
         std::cerr << m_strId << " failed to construct Waypoint Strategy" << std::endl;
         throw StrategySynthesisError(m_strId + " failed to construct Waypoint Strategy");
     }
