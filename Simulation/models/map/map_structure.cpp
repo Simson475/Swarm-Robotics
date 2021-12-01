@@ -2,6 +2,7 @@
 #include "controllers/parsing/uppaal_model_parsing.hpp"
 #include <exception>
 #include <iterator>
+#include <math.h>
 
 void Map_Structure::collectAllWayPoints() {
 
@@ -175,35 +176,72 @@ double dot(const Point &a, const Point &b) {
     return a.GetX() * b.GetX() + a.GetY() * b.GetY();
 }
 
-const double parallelThreshold = 0.1;
+const double parallelThreshold = 0.00001;
 
 bool areLinesParallel(const Point &m1, const Point &m2, const Point &n1, const Point &n2) {
-    double a1 = m2.GetY() - m1.GetY();
-    double b1 = m1.GetX() - m2.GetX();
 
-    double a2 = n2.GetY() - n1.GetY();
-    double b2 = n2.GetX() - n1.GetX();
+    if (m1.getX() - m2.getX() == 0 || n1.getX() - n2.getX() == 0){
+        if(m1.getX() - m2.getX() == 0 && n1.getX() - n2.getX() == 0) {
+            return true;
+        }
+        if(m1.getX() - m2.getX() == 0 ){
+            double angle_degrees =  atan((n2.getY() - n1.getY())/ (n2.getX() - n1.getX()));
+            return parallelThreshold > abs(90 - angle_degrees) || parallelThreshold > abs(270 - angle_degrees);
+        }
+        if(n1.getX() - n2.getX() == 0 ){
+            double angle_degrees =  atan((m2.getY() - m1.getY())/ (m2.getX() - m1.getX()));
+            return parallelThreshold > abs(90 - angle_degrees) || parallelThreshold > abs(270 - angle_degrees);
+        }
+    }
 
-    return parallelThreshold > abs(a1 * b2 - a2 * b1);
+    double m_slope = (m1.getY() - m2.getY()) / (m1.getX() - m2.getX());
+    double n_slope = (n1.getY() - n2.getY()) / (n1.getX() - n2.getX());
+
+    return parallelThreshold > abs(m_slope - n_slope);
 }
 
-//Function responsible to check if two lines intersect
-bool intersectionInterest(const Point &m1, const Point &m2, const Point &n1, const Point &n2) {
-    //If lines are parallel, stop the check and return false
-    if (areLinesParallel(m1, m2, n1, n2)) return false;
+// To find orientation of ordered triplet (p, q, r).
+// The function returns following values
+// 0 --> p, q and r are collinear
+// 1 --> Clockwise
+// 2 --> Counterclockwise
+int orientation(Point p, Point q, Point r)
+{
+    // See https://www.geeksforgeeks.org/orientation-3-ordered-points/
+    // for details of below formula.
+    double val = (q.getY() - p.getY()) * (r.getX() - q.getX()) -
+              (q.getX() - p.getX()) * (r.getY() - q.getY());
 
-    if (cross((n1 - n2), (m1 - n2)) * cross((n1 - n2), (m2 - n2)) < 0 &&
-        cross((m1 - m2), (n1 - m2)) * cross((m1 - m2), (n2 - m2)) < 0) {
+    if (val == 0) return 0;  // collinear
+
+    return (val > 0)? 1: 2; // clock or counterclock wise
+}
+
+
+//Function responsible to check if two lines intersect
+bool intersectionInterest(const Point &p1, const Point &p2, const Point &q1, const Point &q2) {
+    //If lines are parallel, stop the check and return false
+
+    if (areLinesParallel(p1, p2, q1, q2))
+        return false;
+
+    // Find the four orientations needed for general case
+    int o1 = orientation(p1, p2, q1);
+    int o2 = orientation(p1, p2, q2);
+    int o3 = orientation(q1, q2, p1);
+    int o4 = orientation(q1, q2, p2);
+
+    // General case
+    if (o1 != o2 && o3 != o4) {
+        if(p1.getId() == 14 && p2.getId() == 57) {
+            std::cout << "intersects with (" << q1.getX() << ";" << q1.getY() << ") ";
+            std::cout << "and  (" << q2.getX() << ";" << q2.getY() << ") " << std::endl;
+            std::cout << "14: (" << p1.getX() << ";" << p1.getY() << ")" <<std::endl;
+            std::cout << "57: (" << p2.getX() << ";" << p2.getY() << ")" <<std::endl;
+        }
         return true;
     }
-    if (dot(m2 - n2, m2 - n1) <= 0 && dot(m1 - n2, m1 - n1) <= 0 &&
-        cross(m1 - m2, n1 - n2) == 0) {
-        return true;
-    }
-    if (cross(n1 - n2, m1 - n2) * cross(n1 - n2, m2 - n2) < 0 &&
-        cross(m2 - m1, n1 - m1) * cross(m2 - m1, n2 - m1) == 0) {
-        return true;
-    }
+
     return false;
 }
 
@@ -248,15 +286,11 @@ bool doesLineCrossPointHelper(Line &l, const Point &r) {
 
 bool Map_Structure::intersectWithVirtualLines(Line &line) {
     for (auto &box : boxes) {
-        for (auto &vLines : box.getVirtualLines()) {
-            //check if a point is inside the virtual box
-            if (checkIfPointIsInShapeHelper(box, line.Geta(), vLines) ||
-                checkIfPointIsInShapeHelper(box, line.Getb(), vLines)) {
-                continue;
-            }
+
+        for (auto &virtualLine : box.getVirtualLines()) {
             //if normal line intersects with any of the virtual lines, we mark it as incorrect line
-            if (!(line == vLines)) {
-                if (intersectionInterest(line.Geta(), line.Getb(), vLines.Geta(), vLines.Getb())) {
+            if (!(line == virtualLine) && !doesLineCrossPointHelper(virtualLine, line.Geta()) && !doesLineCrossPointHelper(virtualLine, line.Getb())) {
+                if (intersectionInterest(line.Geta(), line.Getb(), virtualLine.Geta(), virtualLine.Getb())) {
                     return true;
                 }
             }
@@ -290,10 +324,12 @@ void Map_Structure::eliminateBadLines() {
                 break;
             }
         }
+
         //Checks if any of the lines intersect with the virtual lines
         if (line.GetDistance() > 0)
             if (intersectWithVirtualLines(line))
                 line.setFailureline();
+
         //Check if any of the lines overlap with other line
         if (line.GetDistance() > 0)
             if (doesLineCrossPoint(line))

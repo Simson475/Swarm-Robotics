@@ -202,7 +202,9 @@ std::string formatOtherStationDistances(const std::vector<std::reference_wrapper
                 dist = getDistanceToNextPoint(bot.get(), map_structure, bot.get().getNextWaypoint());
                 dist += getDistanceBetweenPoints(map_structure, bot.get().getWaypointPlan());
             }
-            distances.push_back(std::to_string(dist));
+            std::string tmp = std::to_string(dist);
+            std::replace(tmp.begin(), tmp.end(), ',', '.');
+            distances.push_back(tmp);
         }
     }
 
@@ -221,7 +223,9 @@ std::string formatOtherWaypointDistances(const std::vector<std::reference_wrappe
             else {
                 dist = getDistanceToNextPoint(bot.get(), map_structure, bot.get().getNextWaypoint());
             }
-            distances.push_back(std::to_string(dist));
+            std::string tmp = std::to_string(dist);
+            std::replace(tmp.begin(), tmp.end(), ',', '.');
+            distances.push_back(tmp);
         }
     }
 

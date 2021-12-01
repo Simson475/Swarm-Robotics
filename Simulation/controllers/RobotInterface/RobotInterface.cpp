@@ -140,7 +140,7 @@ void RobotInterface::ControlStep() {
     }
 
     if (currentState == state::moving) {
-        if (!stationPlan.empty() && isAtStation()) { // If we have a plan and we are at a point
+        if (!stationPlan.empty() && sMap.isPointAvailable(nextLocation) && isAtStation()) { // If we have a plan and we are at a point
 
             lastLocation = nextLocation;
             resetWaypointPlan();
@@ -412,7 +412,7 @@ bool RobotInterface::otherBotIsTooClose(){
             if ((pos - others_pos).Length() < 0.085036758f * 2 &&
                 radianBetweenDirections(others_pos - pos, getOrientation2D()).GetAbsoluteValue() <
                 ARGOS_PI / 2) { //Value is the radius of robots and is in "footbot_entity.cpp"
-                log_helper(other_bot.get().GetId() + " is " + std::to_string((pos - others_pos).Length()) + " away");
+                //log_helper(other_bot.get().GetId() + " is " + std::to_string((pos - others_pos).Length()) + " away");
                 return true;
             }
         }
