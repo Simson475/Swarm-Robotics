@@ -7,6 +7,13 @@
 
 #include <cmath>
 
+/**
+ * Converts a matrix from vector<vector<string>> to string (in the {\n{a,b,c}\n,\n{d,e,f}\n} format)
+ * 
+ * @param std::vector<std::vector<std::string>> &distance_values
+ * 
+ * @return string
+*/
 std::string combineMatrixLines(const std::vector<std::vector<std::string>> &distance_values){
     // Temporary results of the lines in the matrix on string-form.
     std::vector<std::string> waited_matrix{};
@@ -14,7 +21,7 @@ std::string combineMatrixLines(const std::vector<std::vector<std::string>> &dist
     // Gets all the line with correct post-/prefix and delimitor.
     for(auto& dist_line : distance_values){
         std::string line = element_joiner(dist_line, ", ", "{", "}");
-        waited_matrix.emplace_back(line);
+        waited_matrix.emplace_back(line);// Appends to the vector
     }
 
     std::string final_matrix = element_joiner(waited_matrix, ",\n", "{\n", "\n}");
@@ -22,44 +29,72 @@ std::string combineMatrixLines(const std::vector<std::vector<std::string>> &dist
     return final_matrix;
 }
 
-
+/**
+ * Returns the number of other robots
+ * 
+ * @param std::vector<std::reference_wrapper<RobotInterface>> &otherBots 
+ * 
+ * @return size_t
+*/
 std::size_t numOfOtherRobots(const std::vector<std::reference_wrapper<RobotInterface>>& otherBots){
     return otherBots.size();
 }
 
+/**
+ * Returns the number of active other robots
+ *
+ * @param std::vector<std::reference_wrapper<RobotInterface>> &otherBots
+ *
+ * @return size_t
+*/
 std::size_t numOfOtherActiveRobots(const std::vector<std::reference_wrapper<RobotInterface>>& otherBots){
-    std::size_t robots_with_jobs = 0;
+    std::size_t active_robots = 0;
 
     for(auto& bot : otherBots){
         if (bot.get().isActive()){
-            robots_with_jobs++;
+            active_robots++;
         }
     }
 
-    return robots_with_jobs;
+    return active_robots;
 }
 
-// Gets the distances between all stations and the point given as argument
+/**
+ * Gets the distances between all stations and the point given as argument
+ * 
+ * @param Map_Structure &map_structure
+ * @param int p_id
+ * 
+ * @return string - matrix in string format
+*/ 
 std::string get_expanded_distance_matrix(Map_Structure &map_structure, int p_id){
     // Copies the full distance matrix and the short distance between stations.
     const std::vector<std::vector<float>>& fullDistMatrix = map_structure.getShortestDistanceMatrix();
     std::vector<std::vector<float>> newDistMatrix = map_structure.floydShortestOfStations();
 
-    // Adds the distance from stations to point.
+    // Adds the distance from stations to point by extending distance matrix by one column
     for(std::size_t i = 0; i < newDistMatrix.size(); i++){
-        newDistMatrix[i].push_back(fullDistMatrix[i][p_id]);
+        newDistMatrix[i].push_back(fullDistMatrix[i][p_id]);// push_back adds the element to the end
     }
 
-    // Adding distances from point to stations in the matrix.
+    // Adding distances from point to stations in the matrix by extending distance matrix by one row
     std::vector<float> pointToStations(newDistMatrix.size() + 1, 0);
     for(std::size_t i = 0; i < newDistMatrix.size(); i++){
         pointToStations[i] = fullDistMatrix[p_id][i];
     }
-    newDistMatrix.push_back(pointToStations);
+    newDistMatrix.push_back(pointToStations);// push_back adds the element to the end
 
     return formatMatrix(newDistMatrix);
 }
 
+/**
+ * Formats the order as a vector string {a,b,c} where each index is 1 if the id is present and 0 if not.
+ * 
+ * @param int numOfStations
+ * @param std::set<int> order
+ * 
+ * @return std::string
+*/
 std::string format_order(int numOfStations, std::set<int> order){
     std::vector<int> verbatimOrder = convertIDsToBools<std::set<int>>(numOfStations, std::move(order));
 
@@ -68,6 +103,14 @@ std::string format_order(int numOfStations, std::set<int> order){
     return formatted_order;
 }
 
+/**
+ * Formats the ids as a vector string {a,b,c} where each index is 1 if the id is present and 0 if not.
+ * 
+ * @param int numOfStations
+ * @param std::set<int> endstationIDs
+ * 
+ * @return std::string
+*/
 std::string format_endstations(int numOfStations, std::set<int> endstationIDs){
     std::vector<int> verbatimOrder = convertIDsToBools(numOfStations, std::move(endstationIDs));
 
