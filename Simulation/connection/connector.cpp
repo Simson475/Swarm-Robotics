@@ -76,8 +76,8 @@ std::string connectStratego(std::string station, std::string robotName, std::str
 /**
  * Writes the file to the socket.
  * 
- * @param sockfd
- * @param fileName
+ * @param sockfd int
+ * @param fileName string
 */
 void sendFile1(int sockfd, std::string fileName){
     int chars;
@@ -100,9 +100,9 @@ void sendFile1(int sockfd, std::string fileName){
 /**
  * Does not actually send the file, but just sends the chars that are not spaces in the dynamic string
  * 
- * @param sockfd
- * @param fileName - Not used
- * @param dynamic
+ * @param sockfd int
+ * @param fileName string - Not used
+ * @param dynamic string
 */
 void sendFile(int sockfd, std::string fileName, std::string dynamic){
     // Move all spaces to the end of the string and erase them.
