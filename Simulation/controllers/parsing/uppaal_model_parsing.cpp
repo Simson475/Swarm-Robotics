@@ -10,7 +10,7 @@
 /**
  * Converts a matrix from vector<vector<string>> to string (in the {\n{a,b,c}\n,\n{d,e,f}\n} format)
  * 
- * @param std::vector<std::vector<std::string>> &distance_values
+ * @param distance_values std::vector<std::vector<std::string>> &
  * 
  * @return string
 */
@@ -32,7 +32,7 @@ std::string combineMatrixLines(const std::vector<std::vector<std::string>> &dist
 /**
  * Returns the number of other robots
  * 
- * @param std::vector<std::reference_wrapper<RobotInterface>> &otherBots 
+ * @param otherBots std::vector<std::reference_wrapper<RobotInterface>> &
  * 
  * @return size_t
 */
@@ -43,7 +43,7 @@ std::size_t numOfOtherRobots(const std::vector<std::reference_wrapper<RobotInter
 /**
  * Returns the number of active other robots
  *
- * @param std::vector<std::reference_wrapper<RobotInterface>> &otherBots
+ * @param otherBots std::vector<std::reference_wrapper<RobotInterface>> &
  *
  * @return size_t
 */
@@ -62,8 +62,8 @@ std::size_t numOfOtherActiveRobots(const std::vector<std::reference_wrapper<Robo
 /**
  * Gets the distances between all stations and the point given as argument
  * 
- * @param Map_Structure &map_structure
- * @param int p_id
+ * @param map_structure Map_Structure &
+ * @param p_id int
  * 
  * @return string - matrix in string format
 */ 
@@ -90,8 +90,8 @@ std::string get_expanded_distance_matrix(Map_Structure &map_structure, int p_id)
 /**
  * Formats the order as a vector string {a,b,c} where each index is 1 if the id is present and 0 if not.
  * 
- * @param int numOfStations
- * @param std::set<int> order
+ * @param numOfStations int
+ * @param order std::set<int>
  * 
  * @return std::string
 */
@@ -106,8 +106,8 @@ std::string format_order(int numOfStations, std::set<int> order){
 /**
  * Formats the ids as a vector string {a,b,c} where each index is 1 if the id is present and 0 if not.
  * 
- * @param int numOfStations
- * @param std::set<int> endstationIDs
+ * @param numOfStations int
+ * @param endstationIDs std::set<int>
  * 
  * @return std::string
 */
@@ -119,7 +119,15 @@ std::string format_endstations(int numOfStations, std::set<int> endstationIDs){
     return formatted_endstations;
 }
 
+/**
+ * @TODO What does this do?
+ * 
+ * @param map_structure Map_Structure &
+ * 
+ * @return std::vector<std::vector<float>>
+*/
 std::vector<std::vector<float>> getDistanceMatrix(Map_Structure &map_structure){
+    // We want to construct a square matrix?
     int sizeLines = std::sqrt(map_structure.lines.size()); //@todo: Make 2-dimentional to begin with.
     std::vector<std::vector<float>> waypointsDistances(sizeLines, std::vector<float>());
 
@@ -127,15 +135,21 @@ std::vector<std::vector<float>> getDistanceMatrix(Map_Structure &map_structure){
     for (long unsigned i = 0; i < map_structure.lines.size(); i++) {
         if (i % sizeLines == 0)
             k++;
-        if(map_structure.lines[i].GetDistance()==-1)
-            waypointsDistances[k].push_back(0);
-        else
-            waypointsDistances[k].push_back(map_structure.lines[i].GetDistance()/(double)VELOCITY*100);
+        float distance = map_structure.lines[i].GetDistance();
+        distance = distance == -1 ? 0 : distance / (double)VELOCITY*100;
+        waypointsDistances[k].push_back(distance);
     }
 
     return waypointsDistances;
 }
 
+/**
+ * Returns vector string of the active other bots station plan size
+ * 
+ * @param otherBots std::vector<std::reference_wrapper<RobotInterface>> &
+ * 
+ * @return std::string
+*/
 std::string formatStationOrderLenghts(const std::vector<std::reference_wrapper<RobotInterface>> &otherBots){
     std::vector<unsigned> orderLenghts{};
 

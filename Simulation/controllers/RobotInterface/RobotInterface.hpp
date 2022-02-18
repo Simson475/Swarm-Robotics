@@ -105,7 +105,6 @@ protected:
      * the robot and the closest obstacle.
      * The proximity reading is 0 when nothing is detected
      * and grows exponentially to 1 when the obstacle is
-     * and grows exponentially to 1 when the obstacle is
      * touching the robot.
      */
     argos::Real m_fDelta;
