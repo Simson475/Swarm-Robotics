@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.7)
+
+# Load and run CMake code from a file or a module
+# The ExternalProject module is needed to use ExternalProject_add which is used to include github projects
 include(ExternalProject)
 
+# Set the name of the projekt
 project(SwarmSimulator)
 
 #set(CMAKE_C_COMPILER    "/usr/bin/clang")
@@ -38,12 +42,13 @@ unset(ARGOS_WITH_LUA CACHE)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# Look for includes in the source dir (source tree)
 include_directories(${CMAKE_SOURCE_DIR})
 
 # Emit all warning messages
 add_definitions(-Wall -Werror)
 
-
+# Make the experiments dir
 add_custom_target(build-time-make-directory ALL
         COMMAND ${CMAKE_COMMAND} -E make_directory experiments)
 
@@ -58,7 +63,7 @@ add_subdirectory(loop_functions)
 #        )
 
 
-
+# Move the run_a_scene.sh script to the external/bin/run_a_scene.sh
 add_custom_target(move_run_script ALL
         COMMAND ${CMAKE_COMMAND} -E copy
         ../experiment/runtime_scripts/run_a_scene.sh
