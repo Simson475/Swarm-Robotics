@@ -15,6 +15,7 @@
 #include <experimental/iterator>
 #include <limits>
 
+/** Class constructor */
 RobotInterface::RobotInterface() :
     m_pcWheels(nullptr),
     m_pcProximity(nullptr),
@@ -25,7 +26,7 @@ RobotInterface::RobotInterface() :
     m_cGoStraightAngleRange(-ToRadians(m_cAlpha),
                             ToRadians(m_cAlpha)) {}
 
-
+/** Prints the string to the given filename relative to the current path of file system */
 void RobotInterface::print_string(const std::string &text, const std::string &fileName) {
     std::ofstream debug{std::string{std::filesystem::current_path()} + fileName};
 
@@ -34,6 +35,10 @@ void RobotInterface::print_string(const std::string &text, const std::string &fi
     debug.close();
 }
 
+/** Opens the log.txt and prints the message to the log file and argos::LOG. 
+  * If printName is true it prefixes with the id: 
+  * If the newLine is set it ends the message with a newline.
+ */
 void RobotInterface::log_helper(const std::string &message, bool newLine, bool printName){
     std::ofstream logFile;
     logFile.open(std::string{std::filesystem::current_path()} + "/log.txt", std::ofstream::app);
@@ -48,6 +53,9 @@ void RobotInterface::log_helper(const std::string &message, bool newLine, bool p
     }
 }
 
+/**
+ * Appends 'ID, type, time, getLastLocation(), pointsToVisit, pointsInPlan' to the data.csv
+*/
 void RobotInterface::experiment_helper(const std::string &type, double time, int pointsToVisit, int pointsInPlan){
     std::ofstream dataFile;
     dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
@@ -55,6 +63,9 @@ void RobotInterface::experiment_helper(const std::string &type, double time, int
     dataFile << m_strId << ", " << type << ", " << std::to_string(time) << ", " << getLastLocation() << ", " << pointsToVisit << ", " << pointsInPlan << std::endl;
 }
 
+/**
+ * Appends 'ID, type, logicalTime, getLastLocation(), id' to the data.csv
+*/
 void RobotInterface::experiment_job_data(const std::string &type, int id, int logicalTime){
     std::ofstream dataFile;
     dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
@@ -62,6 +73,9 @@ void RobotInterface::experiment_job_data(const std::string &type, int id, int lo
     dataFile << m_strId << ", " << type << ", " << std::to_string(logicalTime) << ", " << getLastLocation() << ", " << id << "," << std::endl;
 }
 
+/**
+ * Appends 'ID, type, , getLastLocation(), value_1, value_2' to the data.csv
+*/
 void RobotInterface::store_data(const std::string &type, const std::string& value_1, const std::string& value_2){
     std::ofstream dataFile;
     dataFile.open(std::string{std::filesystem::current_path()} + "/data.csv", std::ofstream::app);
@@ -116,6 +130,9 @@ void RobotInterface::Init(argos::TConfigurationNode &t_node) {
     specialInit();
 }
 
+/**
+ * Controls how it does the jobs, chooses stations and moves.
+*/
 void RobotInterface::ControlStep() {
     if (currentState == state::working) {
         if (isDoneWorking()) {
@@ -213,6 +230,9 @@ void RobotInterface::ControlStep() {
     movementLogic();
 }
 
+/**
+ * Prints the plans to the '_plans.csv' file as 'type; p1, p2, ..., pn'
+*/
 void RobotInterface::storePlan(std::vector<int> plan, std::string type) {
     std::ofstream planFile;
     planFile.open(std::string{std::filesystem::current_path()} + "/" + GetId() +"_plans.csv", std::ofstream::app);
@@ -228,7 +248,10 @@ void RobotInterface::storePlan(std::vector<int> plan, std::string type) {
     planFile << formatted_elements.str();
 }
 
-//Sets the vector of references of all the other robots in the system.
+/**
+ * Sets the vector of references of all the other robots in the system.
+ * The other bots are appended to the otherBots vector.
+*/
 void RobotInterface::obtainOtherBots(Map_Structure &sMap) {
     argos::CSpace::TMapPerType &tBotMap =
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
