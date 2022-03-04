@@ -13,8 +13,8 @@ include_directories(${LUA_INCLUDE_DIR})
 #add_definitions(-DARGOS_WITH_LUA=0)
 unset(ARGOS_WITH_LUA CACHE)
 
-
-## ********************************* SingleThreadUppaalBot
+# Add a library target called BotImplementations from the source files listed
+# MODULE makes it a library/plugin that is not linked into other targets but may be loaded dynamically at runtime
 add_library(BotImplementations MODULE
         ./exceptions/StrategySynthesisError.hpp
 
@@ -38,13 +38,16 @@ add_library(BotImplementations MODULE
         UppaalStationGreedyWaypoint.hpp
         )
 
+# Ensure that argos-ext is build before BotImplementations
 add_dependencies(BotImplementations argos-ext)
 
-#Because argos3 installation puts in its own folder.
+# Link the argos3 directory to the BotImplementations
+# argos3 installation puts it in its own folder.
 target_link_directories(BotImplementations PRIVATE ${EXTERNAL_INSTALL_LOCATION}/lib/argos3)
 
+# Link the libraries to BotImplementations
 target_link_libraries(BotImplementations
-        Qt5::Widgets
+        Qt5::Widgets# TODO earlier in this file there is a todo to possible remove the Qt5, which would require this to be removed too?
         argos3core_simulator
         argos3plugin_simulator_entities
         argos3plugin_simulator_footbot
@@ -52,12 +55,14 @@ target_link_libraries(BotImplementations
         argos3plugin_simulator_qtopengl
         )
 
+# Copy the libBotImplementations.so to ../external/bin/libBotImplementations.so
 add_custom_command(TARGET BotImplementations POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
         ./libBotImplementations.so
         ../external/bin/libBotImplementations.so
         )
 
+# Copy the ../../controllers/parsing/planning_blueprint.xml to <CMAKE_BINARY_DIR>/external/bin/planning_blueprint.xml
 add_custom_command(TARGET BotImplementations POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
         ../../controllers/parsing/planning_blueprint.xml
