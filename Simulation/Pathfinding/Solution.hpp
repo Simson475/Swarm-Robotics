@@ -3,6 +3,7 @@
 
 #include <queue>
 #include "Agent.hpp"
+#include "Conflict.hpp"
 
 class Solution {
   public:

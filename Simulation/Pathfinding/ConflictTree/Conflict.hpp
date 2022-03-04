@@ -3,27 +3,30 @@
 
 #include <queue>
 #include "Agent.hpp"
-#include "../models/map/line.hpp"
-#include "../models/map/point.hpp"
+#include "line.hpp"
+#include "point.hpp"
 
-class Conflict {
-  public:
-    std::vector<Agent> agents;
-    int timestampStart;
-    int timestampEnd;
-    S location;
-    SType locationType;
+class Conflict
+{
+private:
+  union S
+  {
+    Point vertex;
+    Line edge;
+  };
 
-  private:
-    union {
-      Point vertex;
-      Line edge;
-    };
+  enum SType
+  {
+    VERTEX,
+    EDGE
+  };
 
-    enum SType{
-      VERTEX,
-      EDGE
-    };
+public:
+  std::vector<Agent> agents;
+  int timestampStart;
+  int timestampEnd;
+  S location;
+  SType locationType;
 };
 
 #endif

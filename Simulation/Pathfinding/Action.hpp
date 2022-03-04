@@ -1,7 +1,7 @@
 #ifndef ACTION_HPP
 #define ACTION_HPP
 
-#include "../models/map/point.hpp"
+#include "point.hpp"
 
 class Action {
   public:
