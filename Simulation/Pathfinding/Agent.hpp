@@ -8,7 +8,7 @@
 class Agent {
   public:
     Path getPath();
-    Path createPath(std::vector<Point> &path);
+    void createPath(std::vector<Point> path);
   private:
     Path path;
 };
