@@ -2,13 +2,15 @@
 #define AGENT_HPP
 
 #include "Path.hpp"
+#include "point.hpp"
+#include <queue>
 
 class Agent {
   public:
-    Path GetPath();
+    Path getPath();
+    Path createPath(std::vector<Point> &path);
   private:
     Path path;
-    Path FindPath();
 };
 
 #endif
