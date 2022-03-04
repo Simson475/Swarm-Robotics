@@ -46,3 +46,13 @@ sudo apt-get install kitware-archive-keyring
 sudo apt-get install cmake
 ```
 2. Check for successful install using ```cmake --version```
+
+#### Uppaal Stratego
+To use the Uppaal bot controllers, you need the bin folder from Stratego.  
+This should be located in '~/Desktop/uppaalStratego/', in the linux version of Stratego it is simply called bin.  
+Copy this folder into 'Swarm-Robotics/Simulator/build/external/bin' and rename it to 'bin-Linux'  
+The path of the folder should look like 'Swarm-Robotics/Simulator/build/external/bin/bin-Linux'
+This should allow use of Uppaal to generate strategies at runtime, and therefore use of any controller using uppaal, like SingleThreadUppaalBot  
+
+##### Note
+It is possible that both the Uppaal folder and the Swarm-Robotics repo should be on the desktop, or at least at the same level in the folder hierarchy
