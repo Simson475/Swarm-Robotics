@@ -19,7 +19,7 @@
   <!-- *************** -->
 
   <controllers>
-    <SingleThreadUppaalBot_controller id="fdc"
+    <SingleThreadBotGreedy id="fdc"
                                       library="./libBotImplementations">
       <actuators>
         <differential_steering implementation="default" />
@@ -40,7 +40,7 @@
       </params>
 
       <params alpha="7.5" delta="0.1" />
-    </SingleThreadUppaalBot_controller>
+    </SingleThreadBotGreedy>
 
   </controllers>
 
@@ -119,8 +119,7 @@
   <!-- ****************** -->
   <!-- * Visualization * -->
   <!-- ****************** -->
-  <!--visualization>
-
+  <visualization>
     <qt-opengl autoplay="false">
       <user_functions library="./libCTrajectoryLoopFunctions"
                       label="CTrajectoryQTUserFunctions" />
@@ -130,6 +129,6 @@
       </camera>
     </qt-opengl>
 
-  </visualization-->
+  </visualization>
 
 </argos-configuration>

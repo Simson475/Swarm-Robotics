@@ -17,7 +17,7 @@
   <!-- *************** -->
 
   <controllers>
-    <UppaalStationGreedyWaypoint id="fdc"
+    <SingleThreadBotGreedy id="fdc"
                                       library="./libBotImplementations">
       <actuators>
         <differential_steering implementation="default" />
@@ -38,7 +38,7 @@
         </params>
 
       <params alpha="7.5" delta="0.1" />
-    </UppaalStationGreedyWaypoint>
+    </SingleThreadBotGreedy>
 
   </controllers>
 
@@ -52,18 +52,23 @@
   <!-- *********************** -->
   <!-- * Arena configuration * -->
   <!-- *********************** -->
-  <arena size="24, 20, 2" center="0,0,0.5">
-    <box id="wall_north" size="24,0.1,0.5" movable="false">
-      <body position="0,10,0" orientation="0,0,0" />
+  <arena size="17.4, 17.2, 2" center="0,0,0.5">
+    <box id="wall_north" size="17.4,0.1,0.5" movable="false">
+      <body position="0,8.6,0" orientation="0,0,0" />
     </box>
-    <box id="wall_south" size="24,0.1,0.5" movable="false">
-      <body position="0,-10,0" orientation="0,0,0" />
+    <box id="wall_south" size="17.4,0.1,0.5" movable="false">
+      <body position="0,-8.6,0" orientation="0,0,0" />
     </box>
-    <box id="wall_east" size="0.1,20,0.5" movable="false">
-      <body position="12,0,0" orientation="0,0,0" />
+    <box id="wall_east" size="0.1,17.2,0.5" movable="false">
+      <body position="8.7,0,0" orientation="0,0,0" />
     </box>
-    <box id="wall_west" size="0.1,20,0.5" movable="false">
-      <body position="-12,0,0" orientation="0,0,0" />
+    <box id="wall_west" size="0.1,17.2,0.5" movable="false">
+      <body position="-8.7,0,0" orientation="0,0,0" />
+    </box>
+
+
+    <box id="robot_spawn_wall_north" size="7, 2, 2" movable="false">
+      <body position="8, 11.6, 0" orientation="0,0,0" />
     </box>
 
     <!-- ********************************* -->
@@ -72,11 +77,11 @@
 
     <distribute>
       <position method="grid"
-                center="0,9,0"
-                distances="4,1,0"
-                layout="5,1,1" />
+                center="0,8.2,0"
+                distances="1,1,0"
+                layout="10,1,1" />
       <orientation method="constant" values="-45,0,0" />
-      <entity quantity="5" max_trials="1">
+      <entity quantity="1" max_trials="1">
         <foot-bot id="fb">
           <controller config="fdc" />
         </foot-bot>
@@ -87,12 +92,12 @@
     <!-- ********************************* -->
     <distribute>
       <position method="grid"
-                center="0,0,0"
-                distances="11,1.6,0"
-                layout="2,10,1" />
+                center="0,-0.3,0"
+                distances="5.6,1.6,0"
+                layout="3,10,1" />
       <orientation method="constant" values="0,0,0" />
-      <entity quantity="20" max_trials="1">
-    <box id="ob" size="8,1,1" movable="false" >
+      <entity quantity="30" max_trials="1">
+    <box id="ob" size="5,1,1" movable="false" >
     </box>
       </entity>
   </distribute>
