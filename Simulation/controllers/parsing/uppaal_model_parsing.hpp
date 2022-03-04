@@ -36,11 +36,21 @@ std::string formatOtherWaypointDistances(const std::vector<std::reference_wrappe
 
 //********************************* Formatting functions:
 // Help-function for delimiter
+
+/**
+ * Joins the elements using the delimiter and wraps in prefix+postfix
+ * 
+ * @param std::vector<T> elements - T can be passed as a generic type or be autodetected
+ * @param std::string delimiter
+ * @param std::string prefix
+ * @param std::string postfix
+*/
 template <typename C>
 std::string element_joiner(std::vector<C> elements, std::string delimiter, std::string prefix, std::string postfix){
     std::stringstream formatted_elements{};
 
     formatted_elements << prefix;
+    // Join the elements using the delimiter (result in formatted_elements)
     std::copy(elements.begin(),
               elements.end(),
               std::experimental::make_ostream_joiner(formatted_elements, delimiter));
@@ -49,13 +59,21 @@ std::string element_joiner(std::vector<C> elements, std::string delimiter, std::
     return formatted_elements.str();
 }
 
-// Function to convert a vector of IDs to a int (0's and 1's) vector where indexes indicate that the ID was present
+/**
+ * Function to convert a vector of IDs to a int vector(with only 0's and 1's) where indexes indicate if the ID was present.
+ * 
+ * @param int size
+ * @param T ids - T can be passed as a generic type or be autodetected
+ * 
+ * @return std::vector<int>
+*/
 template <typename C>
 std::vector<int> convertIDsToBools(int size, C ids){
     std::vector<int> verbatimOrder(size, 0);
 
     for(int id = 0; id < size; id++){
-        if(std::find(ids.begin(), ids.end(), id) != ids.end())
+        // Set the value to 1 if the id is present in the ids.
+        if(std::find(ids.begin(), ids.end(), id) != ids.end())// std::find will return ids.end() if id is not found
             verbatimOrder[id] = 1;
     }
 

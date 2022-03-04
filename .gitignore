@@ -1,24 +1,22 @@
-/.vscode
-/Simulation/.vscode
-/Robot-code/.vscode
-/simulation/build/
-/simulation/vscode/
-/simulation/.vscode/ipch/
-/simulation/visualGraph/build/
-/simulation/visualGraph/test/build/
+# IDE ignores
+**.vscode
+**.vs/
+**/.idea/*
+
+# Project ignores
+**out/
 /Simulation/build/
 /Simulation/experiment/scene*/fb*
 /Simulation/uppaalStratego/fb*
 /Simulation/experiment/scene*/jobs.json
 /Simulation/testing/build/
+/Simulation/uppaalStratego/Server
 /Robot-code/build/
 /Robot-code/Plotting/
 /Robot-code/UnitTests/build/
-/Simulation/uppaalStratego/Server
 /Robot-code/config/static_config.json
 /Robot-code/config/station_strategy.json
 /Robot-code/config/waypoint_strategy.json
 /Robot-code/cmake-build-debug/
 /Simulation/cmake-build-debug/
 **/config/libconfig.log
-**/.idea/*
