@@ -25,7 +25,7 @@
   <!-- * Controllers * -->
   <!-- *************** -->
   <controllers>
-    <UppaalStationGreedyWaypoint id="fdc"
+    <SingleThreadBotGreedy id="fdc"
                                   library="libBotImplementations">
       <actuators>
         <differential_steering implementation="default" />
@@ -46,7 +46,7 @@
       </params>
 
       <params alpha="7.5" delta="0.1" />
-    </UppaalStationGreedyWaypoint>
+    </SingleThreadBotGreedy>
 
   </controllers>
 

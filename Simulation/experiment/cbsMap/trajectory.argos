@@ -52,18 +52,18 @@
   <!-- *********************** -->
   <!-- * Arena configuration * -->
   <!-- *********************** -->
-  <arena size="18, 18, 2" center="0,0,0.5">
-    <box id="wall_north" size="18,0.1,0.5" movable="false">
-      <body position="0,9,0" orientation="0,0,0" />
+  <arena size="20, 20, 2" center="0,0,0.5">
+    <box id="wall_north" size="20,0.1,0.5" movable="false">
+      <body position="0,10,0" orientation="0,0,0" />
     </box>
-    <box id="wall_south" size="18,0.1,0.5" movable="false">
-      <body position="0,-9,0" orientation="0,0,0" />
+    <box id="wall_south" size="20,0.1,0.5" movable="false">
+      <body position="0,-10,0" orientation="0,0,0" />
     </box>
-    <box id="wall_east" size="0.1,18,0.5" movable="false">
-      <body position="9,0,0" orientation="0,0,0" />
+    <box id="wall_east" size="0.1,20,0.5" movable="false">
+      <body position="10,0,0" orientation="0,0,0" />
     </box>
-    <box id="wall_west" size="0.1,18,0.5" movable="false">
-      <body position="-9,0,0" orientation="0,0,0" />
+    <box id="wall_west" size="0.1,20,0.5" movable="false">
+      <body position="-10,0,0" orientation="0,0,0" />
     </box>
 
     <!-- ********************************* -->
@@ -72,11 +72,11 @@
 
     <distribute>
       <position method="grid"
-                center="0,8.1,0"
+                center="0,9,0"
                 distances="1,1,0"
                 layout="10,1,1" />
       <orientation method="constant" values="-45,0,0" />
-      <entity quantity="10" max_trials="1">
+      <entity quantity="1" max_trials="1">
         <foot-bot id="fb">
           <controller config="fdc" />
         </foot-bot>
@@ -87,11 +87,11 @@
     <!-- ********************************* -->
     <distribute>
       <position method="grid"
-                center="0,-0.3,0"
-                distances="5.6,1.6,0"
-                layout="3,10,1" />
+                center="0,0,0"
+                distances="7,2,0"
+                layout="2,6,1" />
       <orientation method="constant" values="0,0,0" />
-      <entity quantity="15" max_trials="1">
+      <entity quantity="12" max_trials="1">
     <box id="ob" size="5,1,1" movable="false" >
     </box>
       </entity>
