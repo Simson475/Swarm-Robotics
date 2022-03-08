@@ -25,12 +25,25 @@ std::vector<int> SingleThreadBotCBS::constructStationPlan() {
 
 
 std::vector<int> SingleThreadBotCBS::constructWaypointPlan() {
-    auto highlevel = HighLevelCBS::get_instance();
-    // if (!highlevel.readyforcalculating){
-    //     highlevel.findSolution();
-    //     highlevel.calculating = true;
-    // }
+  if ( !receivedWaypointPlan.empty()){
     return receivedWaypointPlan;
+  }
+  auto highlevel = HighLevelCBS::get_instance();
+  highlevel.findSolution();
+  
+  return receivedWaypointPlan;
+}
+
+void specialInit(){
+  if (jobGenerator->anyJobsLeft()) {
+    log_helper("Sets job");
+    setJob();
+    experiment_job_data("StartedJob", currentJob->getID(),
+                        argos::CSimulator::GetInstance().GetSpace().GetSimulationClock());
+  }
+  else{
+    throw "No jobs at the beginning of simulation!";
+  }
 }
 
 
