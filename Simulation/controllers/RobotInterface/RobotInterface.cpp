@@ -213,17 +213,19 @@ void RobotInterface::ControlStep() {
             {
                 /// Abstract function
                 std::vector<int> waypointPlan = constructWaypointPlan();
-
-                log_helper("Waypoint plan has size " + std::to_string(waypointPlan.size()));
-                storePlan(waypointPlan, "Waypoint");
-                setWaypointPlan(waypointPlan);
-                setNextLocation(waypointPlan.front());
-                log_helper("Waypoint plan: ", false);
-                for (int j : waypointPlan) {
-                    log_helper(std::to_string(j) + " ", false, false);
+                
+                if ( ! waypointPlan.empty()) {
+                    log_helper("Waypoint plan has size " + std::to_string(waypointPlan.size()));
+                    storePlan(waypointPlan, "Waypoint");
+                    setWaypointPlan(waypointPlan);
+                    setNextLocation(waypointPlan.front());
+                    log_helper("Waypoint plan: ", false);
+                    for (int j : waypointPlan) {
+                        log_helper(std::to_string(j) + " ", false, false);
+                    }
+                    log_helper("", true, false);
+                    log_helper("Going towards " + std::to_string(nextLocation));
                 }
-                log_helper("", true, false);
-                log_helper("Going towards " + std::to_string(nextLocation));
             }
         }
     }

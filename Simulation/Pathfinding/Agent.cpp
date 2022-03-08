@@ -1,3 +1,4 @@
+#include "SingleThreadBotCBS.hpp"
 #include "Path.hpp"
 #include "Agent.hpp"
 #include "point.hpp"
@@ -20,6 +21,12 @@ void Agent::createPath(std::vector<Point> plan){
         actions.push_back(temp);
     }
     this->plan = plan;
-    this->path = Path{actions: actions, cost: startTime };
-    
+    this->path = Path{actions: actions, cost: startTime };   
+}
+
+void Agent::setBot(SingleThreadBotCBS* bot){
+    this->bot = bot;
+}
+SingleThreadBotCBS* Agent::getBot(){
+    return this->bot;
 }

@@ -35,6 +35,7 @@ Solution HighLevelCBS::findAllPathsByLowLevel(){
     std::vector<Agent> allAgents;
     for(auto  &bot : botList){
         Agent agent{};
+        agent.setBot(&bot);
         auto plan = bot.findOptimalPath();
         agent.createPath(plan);
         allAgents.push_back(agent);

@@ -1,5 +1,5 @@
-#ifndef SWARMSIMULATOR_SINGLETHREADBOTGREEDY_HPP
-#define SWARMSIMULATOR_SINGLETHREADBOTGREEDY_HPP
+#ifndef SWARMSIMULATOR_SINGLETHREADBOTCBS_HPP
+#define SWARMSIMULATOR_SINGLETHREADBOTCBS_HPP
 
 
 #include "models/map/map_structure.hpp"
@@ -31,8 +31,9 @@ class SingleThreadBotCBS : public virtual RobotInterface {
 public:
     /* Class constructors. */
     using RobotInterface::RobotInterface;
+    void Init(argos::TConfigurationNode &t_node) override;
     std::vector<Point>findOptimalPath();
-
+    std::vector<int> receivedWaypointPlan;
 
 protected:
 
