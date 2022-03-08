@@ -17,6 +17,7 @@ class ConstraintTree {
     ConstraintTree& getLowestCostNode();
     Solution solution;
     std::vector<Conflict> conflicts;
+    bool operator() (ConstraintTree a, ConstraintTree b);//Comparison function for priority queue
 
   private:
 };

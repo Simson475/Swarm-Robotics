@@ -1,5 +1,6 @@
 #include "SingleThreadBotCBS.hpp"
 #include "argos_wrapper/argos_wrapper.hpp"
+#include "HighLevelCBS.hpp"
 
 #include <exception>
 #include <cstdio>
@@ -56,7 +57,7 @@ std::vector<int> SingleThreadBotCBS::constructStationPlan() {
 }
 
 std::vector<int> SingleThreadBotCBS::constructWaypointPlan() {
-    
+    //HighLevelCBS hl = HighLevelCBS::get
     // SingleThreadBotGreedy code:
     std::vector<int> tempPlan{};
 

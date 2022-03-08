@@ -7,7 +7,7 @@
 class Path {
   public:
     std::vector<Action> actions;
-    float cost;
+    int cost;
 };
 
 #endif
