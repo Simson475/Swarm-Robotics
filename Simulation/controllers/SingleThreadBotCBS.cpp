@@ -34,7 +34,7 @@ std::vector<int> SingleThreadBotCBS::constructWaypointPlan() {
   return receivedWaypointPlan;
 }
 
-void specialInit(){
+void SingleThreadBotCBS::specialInit(){
   if (jobGenerator->anyJobsLeft()) {
     log_helper("Sets job");
     setJob();

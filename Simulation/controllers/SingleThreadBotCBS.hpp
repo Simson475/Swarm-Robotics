@@ -39,6 +39,7 @@ protected:
 
     std::vector<int> constructStationPlan() override;
     std::vector<int> constructWaypointPlan() override;
+    void specialInit() override;
 
 private:
     void sortJob(const std::vector<std::vector<float>> &shortestDistances, std::vector<int>& job);
