@@ -14,7 +14,7 @@
 
 class Box {
 private:
-    float x, y, h, w;
+    //Used to have the floats
     argos::CVector3 size, center;
     std::string id;
     std::vector<Point> corners;
@@ -23,6 +23,7 @@ private:
     std::vector<Line> boxLines;
 
 public:
+    float x, y, h, w; //were private before
     Box(std::string id, argos::CVector3 center, argos::CVector3 size);
 
     //returns the box id

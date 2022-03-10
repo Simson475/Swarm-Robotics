@@ -48,14 +48,38 @@ void Map_Structure::collectAllWayPoints() {
     }
     catch (argos::CARGoSException& e){}
 
-    for (long unsigned i = 0; i < Map_Structure::boxes.size(); i++) {
+    std::tuple<float,float> topRight{};
+    std::tuple<float,float> bottomLeft{};
+    auto boxlist =  Map_Structure::boxes;
+    for (long unsigned i = 0; i < boxlist.size(); i++) {
         Map_Structure::boxes[i].setBoxCorner();
+        auto x = Map_Structure::boxes[i].x;
+        auto y = Map_Structure::boxes[i].y;
+        if(x > std::get<0>(topRight)) std::get<0>(topRight) = x;
+        if(y > std::get<1>(topRight)) std::get<1>(topRight) = y;
+        if(x < std::get<0>(bottomLeft)) std::get<0>(bottomLeft) = x; 
+        if(y < std::get<1>(bottomLeft)) std::get<1>(bottomLeft) = y;
+
         for (auto j = 0; j < 4; j++) {
-            if (include_corners)
+            if (include_corners && j % 2 )
                 Map_Structure::points.push_back(Map_Structure::boxes[i].getVCorner(j));
             Map_Structure::hardLines.push_back(Map_Structure::boxes[i].getBoxLine(j));
-        }
+        }   
     }
+    Box max = find_if(boxlist.begin(), boxlist.end(), //Find box with higest x and y
+                [&topRight](const Box& obj)
+                {return obj.x == std::get<0>(topRight)
+                && obj.y == std::get<1>(topRight);})[0]; 
+
+    Box min = find_if(boxlist.begin(), boxlist.end(), //Find box with lowest x and y
+                [&bottomLeft](const Box& obj)
+                {return obj.x == std::get<0>(bottomLeft)
+                && obj.y == std::get<1>(bottomLeft);})[0]; 
+
+    if (include_corners){ //handle corner cases
+        Map_Structure::points.push_back(max.getVCorner(0));
+        Map_Structure::points.push_back(min.getVCorner(2));
+    }   
 }
 
 // Set the fields `shortestDistanceMatrix`, which gives the length of the shortest path between all points

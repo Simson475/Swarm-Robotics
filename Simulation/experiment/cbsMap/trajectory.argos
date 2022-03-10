@@ -6,7 +6,7 @@
   <!-- ************************* -->
 
   <framework>
-    <system threads="8" />
+    <system threads="0" />
     <experiment length="0"
                 ticks_per_second="10"
                 random_seed="127" />
@@ -17,7 +17,7 @@
   <!-- *************** -->
 
   <controllers>
-    <UppaalStationGreedyWaypoint id="fdc"
+    <SingleThreadBotGreedy id="fdc"
                                       library="./libBotImplementations">
       <actuators>
         <differential_steering implementation="default" />
@@ -38,7 +38,7 @@
         </params>
 
       <params alpha="7.5" delta="0.1" />
-    </UppaalStationGreedyWaypoint>
+    </SingleThreadBotGreedy>
 
   </controllers>
 
@@ -73,10 +73,10 @@
     <distribute>
       <position method="grid"
                 center="0,9,0"
-                distances="1,0.3,0"
-                layout="10,3,1" />
+                distances="0.3,0.3,0"
+                layout="20,1,1" />
       <orientation method="constant" values="-45,0,0" />
-      <entity quantity="30" max_trials="1">
+      <entity quantity="20" max_trials="1">
         <foot-bot id="fb">
           <controller config="fdc" />
         </foot-bot>
