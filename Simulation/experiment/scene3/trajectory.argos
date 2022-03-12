@@ -26,7 +26,7 @@
   <!-- *************** -->
   <controllers>
     <SingleThreadBotGreedy_controller id="fdc"
-                                  library="libBotImplementations">
+                                  library="../../bin/libBotImplementations.so">
       <actuators>
         <differential_steering implementation="default" />
       </actuators>

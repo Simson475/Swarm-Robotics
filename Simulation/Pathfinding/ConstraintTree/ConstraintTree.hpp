@@ -1,7 +1,8 @@
 #ifndef CONSTRAINT_TREE_HPP
 #define CONSTRAINT_TREE_HPP
+class ConstraintTree;
 
-#include <queue>
+#include <vector>
 #include "Constraint.hpp"
 #include "Solution.hpp"
 #include "Conflict.hpp"

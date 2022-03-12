@@ -27,6 +27,11 @@ public:
   int timestampEnd;
   S location;
   SType locationType;
+  Conflict() = default;
+  Conflict(Conflict*);
+  Conflict(const Conflict&);
+  Conflict(Conflict&&) noexcept;
+  ~Conflict();
 };
 
 #endif

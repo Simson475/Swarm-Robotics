@@ -1,7 +1,7 @@
 #ifndef SOLUTION_HPP
 #define SOLUTION_HPP
 
-#include <queue>
+#include <vector>
 #include "Agent.hpp"
 #include "Conflict.hpp"
 

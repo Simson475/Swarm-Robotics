@@ -6,8 +6,10 @@
 
 #include "SingleThreadBotCBS.hpp"
 #include "SingleThreadBotGreedy.hpp"
+/* Definition of the CCI_Controller class. */
+//#include "argos3/core/control_interface/ci_controller.h"
 
-class GreedyStationCBSWaypoint : public SingleThreadBotCBS, SingleThreadBotGreedy {
+class GreedyStationCBSWaypoint : public SingleThreadBotGreedy, SingleThreadBotCBS {
 
 public:
     /* Class constructors. */

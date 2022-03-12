@@ -1,23 +1,27 @@
+class HighLevelCBS;
 #ifndef HIGHLEVEL_CBS_HPP
 #define HIGHLEVEL_CBS_HPP
 
 #include "argos_wrapper/argos_wrapper.hpp"
-#include "models/map/map_structure.hpp"
+#include "map_structure.hpp"
 #include "ConstraintTree.hpp"
 #include "SingleThreadBotCBS.hpp"
 #include <queue>
+#include "Conflict.hpp"
+#include "Solution.hpp"
 
 class HighLevelCBS {
 private:
     int botAmount = argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot").size();
-    ConstraintTree root;
-    std::vector<SingleThreadBotCBS> botList{};
+    ConstraintTree& root;
+    std::vector<SingleThreadBotCBS*> botList{};
 
     int SumOfIndividualCosts(Solution solution);
-    std::vector<Conflict> findConflicts(ConstraintTree ctNode);
+    std::vector<Conflict> findConflicts(ConstraintTree& ctNode);
     Solution findAllPathsByLowLevel();
     
 public:
+    HighLevelCBS();
     //ensures that the class is created only once
     static HighLevelCBS &get_instance() {
         static HighLevelCBS instance;

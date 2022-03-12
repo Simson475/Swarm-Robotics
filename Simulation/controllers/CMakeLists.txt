@@ -1,4 +1,7 @@
 include_directories(.)
+include_directories(../Pathfinding/)
+include_directories(../Pathfinding/ConstraintTree/)
+include_directories(../models/map/)
 
 # Find the QtWidgets library
 find_package(Qt5Widgets) #@todo: Is this necessary anymore?
@@ -36,6 +39,24 @@ add_library(BotImplementations MODULE
 
         UppaalStationGreedyWaypoint.cpp
         UppaalStationGreedyWaypoint.hpp
+        
+        SingleThreadBotCBS.hpp
+        SingleThreadBotCBS.cpp
+
+        GreedyStationCBSWaypoint.cpp
+        GreedyStationCBSWaypoint.hpp
+
+        ../Pathfinding/ConstraintTree/Conflict.hpp
+        ../Pathfinding/ConstraintTree/ConstraintTree.cpp
+        ../Pathfinding/ConstraintTree/ConstraintTree.hpp
+        ../Pathfinding/Action.hpp
+        #../Pathfinding/Agent.cpp
+        ../Pathfinding/Agent.hpp
+        ../Pathfinding/Constraint.hpp
+        #../Pathfinding/HighLevelCBS.cpp
+        ../Pathfinding/HighLevelCBS.hpp
+        ../Pathfinding/_path.hpp
+        ../Pathfinding/Solution.hpp
         )
 
 # Ensure that argos-ext is build before BotImplementations

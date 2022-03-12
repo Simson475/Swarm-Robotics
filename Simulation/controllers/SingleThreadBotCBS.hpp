@@ -1,6 +1,6 @@
 #ifndef SWARMSIMULATOR_SINGLETHREADBOTCBS_HPP
 #define SWARMSIMULATOR_SINGLETHREADBOTCBS_HPP
-
+class SingleThreadBotCBS;
 
 #include "models/map/map_structure.hpp"
 #include "models/jobs/JobGenerator.hpp"
@@ -26,6 +26,21 @@
 
 #include <functional>
 
+
+#include "argos_wrapper/argos_wrapper.hpp"
+#include "HighLevelCBS.hpp"
+
+#include <exception>
+#include <cstdio>
+#include <regex>
+#include <fstream>
+#include <set>
+#include <iostream>
+#include <filesystem>
+#include <ctime>
+#include <chrono>
+#include <iterator>
+
 class SingleThreadBotCBS : public virtual RobotInterface {
 
 public:
@@ -34,6 +49,10 @@ public:
     void Init(argos::TConfigurationNode &t_node) override;
     std::vector<Point>findOptimalPath();
     std::vector<int> receivedWaypointPlan;
+
+    SingleThreadBotCBS(const SingleThreadBotCBS&);
+    SingleThreadBotCBS(SingleThreadBotCBS&&) noexcept;
+    ~SingleThreadBotCBS();
 
 protected:
 
