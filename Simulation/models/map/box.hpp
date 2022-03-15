@@ -24,6 +24,7 @@ private:
 
 public:
     float x, y, h, w; //were private before
+    bool shouldSetWaypoints = true;
     Box(std::string id, argos::CVector3 center, argos::CVector3 size);
 
     //returns the box id
