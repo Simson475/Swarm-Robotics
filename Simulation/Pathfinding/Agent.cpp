@@ -1,28 +1,30 @@
 #include "Agent.hpp"
 
 void Agent::createPath(std::vector<Point> plan){
-    std::vector<Action> actions{};
+    if (plan.size() < 2) { return; }// Prevent nasty things
+    
+    std::vector<Action*> actions{};
     std::vector<std::vector<float>> matrix = Map_Structure::get_instance().getRealShortestDistanceMatrix();
-    int robotspeed = 100;         //TODO FIND REAL SPEED
-    int startTime = 0;
-    for (std::vector<Point>::size_type i=0; i < plan.size()-1; i++){
-        Action temp{};
-        temp.startVertex = plan[i];
-        temp.endVertex = plan[i+1];
-        temp.timestamp = startTime;
-        float distance = matrix[temp.startVertex.getId()][temp.endVertex.getId()];
-        int cost = distance / robotspeed;
-        temp.cost = cost;
+    float robotspeed = 0.1;         //TODO FIND REAL SPEED
+    float startTime = 0;
+    for (std::vector<Point>::size_type i=0; i < plan.size()-2; i++){
+        Action* action = new Action();
+        action->startVertex = plan[i];
+        action->endVertex = plan[i+1];
+        action->timestamp = startTime;
+        float distance = matrix[action->startVertex.getId()][action->endVertex.getId()];
+        float cost = distance / robotspeed;
+        action->cost = cost;
         startTime += cost;
-        actions.push_back(temp);
+        actions.push_back(action);
     }
     this->plan = plan;
-    this->path = Path{actions: actions, cost: startTime };   
+    this->path = Path{actions: actions, cost: startTime };
 }
 
-void Agent::setBot(SingleThreadBotCBS* bot){
+void Agent::setBot(TestController* bot){
     this->bot = bot;
 }
-SingleThreadBotCBS* Agent::getBot(){
+TestController* Agent::getBot(){
     return this->bot;
 }

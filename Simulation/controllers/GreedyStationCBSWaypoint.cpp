@@ -1,8 +1,8 @@
 #include "GreedyStationCBSWaypoint.hpp"
 
-std::vector<int> GreedyStationCBSWaypoint::constructStationPlan() {
+/*std::vector<int> GreedyStationCBSWaypoint::constructStationPlan() {
     return SingleThreadBotGreedy::constructStationPlan();
-}
+}*/
 
 std::vector<int> GreedyStationCBSWaypoint::constructWaypointPlan() {
     return SingleThreadBotCBS::constructWaypointPlan();

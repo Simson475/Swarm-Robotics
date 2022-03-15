@@ -22,7 +22,7 @@ private:
   };
 
 public:
-  std::vector<Agent> agents;
+  std::vector<Agent*> agents;
   int timestampStart;
   int timestampEnd;
   S location;

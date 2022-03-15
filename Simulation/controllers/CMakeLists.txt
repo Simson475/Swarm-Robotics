@@ -40,23 +40,26 @@ add_library(BotImplementations MODULE
         UppaalStationGreedyWaypoint.cpp
         UppaalStationGreedyWaypoint.hpp
         
-        SingleThreadBotCBS.hpp
-        SingleThreadBotCBS.cpp
+        #SingleThreadBotCBS.hpp
+        #SingleThreadBotCBS.cpp
 
-        GreedyStationCBSWaypoint.cpp
-        GreedyStationCBSWaypoint.hpp
+        #GreedyStationCBSWaypoint.cpp
+        #GreedyStationCBSWaypoint.hpp
 
         ../Pathfinding/ConstraintTree/Conflict.hpp
         ../Pathfinding/ConstraintTree/ConstraintTree.cpp
         ../Pathfinding/ConstraintTree/ConstraintTree.hpp
         ../Pathfinding/Action.hpp
-        #../Pathfinding/Agent.cpp
+        ../Pathfinding/Agent.cpp
         ../Pathfinding/Agent.hpp
         ../Pathfinding/Constraint.hpp
-        #../Pathfinding/HighLevelCBS.cpp
+        ../Pathfinding/HighLevelCBS.cpp
         ../Pathfinding/HighLevelCBS.hpp
         ../Pathfinding/_path.hpp
         ../Pathfinding/Solution.hpp
+
+        TestController.hpp
+        TestController.cpp
         )
 
 # Ensure that argos-ext is build before BotImplementations

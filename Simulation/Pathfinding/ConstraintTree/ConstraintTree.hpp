@@ -9,16 +9,16 @@ class ConstraintTree;
 
 class ConstraintTree {
   public:
-    ConstraintTree();// Constructor
+    ConstraintTree() = default;// Constructor
 
     std::vector<Constraint> constraints;
     float cost;
-    ConstraintTree& parent;
-    std::vector<ConstraintTree> children;
-    ConstraintTree& getLowestCostNode();
-    Solution solution;
+    ConstraintTree* parent;
+    std::vector<ConstraintTree*> children;
+    ConstraintTree* getLowestCostNode();
+    Solution* solution;
     std::vector<Conflict> conflicts;
-    bool operator() (ConstraintTree a, ConstraintTree b);//Comparison function for priority queue
+    bool operator() (ConstraintTree* a, ConstraintTree* b);//Comparison function for priority queue
 
   private:
 };

@@ -6,18 +6,19 @@ class Agent;
 #include "point.hpp"
 #include <queue>
 //#include "SingleThreadBotCBS.hpp"
+#include "TestController.hpp"
 
 class Agent {
   public:
-    Path getPath();
-    //void setBot(SingleThreadBotCBS*);
-    //SingleThreadBotCBS* getBot();
+    //Path getPath();
+    void setBot(TestController*);
+    TestController* getBot();
     void createPath(std::vector<Point> plan);
-    void recreatePath();
+    //void recreatePath();
   private:
     Path path;
     std::vector<Point> plan;
-    //SingleThreadBotCBS *bot;
+    TestController *bot;
 };
 
 #endif

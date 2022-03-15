@@ -6,8 +6,12 @@
 
 class Path {
   public:
-    std::vector<Action> actions;
-    int cost;
+    /* Variables */
+    std::vector<Action*> actions;
+    float cost;
+
+    /* Methods */
+    std::vector<int> asWaypointPlan();
 };
 
 #endif

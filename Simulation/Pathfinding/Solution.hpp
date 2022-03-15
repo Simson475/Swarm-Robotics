@@ -7,12 +7,13 @@
 
 class Solution {
   public:
-    std::vector<Agent> agents;
+    Solution() = default;
+    std::vector<Agent*> agents;
     float cost;
-    std::vector<Conflict> getConflicts();
+    //std::vector<Conflict> getConflicts();
 
   private:
-    std::vector<Conflict> conflicts;
+    //std::vector<Conflict> conflicts;
 };
 
 #endif

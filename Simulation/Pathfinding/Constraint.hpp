@@ -5,7 +5,7 @@
 
 class Constraint {
   public:
-    Constraint(Agent a, int start, int end);
+    Constraint(Agent* a, int start, int end);
     Agent *agent;
     int timestampStart;
     int timestampEnd;
