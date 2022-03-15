@@ -93,4 +93,4 @@ void SingleThreadBotGreedy::sortJob(const std::vector<std::vector<float>> &short
 }
 
 
-REGISTER_CONTROLLER(SingleThreadBotGreedy, "SingleThreadBotGreedy_controller")
+REGISTER_CONTROLLER(SingleThreadBotGreedy, "SingleThreadBotGreedy")

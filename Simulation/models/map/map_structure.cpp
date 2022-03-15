@@ -5,14 +5,13 @@
 #include <math.h>
 
 void Map_Structure::collectAllWayPoints() {
-
     argos::CSpace::TMapPerType &tBotMap =
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
     for (auto it = tBotMap.begin(); it != tBotMap.end();
          ++it) {
         argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(it->second);
         argos::CVector3 pos = pcBot->GetEmbodiedEntity().GetOriginAnchor().Position;
-
+        
         Point *p = new Point(pos, pointType::via, "S." + pcBot->GetId());
         points.push_back(*p);
         waypointsIDs.push_back(points.back().getId());
@@ -21,6 +20,7 @@ void Map_Structure::collectAllWayPoints() {
     std::vector<Box> walls;
     argos::CSpace::TMapPerType &tBoxMap =
         argos::CLoopFunctions().GetSpace().GetEntitiesByType("box");
+    bool isCBSmap = false;
     for (auto &boxMap : tBoxMap) {
         argos::CBoxEntity *pcBox = argos::any_cast<argos::CBoxEntity *>(boxMap.second);
         argos::CVector3 pos = pcBox->GetEmbodiedEntity().GetOriginAnchor().Position;
@@ -35,6 +35,12 @@ void Map_Structure::collectAllWayPoints() {
             case 'c':
             case 'd':
             case 'o':
+                b.shouldSetWaypoints = true;
+                Map_Structure::boxes.push_back(b);
+                break;
+            case 'n': 
+                b.shouldSetWaypoints = false;
+                isCBSmap = true;
                 Map_Structure::boxes.push_back(b);
                 break;
         }
@@ -47,15 +53,47 @@ void Map_Structure::collectAllWayPoints() {
         argos::GetNodeAttributeOrDefault(params, "include_corners", include_corners, include_corners);
     }
     catch (argos::CARGoSException& e){}
-
-    for (long unsigned i = 0; i < Map_Structure::boxes.size(); i++) {
+    
+    std::tuple<float,float> topRight{}; //needed for corners in edge of arena
+    std::tuple<float,float> bottomLeft{};  //needed for corners in edge of arena
+    auto boxlist =  Map_Structure::boxes;
+    for (long unsigned i = 0; i < boxlist.size(); i++) {
         Map_Structure::boxes[i].setBoxCorner();
-        for (auto j = 0; j < 4; j++) {
-            if (include_corners)
-                Map_Structure::points.push_back(Map_Structure::boxes[i].getVCorner(j));
-            Map_Structure::hardLines.push_back(Map_Structure::boxes[i].getBoxLine(j));
+        if(Map_Structure::boxes[i].shouldSetWaypoints && include_corners && isCBSmap){
+            auto x = Map_Structure::boxes[i].x;
+            auto y = Map_Structure::boxes[i].y;
+            if(x > std::get<0>(topRight)) std::get<0>(topRight) = x;
+            if(y > std::get<1>(topRight)) std::get<1>(topRight) = y;
+            if(x < std::get<0>(bottomLeft)) std::get<0>(bottomLeft) = x; 
+            if(y < std::get<1>(bottomLeft)) std::get<1>(bottomLeft) = y;
+            
+            Map_Structure::points.push_back(Map_Structure::boxes[i].getVCorner(1));
+            Map_Structure::points.push_back(Map_Structure::boxes[i].getVCorner(3));
         }
+        for (auto j = 0; j < 4; j++) {
+            Map_Structure::hardLines.push_back(Map_Structure::boxes[i].getBoxLine(j));
+            if(!isCBSmap) Map_Structure::points.push_back(Map_Structure::boxes[i].getVCorner(j));
+
+        }            
+        
     }
+    
+    if (include_corners && isCBSmap){ //handle corner cases
+        Box max = find_if(boxlist.begin(), boxlist.end(), //Find box with higest x and y
+                [&topRight](const Box& obj)
+                {return obj.x == std::get<0>(topRight)
+                && obj.y == std::get<1>(topRight)
+                && obj.shouldSetWaypoints;})[0]; 
+
+        Box min = find_if(boxlist.begin(), boxlist.end(), //Find box with lowest x and y
+                [&bottomLeft](const Box& obj)
+                {return obj.x == std::get<0>(bottomLeft)
+                && obj.y == std::get<1>(bottomLeft)
+                && obj.shouldSetWaypoints;})[0]; 
+
+        Map_Structure::points.push_back(max.getVCorner(0));
+        Map_Structure::points.push_back(min.getVCorner(2));
+    }   
 }
 
 // Set the fields `shortestDistanceMatrix`, which gives the length of the shortest path between all points
@@ -373,7 +411,6 @@ void Map_Structure::initializeStations() {
     }
     amountOfStations = stationIDs.size() + endStationIDs.size();
 }
-
 void Map_Structure::setFolderPath() {
     std::string fileLoc = argos::CSimulator::GetInstance().GetExperimentFileName();
     if (fileLoc.find("/") != std::string::npos) {
