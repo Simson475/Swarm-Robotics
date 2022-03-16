@@ -688,4 +688,4 @@ void SingleThreadUppaalBot::constructWaypointUppaalModel(uint failed){
     waypoint_model.close();
 }
 
-REGISTER_CONTROLLER(SingleThreadUppaalBot, "SingleThreadUppaalBot_controller")
+REGISTER_CONTROLLER(SingleThreadUppaalBot, "SingleThreadUppaalBot")
