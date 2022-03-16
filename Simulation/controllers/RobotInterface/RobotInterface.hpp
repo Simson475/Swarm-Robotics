@@ -68,7 +68,7 @@ public:
     bool isActive();
     bool isWorking();
     int getClockCount() const;
-
+    void setWaypointPlan(std::vector<int> waypointPlan);
     // Is the robot in a live deadlock
     bool isInLivelock();
 
@@ -139,7 +139,6 @@ protected:
 
 
     void setStationPlan(std::vector<int>);
-    void setWaypointPlan(std::vector<int> waypointPlan);
 
     void setJob();
     void setFinalJob();

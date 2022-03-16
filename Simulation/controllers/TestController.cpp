@@ -2,14 +2,14 @@
 #include <iostream>
 
 std::vector<int> TestController::constructStationPlan(){
-    std::cout << "Testing station plan";
+    // std::cout << "Testing station plan";
     return SingleThreadBotGreedy::constructStationPlan();
 }
 std::vector<int> TestController::constructWaypointPlan(){
-    std::cout << "Testing waypoint plan";
+    //std::cout << "Testing waypoint plan";
 
     if ( !receivedWaypointPlan.empty()){
-        receivedWaypointPlan.erase(receivedWaypointPlan.begin());
+        receivedWaypointPlan.erase(receivedWaypointPlan.begin()); //TODO make pretty
         return receivedWaypointPlan;
     }
 
@@ -21,6 +21,8 @@ std::vector<int> TestController::constructWaypointPlan(){
     }
     auto highlevel = HighLevelCBS::get_instance();
     highlevel.findSolution();
+    std::cout << "WE GO HERE";
+
     
     return receivedWaypointPlan;
 }
