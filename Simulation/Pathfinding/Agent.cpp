@@ -28,3 +28,7 @@ void Agent::setBot(TestController* bot){
 TestController* Agent::getBot(){
     return this->bot;
 }
+
+Path Agent::getPath(){
+    return path;
+}

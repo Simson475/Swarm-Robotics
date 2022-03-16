@@ -56,6 +56,7 @@ add_library(BotImplementations MODULE
         ../Pathfinding/HighLevelCBS.cpp
         ../Pathfinding/HighLevelCBS.hpp
         ../Pathfinding/_path.hpp
+        ../Pathfinding/_path.cpp
         ../Pathfinding/Solution.hpp
 
         TestController.hpp

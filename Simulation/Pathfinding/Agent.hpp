@@ -10,7 +10,7 @@ class Agent;
 
 class Agent {
   public:
-    //Path getPath();
+    Path getPath();
     void setBot(TestController*);
     TestController* getBot();
     void createPath(std::vector<Point> plan);

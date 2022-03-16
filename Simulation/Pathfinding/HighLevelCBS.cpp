@@ -67,7 +67,7 @@ Solution* HighLevelCBS::findSolution(){
     root->solution = findAllPathsByLowLevel();//Root.solution = find individual paths by the low level
 
     for(Agent *agent : root->solution->agents){
-        agent->getBot()->receivedWaypointPlan = agent->path->asWaypointPlan();
+        agent->getBot()->receivedWaypointPlan = agent->getPath().asWaypointPlan();
     }
     
     return root->solution;

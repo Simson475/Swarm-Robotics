@@ -72,7 +72,6 @@ public:
     // Is the robot in a live deadlock
     bool isInLivelock();
 
-
 protected:
     //Internal state for when to move and when to move
     enum class state {working, moving, done};

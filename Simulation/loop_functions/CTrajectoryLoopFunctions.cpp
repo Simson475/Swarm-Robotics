@@ -166,7 +166,7 @@ void CTrajectoryLoopFunctions::setInitLocationOnControllers(Map_Structure& sMap)
 
         //Robot robot = sMap.getRobotByName(controller.GetId());
 
-        // Needs improvement!
+        //TODO Needs improvement!
         for (auto &p : sMap.points) {
             if(p.getName() == "S." + controller.GetId()) {
                 controller.setInitLocation(p.getId());
