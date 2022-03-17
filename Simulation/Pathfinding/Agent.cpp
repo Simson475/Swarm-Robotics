@@ -7,7 +7,7 @@ void Agent::createPath(std::vector<Point> plan){
     std::vector<std::vector<float>> matrix = Map_Structure::get_instance().getRealShortestDistanceMatrix();
     float robotspeed = 0.1;         //TODO FIND REAL SPEED
     float startTime = 0;
-    for (std::vector<Point>::size_type i=0; i < plan.size()-2; i++){
+    for (std::vector<Point>::size_type i=0; i < plan.size()-1; i++){
         Action* action = new Action();
         action->startVertex = plan[i];
         action->endVertex = plan[i+1];

@@ -6,22 +6,22 @@ std::vector<int> TestController::constructStationPlan(){
     return SingleThreadBotGreedy::constructStationPlan();
 }
 std::vector<int> TestController::constructWaypointPlan(){
-    //std::cout << "Testing waypoint plan";
 
     if ( !receivedWaypointPlan.empty()){
+        std::vector<int> tempPlan = receivedWaypointPlan;
         receivedWaypointPlan.erase(receivedWaypointPlan.begin()); //TODO make pretty
-        return receivedWaypointPlan;
+        return tempPlan;
     }
 
     // Ensure that every other bot has gotten a station plan at this point
-    for (auto &bot : otherBots){
-        if (bot.get().getStationPlan().empty()){
-            return {};// If not all bots have a station plan, just go idle
-        }
-    }
+    // for (auto &bot : otherBots){
+    //     if (bot.get().getStationPlan().empty()){
+    //         return {};// If not all bots have a station plan, just go idle
+    //     }
+    // }
     auto highlevel = HighLevelCBS::get_instance();
     highlevel.findSolution();
-    std::cout << "WE GO HERE";
+
 
     
     return receivedWaypointPlan;

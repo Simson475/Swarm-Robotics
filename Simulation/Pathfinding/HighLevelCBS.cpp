@@ -68,7 +68,7 @@ Solution* HighLevelCBS::findSolution(){
 
     for(Agent *agent : root->solution->agents){
         agent->getBot()->receivedWaypointPlan = agent->getPath().asWaypointPlan();
-        agent->getBot()->setWaypointPlan(agent->getPath().asWaypointPlan());
+        //agent->getBot()->setWaypointPlan(agent->getPath().asWaypointPlan());
     }
     
     return root->solution;

@@ -194,7 +194,6 @@ void RobotInterface::ControlStep() {
             {
                 /// Abstract function
                 std::vector<int> stationPlan = constructStationPlan();
-
                 log_helper("Station plan has size " + std::to_string(stationPlan.size()));
                 storePlan(stationPlan, "Station");
                 setStationPlan(stationPlan);
@@ -205,6 +204,9 @@ void RobotInterface::ControlStep() {
                 log_helper("", true, false);
                 log_helper("Next station is now: " + std::to_string(getNextStation()));
 
+                
+                return;
+
             } else if (stationPlan.empty() && lastLocation != initLocation && returningToInit) {
                 setStationPlan(std::vector<int>{initLocation});
             }
@@ -213,7 +215,7 @@ void RobotInterface::ControlStep() {
             {
                 /// Abstract function
                 std::vector<int> waypointPlan = constructWaypointPlan();
-                
+
                 if ( ! waypointPlan.empty()) {
                     log_helper("Waypoint plan has size " + std::to_string(waypointPlan.size()));
                     storePlan(waypointPlan, "Waypoint");
