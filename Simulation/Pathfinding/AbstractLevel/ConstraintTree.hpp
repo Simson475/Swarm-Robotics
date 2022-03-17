@@ -8,9 +8,13 @@ class ConstraintTree;
 #include "Conflict.hpp"
 
 class ConstraintTree {
-  public:
+public:
     ConstraintTree() = default;// Constructor
+    std::vector<Conflict> getConflicts();
+    Solution getSolution();
+    float getSICCost();
 
+private:
     std::vector<Constraint> constraints;
     float cost;
     ConstraintTree* parent;

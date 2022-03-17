@@ -1,3 +1,5 @@
+/*** These files are called _path instead of Path due to CMakeList highlighting Path, which maybe indicates that name as problematic ***/
+
 #ifndef PATH_HPP
 #define PATH_HPP
 
