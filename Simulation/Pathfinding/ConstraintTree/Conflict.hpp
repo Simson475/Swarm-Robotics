@@ -3,6 +3,8 @@
 
 #include <vector>
 #include "Location.hpp"
+#include "AgentInfo.hpp"
+#include <memory>
 
 class Conflict
 {
@@ -15,14 +17,14 @@ public:
     ~Conflict();
 
     std::vector<AgentInfo> getAgents();
-    int getTimeStart;
-    int getTimeEnd;
-    Location location;
+    int getTimeStart();
+    int getTimeEnd();
+    Location getLocation();
 private:
     std::vector<AgentInfo> agents;
     int timeStart;
     int timeEnd;
-    Location location;
+    std::shared_ptr<Location> location;
 };
 
 #endif

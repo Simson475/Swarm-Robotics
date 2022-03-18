@@ -12,7 +12,7 @@ public:
         static LowLevelCBS instance;
         return instance;
     }
-    Path getIndividualPath(AgentInfo);
+    Path getIndividualPath(const AgentInfo&);
     std::vector<Path> getAllPaths(std::vector<AgentInfo>);
 };
 

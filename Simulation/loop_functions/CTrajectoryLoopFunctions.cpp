@@ -202,6 +202,7 @@ void CTrajectoryLoopFunctions::setUpDataCollection(){
     logFile << "Robot, Type, Time, currentPos, Value_1, Value_2" << std::endl;
     logFile.close();
 }
+
 /****************************************/
 /****************************************/
 REGISTER_LOOP_FUNCTIONS(CTrajectoryLoopFunctions, "CTrajectoryLoopFunctions")

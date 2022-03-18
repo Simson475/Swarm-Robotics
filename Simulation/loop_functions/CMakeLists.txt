@@ -27,6 +27,8 @@ add_library(CTrajectoryLoopFunctions MODULE
 
         ../models/map/map_structure.hpp
         ../models/map/map_structure.cpp
+        ../Pathfinding/Interfaces/Graph.hpp
+        ../Pathfinding/Interfaces/Graph.cpp
 
         ../controllers/parsing/uppaal_model_parsing.hpp
         ../controllers/parsing/uppaal_model_parsing.cpp

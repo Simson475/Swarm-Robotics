@@ -1,6 +1,7 @@
 include_directories(.)
 include_directories(../Pathfinding/)
 include_directories(../Pathfinding/ConstraintTree/)
+include_directories(../Pathfinding/Interfaces/)
 include_directories(../models/map/)
 
 # Find the QtWidgets library
@@ -47,20 +48,33 @@ add_library(BotImplementations MODULE
         #GreedyStationCBSWaypoint.hpp
 
         ../Pathfinding/ConstraintTree/Conflict.hpp
+        ../Pathfinding/ConstraintTree/Conflict.cpp
         ../Pathfinding/ConstraintTree/ConstraintTree.cpp
         ../Pathfinding/ConstraintTree/ConstraintTree.hpp
         ../Pathfinding/Action.hpp
         ../Pathfinding/Agent.cpp
         ../Pathfinding/Agent.hpp
-        ../Pathfinding/Constraint.hpp
+        ../Pathfinding/ConstraintTree/Constraint.hpp
         ../Pathfinding/HighLevelCBS.cpp
         ../Pathfinding/HighLevelCBS.hpp
+        ../Pathfinding/LowLevelCBS.cpp
+        ../Pathfinding/LowLevelCBS.hpp
         ../Pathfinding/_path.hpp
         ../Pathfinding/_path.cpp
         ../Pathfinding/Solution.hpp
+        ../Pathfinding/Solution.cpp
 
         TestController.hpp
         TestController.cpp
+
+        ../Pathfinding/Interfaces/Edge.hpp
+        ../Pathfinding/Interfaces/Edge.cpp
+        ../Pathfinding/Interfaces/Graph.hpp
+        ../Pathfinding/Interfaces/Graph.cpp
+        ../Pathfinding/Interfaces/Vertex.hpp
+        ../Pathfinding/Interfaces/Vertex.cpp
+        ../Pathfinding/AgentInfo.hpp
+        ../Pathfinding/AgentInfo.cpp
         )
 
 # Ensure that argos-ext is build before BotImplementations

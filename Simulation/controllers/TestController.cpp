@@ -20,8 +20,8 @@ std::vector<int> TestController::constructWaypointPlan(){
         }
     }
     auto highlevel = HighLevelCBS::get_instance();
-    highlevel.findSolution();
-    std::cout << "WE GO HERE";
+    highlevel.requestSolution();
+    std::cout << "HERE WE GO";
 
     
     return receivedWaypointPlan;

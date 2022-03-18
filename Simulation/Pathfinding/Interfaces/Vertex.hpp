@@ -9,6 +9,7 @@ class Vertex;
 class Vertex {
 public:
     Vertex(float x, float y);
+    Vertex(){Vertex{0,0};}
     float getX();
     float getY();
     std::vector<Edge> getEdges();

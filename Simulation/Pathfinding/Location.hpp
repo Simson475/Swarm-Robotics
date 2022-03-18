@@ -12,10 +12,13 @@ enum ELocationType{
 union ULocationUnion{
     Vertex vertex;
     Edge edge;
+    ULocationUnion() { /* Do absolutely nothing */};
+    ~ULocationUnion() { /* Do nothing idk */};
 };
 
 class Location {
 public:
+    Location(){type=VERTEX_LOCATION; location.vertex = Vertex{0,0};}
     ELocationType type;
     ULocationUnion location;
 };
