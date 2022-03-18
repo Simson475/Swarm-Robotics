@@ -381,10 +381,9 @@ std::vector<Point> Map_Structure::findPath(int startId, int destinationId) {
         return pts;
     }
     auto u = startId;
-    auto v = destinationId;
+    auto v = destinationId;            
     do {
         u = realShortestPath[u][v];
-        //argos::LOG << "ID: " <<
         pts.push_back(getPointByID(u));
     } while (u != v);
     return pts;

@@ -21,7 +21,7 @@ public:
     std::vector<Point> findOptimalPath();
 
 protected:
-
+    void specialInit() override;
     std::vector<int> constructStationPlan() override;
     std::vector<int> constructWaypointPlan() override;
 

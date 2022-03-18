@@ -65,12 +65,20 @@ Solution* HighLevelCBS::findSolution(){
     ConstraintTree* root = new ConstraintTree();
     root->children = {};//Root.constraints = {}
     root->solution = findAllPathsByLowLevel();//Root.solution = find individual paths by the low level
-
+    
     for(Agent *agent : root->solution->agents){
         agent->getBot()->receivedWaypointPlan = agent->getPath().asWaypointPlan();
-        //agent->getBot()->setWaypointPlan(agent->getPath().asWaypointPlan());
+
+
+    //    std::cout << "new robot: ";
+    //
+    //    for (size_t i =0 ; i < agent->getBot()->receivedWaypointPlan.size();i++){
+    //    std::cout << agent->getBot()->receivedWaypointPlan[i] << " ";
+    //    }
+    //    std::cout << "\n";
     }
-    
+    //std::cout << "\n\n\n\n\n\n\n\n";
+
     return root->solution;
 //     root.cost = SumOfIndividualCosts(root.solution);//Root.cost = SIC(Root.solution)
 //     //std::priority_queue<ConstraintTree> open; open.push(root);//insert Root to OPEN

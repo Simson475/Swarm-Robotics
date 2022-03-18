@@ -158,15 +158,20 @@ void RobotInterface::ControlStep() {
 
     if (currentState == state::moving) {
         if (!stationPlan.empty() && sMap.isPointAvailable(nextLocation) && isAtStation()) { // If we have a plan and we are at a point
+            //std::cout << lastLocation <<"<-- last location " << nextLocation << "<-- nextlocation " << stationPlan.front() <<"<-- stationplanfront";
 
             lastLocation = nextLocation;
+            
             resetWaypointPlan();
+
             if (currentJob->isStationInJob(lastLocation) && isStationNextInPlan(lastLocation)) { // Then we have reached the station @todo: Proper function for checking
                 log_helper("Arrived at a work station");
 
                 startWorking(working_time);
                 sMap.setPointAsOccupied(lastLocation);
             } else if (isStationNextInPlan(lastLocation)) {
+                //std::cout << "WE GO HERE A LOT3\n\n\n\n";
+
                 resetStationPlan();
             }
         }
@@ -205,7 +210,7 @@ void RobotInterface::ControlStep() {
                 log_helper("Next station is now: " + std::to_string(getNextStation()));
 
                 
-                return;
+                if (subtype == "CBS") return; 
 
             } else if (stationPlan.empty() && lastLocation != initLocation && returningToInit) {
                 setStationPlan(std::vector<int>{initLocation});
@@ -214,8 +219,9 @@ void RobotInterface::ControlStep() {
             if (hasJob() && waypointPlan.empty()) //@todo: Have proper boolean function
             {
                 /// Abstract function
+                //std::cout << "WE GO HERE 20000 times\n\n\n";
                 std::vector<int> waypointPlan = constructWaypointPlan();
-
+            
                 if ( ! waypointPlan.empty()) {
                     log_helper("Waypoint plan has size " + std::to_string(waypointPlan.size()));
                     storePlan(waypointPlan, "Waypoint");

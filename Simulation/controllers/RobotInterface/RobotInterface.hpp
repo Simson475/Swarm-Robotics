@@ -56,6 +56,8 @@ public:
     // Obtain references for the other robots for information extraction when creating Uppaal models.
     void obtainOtherBots(Map_Structure&);
 
+    std::string getSubtype();
+
     // Functions the other controllers need
     bool hasJob();
     unsigned int sizeOfStationPlan();
@@ -73,6 +75,7 @@ public:
     bool isInLivelock();
 
 protected:
+    std::string subtype = "default";
     //Internal state for when to move and when to move
     enum class state {working, moving, done};
 
