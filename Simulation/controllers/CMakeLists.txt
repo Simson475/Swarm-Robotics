@@ -75,6 +75,8 @@ add_library(BotImplementations MODULE
         ../Pathfinding/Interfaces/Vertex.cpp
         ../Pathfinding/AgentInfo.hpp
         ../Pathfinding/AgentInfo.cpp
+
+        ../Pathfinding/Debugging.hpp
         )
 
 # Ensure that argos-ext is build before BotImplementations

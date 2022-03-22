@@ -1,6 +1,7 @@
-class HighLevelCBS;
 #ifndef HIGHLEVEL_CBS_HPP
 #define HIGHLEVEL_CBS_HPP
+
+class HighLevelCBS;
 
 #include "argos_wrapper/argos_wrapper.hpp"
 #include "map_structure.hpp"
@@ -17,6 +18,8 @@ class HighLevelCBS;
 #include "Agent.hpp"
 #include "AgentInfo.hpp"
 #include "LowLevelCBS.hpp"
+
+#include "Debugging.hpp"
 
 class HighLevelCBS {    
 public:

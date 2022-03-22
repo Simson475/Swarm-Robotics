@@ -1,12 +1,5 @@
 #include "HighLevelCBS.hpp"
 
-#include <fstream>
-#include <iostream>
-#include <cstdio>
-#include <filesystem>
-
-void error_log(std::string);
-
 Solution HighLevelCBS::findSolution(Graph* graph, std::vector<AgentInfo> agentInfo, LowLevelCBS lowLevel){
     /**
      * Root.constraints = {}
@@ -15,16 +8,16 @@ Solution HighLevelCBS::findSolution(Graph* graph, std::vector<AgentInfo> agentIn
      */
     
     std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>();
-    error_log("\n1");
-    root->setSolution(lowLevel.getAllPaths(agentInfo), agentInfo);//Root.solution = find individual paths by the low level
-    error_log("2");
+    Error::log("\n1");
+    root->setSolution(lowLevel.getAllPaths(graph, agentInfo), agentInfo);//Root.solution = find individual paths by the low level
+    Error::log("2");
     /**
      * Insert Root to OPEN
      */
     std::priority_queue<std::shared_ptr<ConstraintTree>> open;
     open.push(root);
     
-    error_log("3");
+    Error::log("3");
     /**
      * While OPEN not empty do
      */
@@ -33,22 +26,22 @@ Solution HighLevelCBS::findSolution(Graph* graph, std::vector<AgentInfo> agentIn
          * p <-- best node from OPEN (the node with the lowest solution cost)
          */
     
-    error_log("4");
+    Error::log("4");
         std::shared_ptr<ConstraintTree> p = open.top();open.pop();
         /**
          * Validate the paths in P until a conflict occurs
          */
     
-    error_log("5");
+    Error::log("5");
         std::vector<Conflict> conflicts = p->findConflicts();
-        error_log("6");
+        Error::log("6");
         /**
          * If P has no conflicts then return P.solution
          */
         if (conflicts.size() == 0) {
             return p->getSolution();
         }
-        error_log("6.2");
+        Error::log("6.2");
         /**
          * Get one of the conflicts
          */
@@ -56,35 +49,40 @@ Solution HighLevelCBS::findSolution(Graph* graph, std::vector<AgentInfo> agentIn
         /**
          * Foreach agent ai in C do
          */
-         error_log("7");
+         Error::log("7");
         for(AgentInfo &agent : c.getAgents()){
             /**
              * A <-- new node
              * A.constraints = p.constraints union (ai,v,t)
              */
-            error_log("7.1");
+            Error::log("7.1");
             std::shared_ptr<ConstraintTree> a = std::make_shared<ConstraintTree>();//TODO should we connect this to P or is it irrelevant in implementation?
             std::shared_ptr<Constraint> constraint = std::make_shared<Constraint>();
             constraint->agent = std::make_unique<AgentInfo>(agent);
             constraint->timeStart = c.getTimeStart();
             constraint->timeEnd = c.getTimeEnd();
             a->constraints = p->constraints;
-            error_log("7.2");
+            Error::log("7.2");
             a->constraints.emplace_back(constraint);
             /**
              * A.solution <-- P.solution
              */
-            error_log(".3");
+            Error::log(".3");
             a->setSolution(p->getSolution());
-            error_log("8");
+            Error::log("8");
             /**
              * Update A.solution by invoking low level(ai)
              */
             Solution s = a->getSolution();
             
-            error_log("8.2");
-            s.setPath(agent, lowLevel.getIndividualPath(agent));
-            error_log("9");
+            Error::log("8.2");
+            Path newPath = lowLevel.getIndividualPath(graph, agent);
+            Error::log(".3\n");
+            Error::log(std::to_string(agent.getId()));
+            Error::log("|");
+            Error::log(std::to_string(s.paths.size()));
+            s.setPath(agent, newPath);
+            Error::log("\n9");
             a->setSolution(s);
             
             /**
@@ -137,10 +135,3 @@ std::vector<Agent> HighLevelCBS::getAgents(){
 //     agent->getBot()->receivedWaypointPlan = agent->getPath().asWaypointPlan();
 //     agent->getBot()->setWaypointPlan(agent->getPath().asWaypointPlan());
 // }
-
-void error_log(std::string err){
-    std::ofstream errFile;
-    errFile.open(std::string{std::filesystem::current_path()} + "/err.txt", std::ofstream::app);
-    errFile << err;
-    errFile.close();
-}

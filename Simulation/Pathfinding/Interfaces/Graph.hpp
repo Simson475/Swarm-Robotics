@@ -11,6 +11,7 @@ public:
     void setVertices(std::vector<Vertex*>);
     std::vector<Edge*> getEdges();
     void setEdges(std::vector<Edge*>);
+    std::vector<Vertex> findPath(int from, int to);
 protected:
     std::vector<Vertex*> vertices;
     std::vector<Edge*> edges;

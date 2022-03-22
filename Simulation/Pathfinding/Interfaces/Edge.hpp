@@ -1,6 +1,8 @@
 #ifndef EDGE_HPP
 #define EDGE_HPP
 
+class Edge;
+
 #include "Vertex.hpp"
 
 class Edge {
@@ -11,8 +13,8 @@ public:
     float getCost();
 private:
     float cost;
-    Vertex& StartVertex;
-    Vertex& EndVertex;  
+    Vertex& startVertex;
+    Vertex& endVertex;  
 };
 
 #endif

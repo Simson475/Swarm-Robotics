@@ -1,7 +1,7 @@
 #include "Agent.hpp"
 
 void Agent::createPath(std::vector<Point> plan){
-    if (plan.size() < 2) { return; }// Prevent nasty things
+    /*if (plan.size() < 2) { return; }// Prevent nasty things
     
     std::vector<Action*> actions{};
     std::vector<std::vector<float>> matrix = Map_Structure::get_instance().getRealShortestDistanceMatrix();
@@ -19,7 +19,7 @@ void Agent::createPath(std::vector<Point> plan){
         actions.push_back(action);
     }
     this->plan = plan;
-    this->path = Path{actions: actions, cost: startTime };
+    this->path = Path{actions: actions, cost: startTime };*/
 }
 
 void Agent::setBot(TestController* bot){

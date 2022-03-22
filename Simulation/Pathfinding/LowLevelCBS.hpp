@@ -2,8 +2,11 @@
 #define LOWLEVEL_CBS_HPP
 
 #include <vector>
+#include <memory>
 #include "_path.hpp"
 #include "AgentInfo.hpp"
+
+#include "Debugging.hpp"
 
 class LowLevelCBS {
 public:
@@ -12,8 +15,9 @@ public:
         static LowLevelCBS instance;
         return instance;
     }
-    Path getIndividualPath(const AgentInfo&);
-    std::vector<Path> getAllPaths(std::vector<AgentInfo>);
+    Path getIndividualPath(Graph *graph, const AgentInfo&);
+    std::vector<Path> getAllPaths(Graph *graph, std::vector<AgentInfo>);
+    Path constructPathFromPlan(Graph *graph, std::vector<Vertex> plan);
 };
 
 #endif

@@ -4,20 +4,19 @@
 class Vertex;
 
 #include <vector>
+#include <memory>
 #include "Edge.hpp"
 
 class Vertex {
 public:
-    Vertex(float x, float y);
-    Vertex(){Vertex{0,0};}
-    float getX();
-    float getY();
-    std::vector<Edge> getEdges();
-    void setEdges(std::vector<Edge> edges);
+    std::vector<std::shared_ptr<Edge>> getEdges();
+    void setEdges(std::vector<std::shared_ptr<Edge>> edges);
+    int getId();
 protected:
     float x;
     float y;
-    std::vector<Edge> edges;
+    std::vector<std::shared_ptr<Edge>> edges;
+    int id;
 };
 
 #endif

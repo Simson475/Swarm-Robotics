@@ -18,7 +18,7 @@ union ULocationUnion{
 
 class Location {
 public:
-    Location(){type=VERTEX_LOCATION; location.vertex = Vertex{0,0};}
+    Location(){type=VERTEX_LOCATION;}
     ELocationType type;
     ULocationUnion location;
 };

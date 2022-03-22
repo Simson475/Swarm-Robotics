@@ -7,8 +7,8 @@
 class Action {
   public:
     int timestamp;
-    Point startVertex;
-    Point endVertex;
+    Vertex startVertex;
+    Vertex endVertex;
     float cost;
 };
 
