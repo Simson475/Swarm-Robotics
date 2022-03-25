@@ -10,14 +10,14 @@ Box::Box(std::string id, argos::CVector3 center, argos::CVector3 size) {
     y = center.GetY();
     h = size.GetY();
     w = size.GetX();
-
-    virtualCorners.emplace_back(x + w / 2 + offset_for_obstacles, y + h / 2 + offset_for_obstacles,
+    auto Offset_for_obstacles = offset_for_obstacles;
+    virtualCorners.emplace_back(x + w / 2 + Offset_for_obstacles, y + h / 2 + Offset_for_obstacles,
                                    center.GetZ(), pointType::via, id + "Vcorner1");
-    virtualCorners.emplace_back(x - w / 2 - offset_for_obstacles, y + h / 2 + offset_for_obstacles,
+    virtualCorners.emplace_back(x - w / 2 - Offset_for_obstacles, y + h / 2 + Offset_for_obstacles,
                                    center.GetZ(), pointType::via, id + "Vcorner2");
-    virtualCorners.emplace_back(x - w / 2 - offset_for_obstacles, y - h / 2 - offset_for_obstacles,
+    virtualCorners.emplace_back(x - w / 2 - Offset_for_obstacles, y - h / 2 - Offset_for_obstacles,
                                    center.GetZ(), pointType::via, id + "Vcorner3");
-    virtualCorners.emplace_back(x + w / 2 + offset_for_obstacles, y - h / 2 - offset_for_obstacles,
+    virtualCorners.emplace_back(x + w / 2 + Offset_for_obstacles, y - h / 2 - Offset_for_obstacles,
                                    center.GetZ(), pointType::via, id + "Vcorner4");
 }
 

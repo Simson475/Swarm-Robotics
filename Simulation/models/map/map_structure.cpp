@@ -198,9 +198,9 @@ void Map_Structure::setPointAsAvailable(int id) {
 // Combines from all the points all possibleMap_Structure::lines
 void Map_Structure::setAllPossibleLines() {
     for (auto &point_a : Map_Structure::points) {
-        for (long unsigned j = 0; j < Map_Structure::points.size(); j++) {
+        for (auto &point_b : Map_Structure::points) {
             Map_Structure::lines.push_back(
-                Line(&point_a, &Map_Structure::points[j]));
+                Line(&point_a, &point_b));
         }
     }
     eliminateBadLines();
@@ -364,6 +364,7 @@ void Map_Structure::eliminateBadLines() {
         }
 
         //Checks if any of the lines intersect with the virtual lines
+        
         if (line.GetDistance() > 0)
             if (intersectWithVirtualLines(line))
                 line.setFailureline();
@@ -372,6 +373,7 @@ void Map_Structure::eliminateBadLines() {
         if (line.GetDistance() > 0)
             if (doesLineCrossPoint(line))
                 line.setFailureline();
+        
     }
 }
 

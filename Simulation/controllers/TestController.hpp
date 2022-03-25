@@ -24,6 +24,7 @@ protected:
     void specialInit() override;
     std::vector<int> constructStationPlan() override;
     std::vector<int> constructWaypointPlan() override;
+    int temp = 0;
 
 };
 

@@ -22,7 +22,7 @@ RobotInterface::RobotInterface() :
     m_pcPosition(nullptr),
     m_cAlpha(10.0f),
     m_fDelta(0.02f),
-    m_fWheelVelocity(100),
+    m_fWheelVelocity(50),
     m_cGoStraightAngleRange(-ToRadians(m_cAlpha),
                             ToRadians(m_cAlpha)) {}
 
@@ -208,9 +208,9 @@ void RobotInterface::ControlStep() {
                 }
                 log_helper("", true, false);
                 log_helper("Next station is now: " + std::to_string(getNextStation()));
-
+            
                 
-                if (subtype == "CBS") return; 
+                if (subtype == "CBS" && getLogicalTime() == 1) return;
 
             } else if (stationPlan.empty() && lastLocation != initLocation && returningToInit) {
                 setStationPlan(std::vector<int>{initLocation});
@@ -237,6 +237,7 @@ void RobotInterface::ControlStep() {
             }
         }
     }
+    //timeSinceStart++;
     movementLogic();
 }
 

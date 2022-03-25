@@ -127,7 +127,6 @@ protected:
     int lastLocation;
     int initLocation;
     bool returningToInit = false;
-
     // Used as a clock counter for when working at stations
     int clock;
     int clockLimit;
@@ -185,7 +184,6 @@ protected:
     void startWorking(int clockLimit);
     void setWorkingClockAsComplete();
     void advanceClock();
-
 };
 
 
