@@ -81,6 +81,9 @@ add_library(BotImplementations MODULE
         ../Pathfinding/AgentInfo.hpp
         ../Pathfinding/AgentInfo.cpp
 
+        ../models/map/map_structure.cpp
+        ../models/map/map_structure.hpp
+
         ../Pathfinding/Debugging.hpp
         )
 

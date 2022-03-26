@@ -13,6 +13,7 @@ class LowLevelCBS;
 #include "Location.hpp"
 #include "Constraint.hpp"
 #include "ActionPathAux.hpp"
+#include "Vertex.hpp"
 
 class LowLevelCBS {
 public:

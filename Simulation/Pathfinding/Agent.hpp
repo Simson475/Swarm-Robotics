@@ -5,9 +5,9 @@ class Agent;
 #include "_path.hpp"
 #include "point.hpp"
 #include <queue>
-//#include "SingleThreadBotCBS.hpp"
 #include "TestController.hpp"
 #include "Action.hpp"
+#include "Location.hpp"
 
 class Agent {
   public:

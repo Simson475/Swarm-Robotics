@@ -24,7 +24,6 @@
 #include <memory>
 
 #include <functional>
-#include "Location.hpp"
 
 class RobotInterface : public argos::CCI_Controller {
 

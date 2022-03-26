@@ -5,6 +5,7 @@ class TestController;
 
 #include "SingleThreadBotGreedy.hpp"
 #include "ExperimentData.hpp"
+#include "Location.hpp"
 
 class TestController : public SingleThreadBotGreedy {
 
