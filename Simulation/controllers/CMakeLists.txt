@@ -51,7 +51,12 @@ add_library(BotImplementations MODULE
         ../Pathfinding/ConstraintTree/Conflict.cpp
         ../Pathfinding/ConstraintTree/ConstraintTree.cpp
         ../Pathfinding/ConstraintTree/ConstraintTree.hpp
+        ../Pathfinding/Action.cpp
         ../Pathfinding/Action.hpp
+        ../Pathfinding/ActionPathAux.cpp
+        ../Pathfinding/ActionPathAux.hpp
+        ../Pathfinding/ExperimentData.cpp
+        ../Pathfinding/ExperimentData.hpp
         ../Pathfinding/Agent.cpp
         ../Pathfinding/Agent.hpp
         ../Pathfinding/ConstraintTree/Constraint.hpp

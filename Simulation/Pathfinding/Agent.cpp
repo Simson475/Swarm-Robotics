@@ -1,5 +1,11 @@
 #include "Agent.hpp"
 
+Agent::Agent(int id, TestController* controller){
+    this->id = id;
+    this->bot = controller;
+    controller->setAgentId(id);
+}
+
 void Agent::createPath(std::vector<Point> plan){
     /*if (plan.size() < 2) { return; }// Prevent nasty things
     
@@ -14,7 +20,7 @@ void Agent::createPath(std::vector<Point> plan){
         action->timestamp = startTime;
         float distance = matrix[action->startVertex.getId()][action->endVertex.getId()];
         float cost = distance / robotspeed;
-        action->cost = cost;
+        action->cost = cost;//WARNING cost changed!
         startTime += cost;
         actions.push_back(action);
     }
@@ -31,4 +37,20 @@ TestController* Agent::getBot(){
 
 Path Agent::getPath(){
     return path;
+}
+
+Location Agent::getLocation(){
+    return bot->getCurrentLocation();
+}
+
+int Agent::getId(){
+    return this->id;
+}
+
+Action Agent::getCurrentAction(){
+    return this->currentAction;
+}
+
+int Agent::getTimeAtVertex(std::shared_ptr<Vertex> vertex){
+    return (vertex->getId() == this->bot->getStationPlan().front()) ? 10 : 1;//TODO actual times!
 }

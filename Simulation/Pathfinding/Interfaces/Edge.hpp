@@ -7,14 +7,14 @@ class Edge;
 
 class Edge {
 public:
-    Edge(Vertex StartVertex, Vertex EndVertex, float cost);
-    Vertex& getStartVertex();
-    Vertex& getEndVertex();
+    Edge(std::shared_ptr<Vertex> startVertex, std::shared_ptr<Vertex> endVertex, float cost);
+    std::shared_ptr<Vertex> getStartVertex();
+    std::shared_ptr<Vertex> getEndVertex();
     float getCost();
 private:
     float cost;
-    Vertex& startVertex;
-    Vertex& endVertex;  
+    std::shared_ptr<Vertex> startVertex;
+    std::shared_ptr<Vertex> endVertex;  
 };
 
 #endif

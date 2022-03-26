@@ -4,7 +4,7 @@
 class TestController;
 
 #include "SingleThreadBotGreedy.hpp"
-#include "HighLevelCBS.hpp"
+#include "ExperimentData.hpp"
 
 class TestController : public SingleThreadBotGreedy {
 
@@ -17,6 +17,12 @@ public:
     /* Class Variables */
     std::vector<int> receivedWaypointPlan;
 
+    /* Properties */
+    int getAgentId();
+    void setAgentId(int id);
+    Location getCurrentLocation();
+    Action getCurrentAction();
+
     /* Methods */
     std::vector<Point> findOptimalPath();
 
@@ -24,6 +30,14 @@ protected:
 
     std::vector<int> constructStationPlan() override;
     std::vector<int> constructWaypointPlan() override;
+
+    int agentId;
+    Path path;
+
+    void reachedPointEvent(int) override;
+    Location currentLocation;
+    Action currentAction;
+    std::vector<int> getNextPointAndUpdateState();
 
 };
 

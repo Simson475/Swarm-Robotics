@@ -160,7 +160,8 @@ void RobotInterface::ControlStep() {
         if (!stationPlan.empty() && sMap.isPointAvailable(nextLocation) && isAtStation()) { // If we have a plan and we are at a point
 
             lastLocation = nextLocation;
-            resetWaypointPlan();
+            reachedPointEvent(lastLocation);
+
             if (currentJob->isStationInJob(lastLocation) && isStationNextInPlan(lastLocation)) { // Then we have reached the station @todo: Proper function for checking
                 log_helper("Arrived at a work station");
 
@@ -654,4 +655,8 @@ bool RobotInterface::isInLivelock() {
         return false;
 
     return lastModification + 30 * 60 * 10 < getLogicalTime();
+}
+
+void RobotInterface::reachedPointEvent(int id){
+    resetWaypointPlan();
 }

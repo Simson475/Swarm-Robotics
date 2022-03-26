@@ -7,16 +7,20 @@ class ConstraintTree;
 #include "Constraint.hpp"
 #include "Solution.hpp"
 #include "Conflict.hpp"
+#include "Agent.hpp"
 
-class ConstraintTree {
+class ConstraintTree : public std::enable_shared_from_this<ConstraintTree> {
 public:
-    std::vector<std::shared_ptr<Constraint>> constraints;
+    /* Tree elements */
     std::shared_ptr<ConstraintTree> getParent();
-    void setChildren();
+    void setChildren(std::vector<std::shared_ptr<ConstraintTree>> children);
     std::shared_ptr<ConstraintTree> getLowestCostNode();
+    std::vector<Constraint> constraints;
+
+    /* More CBS specific */
     Solution getSolution();
     void setSolution(Solution);
-    void setSolution(std::vector<Path>, std::vector<AgentInfo>);
+    void setSolution(std::vector<Path>, std::vector<std::shared_ptr<Agent>>);
     std::vector<Conflict> findConflicts();
     float getCost();
 private:
@@ -25,8 +29,6 @@ private:
     Solution solution;
     std::vector<std::shared_ptr<Conflict>> conflicts;
     bool operator() (ConstraintTree* a, ConstraintTree* b);//Comparison function for priority queue
-
-private:
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "HighLevelCBS.hpp"
 
-Solution HighLevelCBS::findSolution(Graph* graph, std::vector<AgentInfo> agentInfo, LowLevelCBS lowLevel){
+Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<std::shared_ptr<Agent>> agents, LowLevelCBS lowLevel){
     /**
      * Root.constraints = {}
      * Root.solution = find individual paths by the low level
@@ -9,7 +9,7 @@ Solution HighLevelCBS::findSolution(Graph* graph, std::vector<AgentInfo> agentIn
     
     std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>();
     Error::log("\n1");
-    root->setSolution(lowLevel.getAllPaths(graph, agentInfo), agentInfo);//Root.solution = find individual paths by the low level
+    root->setSolution(lowLevel.getAllPaths(graph, agents, std::vector<Constraint>{}), agents);
     Error::log("2");
     /**
      * Insert Root to OPEN
@@ -50,20 +50,21 @@ Solution HighLevelCBS::findSolution(Graph* graph, std::vector<AgentInfo> agentIn
          * Foreach agent ai in C do
          */
          Error::log("7");
-        for(AgentInfo &agent : c.getAgents()){
+        for(std::shared_ptr<Agent> agent : c.getAgents()){
             /**
              * A <-- new node
              * A.constraints = p.constraints union (ai,v,t)
              */
             Error::log("7.1");
             std::shared_ptr<ConstraintTree> a = std::make_shared<ConstraintTree>();//TODO should we connect this to P or is it irrelevant in implementation?
-            std::shared_ptr<Constraint> constraint = std::make_shared<Constraint>();
-            constraint->agent = std::make_unique<AgentInfo>(agent);
-            constraint->timeStart = c.getTimeStart();
-            constraint->timeEnd = c.getTimeEnd();
             a->constraints = p->constraints;
             Error::log("7.2");
-            a->constraints.emplace_back(constraint);
+            a->constraints.emplace_back(Constraint(
+                agent,
+                c.getLocation(),
+                c.getTimeStart(),
+                c.getTimeEnd()
+            ));
             /**
              * A.solution <-- P.solution
              */
@@ -76,9 +77,9 @@ Solution HighLevelCBS::findSolution(Graph* graph, std::vector<AgentInfo> agentIn
             Solution s = a->getSolution();
             
             Error::log("8.2");
-            Path newPath = lowLevel.getIndividualPath(graph, agent);
+            Path newPath = lowLevel.getIndividualPath(graph, agent, a->constraints);
             Error::log(".3\n");
-            Error::log(std::to_string(agent.getId()));
+            Error::log(std::to_string(agent->getId()));
             Error::log("|");
             Error::log(std::to_string(s.paths.size()));
             s.setPath(agent, newPath);
@@ -93,45 +94,7 @@ Solution HighLevelCBS::findSolution(Graph* graph, std::vector<AgentInfo> agentIn
             }
         }
     }
+    // We did not find any solution (No possible solution)
+    Error::log("ERROR: HighLevelCBS: No possible solution\n");
+    exit(1);
 }
-
-bool HighLevelCBS::requestSolution(){
-    if (!true){//TODO insert correct logic
-        return false;
-    }
-    auto g = getGraph();
-    auto a = getAgentInfo();
-    auto ll = LowLevelCBS::get_instance();
-    findSolution(g, a, ll);//TODO do we want to catch solution?
-    return true;
-}
-
-Graph* HighLevelCBS::getGraph(){
-    return &Map_Structure::get_instance();
-}
-std::vector<AgentInfo> HighLevelCBS::getAgentInfo(){
-    auto agents = getAgents();
-    size_t agentCount = agents.size();
-    std::vector<AgentInfo> agentInfo{agentCount};
-    for(size_t i = 0; i < agentCount; ++i){
-        agentInfo[i].setId(i);
-    }
-    return agentInfo;
-}
-std::vector<Agent> HighLevelCBS::getAgents(){
-    auto &tBotMap = argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
-    std::vector<Agent> agents{tBotMap.size()};
-    int i = 0;
-    for (auto& botPair : tBotMap) {
-        argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
-        TestController* controller = dynamic_cast<TestController*>(&(pcBot->GetControllableEntity().GetController()));
-        agents[i++].setBot(controller);
-    }
-    
-    return agents;
-}
-
-// for(Agent *agent : root->solution->agents){
-//     agent->getBot()->receivedWaypointPlan = agent->getPath().asWaypointPlan();
-//     agent->getBot()->setWaypointPlan(agent->getPath().asWaypointPlan());
-// }

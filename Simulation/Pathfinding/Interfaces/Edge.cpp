@@ -1,11 +1,17 @@
 #include "Edge.hpp"
 
-Vertex& Edge::getStartVertex(){
+Edge::Edge(std::shared_ptr<Vertex> startVertex, std::shared_ptr<Vertex> endVertex, float cost){
+    this->startVertex = startVertex;
+    this->endVertex = endVertex;
+    this->cost = cost;
+}
+
+std::shared_ptr<Vertex> Edge::getStartVertex(){
     return startVertex;
 }
-Vertex& Edge::getEndVertex(){
+std::shared_ptr<Vertex> Edge::getEndVertex(){
     return endVertex;
 }
 float Edge::getCost(){
-    return cost;//TODO figure out how we can use this as an interface instead or if we need an adapter
+    return cost;
 }

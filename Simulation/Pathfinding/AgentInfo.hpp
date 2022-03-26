@@ -3,6 +3,7 @@
 
 #include "Location.hpp"
 #include <memory>
+#include "HighLevelCBS.hpp"
 
 class AgentInfo {
 public:

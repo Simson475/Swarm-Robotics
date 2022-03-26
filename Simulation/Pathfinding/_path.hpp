@@ -9,7 +9,7 @@
 class Path {
   public:
     /* Variables */
-    std::vector<Action*> actions;
+    std::vector<Action> actions;
     float cost;
 
     /* Methods */

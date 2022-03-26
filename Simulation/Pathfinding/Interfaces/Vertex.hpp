@@ -9,6 +9,7 @@ class Vertex;
 
 class Vertex {
 public:
+    Vertex(int id);
     std::vector<std::shared_ptr<Edge>> getEdges();
     void setEdges(std::vector<std::shared_ptr<Edge>> edges);
     int getId();

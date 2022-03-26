@@ -1,15 +1,17 @@
 #ifndef SOLUTION_HPP
 #define SOLUTION_HPP
 
+class Solution;
+
 #include <vector>
-#include "AgentInfo.hpp"
-#include "Conflict.hpp"
+#include <memory>
+#include "Agent.hpp"
 #include "_path.hpp"
 
 class Solution {
   public:
     std::vector<Path> paths;
-    void setPath(AgentInfo&, Path);
+    void setPath(std::shared_ptr<Agent>, Path);
 };
 
 #endif

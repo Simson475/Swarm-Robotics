@@ -1,16 +1,19 @@
 #ifndef CONSTRAINT_HPP
 #define CONSTRAINT_HPP
 
-#include "AgentInfo.hpp"
+class Constraint;
+
+#include "Agent.hpp"
+#include "Location.hpp"
 #include <memory>
 
 class Constraint {
   public:
-    Constraint() = default;
-    ~Constraint() = default;
-    std::unique_ptr<AgentInfo> agent;
-    int timeStart;
-    int timeEnd;
+    Constraint(std::shared_ptr<Agent>, Location, uint, uint);
+    std::shared_ptr<Agent> agent;
+    Location location;
+    uint timeStart;
+    uint timeEnd;
 };
 
 #endif

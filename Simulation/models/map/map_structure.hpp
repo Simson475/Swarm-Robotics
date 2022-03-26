@@ -12,9 +12,8 @@
 
 #include <random>
 #include <limits>
-#include "../../Pathfinding/Interfaces/Graph.hpp"
 
-class Map_Structure : public Graph{
+class Map_Structure {
 private:
     // Shortest distance between each point
     std::vector<std::vector<float>> shortestDistanceMatrix{};

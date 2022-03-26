@@ -1,62 +1,127 @@
 #include "LowLevelCBS.hpp"
 
-Path LowLevelCBS::getIndividualPath(Graph *graph, const AgentInfo&){
-    Path path;
-    return path;
+Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, std::shared_ptr<Agent> agent, std::vector<Constraint> constraints){
+    std::shared_ptr<Vertex> u;
+    Action firstAction = agent->getCurrentAction();
+    std::shared_ptr<Vertex> goal = agent->getGoal();
+
+    // Compute path from after the current action
+    std::priority_queue<ActionPathAux> priorityQueue{};
+    priorityQueue.push(ActionPathAux(
+        firstAction,
+        firstAction.timestamp + firstAction.duration + graph->heuristicCost(firstAction.endVertex, agent->getGoal()),
+        nullptr
+    ));
+    uint currentTime = firstAction.timestamp;
+    while( ! priorityQueue.empty()){
+        // Next action
+        auto top = priorityQueue.top(); priorityQueue.pop();
+        u = top.action.endVertex;
+        currentTime += std::ceil(top.action.duration);
+
+        // If the action leads to the goal we are done
+        if (u->getId() == goal->getId()){
+            return top.getPath();
+        }
+
+        // Expand frontier
+        std::vector<Action> possibleActions = getPossibleActions(u, agent, constraints, currentTime);
+        for (Action action : possibleActions){
+            priorityQueue.push(ActionPathAux(
+                action,
+                action.timestamp + action.duration + graph->heuristicCost(action.endVertex, agent->getGoal()),
+                std::make_shared<ActionPathAux>(top)
+            ));
+        }
+    }
+    Error::log("ERROR: No path could be found\n");
+    exit(1);
 }
 
-std::vector<Path> LowLevelCBS::getAllPaths(Graph *graph, std::vector<AgentInfo> agentInfo){
-    std::vector<Path> paths{agentInfo.size()};
-    for(auto &info : agentInfo){
-        Error::log("_1");
-        // Get agents location
-        std::shared_ptr<Location> location = info.getLocation();
-        Vertex nextVertex;
-        Error::log("_2");
-        // If it is an edge, we will calculate its path from the next vertex.
-        if (location->type == ELocationType::EDGE_LOCATION) {
-            nextVertex = location->location.edge.getEndVertex();
-        }
-        // If it is not an edge, we simply take the vertex
-        else{
-            nextVertex = location->location.vertex;
-        }
-        Error::log("_3");
-
-        auto plan = graph->findPath(nextVertex.getId(), info.getGoal()->getId());
-        Error::log("_4");
-        // Graph path does not include starting point, so we insert it
-        plan.insert(plan.begin(), nextVertex);
-        Path path = constructPathFromPlan(graph, plan);
-        paths[info.getId()] = path;
+std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::vector<std::shared_ptr<Agent>> agents, std::vector<Constraint> constraints){
+    std::vector<Path> paths{agents.size()};
+    int i = 0;
+    for (std::shared_ptr<Agent> agent : agents){
+        paths[i] = getIndividualPath(graph, agent, constraints);
+        i++;
     }
     return paths;
 }
 
-Path LowLevelCBS::constructPathFromPlan(Graph *graph, std::vector<Vertex> plan){
-    if (plan.size() < 2) { return Path{}; }// Prevent nasty things
-    
-    std::vector<Action*> actions{};
-    float startTime = 0;
-    for (std::vector<Point>::size_type i=0; i < plan.size()-2; i++){
-        Action* action = new Action();
-        action->startVertex = plan[i];
-        action->endVertex = plan[i+1];
-        action->timestamp = startTime;
-        float cost = 0;
-        for(std::shared_ptr<Edge> e : plan[i].getEdges()){
-            if (e->getEndVertex().getId() == plan[i+1].getId()){
-                cost = e->getCost();
-                break;
+std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vertex, std::shared_ptr<Agent> agent, std::vector<Constraint> constraints, uint currentTime){
+    std::vector<Action> actions{};
+    std::vector<std::shared_ptr<Edge>> edges = vertex->getEdges();
+    uint minWaitTime = -1;//Max uint value
+    // Edge actions
+    for (auto edge : edges){
+        for (Constraint &constraint : constraints){//TODO if this is too slow, we can extract the relevant constraints before the outer loop
+            if (constraint.agent->getId() != agent->getId()
+            || (constraint.timeEnd < currentTime)
+            ){
+                continue;//This constraint is irrelevant (not this agent or over before this time)
             }
+            // Edge constraints
+            if (constraint.location.type == ELocationType::EDGE_LOCATION
+             && edge == constraint.location.edge
+             && constraint.timeStart < (currentTime + std::ceil(edge->getCost()))
+            ){
+                minWaitTime = (minWaitTime < constraint.timeEnd) ? minWaitTime : constraint.timeEnd;
+                continue;
+            }
+
+            // Vertex constraints
+            if (constraint.location.type == ELocationType::VERTEX_LOCATION
+             && edge->getEndVertex() == constraint.location.vertex//TODO do we need to check the start vertex aswell or will those never reach this point?
+             && constraint.timeStart < (currentTime + agent->getTimeAtVertex(edge->getEndVertex()))
+            ){
+                minWaitTime = (minWaitTime < constraint.timeEnd) ? minWaitTime : constraint.timeEnd;
+                continue;
+            }
+
+            actions.push_back(Action(
+                currentTime,
+                edge->getStartVertex(),
+                edge->getEndVertex(),
+                edge->getCost()
+            ));
         }
-        action->cost = cost;
-        startTime += cost;
-        actions.push_back(action);
     }
-    
-    return Path{actions: actions, cost: startTime };
+
+    if (actions.size() == edges.size()){
+        // We have added all possible edges, no need to wait
+        return actions;
+    }
+
+    // Wait action
+    actions.push_back(Action(currentTime, vertex, vertex, minWaitTime));
+
+    return actions;
 }
+
+// Path LowLevelCBS::constructPathFromPlan(Graph *graph, std::vector<Vertex> plan){
+//     if (plan.size() < 2) { return Path{}; }// Prevent nasty things
+    
+//     std::vector<Action*> actions{};
+//     float startTime = 0;
+//     for (std::vector<Point>::size_type i=0; i < plan.size()-2; i++){
+//         Action* action = new Action();
+//         action->startVertex = plan[i];
+//         action->endVertex = plan[i+1];
+//         action->timestamp = startTime;
+//         float cost = 0;
+//         for(std::shared_ptr<Edge> e : plan[i].getEdges()){
+//             if (e->getEndVertex().getId() == plan[i+1].getId()){
+//                 cost = e->getCost();
+//                 break;
+//             }
+//         }
+//         action->cost = cost;//WARNING cost changed
+//         startTime += cost;
+//         actions.push_back(action);
+//     }
+    
+//     return Path{actions: actions, cost: startTime };
+// }
 
 // Solution* solution = new Solution();
 // Map_Structure map = Map_Structure::get_instance();

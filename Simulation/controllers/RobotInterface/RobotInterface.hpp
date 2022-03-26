@@ -24,6 +24,7 @@
 #include <memory>
 
 #include <functional>
+#include "Location.hpp"
 
 class RobotInterface : public argos::CCI_Controller {
 
@@ -73,8 +74,11 @@ public:
     bool isInLivelock();
 
 protected:
+
+    virtual void reachedPointEvent(int id);
+
     //Internal state for when to move and when to move
-    enum class state {working, moving, done};
+    enum class state {working, moving, waiting, done};
 
     state currentState;
 

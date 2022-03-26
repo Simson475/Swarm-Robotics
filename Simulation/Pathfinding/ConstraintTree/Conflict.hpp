@@ -1,9 +1,11 @@
 #ifndef CONFLICT_HPP
 #define CONFLICT_HPP
 
+class Conflict;
+
 #include <vector>
 #include "Location.hpp"
-#include "AgentInfo.hpp"
+#include "Agent.hpp"
 #include <memory>
 
 class Conflict
@@ -16,15 +18,15 @@ public:
     Conflict(Conflict&&) noexcept;
     ~Conflict();
 
-    std::vector<AgentInfo> getAgents();
+    std::vector<std::shared_ptr<Agent>> getAgents();
     int getTimeStart();
     int getTimeEnd();
     Location getLocation();
 private:
-    std::vector<AgentInfo> agents;
+    std::vector<std::shared_ptr<Agent>> agents;
     int timeStart;
     int timeEnd;
-    std::shared_ptr<Location> location;
+    Location location;
 };
 
 #endif

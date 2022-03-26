@@ -9,18 +9,12 @@ enum ELocationType{
     EDGE_LOCATION
 };
 
-union ULocationUnion{
-    Vertex vertex;
-    Edge edge;
-    ULocationUnion() { /* Do absolutely nothing */};
-    ~ULocationUnion() { /* Do nothing idk */};
-};
-
 class Location {
 public:
     Location(){type=VERTEX_LOCATION;}
     ELocationType type;
-    ULocationUnion location;
+    std::shared_ptr<Edge> edge;
+    std::shared_ptr<Vertex> vertex;
 };
 
 #endif

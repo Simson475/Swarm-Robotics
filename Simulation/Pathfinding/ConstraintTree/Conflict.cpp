@@ -1,8 +1,8 @@
 #include "Conflict.hpp"
 
-std::vector<AgentInfo> Conflict::getAgents(){
+std::vector<std::shared_ptr<Agent>> Conflict::getAgents(){
     //TODO implement properly :)
-    std::vector<AgentInfo> a{3};
+    std::vector<std::shared_ptr<Agent>> a{3};
     return a;
 }
 int Conflict::getTimeStart(){
@@ -13,4 +13,6 @@ int Conflict::getTimeEnd(){
     //TODO implement properly :)
     return 69;
 }
-Location Conflict::getLocation(){}
+Location Conflict::getLocation(){
+    return this->location;
+}
