@@ -18,9 +18,19 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, std::shared_pt
         auto top = priorityQueue.top(); priorityQueue.pop();
         u = top.action.endVertex;
         currentTime += std::ceil(top.action.duration);
-
+        if (priorityQueue.size() > 20000){
+            Error::log(std::to_string(priorityQueue.size()));
+            Error::log("\n");
+            Error::log(std::to_string(u->getId()));
+            Error::log("\n");
+            Error::log(std::to_string(goal->getId()));
+            Error::log("\n");
+            exit(1);
+        }
         // If the action leads to the goal we are done
         if (u->getId() == goal->getId()){
+            Error::log("G");
+            exit(1);
             return top.getPath();
         }
 
@@ -42,6 +52,8 @@ std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::ve
     std::vector<Path> paths{agents.size()};
     int i = 0;
     for (std::shared_ptr<Agent> agent : agents){
+        Error::log(":");
+        Error::log(std::to_string(agent->getId()));
         paths[i] = getIndividualPath(graph, agent, constraints);
         i++;
     }
@@ -49,11 +61,12 @@ std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::ve
 }
 
 std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vertex, std::shared_ptr<Agent> agent, std::vector<Constraint> constraints, uint currentTime){
-    std::vector<Action> actions{};
+    std::vector<Action> actions;
     std::vector<std::shared_ptr<Edge>> edges = vertex->getEdges();
     uint minWaitTime = -1;//Max uint value
     // Edge actions
     for (auto edge : edges){
+        bool edgeIsPossible = true;
         for (Constraint &constraint : constraints){//TODO if this is too slow, we can extract the relevant constraints before the outer loop
             if (constraint.agent->getId() != agent->getId()
             || (constraint.timeEnd < currentTime)
@@ -66,6 +79,7 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
              && constraint.timeStart < (currentTime + std::ceil(edge->getCost()))
             ){
                 minWaitTime = (minWaitTime < constraint.timeEnd) ? minWaitTime : constraint.timeEnd;
+                edgeIsPossible = false;
                 continue;
             }
 
@@ -75,9 +89,12 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
              && constraint.timeStart < (currentTime + agent->getTimeAtVertex(edge->getEndVertex()))
             ){
                 minWaitTime = (minWaitTime < constraint.timeEnd) ? minWaitTime : constraint.timeEnd;
+                edgeIsPossible = false;
                 continue;
             }
+        }
 
+        if (edgeIsPossible){
             actions.push_back(Action(
                 currentTime,
                 edge->getStartVertex(),

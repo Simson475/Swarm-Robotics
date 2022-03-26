@@ -6,6 +6,12 @@ ActionPathAux::ActionPathAux(Action action, int priority, std::shared_ptr<Action
     this->predecessor = predecessor;
 }
 
+ActionPathAux::ActionPathAux(const ActionPathAux &a){
+    this->action = a.action;
+    this->priority = a.priority;
+    this->predecessor = a.predecessor;
+}
+
 Path ActionPathAux::getPath(){
     Path path{};
     path.actions.emplace(path.actions.begin(), this->predecessor->action);
@@ -20,5 +26,5 @@ Path ActionPathAux::getPath(){
 }
 
 bool operator< (const ActionPathAux &a, const ActionPathAux &b){
-    return a.priority < b.priority;
+    return a.priority > b.priority;
 }

@@ -1,9 +1,9 @@
 #include "ExperimentData.hpp"
 
 std::shared_ptr<Graph> ExperimentData::getGraph(){
-    if ( ! (graph == nullptr) ) { return graph; }
+    if ( graph != nullptr ) { return graph; }
 
-    graph = std::make_shared<Graph>(Graph(Map_Structure::get_instance()));
+    graph = std::make_shared<Graph>(Map_Structure::get_instance());
     return graph;
 }
 
@@ -16,9 +16,8 @@ std::vector<std::shared_ptr<Agent>> ExperimentData::getAgents(){
     for (auto& botPair : tBotMap) {
         argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
         TestController* controller = dynamic_cast<TestController*>(&(pcBot->GetControllableEntity().GetController()));
-        _agents.emplace_back(std::make_shared<Agent>(Agent(i, controller)));
+        _agents.emplace_back(std::make_shared<Agent>(i, controller));
         i++;
-
     }
 
     agents = _agents;
@@ -27,10 +26,29 @@ std::vector<std::shared_ptr<Agent>> ExperimentData::getAgents(){
 }
 
 bool ExperimentData::requestSolution(int agentId){
-    return false;//TODO actual code.
+    /* If more than the requesting agent does not have a station plan
+     * we make the agent wait. */
+    for (auto a : getAgents()){
+        if (a->getId() != agentId && a->getBot()->getStationPlan().empty()){
+            return false;
+        }
+    }
+    Error::log("Going to find a solution\n");
+
+    Solution solution = HighLevelCBS::get_instance()
+        .findSolution(getGraph(), getAgents(), LowLevelCBS::get_instance());
+    
+    // Distribute paths
+    distributeSolution(solution);
+
+    return true;
 }
 
-
+void ExperimentData::distributeSolution(Solution solution){
+    for (auto agent : getAgents()){
+        agent->getBot()->setPath(solution.paths[agent->getId()]);
+    }
+}
 
 // std::vector<AgentInfo> HighLevelCBS::getAgentInfo(){
 //     auto agents = ExperimentData::get_instance().agents;

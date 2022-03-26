@@ -17,6 +17,47 @@ include_directories(${LUA_INCLUDE_DIR})
 #add_definitions(-DARGOS_WITH_LUA=0)
 unset(ARGOS_WITH_LUA CACHE)
 
+set(PathfindingFiles
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ConstraintTree/Conflict.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ConstraintTree/Conflict.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ConstraintTree/ConstraintTree.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ConstraintTree/ConstraintTree.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Action.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Action.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ActionPathAux.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ActionPathAux.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ExperimentData.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ExperimentData.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Agent.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Agent.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ConstraintTree/Constraint.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/HighLevelCBS.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/HighLevelCBS.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/LowLevelCBS.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/LowLevelCBS.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/_path.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/_path.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Solution.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Solution.cpp
+
+        ${CMAKE_CURRENT_LIST_DIR}/TestController.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/TestController.cpp
+
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Interfaces/Edge.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Interfaces/Edge.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Interfaces/Graph.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Interfaces/Graph.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Interfaces/Vertex.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Interfaces/Vertex.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/AgentInfo.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/AgentInfo.cpp
+
+        ${CMAKE_CURRENT_LIST_DIR}/../models/map/map_structure.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/../models/map/map_structure.hpp
+
+        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Debugging.hpp
+)
+
 # Add a library target called BotImplementations from the source files listed
 # MODULE makes it a library/plugin that is not linked into other targets but may be loaded dynamically at runtime
 add_library(BotImplementations MODULE
@@ -47,44 +88,7 @@ add_library(BotImplementations MODULE
         #GreedyStationCBSWaypoint.cpp
         #GreedyStationCBSWaypoint.hpp
 
-        ../Pathfinding/ConstraintTree/Conflict.hpp
-        ../Pathfinding/ConstraintTree/Conflict.cpp
-        ../Pathfinding/ConstraintTree/ConstraintTree.cpp
-        ../Pathfinding/ConstraintTree/ConstraintTree.hpp
-        ../Pathfinding/Action.cpp
-        ../Pathfinding/Action.hpp
-        ../Pathfinding/ActionPathAux.cpp
-        ../Pathfinding/ActionPathAux.hpp
-        ../Pathfinding/ExperimentData.cpp
-        ../Pathfinding/ExperimentData.hpp
-        ../Pathfinding/Agent.cpp
-        ../Pathfinding/Agent.hpp
-        ../Pathfinding/ConstraintTree/Constraint.hpp
-        ../Pathfinding/HighLevelCBS.cpp
-        ../Pathfinding/HighLevelCBS.hpp
-        ../Pathfinding/LowLevelCBS.cpp
-        ../Pathfinding/LowLevelCBS.hpp
-        ../Pathfinding/_path.hpp
-        ../Pathfinding/_path.cpp
-        ../Pathfinding/Solution.hpp
-        ../Pathfinding/Solution.cpp
-
-        TestController.hpp
-        TestController.cpp
-
-        ../Pathfinding/Interfaces/Edge.hpp
-        ../Pathfinding/Interfaces/Edge.cpp
-        ../Pathfinding/Interfaces/Graph.hpp
-        ../Pathfinding/Interfaces/Graph.cpp
-        ../Pathfinding/Interfaces/Vertex.hpp
-        ../Pathfinding/Interfaces/Vertex.cpp
-        ../Pathfinding/AgentInfo.hpp
-        ../Pathfinding/AgentInfo.cpp
-
-        ../models/map/map_structure.cpp
-        ../models/map/map_structure.hpp
-
-        ../Pathfinding/Debugging.hpp
+        ${PathfindingFiles}
         )
 
 # Ensure that argos-ext is build before BotImplementations

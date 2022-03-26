@@ -6,6 +6,9 @@ class TestController;
 #include "SingleThreadBotGreedy.hpp"
 #include "ExperimentData.hpp"
 #include "Location.hpp"
+#include "Action.hpp"
+
+#include "Debugging.hpp"
 
 class TestController : public SingleThreadBotGreedy {
 
@@ -23,6 +26,7 @@ public:
     void setAgentId(int id);
     Location getCurrentLocation();
     Action getCurrentAction();
+    void setPath(Path path);
 
     /* Methods */
     std::vector<Point> findOptimalPath();

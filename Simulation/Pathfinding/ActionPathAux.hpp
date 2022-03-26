@@ -8,6 +8,7 @@
 class ActionPathAux{
 public:
     ActionPathAux(Action action, int priority, std::shared_ptr<ActionPathAux> predecessor);
+    ActionPathAux(const ActionPathAux &a);
     Path getPath();
 
     Action action;

@@ -8,14 +8,10 @@
 class Action {
   public:
     Action() = default;
+    Action(Action*);
     Action(const Action&);
-    Action(Action&&) noexcept;
-    Action(int timestamp, std::shared_ptr<Vertex> startVertex, std::shared_ptr<Vertex> endVertex, float duration){
-      this->timestamp = timestamp;
-      this->startVertex = startVertex;
-      this->endVertex = endVertex;
-      this->duration = duration;
-    }
+    Action(Action&&);
+    Action(int timestamp, std::shared_ptr<Vertex> startVertex, std::shared_ptr<Vertex> endVertex, float duration);
     ~Action() = default;
     void operator=(const Action &a);
     int timestamp;

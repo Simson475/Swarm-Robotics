@@ -16,12 +16,13 @@ Graph::Graph(Map_Structure& map){
     size_t lineCount = map.lines.size();
     std::vector<std::vector<std::shared_ptr<Edge>>> edges{lineCount};
     for (Line line : map.lines){
+        if (line.GetDistance() < 0) { continue; }
         int a = line.Geta().getId();
         int b = line.Getb().getId();
         edges[a].push_back(std::make_shared<Edge>(Edge(
             vertices[a],
             vertices[b],
-            line.GetDistance() / ROBOT_SPEED
+            2.0//line.GetDistance() / ROBOT_SPEED
         )));
     }
     this->edges = edges;

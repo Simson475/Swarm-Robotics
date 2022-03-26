@@ -5,6 +5,10 @@
 #include <vector>
 #include "Graph.hpp"
 #include "Agent.hpp"
+#include "HighLevelCBS.hpp"
+#include "Solution.hpp"
+
+#include "Debugging.hpp"
 
 class ExperimentData{
 public:
@@ -19,6 +23,7 @@ public:
 private:
     std::shared_ptr<Graph> graph;
     std::vector<std::shared_ptr<Agent>> agents;
+    void distributeSolution(Solution solution);
 };
 
 #endif

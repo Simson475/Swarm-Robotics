@@ -13,6 +13,7 @@ std::vector<int> TestController::constructWaypointPlan(){
     //We do not have a plan
 
     if (ExperimentData::get_instance().requestSolution(agentId)){
+        Error::log("Requested Solution was granted\n");
         return getNextPointAndUpdateState();
     }
     
@@ -29,15 +30,20 @@ std::vector<int> TestController::constructWaypointPlan(){
 }
 
 std::vector<int> TestController::getNextPointAndUpdateState(){
+    Error::log("Getting next action");
     std::vector<int> vec;
     Action action = path.actions.front();
+    Error::log(".");
     path.actions.erase(path.actions.begin());
+    Error::log(".");
     
     // Create a single point waypoint plan (it is cleared after it is reached anyways)
     vec.push_back(action.endVertex->getId());
+    Error::log(".");
     
     // Set state depending on the action
     currentState = (action.startVertex->getId() == action.endVertex->getId()) ? state::waiting : state::moving;
+    Error::log(".\n");
 
     return vec;
 }
@@ -56,6 +62,10 @@ void TestController::setAgentId(int id){
 
 Location TestController::getCurrentLocation(){
     return currentLocation;
+}
+
+void TestController::setPath(Path path){
+    this->path = path;
 }
 
 void TestController::reachedPointEvent(int id){

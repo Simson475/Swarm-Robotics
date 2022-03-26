@@ -82,7 +82,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<st
             Error::log(std::to_string(agent->getId()));
             Error::log("|");
             Error::log(std::to_string(s.paths.size()));
-            s.setPath(agent, newPath);
+            s.paths[agent->getId()] = newPath;
             Error::log("\n9");
             a->setSolution(s);
             
