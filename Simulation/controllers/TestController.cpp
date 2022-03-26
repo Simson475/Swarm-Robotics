@@ -16,6 +16,7 @@ std::vector<int> TestController::constructWaypointPlan(){
         return getNextPointAndUpdateState();
     }
     
+    //If we requested a solution, but did not get one, we just wait where we are.
     std::vector<int> vec;
     
     // Create a single point waypoint plan (it is cleared after it is reached anyways)

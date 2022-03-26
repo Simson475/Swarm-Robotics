@@ -32,6 +32,10 @@ Graph::Graph(Map_Structure& map){
     }
 }
 
+std::vector<std::shared_ptr<Vertex>> Graph::getVertices(){
+    return this->vertices;
+}
+
 float Graph::heuristicCost(std::shared_ptr<Vertex> from, std::shared_ptr<Vertex> to){
     if ( ! this->heuristicCosts.empty()){
         return this->heuristicCosts[from->getId()][to->getId()];
