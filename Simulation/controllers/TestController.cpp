@@ -13,43 +13,34 @@ std::vector<int> TestController::constructWaypointPlan(){
     //We do not have a plan
 
     if (ExperimentData::get_instance().requestSolution(agentId)){
-        Error::log("Requested Solution was granted\n");
         return getNextPointAndUpdateState();
     }
     
     //If we requested a solution, but did not get one, we just wait where we are.
-    std::vector<int> vec;
-    
-    // Create a single point waypoint plan (it is cleared after it is reached anyways)
-    vec.push_back(ExperimentData::get_instance().getGraph()->getVertices()[lastLocation]->getId());
-    
-    // Set state depending on the action
-    currentState = state::waiting;
-
-    return vec;
+    auto currentVertex = ExperimentData::get_instance().getGraph()->getVertices()[lastLocation];
+    path.actions.push_back(Action(time, currentVertex, currentVertex, 1));
+    return getNextPointAndUpdateState();
 }
 
+/* PRE: path.actions.size() > 0 */
 std::vector<int> TestController::getNextPointAndUpdateState(){
-    Error::log("Getting next action");
     std::vector<int> vec;
     Action action = path.actions.front();
-    Error::log(".");
     path.actions.erase(path.actions.begin());
-    Error::log(".");
+
+    /** Update current action and location to the new action
+      * If the action is a wait action, we set the location to the vertex
+      * else we set the location to the edge. */
+    this->currentAction = action;
+    updateCurrentLocation(action);
     
     // Create a single point waypoint plan (it is cleared after it is reached anyways)
     vec.push_back(action.endVertex->getId());
-    Error::log(".");
     
     // Set state depending on the action
     currentState = (action.startVertex->getId() == action.endVertex->getId()) ? state::waiting : state::moving;
-    Error::log(".\n");
 
     return vec;
-}
-
-std::vector<Point> TestController::findOptimalPath(){
-    return sMap.findPath(lastLocation, stationPlan.front());
 }
 
 int TestController::getAgentId(){
@@ -68,25 +59,38 @@ void TestController::setPath(Path path){
     this->path = path;
 }
 
+/**
+ * Called when the robot reached point with the id.
+ * 
+ * @param id - id of the point/vertex reached
+ */
 void TestController::reachedPointEvent(int id){
-    currentAction = path.actions.front();
-    path.actions.erase(path.actions.begin());
-    // If the action is a wait action, we set the location to the vertex
-    // else we set the location to the edge.
-    if (currentAction.startVertex == currentAction.endVertex){
+    resetWaypointPlan();//Needed for RobotInterface ControlStep logic
+}
+
+void TestController::updateCurrentLocation(Action action){
+    if (action.startVertex == action.endVertex){
         currentLocation.type = ELocationType::VERTEX_LOCATION;
-        currentLocation.vertex = currentAction.startVertex;
+        currentLocation.vertex = action.startVertex;
     }
     else{
         currentLocation.type = ELocationType::EDGE_LOCATION;
-        for (std::shared_ptr<Edge> edge : currentAction.startVertex->getEdges()){
-            if (edge->getEndVertex()->getId() == currentAction.endVertex->getId()){
+        for (std::shared_ptr<Edge> edge : action.startVertex->getEdges()){
+            if (edge->getEndVertex()->getId() == action.endVertex->getId()){
                 currentLocation.edge = edge;
                 break;
             }
         }
     }
-    resetWaypointPlan();//Needed for RobotInterface ControlStep logic
+}
+
+/* Called when current state == waiting */
+void TestController::wait(){
+    // If waiting action is over change state to moving so we can get the next action automatically
+    if ((currentAction.timestamp + currentAction.duration) <= time){
+        currentState = state::moving;
+        resetWaypointPlan();
+    }
 }
 
 REGISTER_CONTROLLER(TestController, "TestController")

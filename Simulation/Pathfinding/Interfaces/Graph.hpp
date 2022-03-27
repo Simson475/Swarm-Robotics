@@ -6,6 +6,7 @@
 #include "Edge.hpp"
 #include <memory>
 #include "map_structure.hpp"
+#include "Debugging.hpp"
 
 class Graph {
 public:

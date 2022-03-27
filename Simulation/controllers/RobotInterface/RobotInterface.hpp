@@ -75,6 +75,8 @@ public:
 protected:
 
     virtual void reachedPointEvent(int id);
+    virtual void wait();
+    int time = 0;
 
     //Internal state for when to move and when to move
     enum class state {working, moving, waiting, done};

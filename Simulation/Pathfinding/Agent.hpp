@@ -15,13 +15,11 @@ class Agent {
     Path getPath();
     void setBot(TestController*);
     TestController* getBot();
-    void createPath(std::vector<Point> plan);
     Location getLocation();
     int getId();
     Action getCurrentAction();
     std::shared_ptr<Vertex> getGoal();
     int getTimeAtVertex(std::shared_ptr<Vertex> vertex);
-    //void recreatePath();
   private:
     Path path;
     std::vector<Point> plan;

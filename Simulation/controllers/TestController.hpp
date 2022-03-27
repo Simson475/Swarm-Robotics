@@ -28,9 +28,6 @@ public:
     Action getCurrentAction();
     void setPath(Path path);
 
-    /* Methods */
-    std::vector<Point> findOptimalPath();
-
 protected:
 
     std::vector<int> constructStationPlan() override;
@@ -40,9 +37,11 @@ protected:
     Path path;
 
     void reachedPointEvent(int) override;
+    void wait() override;
     Location currentLocation;
     Action currentAction;
     std::vector<int> getNextPointAndUpdateState();
+    void updateCurrentLocation(Action currentAction);
 
 };
 

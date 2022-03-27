@@ -10,8 +10,6 @@
 #include "argos3/plugins/robots/foot-bot/simulator/footbot_entity.h"
 #include "argos3/plugins/simulator/entities/box_entity.h"
 
-
-
 class CTrajectoryLoopFunctions : public argos::CLoopFunctions {
 
 public:

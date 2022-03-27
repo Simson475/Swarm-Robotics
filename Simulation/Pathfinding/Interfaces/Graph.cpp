@@ -22,7 +22,7 @@ Graph::Graph(Map_Structure& map){
         edges[a].push_back(std::make_shared<Edge>(Edge(
             vertices[a],
             vertices[b],
-            2.0//line.GetDistance() / ROBOT_SPEED
+            line.GetDistance() / ROBOT_SPEED
         )));
     }
     this->edges = edges;
@@ -50,7 +50,7 @@ float Graph::heuristicCost(std::shared_ptr<Vertex> from, std::shared_ptr<Vertex>
         for (size_t j = 0; j < size; ++j){
             this->heuristicCosts[i][j] = ((i == j) ? 0 : INFINITY);
         }
-        for (std::shared_ptr<Edge> e : from->getEdges()){
+        for (std::shared_ptr<Edge> e : this->vertices[i]->getEdges()){
             this->heuristicCosts[i][e->getEndVertex()->getId()] = e->getCost();
         }
     }

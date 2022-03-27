@@ -9,28 +9,23 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, std::shared_pt
     std::priority_queue<ActionPathAux> priorityQueue{};
     priorityQueue.push(ActionPathAux(
         firstAction,
-        firstAction.timestamp + firstAction.duration + graph->heuristicCost(firstAction.endVertex, agent->getGoal()),
+        firstAction.timestamp + std::ceil(firstAction.duration + graph->heuristicCost(firstAction.endVertex, agent->getGoal())),
         nullptr
     ));
     uint currentTime = firstAction.timestamp;
+    int iterations = 0;
     while( ! priorityQueue.empty()){
+        iterations++;
         // Next action
         auto top = priorityQueue.top(); priorityQueue.pop();
         u = top.action.endVertex;
         currentTime += std::ceil(top.action.duration);
-        if (priorityQueue.size() > 20000){
-            Error::log(std::to_string(priorityQueue.size()));
-            Error::log("\n");
-            Error::log(std::to_string(u->getId()));
-            Error::log("\n");
-            Error::log(std::to_string(goal->getId()));
-            Error::log("\n");
+        if (iterations > 500){
+            Error::log("Max iterations reached.\n");
             exit(1);
         }
         // If the action leads to the goal we are done
         if (u->getId() == goal->getId()){
-            Error::log("G");
-            exit(1);
             return top.getPath();
         }
 
@@ -39,7 +34,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, std::shared_pt
         for (Action action : possibleActions){
             priorityQueue.push(ActionPathAux(
                 action,
-                action.timestamp + action.duration + graph->heuristicCost(action.endVertex, agent->getGoal()),
+                action.timestamp + std::ceil(action.duration + graph->heuristicCost(action.endVertex, agent->getGoal())),
                 std::make_shared<ActionPathAux>(top)
             ));
         }
@@ -52,8 +47,6 @@ std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::ve
     std::vector<Path> paths{agents.size()};
     int i = 0;
     for (std::shared_ptr<Agent> agent : agents){
-        Error::log(":");
-        Error::log(std::to_string(agent->getId()));
         paths[i] = getIndividualPath(graph, agent, constraints);
         i++;
     }
@@ -108,7 +101,7 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
         // We have added all possible edges, no need to wait
         return actions;
     }
-
+    Error::log("\nWaitAction\n");
     // Wait action
     actions.push_back(Action(currentTime, vertex, vertex, minWaitTime));
 

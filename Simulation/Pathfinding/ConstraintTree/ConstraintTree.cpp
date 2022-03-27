@@ -30,12 +30,15 @@ void ConstraintTree::setSolution(std::vector<Path> paths, std::vector<std::share
     setSolution(solution);
 }
 std::vector<Conflict> ConstraintTree::findConflicts(){
-    std::vector<Conflict> conflicts{3};
+    std::vector<Conflict> conflicts{};
     return conflicts;
 }
 float ConstraintTree::getCost(){
-    //Implement Lat
-    return 4.20;
+    float cost = 0;
+    for (Path p : this->solution.paths){
+        cost += p.cost;
+    }
+    return cost;
 }
 
 /*bool ConstraintTree::operator()(ConstraintTree a, ConstraintTree b){
