@@ -7,6 +7,7 @@
 #include "ActionPathAux.hpp"
 #include "Vertex.hpp"
 #include "Action.hpp"
+#include <iostream>
 
 class ActionPathAuxTests : public TestInterface {
 private:

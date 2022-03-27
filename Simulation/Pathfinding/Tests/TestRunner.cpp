@@ -9,5 +9,5 @@ int main (int argc, char *argv[]) {
 
     ActionPathAuxTests().run();
 
-    cout << "Testing done.\n";
+    cout << "Testing done!\n";
 } 

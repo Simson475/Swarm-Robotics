@@ -36,8 +36,8 @@ set(PathfindingFiles
     # ${ControllersDir}/TestController.hpp
     # ${ControllersDir}/TestController.cpp
 
-    # ${PathfindingDir}/Interfaces/Edge.hpp
-    # ${PathfindingDir}/Interfaces/Edge.cpp
+    ${PathfindingDir}/Interfaces/Edge.hpp
+    ${PathfindingDir}/Interfaces/Edge.cpp
     # ${PathfindingDir}/Interfaces/Graph.hpp
     # ${PathfindingDir}/Interfaces/Graph.cpp
     ${PathfindingDir}/Interfaces/Vertex.hpp
@@ -47,9 +47,10 @@ set(PathfindingFiles
 )
 
 # Emit all warning messages
-add_definitions(-Wall -Werror) 
+add_definitions(-Wall -Werror)
 
 add_executable(run_tests
+    
     ${PathfindingFiles}
     
     TestRunner.cpp
@@ -64,6 +65,8 @@ add_executable(run_tests
 
 # Move the run_tests script to the external/bin/
 add_custom_command(TARGET run_tests POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-        ../../Pathfinding/Tests/run_tests
-        ${CMAKE_BINARY_DIR}/external/bin/run_tests)
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ./run_tests
+    ${CMAKE_BINARY_DIR}/external/bin/run_tests
+    COMMENT "Copying run_tests to external/bin/"
+    )
