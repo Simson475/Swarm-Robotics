@@ -14,6 +14,7 @@ public:
     Action action;
     int priority;
     std::shared_ptr<ActionPathAux> predecessor;
+    void operator=(const ActionPathAux &a);
 };
 
 bool operator< (const ActionPathAux &a, const ActionPathAux &b);//Comparison function for priority queue

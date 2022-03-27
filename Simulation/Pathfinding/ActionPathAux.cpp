@@ -25,6 +25,13 @@ Path ActionPathAux::getPath(){
     return path;
 }
 
+void ActionPathAux::operator=(const ActionPathAux &a){
+    action = a.action;
+    priority = a.priority;
+    predecessor = a.predecessor;
+}
+
+/* Comparator for use in priority queue (must be global or you will need a compare class) */
 bool operator< (const ActionPathAux &a, const ActionPathAux &b){
     return a.priority > b.priority;
 }

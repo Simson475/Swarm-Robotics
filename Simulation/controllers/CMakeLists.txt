@@ -17,45 +17,49 @@ include_directories(${LUA_INCLUDE_DIR})
 #add_definitions(-DARGOS_WITH_LUA=0)
 unset(ARGOS_WITH_LUA CACHE)
 
+set(PathfindingDir ../Pathfinding)
+set(ControllersDir .)
+set(MapDir ../models/map)
 set(PathfindingFiles
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ConstraintTree/Conflict.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ConstraintTree/Conflict.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ConstraintTree/ConstraintTree.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ConstraintTree/ConstraintTree.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Action.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Action.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ActionPathAux.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ActionPathAux.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ExperimentData.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ExperimentData.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Agent.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Agent.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/ConstraintTree/Constraint.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/HighLevelCBS.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/HighLevelCBS.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/LowLevelCBS.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/LowLevelCBS.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/_path.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/_path.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Solution.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Solution.cpp
+        ${PathfindingDir}/ConstraintTree/Conflict.hpp
+        ${PathfindingDir}/ConstraintTree/Conflict.cpp
+        ${PathfindingDir}/ConstraintTree/ConstraintTree.hpp
+        ${PathfindingDir}/ConstraintTree/ConstraintTree.cpp
+        ${PathfindingDir}/Action.hpp
+        ${PathfindingDir}/Action.cpp
+        ${PathfindingDir}/ActionPathAux.hpp
+        ${PathfindingDir}/ActionPathAux.cpp
+        ${PathfindingDir}/ExperimentData.hpp
+        ${PathfindingDir}/ExperimentData.cpp
+        ${PathfindingDir}/Agent.hpp
+        ${PathfindingDir}/Agent.cpp
+        ${PathfindingDir}/ConstraintTree/Constraint.hpp
+        ${PathfindingDir}/ConstraintTree/Constraint.cpp
+        ${PathfindingDir}/HighLevelCBS.hpp
+        ${PathfindingDir}/HighLevelCBS.cpp
+        ${PathfindingDir}/LowLevelCBS.hpp
+        ${PathfindingDir}/LowLevelCBS.cpp
+        ${PathfindingDir}/_path.hpp
+        ${PathfindingDir}/_path.cpp
+        ${PathfindingDir}/Solution.hpp
+        ${PathfindingDir}/Solution.cpp
 
-        ${CMAKE_CURRENT_LIST_DIR}/TestController.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/TestController.cpp
+        ${ControllersDir}/TestController.hpp
+        ${ControllersDir}/TestController.cpp
 
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Interfaces/Edge.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Interfaces/Edge.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Interfaces/Graph.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Interfaces/Graph.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Interfaces/Vertex.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Interfaces/Vertex.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/AgentInfo.hpp
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/AgentInfo.cpp
+        ${PathfindingDir}/Interfaces/Edge.hpp
+        ${PathfindingDir}/Interfaces/Edge.cpp
+        ${PathfindingDir}/Interfaces/Graph.hpp
+        ${PathfindingDir}/Interfaces/Graph.cpp
+        ${PathfindingDir}/Interfaces/Vertex.hpp
+        ${PathfindingDir}/Interfaces/Vertex.cpp
+        ${PathfindingDir}/AgentInfo.hpp
+        ${PathfindingDir}/AgentInfo.cpp
 
-        ${CMAKE_CURRENT_LIST_DIR}/../models/map/map_structure.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/../models/map/map_structure.hpp
+        ${MapDir}/map_structure.hpp
+        ${MapDir}/map_structure.cpp
 
-        ${CMAKE_CURRENT_LIST_DIR}/../Pathfinding/Debugging.hpp
+        ${PathfindingDir}/Debugging.hpp
 )
 
 # Add a library target called BotImplementations from the source files listed
