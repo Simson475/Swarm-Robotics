@@ -36,6 +36,11 @@ std::vector<int> TestController::getNextPointAndUpdateState(){
     
     // Create a single point waypoint plan (it is cleared after it is reached anyways)
     vec.push_back(action.endVertex->getId());
+
+    if (agentId == 6){
+        Error::log(std::to_string(action.endVertex->getId()));
+        Error::log(".\n");
+    }
     
     // Set state depending on the action
     currentState = (action.startVertex->getId() == action.endVertex->getId()) ? state::waiting : state::moving;

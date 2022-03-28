@@ -27,3 +27,10 @@ void Action::operator=(const Action &a){
     endVertex = a.endVertex;
     duration = a.duration;
 }
+
+bool Action::operator==(const Action &a){
+    return timestamp == a.timestamp
+        && startVertex == a.startVertex
+        && endVertex == a.endVertex
+        && duration == a.duration;
+}

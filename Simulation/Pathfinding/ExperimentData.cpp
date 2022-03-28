@@ -46,16 +46,15 @@ bool ExperimentData::requestSolution(int agentId){
 
 void ExperimentData::distributeSolution(Solution solution){
     for (auto agent : getAgents()){
+        if (agent->getId() == 6){
+            Error::log(std::to_string(agent->getId()));
+            Error::log(": ");
+            for (auto a : solution.paths[agent->getId()].actions){
+                Error::log(std::to_string(a.endVertex->getId()));
+                Error::log(" ");
+            }
+            Error::log("\n");
+        }
         agent->getBot()->setPath(solution.paths[agent->getId()]);
     }
 }
-
-// std::vector<AgentInfo> HighLevelCBS::getAgentInfo(){
-//     auto agents = ExperimentData::get_instance().agents;
-//     size_t agentCount = agents->size();
-//     std::vector<AgentInfo> agentInfo{agentCount};
-//     for(size_t i = 0; i < agentCount; ++i){
-//         agentInfo[i].setId(i);
-//     }
-//     return agentInfo;
-// }

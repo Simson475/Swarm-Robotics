@@ -14,8 +14,8 @@ ActionPathAux::ActionPathAux(const ActionPathAux &a){
 
 Path ActionPathAux::getPath(){
     Path path{};
-    path.actions.emplace(path.actions.begin(), this->predecessor->action);
-    path.cost = predecessor->action.duration;
+    path.actions.emplace(path.actions.begin(), this->action);
+    path.cost = this->action.duration;
     std::shared_ptr<ActionPathAux> predecessor = this->predecessor;
     while (predecessor != nullptr){
         path.actions.emplace(path.actions.begin(), predecessor->action);

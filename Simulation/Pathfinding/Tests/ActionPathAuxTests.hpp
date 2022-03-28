@@ -12,10 +12,12 @@
 class ActionPathAuxTests : public TestInterface {
 private:
     void it_can_compare_in_priority_queue();
+    void it_can_get_path();
 public:
     // Writing this in header so it is much easier to see that all functions are called
     void run(){
         it_can_compare_in_priority_queue();
+        it_can_get_path();
     }
 };
 

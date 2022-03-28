@@ -14,6 +14,7 @@ class Action {
     Action(int timestamp, std::shared_ptr<Vertex> startVertex, std::shared_ptr<Vertex> endVertex, float duration);
     ~Action() = default;
     void operator=(const Action &a);
+    bool operator==(const Action &a);
     int timestamp;
     std::shared_ptr<Vertex> startVertex;
     std::shared_ptr<Vertex> endVertex;
