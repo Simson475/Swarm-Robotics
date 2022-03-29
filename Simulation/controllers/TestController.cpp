@@ -73,6 +73,10 @@ void TestController::reachedPointEvent(int id){
     resetWaypointPlan();//Needed for RobotInterface ControlStep logic
 }
 
+/**
+ * Update the current location to be the location the robot will be 
+ * during the action.
+ */
 void TestController::updateCurrentLocation(Action action){
     if (action.startVertex == action.endVertex){
         currentLocation.type = ELocationType::VERTEX_LOCATION;

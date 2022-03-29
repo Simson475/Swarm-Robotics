@@ -38,7 +38,7 @@ set(PathfindingFiles
 
     ${PathfindingDir}/Interfaces/Edge.hpp
     ${PathfindingDir}/Interfaces/Edge.cpp
-    # ${PathfindingDir}/Interfaces/Graph.hpp
+    ${PathfindingDir}/Interfaces/Graph.hpp
     # ${PathfindingDir}/Interfaces/Graph.cpp
     ${PathfindingDir}/Interfaces/Vertex.hpp
     ${PathfindingDir}/Interfaces/Vertex.cpp

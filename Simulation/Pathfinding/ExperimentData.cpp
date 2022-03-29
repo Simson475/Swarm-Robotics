@@ -12,12 +12,12 @@ std::vector<std::shared_ptr<Agent>> ExperimentData::getAgents(){
 
     auto &tBotMap = argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
     std::vector<std::shared_ptr<Agent>> _agents;
-    int i = 0;
+    int id = 0;
     for (auto& botPair : tBotMap) {
         argos::CFootBotEntity *pcBot = argos::any_cast<argos::CFootBotEntity *>(botPair.second);
         TestController* controller = dynamic_cast<TestController*>(&(pcBot->GetControllableEntity().GetController()));
-        _agents.emplace_back(std::make_shared<Agent>(i, controller));
-        i++;
+        _agents.emplace_back(std::make_shared<Agent>(id, controller));
+        id++;
     }
 
     agents = _agents;
@@ -46,7 +46,7 @@ bool ExperimentData::requestSolution(int agentId){
 
 void ExperimentData::distributeSolution(Solution solution){
     for (auto agent : getAgents()){
-        if (agent->getId() == 6){
+        if (agent->getId() == 6){//TODO remove this debug logging
             Error::log(std::to_string(agent->getId()));
             Error::log(": ");
             for (auto a : solution.paths[agent->getId()].actions){
