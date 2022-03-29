@@ -43,4 +43,5 @@ void ActionPathAuxTests::it_can_get_path(){
     assert(p.actions[1] == a1);
     assert(p.actions[2] == a2);
     assert(p.actions[3] == a3);
+    assert(p.cost == 10);
 }
