@@ -51,6 +51,8 @@ set(PathfindingFiles
         ${PathfindingDir}/Interfaces/Edge.cpp
         ${PathfindingDir}/Interfaces/Graph.hpp
         ${PathfindingDir}/Interfaces/Graph.cpp
+        ${PathfindingDir}/Interfaces/MapStructureGraph.hpp
+        ${PathfindingDir}/Interfaces/MapStructureGraph.cpp
         ${PathfindingDir}/Interfaces/Vertex.hpp
         ${PathfindingDir}/Interfaces/Vertex.cpp
         ${PathfindingDir}/AgentInfo.hpp

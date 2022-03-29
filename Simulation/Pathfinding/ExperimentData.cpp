@@ -3,7 +3,8 @@
 std::shared_ptr<Graph> ExperimentData::getGraph(){
     if ( graph != nullptr ) { return graph; }
 
-    graph = std::make_shared<Graph>(Map_Structure::get_instance());
+    auto g = std::make_shared<MapStructureGraph>(Map_Structure::get_instance());
+    graph = std::static_pointer_cast<Graph>(g);
     return graph;
 }
 

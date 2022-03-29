@@ -20,7 +20,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, std::shared_pt
         auto top = priorityQueue.top(); priorityQueue.pop();
         u = top.action.endVertex;
         currentTime += std::ceil(top.action.duration);
-        if (iterations > 1000){
+        if (iterations > 25000){
             Error::log("Max iterations reached.\n");
             exit(1);
         }
