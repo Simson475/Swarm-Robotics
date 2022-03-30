@@ -4,6 +4,7 @@
 #include "models/map/map_structure.hpp"
 #include "point.hpp"
 #include "Vertex.hpp"
+#include "Location.hpp"
 
 class Action {
   public:
@@ -19,6 +20,8 @@ class Action {
     std::shared_ptr<Vertex> startVertex;
     std::shared_ptr<Vertex> endVertex;
     float duration;
+    bool isWaitAction();
+    Location getLocation();
 };
 
 #endif

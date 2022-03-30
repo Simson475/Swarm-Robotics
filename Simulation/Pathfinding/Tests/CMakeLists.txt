@@ -32,6 +32,8 @@ set(PathfindingFiles
     # ${PathfindingDir}/_path.cpp
     # ${PathfindingDir}/Solution.hpp
     # ${PathfindingDir}/Solution.cpp
+    ${PathfindingDir}/Location.hpp
+    ${PathfindingDir}/Location.cpp
 
     # ${ControllersDir}/TestController.hpp
     # ${ControllersDir}/TestController.cpp

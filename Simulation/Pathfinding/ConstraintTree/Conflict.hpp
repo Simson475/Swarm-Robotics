@@ -12,6 +12,8 @@ class Conflict
 {
 public:
     //TODO can any of the constructors/destructors be pruned
+    Conflict(std::vector<std::shared_ptr<Agent>> agents, int timeStart, int timeEnd, Location location);
+    Conflict(std::vector<int> agents, int timeStart, int timeEnd, Location location);
     Conflict() = default;
     Conflict(Conflict*);
     Conflict(const Conflict&);

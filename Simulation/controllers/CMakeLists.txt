@@ -55,6 +55,8 @@ set(PathfindingFiles
         ${PathfindingDir}/Interfaces/Vertex.cpp
         ${PathfindingDir}/AgentInfo.hpp
         ${PathfindingDir}/AgentInfo.cpp
+        ${PathfindingDir}/Location.hpp
+        ${PathfindingDir}/Location.cpp
 
         ${MapDir}/map_structure.hpp
         ${MapDir}/map_structure.cpp
