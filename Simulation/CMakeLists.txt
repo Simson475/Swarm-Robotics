@@ -22,7 +22,7 @@ if (GetDependencies)
             )
 
     ExternalProject_add(argos-ext
-            URL https://github.com/simson475/argos3//archive/refs/heads/master.zip
+            URL https://github.com/simson475/argos3//archive/refs/heads/BranchFrom56.zip
             # URL_HASH SHA512=a4de8cc23550afb790d997ee7595068417154820bc8ab3ac0cfa94cc9de6df10fc9db08f6f106ecfd782192d640bce68ca662333c9e37f3a3ef69e90bf7a8a65
             SOURCE_SUBDIR = ../argos-ext/src
             CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DARGOS_INSTALL_LDSOCONF=OFF -DARGOS_DOCUMENTATION=OFF
