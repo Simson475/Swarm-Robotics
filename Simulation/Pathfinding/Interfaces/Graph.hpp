@@ -5,12 +5,12 @@
 #include "Vertex.hpp"
 #include "Edge.hpp"
 #include <memory>
-#include "map_structure.hpp"
 #include "Debugging.hpp"
+#include <limits>
 
 class Graph {
 public:
-    Graph(Map_Structure& map);
+    virtual ~Graph() = default;
     std::vector<std::shared_ptr<Vertex>> getVertices();
     float heuristicCost(std::shared_ptr<Vertex> from, std::shared_ptr<Vertex> to);
     //void setVertices(std::vector<std::shared_ptr<Vertex>>);

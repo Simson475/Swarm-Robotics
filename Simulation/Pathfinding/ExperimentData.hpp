@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include "Graph.hpp"
+#include "MapStructureGraph.hpp"
 #include "Agent.hpp"
 #include "HighLevelCBS.hpp"
 #include "Solution.hpp"
