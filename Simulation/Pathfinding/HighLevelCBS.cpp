@@ -72,10 +72,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<st
              * Update A.solution by invoking low level(ai)
              */
             Solution s = a->getSolution();
-            
             Path newPath = lowLevel.getIndividualPath(graph, agent, a->constraints);
             s.paths[agent->getId()] = newPath;
-            a->setSolution(s);            
+            a->setSolution(s);
             /**
              * If A.cost < INF then insert A to OPEN
              */

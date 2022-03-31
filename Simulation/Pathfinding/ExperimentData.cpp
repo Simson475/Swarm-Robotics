@@ -47,15 +47,6 @@ bool ExperimentData::requestSolution(int agentId){
 
 void ExperimentData::distributeSolution(Solution solution){
     for (auto agent : getAgents()){
-        if (agent->getId() == 6){//TODO remove this debug logging
-            Error::log(std::to_string(agent->getId()));
-            Error::log(": ");
-            for (auto a : solution.paths[agent->getId()].actions){
-                Error::log(std::to_string(a.endVertex->getId()));
-                Error::log(" ");
-            }
-            Error::log("\n");
-        }
         agent->getBot()->setPath(solution.paths[agent->getId()]);
     }
 }
