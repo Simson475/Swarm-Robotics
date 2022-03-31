@@ -1,4 +1,6 @@
 include_directories(.)
+include_directories(./Unit/)
+include_directories(./Integration/)
 include_directories(..)
 include_directories(../ConstraintTree/)
 include_directories(../Interfaces/)
@@ -50,6 +52,9 @@ set(PathfindingFiles
     ${PathfindingDir}/Debugging.hpp
 )
 
+set(UNIT_TESTS ./Unit)
+set(INTEGRATION_TESTS ./Integration)
+
 # Emit all warning messages
 add_definitions(-Wall -Werror)
 
@@ -63,8 +68,12 @@ add_executable(run_tests
     CBSTests.hpp
     CBSTests.cpp
 
-    ActionPathAuxTests.hpp
-    ActionPathAuxTests.cpp
+    ${UNIT_TESTS}/ActionPathAuxTests.hpp
+    ${UNIT_TESTS}/ActionPathAuxTests.cpp
+    ${UNIT_TESTS}/GraphTests.hpp
+    ${UNIT_TESTS}/GraphTests.cpp
+    ${INTEGRATION_TESTS}/LowLevelCBSTests.hpp
+    ${INTEGRATION_TESTS}/LowLevelCBSTests.cpp
 )
 
 # Move the run_tests script to the external/bin/

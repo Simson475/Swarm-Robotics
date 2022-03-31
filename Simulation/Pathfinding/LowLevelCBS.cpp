@@ -13,14 +13,14 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
         nullptr
     ));
     uint currentTime = firstAction.timestamp;// The first action is in the prio queue, so its duration will be added later
-    int iterations = 0;
+    this->iterations = 0;
     while( ! priorityQueue.empty()){
-        iterations++;
+        this->iterations++;
         // Next action
         auto top = priorityQueue.top(); priorityQueue.pop();
         u = top.action.endVertex;
         currentTime += std::ceil(top.action.duration);
-        if (iterations > 25000){
+        if (this->iterations > 25000){
             Error::log("Max iterations reached.\n");
             exit(1);
         }

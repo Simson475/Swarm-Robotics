@@ -1,5 +1,9 @@
 #include "Graph.hpp"
 
+Graph::Graph(std::vector<std::shared_ptr<Vertex>> vertices){
+    this->vertices = vertices;
+}
+
 std::vector<std::shared_ptr<Vertex>> Graph::getVertices(){
     return this->vertices;
 }
