@@ -12,7 +12,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, std::shared_pt
         firstAction.timestamp + std::ceil(firstAction.duration + graph->heuristicCost(firstAction.endVertex, agent->getGoal())),
         nullptr
     ));
-    uint currentTime = firstAction.timestamp;
+    uint currentTime = firstAction.timestamp;// The first action is in the prio queue, so its duration will be added later
     int iterations = 0;
     while( ! priorityQueue.empty()){
         iterations++;
@@ -34,7 +34,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, std::shared_pt
         for (Action action : possibleActions){
             priorityQueue.push(ActionPathAux(
                 action,
-                action.timestamp + std::ceil(action.duration + graph->heuristicCost(action.endVertex, agent->getGoal())),
+                action.timestamp + std::ceil(action.duration + graph->heuristicCost(action.endVertex, goal)),
                 std::make_shared<ActionPathAux>(top)
             ));
         }

@@ -32,7 +32,7 @@ Action Agent::getCurrentAction(){
 }
 
 int Agent::getTimeAtVertex(std::shared_ptr<Vertex> vertex){
-    return (vertex->getId() == this->bot->getStationPlan().front()) ? 10 : 1;//TODO actual times!
+    return (vertex->getId() == this->bot->getStationPlan().front()) ? 100 : 20;//TODO actual times! Also is this dublicate from deltas in conflict?
 }
 
 std::shared_ptr<Vertex> Agent::getGoal(){

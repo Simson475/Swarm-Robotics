@@ -1,17 +1,40 @@
 #include "Conflict.hpp"
 
-std::vector<std::shared_ptr<Agent>> Conflict::getAgents(){
-    //TODO implement properly :)
-    std::vector<std::shared_ptr<Agent>> a{3};
-    return a;
+Conflict::Conflict(Conflict* c){
+    agentIds = c->agentIds;
+    timeStart = c->timeStart;
+    timeEnd = c->timeEnd;
+    location = c->location;
 }
+Conflict::Conflict(const Conflict& c){
+    agentIds = c.agentIds;
+    timeStart = c.timeStart;
+    timeEnd = c.timeEnd;
+    location = c.location;
+}
+Conflict::Conflict(Conflict&& c){
+    agentIds = c.agentIds;
+    timeStart = c.timeStart;
+    timeEnd = c.timeEnd;
+    location = c.location;
+}
+
+Conflict::Conflict(std::vector<int> agentIds, int timeStart, int timeEnd, Location location){
+    this->agentIds = agentIds;
+    this->timeStart = timeStart;
+    this->timeEnd = timeEnd;
+    this->location = location;
+}
+
+std::vector<int> Conflict::getAgentIds(){
+    return this->agentIds;
+}
+
 int Conflict::getTimeStart(){
-    //TODO implement properly :)
-    return 42;
+    return this->timeStart;
 }
 int Conflict::getTimeEnd(){
-    //TODO implement properly :)
-    return 69;
+    return this->timeEnd;
 }
 Location Conflict::getLocation(){
     return this->location;

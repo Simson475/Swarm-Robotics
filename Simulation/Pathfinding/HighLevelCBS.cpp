@@ -1,6 +1,11 @@
 #include "HighLevelCBS.hpp"
 
 Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<std::shared_ptr<Agent>> agents, LowLevelCBS lowLevel){
+    for(auto a : agents){
+        Error::log("Goal: ");
+        Error::log(std::to_string(a->getGoal()->getId()));
+        Error::log("\n");
+    }
     /**
      * Root.constraints = {}
      * Root.solution = find individual paths by the low level
@@ -16,7 +21,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<st
     /**
      * While OPEN not empty do
      */
+    int iterations = 0;
     while (open.size() > 0) {
+        iterations++;
         /**
          * p <-- best node from OPEN (the node with the lowest solution cost)
          */
@@ -24,13 +31,18 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<st
         /**
          * Validate the paths in P until a conflict occurs
          */
+        // Error::log("finding Conflicts now:\n");
         std::vector<Conflict> conflicts = p->findConflicts();
         /**
          * If P has no conflicts then return P.solution
          */
         if (conflicts.size() == 0) {
+            Error::log("After ");
+            Error::log(std::to_string(iterations));
+            Error::log("iterations, we found a solution!\n");
             return p->getSolution();
         }
+        // Error::log("We found conflicts\n");
         /**
          * Get one of the conflicts
          */
@@ -38,7 +50,8 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<st
         /**
          * Foreach agent ai in C do
          */
-        for(std::shared_ptr<Agent> agent : c.getAgents()){
+        for(int agentId : c.getAgentIds()){
+            std::shared_ptr<Agent> agent = agents[agentId];
             /**
              * A <-- new node
              * A.constraints = p.constraints union (ai,v,t)
@@ -60,16 +73,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<st
              */
             Solution s = a->getSolution();
             
-            Error::log(">");
             Path newPath = lowLevel.getIndividualPath(graph, agent, a->constraints);
-            Error::log(".3\n");
-            Error::log(std::to_string(agent->getId()));
-            Error::log("|");
-            Error::log(std::to_string(s.paths.size()));
             s.paths[agent->getId()] = newPath;
-            Error::log("\n9");
-            a->setSolution(s);
-            
+            a->setSolution(s);            
             /**
              * If A.cost < INF then insert A to OPEN
              */
