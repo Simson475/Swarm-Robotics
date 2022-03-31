@@ -24,7 +24,7 @@ Solution ConstraintTree::getSolution(){
 void ConstraintTree::setSolution(Solution s){
     this->solution = s;
 }
-void ConstraintTree::setSolution(std::vector<Path> paths, std::vector<std::shared_ptr<Agent>> agents){
+void ConstraintTree::setSolution(std::vector<Path> paths, std::vector<AgentInfo> agents){
     Solution solution;
     solution.paths = paths;
     setSolution(solution);

@@ -1,10 +1,36 @@
 #include "AgentInfo.hpp"
 
-int AgentInfo::getId(){ return id; }
-void AgentInfo::setId(size_t id) { this->id = id; }
-std::shared_ptr<Location> AgentInfo::getLocation()
-{
-    ExperimentData::get_instance().getAgents()[id]->getLocation();
-    return location;
+AgentInfo::AgentInfo(){
+    
 }
+AgentInfo::AgentInfo(const AgentInfo& a){
+    id = a.id;
+    currentAction = a.currentAction;
+    goal = a.goal;
+}
+AgentInfo::AgentInfo(AgentInfo* a){
+    id = a->getId();
+    currentAction = a->getCurrentAction();
+    goal = a->getGoal();
+}
+AgentInfo::AgentInfo(AgentInfo&& a){
+    id = a.getId();
+    currentAction = a.getCurrentAction();
+    goal = a.getGoal();
+}
+AgentInfo::AgentInfo(int id, Action currentAction, std::shared_ptr<Vertex> destination){
+    this->id = id;
+    this->currentAction = currentAction;
+    this->goal = destination;
+}
+
+int AgentInfo::getId(){ return id; }
+Action AgentInfo::getCurrentAction(){ return currentAction; }
 std::shared_ptr<Vertex> AgentInfo::getGoal(){ return goal; }
+int AgentInfo::getTimeAtVertex(std::shared_ptr<Vertex> vertex){ return (vertex == goal) ? 300 : 20; }//TODO improve estimates
+
+void AgentInfo::operator=(const AgentInfo& other){
+    id = other.id;
+    currentAction = other.currentAction;
+    goal = other.goal;
+}
