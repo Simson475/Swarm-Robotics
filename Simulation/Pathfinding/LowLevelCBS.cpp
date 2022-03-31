@@ -48,15 +48,6 @@ std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::ve
     int i = 0;
     for (AgentInfo agent : agents){
         paths[i] = getIndividualPath(graph, agent, constraints);
-        if (agent.getId() == 6){
-            Error::log(std::to_string(agent.getId()));
-            Error::log(": ");
-            for (auto a : paths[i].actions){
-                Error::log(std::to_string(a.endVertex->getId()));
-                Error::log(" ");
-            }
-            Error::log("\n");
-        }
         i++;
     }
     return paths;
