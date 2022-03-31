@@ -1,9 +1,9 @@
 #include "HighLevelCBS.hpp"
 
-Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<std::shared_ptr<Agent>> agents, LowLevelCBS lowLevel){
+Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS lowLevel){
     for(auto a : agents){
         Error::log("Goal: ");
-        Error::log(std::to_string(a->getGoal()->getId()));
+        Error::log(std::to_string(a.getGoal()->getId()));
         Error::log("\n");
     }
     /**
@@ -51,7 +51,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<st
          * Foreach agent ai in C do
          */
         for(int agentId : c.getAgentIds()){
-            std::shared_ptr<Agent> agent = agents[agentId];
+            AgentInfo agent = agents[agentId];
             /**
              * A <-- new node
              * A.constraints = p.constraints union (ai,v,t)
@@ -73,7 +73,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<st
              */
             Solution s = a->getSolution();
             Path newPath = lowLevel.getIndividualPath(graph, agent, a->constraints);
-            s.paths[agent->getId()] = newPath;
+            s.paths[agent.getId()] = newPath;
             a->setSolution(s);
             /**
              * If A.cost < INF then insert A to OPEN

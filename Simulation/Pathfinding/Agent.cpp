@@ -43,3 +43,7 @@ std::shared_ptr<Vertex> Agent::getGoal(){
     // Return the vertex for the front of station plan
     return ExperimentData::get_instance().getGraph()->getVertices()[bot->getStationPlan().front()];
 }
+
+AgentInfo Agent::getAgentInfo(){
+    return AgentInfo(this->id, currentAction, getGoal());
+}

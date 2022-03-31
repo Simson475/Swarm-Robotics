@@ -7,7 +7,7 @@ class ConstraintTree;
 #include "Constraint.hpp"
 #include "Solution.hpp"
 #include "Conflict.hpp"
-#include "Agent.hpp"
+#include "AgentInfo.hpp"
 
 class ConstraintTree : public std::enable_shared_from_this<ConstraintTree> {
 public:
@@ -20,7 +20,7 @@ public:
     /* More CBS specific */
     Solution getSolution();
     void setSolution(Solution);
-    void setSolution(std::vector<Path>, std::vector<std::shared_ptr<Agent>>);
+    void setSolution(std::vector<Path>, std::vector<AgentInfo>);
     std::vector<Conflict> findConflicts();
     float getCost();
 private:
