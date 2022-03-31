@@ -12,8 +12,10 @@
 #include <chrono>
 #include <iterator>
 
-std::vector<int> SingleThreadBotGreedy::constructStationPlan() {
 
+
+
+std::vector<int> SingleThreadBotGreedy::constructStationPlan() {
 
     // First the current remaining stations in the order are sorted
     std::vector<int> tempPlan{};

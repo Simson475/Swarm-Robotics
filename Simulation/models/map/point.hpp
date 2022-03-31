@@ -7,12 +7,11 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-
 enum pointType {
     via, endpoint, station, realCorner, cStation, tempCalculation
 };
 
-class Point : public argos::CVector3 {
+class Point : public argos::CVector3{
     unsigned int id{};
     pointType pType;
     static unsigned int id_counter;

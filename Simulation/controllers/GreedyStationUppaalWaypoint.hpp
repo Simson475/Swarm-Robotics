@@ -21,4 +21,4 @@ protected:
 };
 
 
-#endif //SWARMSIMULATOR_GREEDYSTATIONUPPAALWAYPOINT_HPP
+#endif

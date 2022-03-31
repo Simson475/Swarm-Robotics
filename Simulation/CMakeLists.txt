@@ -46,7 +46,7 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(${CMAKE_SOURCE_DIR})
 
 # Emit all warning messages
-add_definitions(-Wall -Werror)
+add_definitions(-Wall)# -Werror
 
 # Make the experiments dir
 add_custom_target(build-time-make-directory ALL
@@ -55,6 +55,8 @@ add_custom_target(build-time-make-directory ALL
 add_subdirectory(controllers)
 
 add_subdirectory(loop_functions)
+
+add_subdirectory(Pathfinding/Tests)
 
 #add_custom_command(OUTPUT run_a_scene.sh POST_BUILD
 #        COMMAND ${CMAKE_COMMAND} -E copy

@@ -134,6 +134,10 @@ void RobotInterface::Init(argos::TConfigurationNode &t_node) {
  * Controls how it does the jobs, chooses stations and moves.
 */
 void RobotInterface::ControlStep() {
+    time++;
+    if (currentState == state::waiting) {
+        wait();
+    }
     if (currentState == state::working) {
         if (isDoneWorking()) {
             setWorkingClockAsComplete();
@@ -160,7 +164,8 @@ void RobotInterface::ControlStep() {
         if (!stationPlan.empty() && sMap.isPointAvailable(nextLocation) && isAtStation()) { // If we have a plan and we are at a point
 
             lastLocation = nextLocation;
-            resetWaypointPlan();
+            reachedPointEvent(lastLocation);
+
             if (currentJob->isStationInJob(lastLocation) && isStationNextInPlan(lastLocation)) { // Then we have reached the station @todo: Proper function for checking
                 log_helper("Arrived at a work station");
 
@@ -213,17 +218,19 @@ void RobotInterface::ControlStep() {
             {
                 /// Abstract function
                 std::vector<int> waypointPlan = constructWaypointPlan();
-
-                log_helper("Waypoint plan has size " + std::to_string(waypointPlan.size()));
-                storePlan(waypointPlan, "Waypoint");
-                setWaypointPlan(waypointPlan);
-                setNextLocation(waypointPlan.front());
-                log_helper("Waypoint plan: ", false);
-                for (int j : waypointPlan) {
-                    log_helper(std::to_string(j) + " ", false, false);
+                
+                if ( ! waypointPlan.empty()) {
+                    log_helper("Waypoint plan has size " + std::to_string(waypointPlan.size()));
+                    storePlan(waypointPlan, "Waypoint");
+                    setWaypointPlan(waypointPlan);
+                    setNextLocation(waypointPlan.front());
+                    log_helper("Waypoint plan: ", false);
+                    for (int j : waypointPlan) {
+                        log_helper(std::to_string(j) + " ", false, false);
+                    }
+                    log_helper("", true, false);
+                    log_helper("Going towards " + std::to_string(nextLocation));
                 }
-                log_helper("", true, false);
-                log_helper("Going towards " + std::to_string(nextLocation));
             }
         }
     }
@@ -652,4 +659,12 @@ bool RobotInterface::isInLivelock() {
         return false;
 
     return lastModification + 30 * 60 * 10 < getLogicalTime();
+}
+
+void RobotInterface::reachedPointEvent(int id){
+    resetWaypointPlan();
+}
+
+void RobotInterface::wait(){
+    //Do nothing
 }

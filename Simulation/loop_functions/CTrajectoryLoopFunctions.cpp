@@ -166,7 +166,7 @@ void CTrajectoryLoopFunctions::setInitLocationOnControllers(Map_Structure& sMap)
 
         //Robot robot = sMap.getRobotByName(controller.GetId());
 
-        // Needs improvement!
+        //TODO Needs improvement!
         for (auto &p : sMap.points) {
             if(p.getName() == "S." + controller.GetId()) {
                 controller.setInitLocation(p.getId());
@@ -202,6 +202,7 @@ void CTrajectoryLoopFunctions::setUpDataCollection(){
     logFile << "Robot, Type, Time, currentPos, Value_1, Value_2" << std::endl;
     logFile.close();
 }
+
 /****************************************/
 /****************************************/
 REGISTER_LOOP_FUNCTIONS(CTrajectoryLoopFunctions, "CTrajectoryLoopFunctions")

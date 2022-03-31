@@ -25,8 +25,8 @@
   <!-- * Controllers * -->
   <!-- *************** -->
   <controllers>
-    <SingleThreadBotGreedy id="fdc"
-                                  library="libBotImplementations">
+    <TestController id="fdc"
+                                  library="../../bin/libBotImplementations.so">
       <actuators>
         <differential_steering implementation="default" />
       </actuators>
@@ -46,7 +46,7 @@
       </params>
 
       <params alpha="7.5" delta="0.1" />
-    </SingleThreadBotGreedy>
+    </TestController>
 
   </controllers>
 

@@ -1,4 +1,8 @@
 include_directories(.)
+include_directories(../Pathfinding/)
+include_directories(../Pathfinding/ConstraintTree/)
+include_directories(../Pathfinding/Interfaces/)
+include_directories(../models/map/)
 
 # Find the QtWidgets library
 find_package(Qt5Widgets) #@todo: Is this necessary anymore?
@@ -12,6 +16,53 @@ include_directories(${LUA_INCLUDE_DIR})
 #set(ARGOS_WITH_LUA OFF)
 #add_definitions(-DARGOS_WITH_LUA=0)
 unset(ARGOS_WITH_LUA CACHE)
+
+set(PathfindingDir ../Pathfinding)
+set(ControllersDir .)
+set(MapDir ../models/map)
+set(PathfindingFiles
+        ${PathfindingDir}/ConstraintTree/Conflict.hpp
+        ${PathfindingDir}/ConstraintTree/Conflict.cpp
+        ${PathfindingDir}/ConstraintTree/ConstraintTree.hpp
+        ${PathfindingDir}/ConstraintTree/ConstraintTree.cpp
+        ${PathfindingDir}/Action.hpp
+        ${PathfindingDir}/Action.cpp
+        ${PathfindingDir}/ActionPathAux.hpp
+        ${PathfindingDir}/ActionPathAux.cpp
+        ${PathfindingDir}/ExperimentData.hpp
+        ${PathfindingDir}/ExperimentData.cpp
+        ${PathfindingDir}/Agent.hpp
+        ${PathfindingDir}/Agent.cpp
+        ${PathfindingDir}/ConstraintTree/Constraint.hpp
+        ${PathfindingDir}/ConstraintTree/Constraint.cpp
+        ${PathfindingDir}/HighLevelCBS.hpp
+        ${PathfindingDir}/HighLevelCBS.cpp
+        ${PathfindingDir}/LowLevelCBS.hpp
+        ${PathfindingDir}/LowLevelCBS.cpp
+        ${PathfindingDir}/_path.hpp
+        ${PathfindingDir}/_path.cpp
+        ${PathfindingDir}/Solution.hpp
+        ${PathfindingDir}/Solution.cpp
+
+        ${ControllersDir}/TestController.hpp
+        ${ControllersDir}/TestController.cpp
+
+        ${PathfindingDir}/Interfaces/Edge.hpp
+        ${PathfindingDir}/Interfaces/Edge.cpp
+        ${PathfindingDir}/Interfaces/Graph.hpp
+        ${PathfindingDir}/Interfaces/Graph.cpp
+        ${PathfindingDir}/Interfaces/MapStructureGraph.hpp
+        ${PathfindingDir}/Interfaces/MapStructureGraph.cpp
+        ${PathfindingDir}/Interfaces/Vertex.hpp
+        ${PathfindingDir}/Interfaces/Vertex.cpp
+        ${PathfindingDir}/AgentInfo.hpp
+        ${PathfindingDir}/AgentInfo.cpp
+
+        ${MapDir}/map_structure.hpp
+        ${MapDir}/map_structure.cpp
+
+        ${PathfindingDir}/Debugging.hpp
+)
 
 # Add a library target called BotImplementations from the source files listed
 # MODULE makes it a library/plugin that is not linked into other targets but may be loaded dynamically at runtime
@@ -36,6 +87,14 @@ add_library(BotImplementations MODULE
 
         UppaalStationGreedyWaypoint.cpp
         UppaalStationGreedyWaypoint.hpp
+        
+        #SingleThreadBotCBS.hpp
+        #SingleThreadBotCBS.cpp
+
+        #GreedyStationCBSWaypoint.cpp
+        #GreedyStationCBSWaypoint.hpp
+
+        ${PathfindingFiles}
         )
 
 # Ensure that argos-ext is build before BotImplementations
