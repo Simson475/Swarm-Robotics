@@ -63,6 +63,9 @@ std::vector<Conflict> ConstraintTree::findConflicts(){
                         else if (isVertexConflict(a1, a2)){
                             conflicts.push_back(getVertexConflict({i, j}, a1, a2));
                         }
+                        else if (isFollowConflict(a1, a2)){
+                            conflicts.push_back(getFollowConflict({i, j}, a1, a2));
+                        }
                     }
                 }
             }
