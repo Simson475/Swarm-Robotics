@@ -179,64 +179,45 @@ void ConstraintTreeTests::it_is_vertex_conflict(){
     // Arrange
     ConstraintTree ct;
     Action a1, a2;
-    /**
-     * We will construct the following graph
-     * 1--2--3
-    */
     auto v1 = std::make_shared<Vertex>(1);
     auto v2 = std::make_shared<Vertex>(2);
     auto v3 = std::make_shared<Vertex>(3);
-    std::vector<std::shared_ptr<Edge>> v1edges = {
-        std::make_shared<Edge>(v1, v2, 100),
-    };
-    std::vector<std::shared_ptr<Edge>> v2edges = {
-        std::make_shared<Edge>(v2, v1, 100),
-        std::make_shared<Edge>(v2, v3, 100),
-    };
-    std::vector<std::shared_ptr<Edge>> v3edges = {
-        std::make_shared<Edge>(v3, v2, 100),
-    };
-    v1->setEdges(v1edges);
-    v2->setEdges(v2edges);
-    v3->setEdges(v3edges);
     a1 = Action(0, v1, v2, 100);
     a2 = Action(0, v3, v2, 100);
 
     // Act & Assert
-    std::cout << "Assert 1\n";
-    assert(ct.isVertexConflict(a1, a2)); // Meet at the same vertex within delta time
-    a2 = Action(21, v3, v2, 100);
-    std::cout << "Assert 2\n";
-    assert( ! ct.isVertexConflict(a1, a2)); // Go to the same vertex, but dont meet within delta time
-    a2 = Action(121, v2, v3, 100);
-    std::cout << "Assert 3\n";
-    assert( ! ct.isVertexConflict(a1, a2)); // Follow, but with > delta time spacing
+    // Meets at the same vertex within delta time
+    assert(ct.isVertexConflict(a1, a2));
+
+    // a1 moves to the vertex a2 is waiting at
+    a2 = Action(0, v2, v2, 100);
+    assert(ct.isVertexConflict(a1, a2));
+
+    // a2 moves to the vertex a1 is waiting at
+    a1 = Action(0, v2, v2, 100);
+    a2 = Action(0, v1, v2, 100);
+    assert(ct.isVertexConflict(a1, a2));
+
+    // Going to same vertex, but at different times (still overlapping)
+    a1 = Action(0, v1, v2, 500);
+    a2 = Action(0, v3, v2, 100);
+    assert( ! ct.isVertexConflict(a1, a2));
 }
 
 void ConstraintTreeTests::it_is_edge_conflict(){
     // Arrange
     ConstraintTree ct;
     Action a1, a2;
-    /**
-     * We will construct the following graph
-     * 1--2--3
-    */
     auto v1 = std::make_shared<Vertex>(1);
     auto v2 = std::make_shared<Vertex>(2);
-    auto v3 = std::make_shared<Vertex>(3);
     std::vector<std::shared_ptr<Edge>> v1edges = {
         std::make_shared<Edge>(v1, v2, 100),
     };
     std::vector<std::shared_ptr<Edge>> v2edges = {
         std::make_shared<Edge>(v2, v1, 100),
-        std::make_shared<Edge>(v2, v3, 100),
-    };
-    std::vector<std::shared_ptr<Edge>> v3edges = {
-        std::make_shared<Edge>(v3, v2, 100),
     };
     v1->setEdges(v1edges);
     v2->setEdges(v2edges);
-    v3->setEdges(v3edges);
     a1 = Action(0, v1, v2, 100);
     a2 = Action(50, v1, v2, 100);
 
@@ -248,29 +229,150 @@ void ConstraintTreeTests::it_is_swap_conflict(){
     // Arrange
     ConstraintTree ct;
     Action a1, a2;
-    /**
-     * We will construct the following graph
-     * 1--2--3
-    */
     auto v1 = std::make_shared<Vertex>(1);
     auto v2 = std::make_shared<Vertex>(2);
-    auto v3 = std::make_shared<Vertex>(3);
     std::vector<std::shared_ptr<Edge>> v1edges = {
         std::make_shared<Edge>(v1, v2, 100),
     };
     std::vector<std::shared_ptr<Edge>> v2edges = {
         std::make_shared<Edge>(v2, v1, 100),
-        std::make_shared<Edge>(v2, v3, 100),
-    };
-    std::vector<std::shared_ptr<Edge>> v3edges = {
-        std::make_shared<Edge>(v3, v2, 100),
     };
     v1->setEdges(v1edges);
     v2->setEdges(v2edges);
-    v3->setEdges(v3edges);
     a1 = Action(0, v1, v2, 100);
     a2 = Action(0, v2, v1, 100);
 
     // Act & Assert
     assert(ct.isSwapConflict(a1, a2));
+    a2 = Action(50, v2, v1, 100);
+    assert(ct.isSwapConflict(a1, a2));
+}
+
+void ConstraintTreeTests::it_is_follow_conflict(){
+    // Arrange
+    ConstraintTree ct;
+    Action a1, a2;
+    auto v1 = std::make_shared<Vertex>(1);
+    auto v2 = std::make_shared<Vertex>(2);
+    auto v3 = std::make_shared<Vertex>(3);
+
+    // Act & Assert
+    // Meets at the same vertex within delta time
+    a1 = Action(0, v1, v2, 100);
+    a2 = Action(100, v2, v3, 100);
+    assert(ct.isFollowConflict(a1, a2));
+
+    // a1 moves to the vertex a2 is waiting at
+    a2 = Action(a1.timestamp + a1.duration, v2, v2, 100);
+    assert(ct.isFollowConflict(a1, a2));
+
+    // a1 moves to the vertex a2 waited at > delta ago
+    a2 = Action(a1.timestamp + a1.duration + ct.delta + 1, v2, v2, 100);
+    assert( ! ct.isFollowConflict(a1, a2));
+}
+
+void ConstraintTreeTests::it_can_get_vertex_conflict(){
+    // Arrange
+    ConstraintTree ct;
+    Action a1, a2;
+    auto v1 = std::make_shared<Vertex>(1);
+    auto v2 = std::make_shared<Vertex>(2);
+    auto v3 = std::make_shared<Vertex>(3);
+    a1 = Action(0, v1, v2, 100);
+    a2 = Action(10, v3, v2, 100);
+    std::vector<int> agents = {1, 2};
+
+    // Act
+    Conflict c1 = ct.getVertexConflict(agents, a1, a2);
+
+    // Assert
+    assert(c1.getAgentIds()[0] == agents[0]);
+    assert(c1.getAgentIds()[1] == agents[1]);
+    assert(c1.getLocation().toString() == "v2");
+    assert(c1.getTimeStart() == a1.timestamp + a1.duration);
+    assert(c1.getTimeEnd() == (a1.timestamp + a1.duration + ct.delta));
+}
+
+void ConstraintTreeTests::it_can_get_follow_conflict(){
+    // Arrange
+    ConstraintTree ct;
+    Action a1, a2;
+    auto v1 = std::make_shared<Vertex>(1);
+    auto v2 = std::make_shared<Vertex>(2);
+    auto v3 = std::make_shared<Vertex>(3);
+    a1 = Action(0, v1, v2, 100);
+    a2 = Action(110, v2, v3, 100);
+    std::vector<int> agents = {1, 2};
+
+    // Act
+    Conflict c1 = ct.getFollowConflict(agents, a1, a2);
+
+    // Assert
+    assert(c1.getAgentIds()[0] == agents[0]);
+    assert(c1.getAgentIds()[1] == agents[1]);
+    assert(c1.getLocation().toString() == "v2");
+    assert(c1.getTimeStart() == a2.timestamp);
+    assert(c1.getTimeEnd() == (a1.timestamp + a1.duration + ct.delta));
+}
+
+void ConstraintTreeTests::it_can_get_edge_conflict(){
+    // Arrange
+    ConstraintTree ct;
+    Action a1, a2;
+    auto v1 = std::make_shared<Vertex>(1);
+    auto v2 = std::make_shared<Vertex>(2);
+    std::vector<std::shared_ptr<Edge>> v1edges = {
+        std::make_shared<Edge>(v1, v2, 100),
+    };
+    std::vector<std::shared_ptr<Edge>> v2edges = {
+        std::make_shared<Edge>(v2, v1, 100),
+    };
+    v1->setEdges(v1edges);
+    v2->setEdges(v2edges);
+    a1 = Action(0, v1, v2, 100);
+    a2 = Action(50, v1, v2, 100);
+    std::vector<int> agents = {1, 2};
+
+    // Act
+    Conflict c1 = ct.getEdgeConflict(agents, a1, a2);
+
+    // Assert
+    assert(c1.getAgentIds()[0] == agents[0]);
+    assert(c1.getAgentIds()[1] == agents[1]);
+    assert(c1.getLocation().toString() == "e[1,2]");
+    assert(c1.getTimeStart() == a2.timestamp);
+    assert(c1.getTimeEnd() == (a1.timestamp + a1.duration));
+}
+
+void ConstraintTreeTests::it_can_get_swap_conflict(){
+    // Arrange
+    ConstraintTree ct;
+    Action a1, a2;
+    auto v1 = std::make_shared<Vertex>(1);
+    auto v2 = std::make_shared<Vertex>(2);
+    std::vector<std::shared_ptr<Edge>> v1edges = {
+        std::make_shared<Edge>(v1, v2, 100),
+    };
+    std::vector<std::shared_ptr<Edge>> v2edges = {
+        std::make_shared<Edge>(v2, v1, 100),
+    };
+    v1->setEdges(v1edges);
+    v2->setEdges(v2edges);
+    a1 = Action(0, v1, v2, 100);
+    a2 = Action(50, v2, v1, 100);
+    std::vector<int> agents = {1, 2};
+
+    // Act
+    Conflict c1 = ct.getSwapConflict(agents[0], a1, a2);
+    Conflict c2 = ct.getSwapConflict(agents[1], a2, a1);
+
+    // Assert
+    assert(c1.getAgentIds()[0] == agents[0]);
+    assert(c2.getAgentIds()[0] == agents[1]);
+    assert(c1.getLocation().toString() == "e[1,2]");
+    assert(c2.getLocation().toString() == "e[2,1]");
+    assert(c1.getTimeStart() == a2.timestamp);
+    assert(c1.getTimeEnd() == (a1.timestamp + a1.duration));
+    assert(c1.getTimeStart() == c2.getTimeStart());
+    assert(c1.getTimeEnd() == c2.getTimeEnd());
 }

@@ -11,6 +11,7 @@ public:
     std::shared_ptr<Vertex> getStartVertex();
     std::shared_ptr<Vertex> getEndVertex();
     float getCost();
+    std::string toString();
 private:
     float cost;
     std::shared_ptr<Vertex> startVertex;

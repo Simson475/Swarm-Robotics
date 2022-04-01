@@ -129,7 +129,6 @@ void LowLevelCBSTests::pathfinding_is_correct_with_constraints(){
     };
 
     //Act
-    LowLevelCBS::get_instance().iterations = 0;
     Path path = LowLevelCBS::get_instance()
         .getIndividualPath(g, agents[0], constraints);
 

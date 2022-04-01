@@ -39,10 +39,6 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         /**
          * If P has no conflicts then return P.solution
          */
-        for(auto p : p->getSolution().paths){
-            std::cout << "p:" << p.toString() << "\n";
-        }
-        std::cout << conflicts.size() << " conflicts found\n";
         if (conflicts.size() == 0) {
             Error::log("After ");
             Error::log(std::to_string(iterations));
@@ -68,10 +64,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             Constraint constraint = Constraint(
                 agent,
                 c.getLocation(),
-                c.getTimeStart(),
-                c.getTimeEnd()
+                c.getTimeStart() - 1,
+                c.getTimeEnd() + 1
             );
-            std::cout << constraint.toString() << "\n";
             a->constraints.emplace_back(constraint);
             /**
              * A.solution <-- P.solution

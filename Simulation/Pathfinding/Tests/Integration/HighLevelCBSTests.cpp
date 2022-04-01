@@ -57,7 +57,6 @@ void HighLevelCBSTests::it_gets_a_path_that_has_no_conflicts(){
         AgentInfo(1, Action(0, v1, v1, 0), v3), // Starting in v1, going to v3
     };
     // Act
-    LowLevelCBS::get_instance().iterations = 0;
     Solution solution = HighLevelCBS::get_instance().findSolution(g, agents, LowLevelCBS::get_instance());
 
     // Assert

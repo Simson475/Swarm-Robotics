@@ -18,7 +18,6 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
         this->iterations++;
         // Next action
         auto top = priorityQueue.top(); priorityQueue.pop();
-        std::cout << "top: " << top.action.toString() << " \n";
         u = top.action.endVertex;
         currentTime += top.action.duration;
         if (this->iterations > 25000){
@@ -84,7 +83,7 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
              && constraint.timeEnd >= (currentTime + edge->getCost() + agent.getTimeAtVertex(edge->getEndVertex()))
             ){
                 float arrivalTime = edge->getCost();
-                minWaitTime = (minWaitTime < arrivalTime) ? minWaitTime : (constraint.timeEnd - (currentTime + arrivalTime) + 1);
+                minWaitTime = (minWaitTime < arrivalTime) ? minWaitTime : (constraint.timeEnd - (currentTime + arrivalTime));
                 edgeIsPossible = false;
                 continue;
             }
