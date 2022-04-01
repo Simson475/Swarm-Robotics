@@ -23,8 +23,8 @@ exit 0
 fi
 
 # Create the header file
-echo "#ifndef ${2^^}_HPP
-#define ${2^^}_HPP
+echo "#ifndef ${2^^}_TESTS_HPP
+#define ${2^^}_TESTS_HPP
 
 #include \"TestInterface.hpp\"
 #include \"$2.hpp\"
@@ -36,7 +36,8 @@ public:
     void run(){// This is placed in the header to help ensure all tests are run
 
     }
-}
+};
+
 #endif" > "$1/$2Tests.hpp"
 
 # Create the cpp file

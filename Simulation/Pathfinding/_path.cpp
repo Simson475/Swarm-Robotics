@@ -7,3 +7,12 @@ std::vector<int> Path::asWaypointPlan(){
   }
   return waypointPlan;
 }
+
+std::string Path::toString(){
+  std::string str = "";
+  str += "v" + std::to_string(actions[0].startVertex->getId());
+  for(Action a : actions){
+    str += "v" + std::to_string(a.endVertex->getId()) + "t" + std::to_string(a.timestamp + a.duration) + " ";
+  }
+  return str;
+}

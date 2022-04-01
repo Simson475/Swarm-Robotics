@@ -7,12 +7,12 @@
 
 class ActionPathAux{
 public:
-    ActionPathAux(Action action, int priority, std::shared_ptr<ActionPathAux> predecessor);
+    ActionPathAux(Action action, float priority, std::shared_ptr<ActionPathAux> predecessor);
     ActionPathAux(const ActionPathAux &a);
     Path getPath();
 
     Action action;
-    int priority;
+    float priority;
     std::shared_ptr<ActionPathAux> predecessor;
     void operator=(const ActionPathAux &a);
 };

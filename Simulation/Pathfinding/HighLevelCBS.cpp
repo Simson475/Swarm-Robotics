@@ -24,6 +24,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     int iterations = 0;
     while (open.size() > 0) {
         iterations++;
+        if (iterations == 3){
+            exit(1);
+        }
         /**
          * p <-- best node from OPEN (the node with the lowest solution cost)
          */
@@ -36,13 +39,16 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         /**
          * If P has no conflicts then return P.solution
          */
+        for(auto p : p->getSolution().paths){
+            std::cout << "p:" << p.toString() << "\n";
+        }
+        std::cout << conflicts.size() << " conflicts found\n";
         if (conflicts.size() == 0) {
             Error::log("After ");
             Error::log(std::to_string(iterations));
             Error::log("iterations, we found a solution!\n");
             return p->getSolution();
         }
-        // Error::log("We found conflicts\n");
         /**
          * Get one of the conflicts
          */
@@ -58,12 +64,15 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              */
             std::shared_ptr<ConstraintTree> a = std::make_shared<ConstraintTree>();//TODO should we connect this to P or is it irrelevant in implementation?
             a->constraints = p->constraints;
-            a->constraints.emplace_back(Constraint(
+
+            Constraint constraint = Constraint(
                 agent,
                 c.getLocation(),
                 c.getTimeStart(),
                 c.getTimeEnd()
-            ));
+            );
+            std::cout << constraint.toString() << "\n";
+            a->constraints.emplace_back(constraint);
             /**
              * A.solution <-- P.solution
              */
