@@ -26,10 +26,12 @@ public:
     void setAgentId(int id);
     Location getCurrentLocation();
     Action getCurrentAction();
+    void setCurrentAction(Action action);
     void setPath(Path path);
 
 protected:
 
+    void specialInit() override;
     std::vector<int> constructStationPlan() override;
     std::vector<int> constructWaypointPlan() override;
 

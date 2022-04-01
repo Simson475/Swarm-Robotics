@@ -101,7 +101,7 @@ void CTrajectoryLoopFunctions::initJobGenerator(){
     for(auto id : sMap.endStationIDs)
         endStationIDs.insert(id);
 
-    int jobs_per_robot = 200;
+    int jobs_per_robot = 60;
     try {
         argos::TConfigurationNode &t_node = argos::CSimulator::GetInstance().GetConfigurationRoot();
         argos::TConfigurationNode &params = argos::GetNode(t_node, "custom");

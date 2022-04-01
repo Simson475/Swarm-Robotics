@@ -192,6 +192,8 @@ void RobotInterface::ControlStep() {
                 } else if (lastLocation != initLocation) {
                     log_helper("Sets final job");
                     setFinalJob();
+                }else{
+                    currentState=state::finished;
                 }
             }
 
@@ -209,6 +211,8 @@ void RobotInterface::ControlStep() {
                 }
                 log_helper("", true, false);
                 log_helper("Next station is now: " + std::to_string(getNextStation()));
+
+                if (subtype == "CBS" && getLogicalTime() == 1) return;
 
             } else if (stationPlan.empty() && lastLocation != initLocation && returningToInit) {
                 setStationPlan(std::vector<int>{initLocation});
@@ -667,4 +671,8 @@ void RobotInterface::reachedPointEvent(int id){
 
 void RobotInterface::wait(){
     //Do nothing
+}
+
+bool RobotInterface::isFinished(){
+    return this->currentState == state::finished;
 }

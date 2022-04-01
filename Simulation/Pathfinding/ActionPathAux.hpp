@@ -18,5 +18,6 @@ public:
 };
 
 bool operator< (const ActionPathAux &a, const ActionPathAux &b);//Comparison function for priority queue
+bool operator> (const ActionPathAux &a, const ActionPathAux &b);//Comparison function for priority queue
 
 #endif

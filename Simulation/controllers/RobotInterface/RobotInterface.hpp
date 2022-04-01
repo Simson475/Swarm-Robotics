@@ -56,6 +56,8 @@ public:
     // Obtain references for the other robots for information extraction when creating Uppaal models.
     void obtainOtherBots(Map_Structure&);
 
+    std::string getSubtype();
+
     // Functions the other controllers need
     bool hasJob();
     unsigned int sizeOfStationPlan();
@@ -71,15 +73,17 @@ public:
     void setWaypointPlan(std::vector<int> waypointPlan);
     // Is the robot in a live deadlock
     bool isInLivelock();
+    bool isFinished();
 
 protected:
 
+    std::string subtype = "default";
     virtual void reachedPointEvent(int id);
     virtual void wait();
     int time = 0;
 
     //Internal state for when to move and when to move
-    enum class state {working, moving, waiting, done};
+    enum class state {working, moving, waiting, done, finished};
 
     state currentState;
 
