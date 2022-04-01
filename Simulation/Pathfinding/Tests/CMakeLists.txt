@@ -74,6 +74,10 @@ add_executable(run_tests
     ${UNIT_TESTS}/GraphTests.cpp
     ${INTEGRATION_TESTS}/LowLevelCBSTests.hpp
     ${INTEGRATION_TESTS}/LowLevelCBSTests.cpp
+    ${INTEGRATION_TESTS}/HighLevelCBSTests.hpp
+    ${INTEGRATION_TESTS}/HighLevelCBSTests.cpp
+    #TEST_SOURCE_FILES_LAST_LINE
+    # The above line should not be edited or deleted
 )
 
 # Move the run_tests script to the external/bin/
