@@ -59,10 +59,6 @@ void TestController::setPath(Path path){
     this->path = path;
 }
 
-void TestController::specialInit(){
-    subtype = "CBS";
-}
-
 /**
  * Called when the robot reached point with the id.
  * 

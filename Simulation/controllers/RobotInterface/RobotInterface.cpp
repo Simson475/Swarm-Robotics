@@ -212,8 +212,6 @@ void RobotInterface::ControlStep() {
                 log_helper("", true, false);
                 log_helper("Next station is now: " + std::to_string(getNextStation()));
 
-                if (subtype == "CBS" && getLogicalTime() == 1) return;
-
             } else if (stationPlan.empty() && lastLocation != initLocation && returningToInit) {
                 setStationPlan(std::vector<int>{initLocation});
             }
