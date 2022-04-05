@@ -3,6 +3,7 @@
 
 #include "Vertex.hpp"
 #include "Edge.hpp"
+#include <iostream>
 
 enum ELocationType{
     VERTEX_LOCATION,

@@ -16,15 +16,29 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     /**
      * While OPEN not empty do
      */
+    int iterations = 0;
     while (open.size() > 0) {
+        if (++iterations == 10000){
+            Error::log("Max highlevel iterations reached!\n");
+            exit(1);
+        }
         /**
          * p <-- best node from OPEN (the node with the lowest solution cost)
          */
         std::shared_ptr<ConstraintTree> p = open.top();open.pop();
+        // std::cout << "Popped this solution:\n";
+        // for (auto pa : p->getSolution().paths){
+        //     std::cout << pa.toString() << "\n";
+        // }
         /**
          * Validate the paths in P until a conflict occurs
          */
         std::vector<Conflict> conflicts = p->findConflicts();
+        // std::cout << "Found these conflicts:\n";
+        // std::cout << conflicts.size() << "\n";
+        // for (auto conf : conflicts){
+        //     std::cout << conf.toString();
+        // }
         /**
          * If P has no conflicts then return P.solution
          */
@@ -46,14 +60,25 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              */
             std::shared_ptr<ConstraintTree> a = std::make_shared<ConstraintTree>();//TODO should we connect this to P or is it irrelevant in implementation?
             a->constraints = p->constraints;
-
+            //std::cout << c.getLocation().toString() << "<-- get location  get time start-->"<< c.getTimeStart()<< "\n"
+            //<< "Constraints.size: " << a->constraints.size() << "\n";
             Constraint constraint = Constraint(
                 agent,
                 c.getLocation(),
                 c.getTimeStart() - 1,
                 c.getTimeEnd() + 1
             );
-            a->constraints.emplace_back(constraint);
+            // if (agentId == c.getAgentIds()[0]){
+            //     std::cout << "X\n";
+            //     for (auto pa : p->getSolution().paths){
+            //         std::cout << pa.toString() << "\n";
+            //     }
+            //     std::cout << constraint.toString() << "\n";
+            // }
+            a->constraints.push_back(constraint);
+            // for (auto constr : a->constraints){
+            //     std::cout << constr.toString() << "\n";
+            // }
             /**
              * A.solution <-- P.solution
              */
@@ -65,6 +90,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             Path newPath = lowLevel.getIndividualPath(graph, agent, a->constraints);
             s.paths[agent.getId()] = newPath;
             a->setSolution(s);
+            // for (auto pa : a->getSolution().paths){
+            //     std::cout << pa.toString() << "\n";
+            // }
             /**
              * If A.cost < INF then insert A to OPEN
              */

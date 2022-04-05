@@ -40,6 +40,8 @@ private:
     std::vector<std::shared_ptr<ConstraintTree>> children;
     Solution solution;
     std::vector<std::shared_ptr<Conflict>> conflicts;
+    bool actionsOverlap(Action a1, Action a2);
+    bool arriveWithinDelta(Action a1, Action a2);
 };
 
 #endif

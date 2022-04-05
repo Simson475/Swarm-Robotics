@@ -129,7 +129,6 @@ void HighLevelCBSTests::it_can_find_a_solution_if_agents_have_same_goal(){
     assert(solution.paths.size() == 2);
     std::cout << "Path0 cost: " << solution.paths[0].cost << "\n";
     std::cout << "Path1 cost: " << solution.paths[1].cost << "\n";
-    assert(solution.paths[0].cost == 221 || solution.paths[0].cost == 200);
-    assert(solution.paths[1].cost == 221 || solution.paths[1].cost == 200);
-    assert(solution.paths[0].cost != solution.paths[1].cost);
+    assert(solution.paths[0].cost == 761);
+    assert(solution.paths[1].cost == 440);
 }

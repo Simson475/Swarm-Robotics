@@ -7,6 +7,8 @@ class Vertex;
 #include <memory>
 #include "Edge.hpp"
 
+#include <iostream>
+
 class Vertex {
 public:
     Vertex(int id);
