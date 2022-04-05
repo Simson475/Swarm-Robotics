@@ -104,7 +104,7 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
     }
 
     // Wait action
-    //actions.push_back(Action(currentTime, vertex, vertex, minWaitTime));
+    actions.push_back(Action(currentTime, vertex, vertex, minWaitTime));
 
     return actions;
 }
