@@ -192,6 +192,8 @@ void RobotInterface::ControlStep() {
                 } else if (lastLocation != initLocation) {
                     log_helper("Sets final job");
                     setFinalJob();
+                }else{
+                    currentState=state::finished;
                 }
             }
 
@@ -667,4 +669,8 @@ void RobotInterface::reachedPointEvent(int id){
 
 void RobotInterface::wait(){
     //Do nothing
+}
+
+bool RobotInterface::isFinished(){
+    return this->currentState == state::finished;
 }

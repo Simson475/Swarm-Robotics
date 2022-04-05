@@ -10,7 +10,7 @@
 #include <tuple>
 
 #define robotDiameter 0.2f
-#define offset_for_obstacles robotDiameter * 1.5
+#define offset_for_obstacles robotDiameter * 0.5
 
 class Box {
 private:

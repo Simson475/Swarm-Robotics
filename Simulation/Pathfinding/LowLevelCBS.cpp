@@ -6,7 +6,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     std::shared_ptr<Vertex> goal = agent.getGoal();
 
     // Compute path from after the current action
-    std::priority_queue<ActionPathAux> priorityQueue{};
+    std::priority_queue<ActionPathAux, std::vector<ActionPathAux>, std::greater<ActionPathAux>> priorityQueue{};
     priorityQueue.push(ActionPathAux(
         firstAction,
         firstAction.timestamp + firstAction.duration + graph->heuristicCost(firstAction.endVertex, goal),
@@ -20,7 +20,8 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
         auto top = priorityQueue.top(); priorityQueue.pop();
         u = top.action.endVertex;
         currentTime += top.action.duration;
-        if (this->iterations > 25000){
+
+        if (this->iterations > 25000000){
             Error::log("Max iterations reached.\n");
             exit(1);
         }

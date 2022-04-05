@@ -26,6 +26,7 @@ public:
     void setAgentId(int id);
     Location getCurrentLocation();
     Action getCurrentAction();
+    void setCurrentAction(Action action);
     void setPath(Path path);
 
 protected:

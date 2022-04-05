@@ -71,6 +71,7 @@ public:
     void setWaypointPlan(std::vector<int> waypointPlan);
     // Is the robot in a live deadlock
     bool isInLivelock();
+    bool isFinished();
 
 protected:
 
@@ -79,7 +80,7 @@ protected:
     int time = 0;
 
     //Internal state for when to move and when to move
-    enum class state {working, moving, waiting, done};
+    enum class state {working, moving, waiting, done, finished};
 
     state currentState;
 

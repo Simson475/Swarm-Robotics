@@ -1,17 +1,17 @@
 #include "TestController.hpp"
 #include <iostream>
 
-std::vector<int> TestController::constructStationPlan(){
+std::vector<int> TestController::constructStationPlan(){    
     // std::cout << "Testing station plan";
     return SingleThreadBotGreedy::constructStationPlan();
 }
+
 std::vector<int> TestController::constructWaypointPlan(){
     // If we already have a plan
     if ( ! path.actions.empty()){
         return getNextPointAndUpdateState();
     }
     //We do not have a plan
-
     if (ExperimentData::get_instance().requestSolution(agentId)){
         return getNextPointAndUpdateState();
     }
@@ -31,16 +31,11 @@ std::vector<int> TestController::getNextPointAndUpdateState(){
     /** Update current action and location to the new action
       * If the action is a wait action, we set the location to the vertex
       * else we set the location to the edge. */
-    this->currentAction = action;
+    this->setCurrentAction(action);
     updateCurrentLocation(action);
     
     // Create a single point waypoint plan (it is cleared after it is reached anyways)
     vec.push_back(action.endVertex->getId());
-
-    if (agentId == 6){
-        Error::log(std::to_string(action.endVertex->getId()));
-        Error::log(".\n");
-    }
     
     // Set state depending on the action
     currentState = (action.startVertex->getId() == action.endVertex->getId()) ? state::waiting : state::moving;
@@ -100,6 +95,14 @@ void TestController::wait(){
         currentState = state::moving;
         resetWaypointPlan();
     }
+}
+
+void TestController::setCurrentAction(Action action){
+    this->currentAction = action;
+}
+
+Action TestController::getCurrentAction(){
+    return this->currentAction;
 }
 
 REGISTER_CONTROLLER(TestController, "TestController")

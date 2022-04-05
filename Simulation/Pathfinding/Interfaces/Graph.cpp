@@ -26,13 +26,14 @@ float Graph::heuristicCost(std::shared_ptr<Vertex> from, std::shared_ptr<Vertex>
         }
     }
     for (size_t k = 0; k < size; ++k){
-    for (size_t i = 0; i < size; ++i){
-    for (size_t j = 0; j < size; ++j){
-        float directCost = this->heuristicCosts[i][j];
-        float indirectCost = this->heuristicCosts[i][k] + this->heuristicCosts[k][j];
-        if (directCost > indirectCost)
-            this->heuristicCosts[i][j] = indirectCost;
-    }}}
+        for (size_t i = 0; i < size; ++i){
+            for (size_t j = 0; j < size; ++j){
+                float directCost = this->heuristicCosts[i][j];
+                float indirectCost = this->heuristicCosts[i][k] + this->heuristicCosts[k][j];
+                if (directCost > indirectCost) this->heuristicCosts[i][j] = indirectCost;
+            }
+        }
+    }
 
     return this->heuristicCosts[from->getId()][to->getId()];
 }

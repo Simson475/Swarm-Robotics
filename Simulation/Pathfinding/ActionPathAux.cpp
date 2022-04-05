@@ -1,4 +1,5 @@
 #include "ActionPathAux.hpp"
+#include "Debugging.hpp"
 
 ActionPathAux::ActionPathAux(Action action, float priority, std::shared_ptr<ActionPathAux> predecessor){
     this->action = action;
@@ -32,6 +33,9 @@ void ActionPathAux::operator=(const ActionPathAux &a){
 }
 
 /* Comparator for use in priority queue (must be global or you will need a compare class) */
-bool operator< (const ActionPathAux &a, const ActionPathAux &b){
+bool operator> (const ActionPathAux &a, const ActionPathAux &b){
     return a.priority > b.priority;
+}
+bool operator< (const ActionPathAux &a, const ActionPathAux &b){
+    return a.priority < b.priority;
 }

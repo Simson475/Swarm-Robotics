@@ -30,14 +30,23 @@ bool ExperimentData::requestSolution(int agentId){
     /* If more than the requesting agent does not have a station plan
      * we make the agent wait. */
     for (auto a : getAgents()){
-        if (a->getId() != agentId && a->getBot()->getStationPlan().empty()){
+        if (a->getId() != agentId && a->getBot()->getStationPlan().empty() && !a->getBot()->isFinished()){
             return false;
         }
     }
     Error::log("Going to find a solution\n");
+    auto agentInfos = getAgentsInfo();
+    for (auto a1 : agentInfos){
+        for (auto a2 : agentInfos){
+            if (a1.getId() != a2.getId() && a1.getGoal() == a2.getGoal()){
+                Error::log("Impossible to find a solution.\n");
+                exit(2);
+            }
+        }
+    }
 
     Solution solution = HighLevelCBS::get_instance()
-        .findSolution(getGraph(), getAgentsInfo(), LowLevelCBS::get_instance());
+        .findSolution(getGraph(), agentInfos, LowLevelCBS::get_instance());
     
     // Distribute paths
     distributeSolution(solution);
