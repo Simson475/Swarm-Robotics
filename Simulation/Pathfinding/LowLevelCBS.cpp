@@ -21,10 +21,10 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, std::shared_pt
         
         currentTime += std::ceil(top.action.duration);
 
-        // if (iterations > 25000){
-        //     Error::log("Max iterations reached.\n");
-        //     exit(1);
-        // }
+        if (iterations > 25000){
+            Error::log("Max iterations reached.\n");
+            exit(1);
+        }
         // If the action leads to the goal we are done
         if (u->getId() == goal->getId()){
             return top.getPath();
