@@ -16,12 +16,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     /**
      * While OPEN not empty do
      */
-    int iterations = 0;
     while (open.size() > 0) {
-        iterations++;
-        if (iterations == 3){
-            exit(1);
-        }
         /**
          * p <-- best node from OPEN (the node with the lowest solution cost)
          */
