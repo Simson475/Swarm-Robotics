@@ -37,5 +37,5 @@ bool operator> (const ActionPathAux &a, const ActionPathAux &b){
     return a.priority > b.priority;
 }
 bool operator< (const ActionPathAux &a, const ActionPathAux &b){
-    return a.priority <= b.priority;
+    return a.priority < b.priority;
 }
