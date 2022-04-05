@@ -15,7 +15,6 @@ class HighLevelCBS;
 #include "Solution.hpp"
 #include "TestController.hpp"
 #include "Graph.hpp"
-#include "Agent.hpp"
 #include "AgentInfo.hpp"
 #include "LowLevelCBS.hpp"
 #include "ExperimentData.hpp"
@@ -29,7 +28,7 @@ public:
         static HighLevelCBS instance;
         return instance;
     }
-    Solution findSolution(std::shared_ptr<Graph>, std::vector<std::shared_ptr<Agent>>, LowLevelCBS);    
+    Solution findSolution(std::shared_ptr<Graph>, std::vector<AgentInfo>, LowLevelCBS);    
 };
 
 #endif

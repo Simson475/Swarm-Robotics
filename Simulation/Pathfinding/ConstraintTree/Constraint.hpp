@@ -3,14 +3,14 @@
 
 class Constraint;
 
-#include "Agent.hpp"
+#include "AgentInfo.hpp"
 #include "Location.hpp"
 #include <memory>
 
 class Constraint {
   public:
-    Constraint(std::shared_ptr<Agent>, Location, uint, uint);
-    std::shared_ptr<Agent> agent;
+    Constraint(AgentInfo, Location, uint, uint);
+    AgentInfo agent;
     Location location;
     uint timeStart;
     uint timeEnd;

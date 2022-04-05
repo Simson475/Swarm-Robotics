@@ -6,6 +6,7 @@
 #include "Graph.hpp"
 #include "MapStructureGraph.hpp"
 #include "Agent.hpp"
+#include "AgentInfo.hpp"
 #include "HighLevelCBS.hpp"
 #include "Solution.hpp"
 
@@ -19,6 +20,7 @@ public:
     }
     std::shared_ptr<Graph> getGraph();
     std::vector<std::shared_ptr<Agent>> getAgents();
+    std::vector<AgentInfo> getAgentsInfo();
     bool requestSolution(int agentId);
     // std::vector<AgentInfo> getAgentInfo();
 private:
