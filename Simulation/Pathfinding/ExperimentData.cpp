@@ -35,9 +35,18 @@ bool ExperimentData::requestSolution(int agentId){
         }
     }
     Error::log("Going to find a solution\n");
+    auto agentInfos = getAgentsInfo();
+    for (auto a1 : agentInfos){
+        for (auto a2 : agentInfos){
+            if (a1.getId() != a2.getId() && a1.getGoal() == a2.getGoal()){
+                Error::log("Impossible to find a solution.\n");
+                exit(2);
+            }
+        }
+    }
 
     Solution solution = HighLevelCBS::get_instance()
-        .findSolution(getGraph(), getAgents(), LowLevelCBS::get_instance());
+        .findSolution(getGraph(), agentInfos, LowLevelCBS::get_instance());
     
     // Distribute paths
     distributeSolution(solution);
@@ -49,4 +58,14 @@ void ExperimentData::distributeSolution(Solution solution){
     for (auto agent : getAgents()){
         agent->getBot()->setPath(solution.paths[agent->getId()]);
     }
+}
+
+std::vector<AgentInfo> ExperimentData::getAgentsInfo(){
+    auto agents = getAgents();
+    int size = agents.size();
+    std::vector<AgentInfo> agentInfo{(long unsigned int)size};
+    for (int i = 0; i < size; ++i){
+        agentInfo[i] = agents[i]->getAgentInfo();
+    }
+    return agentInfo;
 }

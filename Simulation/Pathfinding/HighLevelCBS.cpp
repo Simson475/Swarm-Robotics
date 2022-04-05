@@ -1,6 +1,6 @@
 #include "HighLevelCBS.hpp"
 
-Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<std::shared_ptr<Agent>> agents, LowLevelCBS lowLevel){
+Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS lowLevel){
     /**
      * Root.constraints = {}
      * Root.solution = find individual paths by the low level
@@ -38,19 +38,22 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<st
         /**
          * Foreach agent ai in C do
          */
-        for(std::shared_ptr<Agent> agent : c.getAgents()){
+        for(int agentId : c.getAgentIds()){
+            AgentInfo agent = agents[agentId];
             /**
              * A <-- new node
              * A.constraints = p.constraints union (ai,v,t)
              */
             std::shared_ptr<ConstraintTree> a = std::make_shared<ConstraintTree>();//TODO should we connect this to P or is it irrelevant in implementation?
             a->constraints = p->constraints;
-            a->constraints.emplace_back(Constraint(
+
+            Constraint constraint = Constraint(
                 agent,
                 c.getLocation(),
-                c.getTimeStart(),
-                c.getTimeEnd()
-            ));
+                c.getTimeStart() - 1,
+                c.getTimeEnd() + 1
+            );
+            a->constraints.emplace_back(constraint);
             /**
              * A.solution <-- P.solution
              */
@@ -60,7 +63,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<st
              */
             Solution s = a->getSolution();
             Path newPath = lowLevel.getIndividualPath(graph, agent, a->constraints);
-            s.paths[agent->getId()] = newPath;
+            s.paths[agent.getId()] = newPath;
             a->setSolution(s);
             /**
              * If A.cost < INF then insert A to OPEN

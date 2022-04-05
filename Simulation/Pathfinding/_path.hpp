@@ -14,6 +14,7 @@ class Path {
 
     /* Methods */
     std::vector<int> asWaypointPlan();
+    std::string toString();
 };
 
 #endif

@@ -13,6 +13,7 @@ public:
     std::vector<std::shared_ptr<Edge>> getEdges();
     void setEdges(std::vector<std::shared_ptr<Edge>> edges);
     int getId();
+    std::string toString();
 protected:
     float x;
     float y;

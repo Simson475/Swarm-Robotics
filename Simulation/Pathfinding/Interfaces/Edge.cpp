@@ -15,3 +15,7 @@ std::shared_ptr<Vertex> Edge::getEndVertex(){
 float Edge::getCost(){
     return cost;
 }
+
+std::string Edge::toString(){
+    return "e["+(std::to_string(startVertex->getId()))+"," + (std::to_string(endVertex->getId())) +"]";
+}

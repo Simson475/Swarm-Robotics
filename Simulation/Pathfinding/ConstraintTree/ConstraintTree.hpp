@@ -7,7 +7,7 @@ class ConstraintTree;
 #include "Constraint.hpp"
 #include "Solution.hpp"
 #include "Conflict.hpp"
-#include "Agent.hpp"
+#include "AgentInfo.hpp"
 
 class ConstraintTree : public std::enable_shared_from_this<ConstraintTree> {
 public:
@@ -20,15 +20,25 @@ public:
     /* More CBS specific */
     Solution getSolution();
     void setSolution(Solution);
-    void setSolution(std::vector<Path>, std::vector<std::shared_ptr<Agent>>);
+    void setSolution(std::vector<Path>, std::vector<AgentInfo>);
     std::vector<Conflict> findConflicts();
     float getCost();
+    bool operator() (std::shared_ptr<ConstraintTree> a, std::shared_ptr<ConstraintTree> b);//Comparison function for priority queue
+    bool isEdgeConflict(Action a1, Action a2);
+    bool isVertexConflict(Action a1, Action a2);
+    bool isFollowConflict(Action a1, Action a2);
+    bool isSwapConflict(Action a1, Action a2);
+    Conflict getEdgeConflict(std::vector<int> conflictAgents, Action a1, Action a2);
+    Conflict getVertexConflict(std::vector<int> conflictAgents, Action a1, Action a2);
+    Conflict getFollowConflict(std::vector<int> conflictAgents, Action a1, Action a2);
+    Conflict getSwapConflict(int conflictAgents, Action a1, Action a2);
+
+    const float delta = 20; // Small time delta aprx the time it takes a robot to move through a vertex.
 private:
     std::shared_ptr<ConstraintTree> parent;
     std::vector<std::shared_ptr<ConstraintTree>> children;
     Solution solution;
     std::vector<std::shared_ptr<Conflict>> conflicts;
-    bool operator() (ConstraintTree* a, ConstraintTree* b);//Comparison function for priority queue
 };
 
 #endif

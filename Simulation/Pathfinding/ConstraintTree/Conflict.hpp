@@ -5,27 +5,28 @@ class Conflict;
 
 #include <vector>
 #include "Location.hpp"
-#include "Agent.hpp"
 #include <memory>
 
 class Conflict
 {
 public:
     //TODO can any of the constructors/destructors be pruned
+    Conflict(std::vector<int> agentIds, float timeStart, float timeEnd, Location location);
     Conflict() = default;
     Conflict(Conflict*);
     Conflict(const Conflict&);
-    Conflict(Conflict&&) noexcept;
-    ~Conflict();
+    Conflict(Conflict&&);
+    ~Conflict() = default;
 
-    std::vector<std::shared_ptr<Agent>> getAgents();
-    int getTimeStart();
-    int getTimeEnd();
+    std::vector<int> getAgentIds();
+    float getTimeStart();
+    float getTimeEnd();
     Location getLocation();
+    std::string toString();
 private:
-    std::vector<std::shared_ptr<Agent>> agents;
-    int timeStart;
-    int timeEnd;
+    std::vector<int> agentIds;
+    float timeStart;
+    float timeEnd;
     Location location;
 };
 

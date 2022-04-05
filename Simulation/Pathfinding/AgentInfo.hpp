@@ -2,20 +2,25 @@
 #define AGENT_INFO_HPP
 
 #include "Location.hpp"
+#include "Action.hpp"
+#include "Vertex.hpp"
 #include <memory>
-#include "HighLevelCBS.hpp"
 
 class AgentInfo {
 public:
-    AgentInfo() = default;
-    AgentInfo(const AgentInfo&){};
+    AgentInfo();
+    AgentInfo(const AgentInfo& a);
+    AgentInfo(AgentInfo* a);
+    AgentInfo(AgentInfo&&);
+    AgentInfo(int id, Action currentAction, std::shared_ptr<Vertex> destination);
     int getId();
-    void setId(size_t id);
-    std::shared_ptr<Location> getLocation();
+    Action getCurrentAction();
     std::shared_ptr<Vertex> getGoal();
+    int getTimeAtVertex(std::shared_ptr<Vertex> vertex);
+    void operator=(const AgentInfo& other);
 private:
     int id;
-    std::shared_ptr<Location> location;
+    Action currentAction;
     std::shared_ptr<Vertex> goal;
 };
 

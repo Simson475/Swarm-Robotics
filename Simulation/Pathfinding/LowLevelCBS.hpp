@@ -6,7 +6,7 @@ class LowLevelCBS;
 #include <vector>
 #include <memory>
 #include "_path.hpp"
-#include "Agent.hpp"
+#include "AgentInfo.hpp"
 #include "Action.hpp"
 #include "Debugging.hpp"
 #include <queue>
@@ -14,6 +14,7 @@ class LowLevelCBS;
 #include "Constraint.hpp"
 #include "ActionPathAux.hpp"
 #include "Vertex.hpp"
+#include "Graph.hpp"
 
 class LowLevelCBS {
 public:
@@ -22,11 +23,11 @@ public:
         static LowLevelCBS instance;
         return instance;
     }
-    Path getIndividualPath(std::shared_ptr<Graph> graph, std::shared_ptr<Agent>, std::vector<Constraint> constraints);
-    std::vector<Path> getAllPaths(std::shared_ptr<Graph> graph, std::vector<std::shared_ptr<Agent>>, std::vector<Constraint> constraints);
-    //Path constructPathFromPlan(std::shared_ptr<Graph> graph, std::vector<Vertex> plan);
+    Path getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agent, std::vector<Constraint> constraints);
+    std::vector<Path> getAllPaths(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Constraint> constraints);
+    int iterations = 0;
 protected:
-    std::vector<Action> getPossibleActions(std::shared_ptr<Vertex> vertex, std::shared_ptr<Agent> agent, std::vector<Constraint> constraints, uint currentTime);
+    std::vector<Action> getPossibleActions(std::shared_ptr<Vertex> vertex, AgentInfo agent, std::vector<Constraint> constraints, uint currentTime);
 };
 
 #endif

@@ -1,4 +1,6 @@
 include_directories(.)
+include_directories(./Unit/)
+include_directories(./Integration/)
 include_directories(..)
 include_directories(../ConstraintTree/)
 include_directories(../Interfaces/)
@@ -10,10 +12,10 @@ set(ControllersDir ../../controllers)
 set(MapDir ../../models/map)
 # We must be able to compile with these files alone (so map_structure wont work without argos files, which makes a lot of our files untestable atm)
 set(PathfindingFiles
-    # ${PathfindingDir}/ConstraintTree/Conflict.hpp
-    # ${PathfindingDir}/ConstraintTree/Conflict.cpp
-    # ${PathfindingDir}/ConstraintTree/ConstraintTree.hpp
-    # ${PathfindingDir}/ConstraintTree/ConstraintTree.cpp
+    ${PathfindingDir}/ConstraintTree/Conflict.hpp
+    ${PathfindingDir}/ConstraintTree/Conflict.cpp
+    ${PathfindingDir}/ConstraintTree/ConstraintTree.hpp
+    ${PathfindingDir}/ConstraintTree/ConstraintTree.cpp
     ${PathfindingDir}/Action.hpp
     ${PathfindingDir}/Action.cpp
     ${PathfindingDir}/ActionPathAux.hpp
@@ -22,16 +24,20 @@ set(PathfindingFiles
     # ${PathfindingDir}/ExperimentData.cpp
     # ${PathfindingDir}/Agent.hpp
     # ${PathfindingDir}/Agent.cpp
-    # ${PathfindingDir}/ConstraintTree/Constraint.hpp
-    # ${PathfindingDir}/ConstraintTree/Constraint.cpp
-    # ${PathfindingDir}/HighLevelCBS.hpp
-    # ${PathfindingDir}/HighLevelCBS.cpp
-    # ${PathfindingDir}/LowLevelCBS.hpp
-    # ${PathfindingDir}/LowLevelCBS.cpp
-    # ${PathfindingDir}/_path.hpp
-    # ${PathfindingDir}/_path.cpp
-    # ${PathfindingDir}/Solution.hpp
-    # ${PathfindingDir}/Solution.cpp
+    ${PathfindingDir}/AgentInfo.hpp
+    ${PathfindingDir}/AgentInfo.cpp
+    ${PathfindingDir}/ConstraintTree/Constraint.hpp
+    ${PathfindingDir}/ConstraintTree/Constraint.cpp
+    ${PathfindingDir}/HighLevelCBS.hpp
+    ${PathfindingDir}/HighLevelCBS.cpp
+    ${PathfindingDir}/LowLevelCBS.hpp
+    ${PathfindingDir}/LowLevelCBS.cpp
+    ${PathfindingDir}/_path.hpp
+    ${PathfindingDir}/_path.cpp
+    ${PathfindingDir}/Solution.hpp
+    ${PathfindingDir}/Solution.cpp
+    ${PathfindingDir}/Location.hpp
+    ${PathfindingDir}/Location.cpp
 
     # ${ControllersDir}/TestController.hpp
     # ${ControllersDir}/TestController.cpp
@@ -39,15 +45,18 @@ set(PathfindingFiles
     ${PathfindingDir}/Interfaces/Edge.hpp
     ${PathfindingDir}/Interfaces/Edge.cpp
     ${PathfindingDir}/Interfaces/Graph.hpp
-    # ${PathfindingDir}/Interfaces/Graph.cpp
+    ${PathfindingDir}/Interfaces/Graph.cpp
     ${PathfindingDir}/Interfaces/Vertex.hpp
     ${PathfindingDir}/Interfaces/Vertex.cpp
 
     ${PathfindingDir}/Debugging.hpp
 )
 
+set(UNIT_TESTS ./Unit)
+set(INTEGRATION_TESTS ./Integration)
+
 # Emit all warning messages
-add_definitions(-Wall -Werror)
+add_definitions(-Wall)# -Werror
 
 add_executable(run_tests
     
@@ -59,8 +68,18 @@ add_executable(run_tests
     CBSTests.hpp
     CBSTests.cpp
 
-    ActionPathAuxTests.hpp
-    ActionPathAuxTests.cpp
+    ${UNIT_TESTS}/ActionPathAuxTests.hpp
+    ${UNIT_TESTS}/ActionPathAuxTests.cpp
+    ${UNIT_TESTS}/GraphTests.hpp
+    ${UNIT_TESTS}/GraphTests.cpp
+    ${INTEGRATION_TESTS}/LowLevelCBSTests.hpp
+    ${INTEGRATION_TESTS}/LowLevelCBSTests.cpp
+    ${INTEGRATION_TESTS}/HighLevelCBSTests.hpp
+    ${INTEGRATION_TESTS}/HighLevelCBSTests.cpp
+    ${INTEGRATION_TESTS}/ConstraintTreeTests.hpp
+    ${INTEGRATION_TESTS}/ConstraintTreeTests.cpp
+    #TEST_SOURCE_FILES_LAST_LINE
+    # The above line should not be edited or deleted
 )
 
 # Move the run_tests script to the external/bin/

@@ -10,6 +10,8 @@
 
 class Graph {
 public:
+    Graph() = default;
+    Graph(std::vector<std::shared_ptr<Vertex>> vertices);
     virtual ~Graph() = default;
     std::vector<std::shared_ptr<Vertex>> getVertices();
     float heuristicCost(std::shared_ptr<Vertex> from, std::shared_ptr<Vertex> to);
