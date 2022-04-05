@@ -5,7 +5,6 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, std::shared_pt
     Action firstAction = agent->getBot()->getCurrentAction();
     std::shared_ptr<Vertex> goal = agent->getGoal();
     // Compute path from after the current action
-    //std::priority_queue<ActionPathAux, std::vector<ActionPathAux>, std::smaller<ActionPathAux>> priorityQueue{};
     std::priority_queue<ActionPathAux, std::vector<ActionPathAux>, std::greater<ActionPathAux>> priorityQueue{};
     priorityQueue.push(ActionPathAux(
         firstAction,
