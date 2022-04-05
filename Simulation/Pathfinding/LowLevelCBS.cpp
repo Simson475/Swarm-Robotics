@@ -2,11 +2,10 @@
 
 Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, std::shared_ptr<Agent> agent, std::vector<Constraint> constraints){
     std::shared_ptr<Vertex> u;
-    Action firstAction = agent->getCurrentAction();
+    Action firstAction = agent->getBot()->getCurrentAction();
     std::shared_ptr<Vertex> goal = agent->getGoal();
-
     // Compute path from after the current action
-    std::priority_queue<ActionPathAux> priorityQueue{};
+    std::priority_queue<ActionPathAux, std::vector<ActionPathAux>, std::greater<ActionPathAux>> priorityQueue{};
     priorityQueue.push(ActionPathAux(
         firstAction,
         firstAction.timestamp + std::ceil(firstAction.duration + graph->heuristicCost(firstAction.endVertex, agent->getGoal())),
@@ -19,7 +18,9 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, std::shared_pt
         // Next action
         auto top = priorityQueue.top(); priorityQueue.pop();
         u = top.action.endVertex;
+        
         currentTime += std::ceil(top.action.duration);
+
         if (iterations > 25000){
             Error::log("Max iterations reached.\n");
             exit(1);
@@ -48,15 +49,6 @@ std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::ve
     int i = 0;
     for (std::shared_ptr<Agent> agent : agents){
         paths[i] = getIndividualPath(graph, agent, constraints);
-        if (agent->getId() == 6){
-            Error::log(std::to_string(agent->getId()));
-            Error::log(": ");
-            for (auto a : paths[i].actions){
-                Error::log(std::to_string(a.endVertex->getId()));
-                Error::log(" ");
-            }
-            Error::log("\n");
-        }
         i++;
     }
     return paths;

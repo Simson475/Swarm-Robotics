@@ -15,7 +15,7 @@ MapStructureGraph::MapStructureGraph(Map_Structure& map){
     std::vector<std::vector<std::shared_ptr<Edge>>> edges{lineCount};
     float robotSpeed = 0.1;
     for (Line line : map.lines){
-        if (line.GetDistance() < 0) { continue; }
+        if (line.GetDistance() <= 0) { continue; }
         int a = line.Geta().getId();
         int b = line.Getb().getId();
         edges[a].push_back(std::make_shared<Edge>(Edge(

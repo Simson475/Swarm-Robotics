@@ -15,7 +15,7 @@ PredefinedDescreteJobGenerator::PredefinedDescreteJobGenerator(int numOfStations
     }
 
     // Push increasing probabilities for other stations.
-    for(unsigned long i = 1; i <= numOfStations - endStations.size(); i++){
+    for(unsigned long i = 1; i < numOfStations - endStations.size(); i++){
         probabilities.push_back(i);
     }
 

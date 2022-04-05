@@ -30,7 +30,7 @@ bool ExperimentData::requestSolution(int agentId){
     /* If more than the requesting agent does not have a station plan
      * we make the agent wait. */
     for (auto a : getAgents()){
-        if (a->getId() != agentId && a->getBot()->getStationPlan().empty()){
+        if (a->getId() != agentId && a->getBot()->getStationPlan().empty() && !a->getBot()->isFinished()){
             return false;
         }
     }
