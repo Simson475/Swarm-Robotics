@@ -24,9 +24,15 @@ Solution ConstraintTree::getSolution(){
 void ConstraintTree::setSolution(Solution s){
     this->solution = s;
 }
+/**
+ * Creates a solution from the paths (Does not update the existing, but creates a completely new one!)
+ * 
+ * @param paths 
+ * @param agents 
+ */
 void ConstraintTree::setSolution(std::vector<Path> paths, std::vector<AgentInfo> agents){
     Solution solution;
-    solution.paths = paths;//TODO this does not work??!
+    solution.paths = paths;
     setSolution(solution);
 }
 std::vector<Conflict> ConstraintTree::findConflicts(){
