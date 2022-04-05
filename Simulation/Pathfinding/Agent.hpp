@@ -20,7 +20,6 @@ class Agent {
     int getId();
     Action getCurrentAction();
     std::shared_ptr<Vertex> getGoal();
-    int getTimeAtVertex(std::shared_ptr<Vertex> vertex);
     AgentInfo getAgentInfo();
   private:
     Path path;

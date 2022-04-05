@@ -1,11 +1,6 @@
 #include "HighLevelCBS.hpp"
 
 Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS lowLevel){
-    for(auto a : agents){
-        Error::log("Goal: ");
-        Error::log(std::to_string(a.getGoal()->getId()));
-        Error::log("\n");
-    }
     /**
      * Root.constraints = {}
      * Root.solution = find individual paths by the low level
@@ -34,15 +29,11 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         /**
          * Validate the paths in P until a conflict occurs
          */
-        // Error::log("finding Conflicts now:\n");
         std::vector<Conflict> conflicts = p->findConflicts();
         /**
          * If P has no conflicts then return P.solution
          */
         if (conflicts.size() == 0) {
-            Error::log("After ");
-            Error::log(std::to_string(iterations));
-            Error::log("iterations, we found a solution!\n");
             return p->getSolution();
         }
         /**
