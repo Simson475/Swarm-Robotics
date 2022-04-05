@@ -16,9 +16,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     /**
      * While OPEN not empty do
      */
-    int iterations = 0;
     while (open.size() > 0) {
-        iterations++;
         /**
          * p <-- best node from OPEN (the node with the lowest solution cost)
          */
@@ -48,12 +46,14 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              */
             std::shared_ptr<ConstraintTree> a = std::make_shared<ConstraintTree>();//TODO should we connect this to P or is it irrelevant in implementation?
             a->constraints = p->constraints;
-            a->constraints.emplace_back(Constraint(
+
+            Constraint constraint = Constraint(
                 agent,
                 c.getLocation(),
-                c.getTimeStart(),
-                c.getTimeEnd()
-            ));
+                c.getTimeStart() - 1,
+                c.getTimeEnd() + 1
+            );
+            a->constraints.emplace_back(constraint);
             /**
              * A.solution <-- P.solution
              */

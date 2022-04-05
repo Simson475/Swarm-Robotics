@@ -17,6 +17,7 @@ public:
     ELocationType type;
     std::shared_ptr<Edge> edge;
     std::shared_ptr<Vertex> vertex;
+    std::string toString();
 };
 
 #endif

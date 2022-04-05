@@ -8,7 +8,7 @@ void ConstraintTree::setChildren(std::vector<std::shared_ptr<ConstraintTree>> ch
 }
 std::shared_ptr<ConstraintTree> ConstraintTree::getLowestCostNode(){
     std::shared_ptr<ConstraintTree> lowestCostNode = shared_from_this();
-    
+
     for (auto child : children){
         auto lowestFromChild = child->getLowestCostNode();
         if (lowestFromChild->getCost() < lowestCostNode->getCost()){
@@ -24,6 +24,12 @@ Solution ConstraintTree::getSolution(){
 void ConstraintTree::setSolution(Solution s){
     this->solution = s;
 }
+/**
+ * Creates a solution from the paths (Does not update the existing, but creates a completely new one!)
+ * 
+ * @param paths 
+ * @param agents 
+ */
 void ConstraintTree::setSolution(std::vector<Path> paths, std::vector<AgentInfo> agents){
     Solution solution;
     solution.paths = paths;
@@ -46,76 +52,25 @@ std::vector<Conflict> ConstraintTree::findConflicts(){
                     int a1End = a1Start + a1.duration;
                     int a2Start = a2.timestamp;
                     int a2End = a1Start + a2.duration;
-                    if (a1End > a2End) { p2Index++; }// Update p2Index to only start looking at the actions in p2 that can overlap with a1
-                    if (a2Start > a1End) { k = numActions; }// Skip the remainding actions in p2 since they can't have overlaps
+                    if (a2Start > a1End) { break; }// Skip the remainding actions in p2 since they can't have overlaps
+                    if (a1End > a2End) { p2Index++; }// Update p2Index to only start looking at the actions in p2 that can overlap with the next a1
+                    int maxStart = ((a1Start > a2Start) ? a1Start : a2Start);//max start
+                    int minEnd = ((a1End < a2End) ? a1End : a2End);//min end
+
                     // These actions overlap
-                    if ((a1Start >= a2Start) && (a1Start <= a2End)){
-                        std::vector<int> conflictAgents = {i, j};
-                        int cStart = ((a1Start > a2Start) ? a1Start : a2Start);//max start
-                        int cEnd = ((a1End < a2End) ? a1End : a2End);//min end
-                        //TODO ensure that the delta is close to the actual value, but >=.
-                        int delta = 20;// Small time delta aprx the time it takes a robot to move through a vertex.
-                        if (!a1.isWaitAction() || !a2.isWaitAction()){
-                            // There are multiple cases:
-                            // Vertex conflicts:
-                            // Case 1: Following too closely
-                            // Case 2: Both agents are moving to the same vertex
-                            // Edge conflicts:
-                            // Case 3: Both agents are moving on the same edge
-                            // Swap conflict:
-                            // case 4: Both agents are moving on opposing edges between the same two nodes
-                            bool case1 = (a1.endVertex == a2.startVertex && (a1End >= a2Start - delta))//agent i follows agent j
-                                      || (a2.endVertex == a1.startVertex && (a2End >= a1Start - delta));//agent j follows agent i
-                            bool case2 = a1.endVertex == a2.endVertex && (std::abs(a1End - a2End) <= delta);
-                            bool case3 = a1.startVertex == a2.startVertex && a1.endVertex == a2.endVertex;
-                            bool case4 = a1.startVertex == a2.endVertex && a2.startVertex == a1.endVertex;
-
-                            if (case1){
-                                // Limit the conflict time frame (it is only delta length for this case)
-                                if (a1.endVertex == a2.startVertex){
-                                    cStart = a2Start - delta;
-                                    cEnd = a2Start;
-                                }
-                                else {
-                                    cStart = a1Start - delta;
-                                    cEnd = a1Start;
-                                }
-                                conflicts.push_back(Conflict(conflictAgents, cStart, cEnd,
-                                    Location(ELocationType::VERTEX_LOCATION, a1.startVertex)));
-                                continue;
-                            }
-
-                            if (case2){
-                                cStart = ((a1End > a2End) ? a2Start : a1Start);//min of the end times
-                                cEnd = cStart + delta;
-                                conflicts.push_back(Conflict(conflictAgents, cStart, cEnd,
-                                    Location(ELocationType::VERTEX_LOCATION, a1.startVertex)));
-                                continue;
-                            }
-
-                            if (case3){
-                                conflicts.push_back(Conflict(conflictAgents, cStart, cEnd,
-                                    Location(ELocationType::VERTEX_LOCATION, a1.startVertex)));
-                                continue;
-                            }
-
-                            if (case4){
-                                conflicts.push_back(Conflict(conflictAgents, cStart, cEnd,
-                                    Location(ELocationType::VERTEX_LOCATION, a1.startVertex)));
-                                continue;
-                            }
-                        }//End of conflicts with edge actions only
-                        else{
-                            // There is one vertex conflict case that involves waiting:
-                            // Case 1: An agent is moving to a vertex an agent is waiting on
-                            bool case1 = (a1.endVertex == a2.startVertex && a2.isWaitAction())
-                                      || (a2.endVertex == a1.startVertex && a1.isWaitAction());
-
-                            if (case1){
-                                conflicts.push_back(Conflict(conflictAgents, cStart, cEnd,
-                                    Location(ELocationType::VERTEX_LOCATION, a1.startVertex)));
-                                continue;
-                            }
+                    if (maxStart <= minEnd){
+                        if (isEdgeConflict(a1, a2)){
+                            conflicts.push_back(getEdgeConflict({i, j}, a1, a2));
+                        }
+                        else if (isSwapConflict(a1, a2)){ //Perhaps make the checks tighter so else isnt needed
+                            conflicts.push_back(getSwapConflict(i, a1, a2));
+                            conflicts.push_back(getSwapConflict(j, a2, a1));
+                        }
+                        else if (isVertexConflict(a1, a2)){
+                            conflicts.push_back(getVertexConflict({i, j}, a1, a2));
+                        }
+                        else if (isFollowConflict(a1, a2)){
+                            conflicts.push_back(getFollowConflict({i, j}, a1, a2));
                         }
                     }
                 }
@@ -132,6 +87,181 @@ float ConstraintTree::getCost(){
     return cost;
 }
 
-/*bool ConstraintTree::operator()(ConstraintTree a, ConstraintTree b){
-    return a.cost < b.cost;
-}*/
+bool ConstraintTree::operator() (std::shared_ptr<ConstraintTree> a, std::shared_ptr<ConstraintTree> b){
+    return a->getCost() > b->getCost();
+}
+
+/**
+ * PRE: The actions are overlapping
+ * Both agents are moving on the same edge
+ * @param a1 
+ * @param a2 
+ * @return true|false 
+ */
+bool ConstraintTree::isEdgeConflict(Action a1, Action a2){
+    return a1.startVertex == a2.startVertex && a1.endVertex == a2.endVertex;
+}
+
+/**
+ * PRE: The actions are overlapping
+ * 
+ * @param a1 
+ * @param a2 
+ * @return true|false 
+ */
+bool ConstraintTree::isVertexConflict(Action a1, Action a2){
+    // Vertex conflicts:
+    // Case 1: Both agents are moving to the same vertex
+    // Case 2: An agent is moving to a vertex an agent is waiting on
+    float a1End = a1.timestamp + a1.duration;
+    float a2End = a2.timestamp + a2.duration;
+    
+    bool case1 = a1.endVertex == a2.endVertex && (std::abs(a1End - a2End) <= delta);
+    bool case2 = (a1.endVertex == a2.startVertex && a2.isWaitAction())
+              || (a2.endVertex == a1.startVertex && a1.isWaitAction());
+    return case1 || case2;
+}
+
+/**
+ * PRE: The actions are overlapping
+ * 
+ * @param a1 
+ * @param a2 
+ * @return true|false 
+ */
+bool ConstraintTree::isFollowConflict(Action a1, Action a2){
+    return a1.endVertex == a2.startVertex // a1 ends up where a2 starts
+        && (std::abs(a1.timestamp + a1.duration - a2.timestamp) <= delta); // a1 arrives before delta has passed
+}
+
+/**
+ * PRE: The actions are overlapping
+ * 
+ * @param a1 
+ * @param a2 
+ * @return true|false 
+ */
+bool ConstraintTree::isSwapConflict(Action a1, Action a2){
+    return a1.startVertex == a2.endVertex && a2.startVertex == a1.endVertex;
+}
+
+/**
+ * PRE: isEdgeConflict must have returned true on the two actions
+ * 
+ * @param conflictAgents
+ * @param a1
+ * @param a2
+ * @return An edge conflict
+ */
+Conflict ConstraintTree::getEdgeConflict(std::vector<int> conflictAgents, Action a1, Action a2){
+    int a1Start = a1.timestamp;
+    int a1End = a1Start + a1.duration;
+    int a2Start = a2.timestamp;
+    int a2End = a1Start + a2.duration;
+    int cStart = ((a1Start > a2Start) ? a1Start : a2Start);//max start
+    int cEnd = ((a1End < a2End) ? a1End : a2End);//min end
+    std::shared_ptr<Edge> edge;
+    for (auto e : a1.startVertex->getEdges()){
+        if (e->getEndVertex() == a2.endVertex){
+            edge = e;
+            break;
+        }
+    }
+    return Conflict(conflictAgents, cStart, cEnd,
+        Location(ELocationType::EDGE_LOCATION, edge));
+}
+
+/**
+ * PRE: isVertexConflict must have returned true on the two actions
+ * 
+ * @param conflictAgents
+ * @param a1
+ * @param a2
+ * @return A vertex conflict
+ */
+Conflict ConstraintTree::getVertexConflict(std::vector<int> conflictAgents, Action a1, Action a2){
+    // Vertex conflicts:
+    // Case 1: Both agents are moving to the same vertex
+    // Case 2: An agent is moving to a vertex an agent is waiting on
+    float a1End = a1.timestamp + a1.duration;
+    float a2End = a2.timestamp + a2.duration;
+    float cStart, cEnd;
+    
+    bool case1 = a1.endVertex == a2.endVertex && (std::abs(a1End - a2End) <= delta);
+
+    if (case1){
+        cStart = ((a1End > a2End) ? a2End : a1End);//min of the end times
+        cEnd = cStart + delta;
+        auto conflict = Conflict(
+            conflictAgents,
+            cStart, cEnd,
+            Location(ELocationType::VERTEX_LOCATION, a1.endVertex));
+        return conflict;
+    }
+    else{ //case2
+        cStart = a1.isWaitAction() ? a2End : a1End;// arrival time of moving action
+        cEnd = ((a1End > a2End) ? a1End : a2End);//max end (end of the wait action)
+        auto conflict = Conflict(
+            conflictAgents,
+            cStart, cEnd,
+            Location(ELocationType::VERTEX_LOCATION, a1.endVertex));
+        return conflict;
+    }
+}
+
+/**
+ * PRE: isVertexConflict must have returned true on the two actions
+ * 
+ * @param conflictAgents
+ * @param a1
+ * @param a2
+ * @return A vertex conflict
+ */
+Conflict ConstraintTree::getFollowConflict(std::vector<int> conflictAgents, Action a1, Action a2){
+    float a1Start = a1.timestamp;
+    float a2Start = a2.timestamp;
+    float a1End = a1.timestamp + a1.duration;
+    float a2End = a2.timestamp + a2.duration;
+    float cStart = (a1Start > a2Start) ? a1Start : a2Start;//max start time
+    float cEnd = ((a1End < a2End) ? a1End : a2End) + delta;//min end time + delta;
+
+    auto conflict = Conflict(
+        conflictAgents,
+        cStart, cEnd,
+        Location(ELocationType::VERTEX_LOCATION, a2.startVertex));
+    return conflict;
+}
+
+/**
+ * PRE: isSwapConflict must have returned true on the two actions
+ * 
+ * @param conflictAgents
+ * @param a1
+ * @param a2
+ * @return A swap conflict
+ */
+Conflict ConstraintTree::getSwapConflict(int conflictAgent, Action a1, Action a2){
+    // Conflict agents
+    std::vector<int> conflictAgents = { conflictAgent };
+    // Conflict timespan
+    int a1Start = a1.timestamp;
+    int a1End = a1Start + a1.duration;
+    int a2Start = a2.timestamp;
+    int a2End = a2Start + a2.duration;
+    int cStart = ((a1Start > a2Start) ? a1Start : a2Start);//max start
+    int cEnd = ((a1End < a2End) ? a1End : a2End);//min end
+    // Conflict location
+    std::shared_ptr<Edge> edge;
+    for (auto e : a1.startVertex->getEdges()){
+        if (e->getEndVertex() == a2.startVertex){
+            edge = e;
+            break;
+        }
+    }
+    return Conflict(
+        conflictAgents,
+        cStart,
+        cEnd,
+        Location(ELocationType::EDGE_LOCATION, edge)
+    );
+}

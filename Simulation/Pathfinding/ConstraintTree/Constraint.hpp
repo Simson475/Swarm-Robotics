@@ -9,11 +9,12 @@ class Constraint;
 
 class Constraint {
   public:
-    Constraint(AgentInfo, Location, uint, uint);
+    Constraint(AgentInfo, Location, float, float);
     AgentInfo agent;
     Location location;
-    uint timeStart;
-    uint timeEnd;
+    float timeStart;
+    float timeEnd;
+    std::string toString();
 };
 
 #endif

@@ -19,7 +19,7 @@ Conflict::Conflict(Conflict&& c){
     location = c.location;
 }
 
-Conflict::Conflict(std::vector<int> agentIds, int timeStart, int timeEnd, Location location){
+Conflict::Conflict(std::vector<int> agentIds, float timeStart, float timeEnd, Location location){
     this->agentIds = agentIds;
     this->timeStart = timeStart;
     this->timeEnd = timeEnd;
@@ -30,12 +30,16 @@ std::vector<int> Conflict::getAgentIds(){
     return this->agentIds;
 }
 
-int Conflict::getTimeStart(){
+float Conflict::getTimeStart(){
     return this->timeStart;
 }
-int Conflict::getTimeEnd(){
+float Conflict::getTimeEnd(){
     return this->timeEnd;
 }
 Location Conflict::getLocation(){
     return this->location;
+}
+
+std::string Conflict::toString(){
+    return "{" + this->location.toString() + " [" + std::to_string(this->timeStart) + "," + std::to_string(this->timeEnd) + "]}";
 }

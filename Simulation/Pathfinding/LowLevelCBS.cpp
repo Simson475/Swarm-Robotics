@@ -9,18 +9,18 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     std::priority_queue<ActionPathAux> priorityQueue{};
     priorityQueue.push(ActionPathAux(
         firstAction,
-        firstAction.timestamp + std::ceil(firstAction.duration + graph->heuristicCost(firstAction.endVertex, goal)),
+        firstAction.timestamp + firstAction.duration + graph->heuristicCost(firstAction.endVertex, goal),
         nullptr
     ));
-    uint currentTime = firstAction.timestamp;// The first action is in the prio queue, so its duration will be added later
-    int iterations = 0;
+    float currentTime = firstAction.timestamp;// The first action is in the prio queue, so its duration will be added later
+    this->iterations = 0;
     while( ! priorityQueue.empty()){
-        iterations++;
+        this->iterations++;
         // Next action
         auto top = priorityQueue.top(); priorityQueue.pop();
         u = top.action.endVertex;
-        currentTime += std::ceil(top.action.duration);
-        if (iterations > 25000){
+        currentTime += top.action.duration;
+        if (this->iterations > 25000){
             Error::log("Max iterations reached.\n");
             exit(1);
         }
@@ -34,7 +34,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
         for (Action action : possibleActions){
             priorityQueue.push(ActionPathAux(
                 action,
-                action.timestamp + std::ceil(action.duration + graph->heuristicCost(action.endVertex, goal)),
+                action.timestamp + action.duration + graph->heuristicCost(action.endVertex, goal),
                 std::make_shared<ActionPathAux>(top)
             ));
         }
@@ -54,9 +54,9 @@ std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::ve
 }
 
 std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vertex, AgentInfo agent, std::vector<Constraint> constraints, uint currentTime){
-    std::vector<Action> actions;
+    std::vector<Action> actions; // The actions we will return later (gets filled in)
     std::vector<std::shared_ptr<Edge>> edges = vertex->getEdges();
-    uint minWaitTime = -1;//Max uint value
+    float minWaitTime = std::numeric_limits<float>::infinity();
     // Edge actions
     for (auto edge : edges){
         bool edgeIsPossible = true;
@@ -69,7 +69,7 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
             // Edge constraints
             if (constraint.location.type == ELocationType::EDGE_LOCATION
              && edge == constraint.location.edge
-             && constraint.timeStart < (currentTime + std::ceil(edge->getCost()))
+             && constraint.timeStart < (currentTime + edge->getCost())
             ){
                 minWaitTime = (minWaitTime < constraint.timeEnd) ? minWaitTime : constraint.timeEnd;
                 edgeIsPossible = false;
@@ -79,9 +79,11 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
             // Vertex constraints
             if (constraint.location.type == ELocationType::VERTEX_LOCATION
              && edge->getEndVertex() == constraint.location.vertex//TODO do we need to check the start vertex aswell or will those never reach this point?
-             && constraint.timeStart < (currentTime + agent.getTimeAtVertex(edge->getEndVertex()))
+             && constraint.timeStart < (currentTime + edge->getCost() + agent.getTimeAtVertex(edge->getEndVertex()))
+             && constraint.timeEnd >= (currentTime + edge->getCost() + agent.getTimeAtVertex(edge->getEndVertex()))
             ){
-                minWaitTime = (minWaitTime < constraint.timeEnd) ? minWaitTime : constraint.timeEnd;
+                float arrivalTime = edge->getCost();
+                minWaitTime = (minWaitTime < arrivalTime) ? minWaitTime : (constraint.timeEnd - (currentTime + arrivalTime));
                 edgeIsPossible = false;
                 continue;
             }

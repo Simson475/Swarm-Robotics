@@ -1,6 +1,6 @@
 #include "ActionPathAux.hpp"
 
-ActionPathAux::ActionPathAux(Action action, int priority, std::shared_ptr<ActionPathAux> predecessor){
+ActionPathAux::ActionPathAux(Action action, float priority, std::shared_ptr<ActionPathAux> predecessor){
     this->action = action;
     this->priority = priority;
     this->predecessor = predecessor;

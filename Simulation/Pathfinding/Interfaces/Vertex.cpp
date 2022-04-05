@@ -12,3 +12,7 @@ void Vertex::setEdges(std::vector<std::shared_ptr<Edge>> edges){
 int Vertex::getId(){
     return this->id;
 }
+
+std::string Vertex::toString(){
+    return "v" + std::to_string(id);
+}
