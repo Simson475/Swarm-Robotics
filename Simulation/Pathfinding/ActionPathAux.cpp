@@ -34,7 +34,7 @@ void ActionPathAux::operator=(const ActionPathAux &a){
 
 /* Comparator for use in priority queue (must be global or you will need a compare class) */
 bool operator> (const ActionPathAux &a, const ActionPathAux &b){
-    return a.priority >= b.priority;
+    return a.priority > b.priority;
 }
 bool operator< (const ActionPathAux &a, const ActionPathAux &b){
     return a.priority <= b.priority;
