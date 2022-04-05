@@ -6,14 +6,6 @@
 #include "Vertex.hpp"
 #include <memory>
 
-/**
- * getId
- * getCurrentAction
- * getGoal
- * getTimeAtVertex
- * 
- */
-
 class AgentInfo {
 public:
     AgentInfo();
