@@ -34,3 +34,18 @@ bool Action::operator==(const Action &a){
         && endVertex == a.endVertex
         && duration == a.duration;
 }
+
+bool Action::isWaitAction(){
+    return startVertex->getId() == endVertex->getId();
+}
+
+Location Action::getLocation(){
+    if (isWaitAction()){
+        return Location(ELocationType::VERTEX_LOCATION, startVertex);
+    }
+    for (auto e : startVertex->getEdges()){
+        if (e->getEndVertex()->getId() == endVertex->getId())
+        return Location(ELocationType::EDGE_LOCATION, e);
+    }
+    exit(1);
+}

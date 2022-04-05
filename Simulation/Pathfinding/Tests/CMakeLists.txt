@@ -10,10 +10,10 @@ set(ControllersDir ../../controllers)
 set(MapDir ../../models/map)
 # We must be able to compile with these files alone (so map_structure wont work without argos files, which makes a lot of our files untestable atm)
 set(PathfindingFiles
-    # ${PathfindingDir}/ConstraintTree/Conflict.hpp
-    # ${PathfindingDir}/ConstraintTree/Conflict.cpp
-    # ${PathfindingDir}/ConstraintTree/ConstraintTree.hpp
-    # ${PathfindingDir}/ConstraintTree/ConstraintTree.cpp
+    ${PathfindingDir}/ConstraintTree/Conflict.hpp
+    ${PathfindingDir}/ConstraintTree/Conflict.cpp
+    ${PathfindingDir}/ConstraintTree/ConstraintTree.hpp
+    ${PathfindingDir}/ConstraintTree/ConstraintTree.cpp
     ${PathfindingDir}/Action.hpp
     ${PathfindingDir}/Action.cpp
     ${PathfindingDir}/ActionPathAux.hpp
@@ -22,16 +22,20 @@ set(PathfindingFiles
     # ${PathfindingDir}/ExperimentData.cpp
     # ${PathfindingDir}/Agent.hpp
     # ${PathfindingDir}/Agent.cpp
-    # ${PathfindingDir}/ConstraintTree/Constraint.hpp
-    # ${PathfindingDir}/ConstraintTree/Constraint.cpp
-    # ${PathfindingDir}/HighLevelCBS.hpp
-    # ${PathfindingDir}/HighLevelCBS.cpp
-    # ${PathfindingDir}/LowLevelCBS.hpp
-    # ${PathfindingDir}/LowLevelCBS.cpp
-    # ${PathfindingDir}/_path.hpp
-    # ${PathfindingDir}/_path.cpp
-    # ${PathfindingDir}/Solution.hpp
-    # ${PathfindingDir}/Solution.cpp
+    ${PathfindingDir}/AgentInfo.hpp
+    ${PathfindingDir}/AgentInfo.cpp
+    ${PathfindingDir}/ConstraintTree/Constraint.hpp
+    ${PathfindingDir}/ConstraintTree/Constraint.cpp
+    ${PathfindingDir}/HighLevelCBS.hpp
+    ${PathfindingDir}/HighLevelCBS.cpp
+    ${PathfindingDir}/LowLevelCBS.hpp
+    ${PathfindingDir}/LowLevelCBS.cpp
+    ${PathfindingDir}/_path.hpp
+    ${PathfindingDir}/_path.cpp
+    ${PathfindingDir}/Solution.hpp
+    ${PathfindingDir}/Solution.cpp
+    ${PathfindingDir}/Location.hpp
+    ${PathfindingDir}/Location.cpp
 
     # ${ControllersDir}/TestController.hpp
     # ${ControllersDir}/TestController.cpp
@@ -39,7 +43,7 @@ set(PathfindingFiles
     ${PathfindingDir}/Interfaces/Edge.hpp
     ${PathfindingDir}/Interfaces/Edge.cpp
     ${PathfindingDir}/Interfaces/Graph.hpp
-    # ${PathfindingDir}/Interfaces/Graph.cpp
+    ${PathfindingDir}/Interfaces/Graph.cpp
     ${PathfindingDir}/Interfaces/Vertex.hpp
     ${PathfindingDir}/Interfaces/Vertex.cpp
 

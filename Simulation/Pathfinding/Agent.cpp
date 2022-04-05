@@ -31,10 +31,6 @@ Action Agent::getCurrentAction(){
     return currentAction;
 }
 
-int Agent::getTimeAtVertex(std::shared_ptr<Vertex> vertex){
-    return (vertex->getId() == this->bot->getStationPlan().front()) ? 10 : 1;//TODO actual times!
-}
-
 std::shared_ptr<Vertex> Agent::getGoal(){
     if (bot->getStationPlan().empty()){
         Error::log("Warning: An agents goal was requested, but had none.");
@@ -42,4 +38,8 @@ std::shared_ptr<Vertex> Agent::getGoal(){
     }
     // Return the vertex for the front of station plan
     return ExperimentData::get_instance().getGraph()->getVertices()[bot->getStationPlan().front()];
+}
+
+AgentInfo Agent::getAgentInfo(){
+    return AgentInfo(this->id, currentAction, getGoal());
 }
