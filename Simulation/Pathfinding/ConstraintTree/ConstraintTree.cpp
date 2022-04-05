@@ -1,4 +1,5 @@
 #include "ConstraintTree.hpp"
+#include "Debugging.hpp"
 
 std::shared_ptr<ConstraintTree> ConstraintTree::getParent(){
     return this->parent;
@@ -116,7 +117,7 @@ bool ConstraintTree::isVertexConflict(Action a1, Action a2){
     float a1End = a1.timestamp + a1.duration;
     float a2End = a2.timestamp + a2.duration;
     
-    bool case1 = a1.endVertex == a2.endVertex && (std::abs(a1End - a2End) <= delta);
+    bool case1 = a1.endVertex == a2.endVertex && (std::abs(a1End - a2End) <= DELTA);
     bool case2 = (a1.endVertex == a2.startVertex && a2.isWaitAction())
               || (a2.endVertex == a1.startVertex && a1.isWaitAction());
     return case1 || case2;
@@ -131,7 +132,7 @@ bool ConstraintTree::isVertexConflict(Action a1, Action a2){
  */
 bool ConstraintTree::isFollowConflict(Action a1, Action a2){
     return a1.endVertex == a2.startVertex // a1 ends up where a2 starts
-        && (std::abs(a1.timestamp + a1.duration - a2.timestamp) <= delta); // a1 arrives before delta has passed
+        && (std::abs(a1.timestamp + a1.duration - a2.timestamp) <= DELTA); // a1 arrives before delta has passed
 }
 
 /**
@@ -187,18 +188,18 @@ Conflict ConstraintTree::getVertexConflict(std::vector<int> conflictAgents, Acti
     float a2End = a2.timestamp + a2.duration;
     float cStart, cEnd;
     
-    bool case1 = a1.endVertex == a2.endVertex && (std::abs(a1End - a2End) <= delta);
+    bool arriveAtSameTime = a1.endVertex == a2.endVertex && (std::abs(a1End - a2End) <= DELTA);
 
-    if (case1){
+    if (arriveAtSameTime){
         cStart = ((a1End > a2End) ? a2End : a1End);//min of the end times
-        cEnd = cStart + delta;
+        cEnd = cStart + DELTA;
         auto conflict = Conflict(
             conflictAgents,
             cStart, cEnd,
             Location(ELocationType::VERTEX_LOCATION, a1.endVertex));
         return conflict;
     }
-    else{ //case2
+    else{ //case2 (an agent is moving to a vertex and agent is waiting on)
         cStart = a1.isWaitAction() ? a2End : a1End;// arrival time of moving action
         cEnd = ((a1End > a2End) ? a1End : a2End);//max end (end of the wait action)
         auto conflict = Conflict(
@@ -223,7 +224,7 @@ Conflict ConstraintTree::getFollowConflict(std::vector<int> conflictAgents, Acti
     float a1End = a1.timestamp + a1.duration;
     float a2End = a2.timestamp + a2.duration;
     float cStart = (a1Start > a2Start) ? a1Start : a2Start;//max start time
-    float cEnd = ((a1End < a2End) ? a1End : a2End) + delta;//min end time + delta;
+    float cEnd = ((a1End < a2End) ? a1End : a2End) + DELTA;//min end time + delta;
 
     auto conflict = Conflict(
         conflictAgents,

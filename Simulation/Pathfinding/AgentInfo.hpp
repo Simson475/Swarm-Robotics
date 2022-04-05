@@ -16,7 +16,6 @@ public:
     int getId();
     Action getCurrentAction();
     std::shared_ptr<Vertex> getGoal();
-    int getTimeAtVertex(std::shared_ptr<Vertex> vertex);
     void operator=(const AgentInfo& other);
 private:
     int id;

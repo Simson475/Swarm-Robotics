@@ -23,6 +23,8 @@ Path ActionPathAux::getPath(){
         path.cost += predecessor->action.duration;
         predecessor = predecessor->predecessor;
     }
+    // Add a wait action at the end which is the work time
+    path.actions.push_back(Action(path.cost, this->action.endVertex, this->action.endVertex, 300));//TODO good value?
     return path;
 }
 

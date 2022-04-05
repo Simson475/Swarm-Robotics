@@ -267,7 +267,7 @@ void ConstraintTreeTests::it_is_follow_conflict(){
     assert(ct.isFollowConflict(a1, a2));
 
     // a1 moves to the vertex a2 waited at > delta ago
-    a2 = Action(a1.timestamp + a1.duration + ct.delta + 1, v2, v2, 100);
+    a2 = Action(a1.timestamp + a1.duration + DELTA + 1, v2, v2, 100);
     assert( ! ct.isFollowConflict(a1, a2));
 }
 
@@ -290,7 +290,7 @@ void ConstraintTreeTests::it_can_get_vertex_conflict(){
     assert(c1.getAgentIds()[1] == agents[1]);
     assert(c1.getLocation().toString() == "v2");
     assert(c1.getTimeStart() == a1.timestamp + a1.duration);
-    assert(c1.getTimeEnd() == (a1.timestamp + a1.duration + ct.delta));
+    assert(c1.getTimeEnd() == (a1.timestamp + a1.duration + DELTA));
 }
 
 void ConstraintTreeTests::it_can_get_follow_conflict(){
@@ -312,7 +312,7 @@ void ConstraintTreeTests::it_can_get_follow_conflict(){
     assert(c1.getAgentIds()[1] == agents[1]);
     assert(c1.getLocation().toString() == "v2");
     assert(c1.getTimeStart() == a2.timestamp);
-    assert(c1.getTimeEnd() == (a1.timestamp + a1.duration + ct.delta));
+    assert(c1.getTimeEnd() == (a1.timestamp + a1.duration + DELTA));
 }
 
 void ConstraintTreeTests::it_can_get_edge_conflict(){

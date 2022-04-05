@@ -15,6 +15,7 @@ class LowLevelCBS;
 #include "ActionPathAux.hpp"
 #include "Vertex.hpp"
 #include "Graph.hpp"
+#include "ConstraintTree.hpp"
 
 class LowLevelCBS {
 public:

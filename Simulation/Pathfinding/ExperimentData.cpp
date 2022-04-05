@@ -39,8 +39,8 @@ bool ExperimentData::requestSolution(int agentId){
     for (auto a1 : agentInfos){
         for (auto a2 : agentInfos){
             if (a1.getId() != a2.getId() && a1.getGoal() == a2.getGoal()){
-                Error::log("Impossible to find a solution.\n");
-                exit(2);
+                Error::log("Impossible to find a solution?\n");
+                //exit(2);
             }
         }
     }

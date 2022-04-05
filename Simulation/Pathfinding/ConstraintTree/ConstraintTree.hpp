@@ -1,5 +1,6 @@
 #ifndef CONSTRAINT_TREE_HPP
 #define CONSTRAINT_TREE_HPP
+#define DELTA 20
 class ConstraintTree;
 
 #include <vector>
@@ -8,6 +9,7 @@ class ConstraintTree;
 #include "Solution.hpp"
 #include "Conflict.hpp"
 #include "AgentInfo.hpp"
+
 
 class ConstraintTree : public std::enable_shared_from_this<ConstraintTree> {
 public:
@@ -33,7 +35,6 @@ public:
     Conflict getFollowConflict(std::vector<int> conflictAgents, Action a1, Action a2);
     Conflict getSwapConflict(int conflictAgents, Action a1, Action a2);
 
-    const float delta = 20; // Small time delta aprx the time it takes a robot to move through a vertex.
 private:
     std::shared_ptr<ConstraintTree> parent;
     std::vector<std::shared_ptr<ConstraintTree>> children;

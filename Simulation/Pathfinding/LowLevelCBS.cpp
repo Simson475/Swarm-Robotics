@@ -21,7 +21,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
         u = top.action.endVertex;
         currentTime += top.action.duration;
 
-        if (this->iterations > 25000000){
+        if (this->iterations > 250000){
             Error::log("Max iterations reached.\n");
             exit(1);
         }
@@ -80,8 +80,8 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
             // Vertex constraints
             if (constraint.location.type == ELocationType::VERTEX_LOCATION
              && edge->getEndVertex() == constraint.location.vertex//TODO do we need to check the start vertex aswell or will those never reach this point?
-             && constraint.timeStart < (currentTime + edge->getCost() + agent.getTimeAtVertex(edge->getEndVertex()))
-             && constraint.timeEnd >= (currentTime + edge->getCost() + agent.getTimeAtVertex(edge->getEndVertex()))
+             && constraint.timeStart < (currentTime + edge->getCost())
+             && constraint.timeEnd >= (currentTime + edge->getCost() + DELTA)
             ){
                 float arrivalTime = edge->getCost();
                 minWaitTime = (minWaitTime < arrivalTime) ? minWaitTime : (constraint.timeEnd - (currentTime + arrivalTime));
