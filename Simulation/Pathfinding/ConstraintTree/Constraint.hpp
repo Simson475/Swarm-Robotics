@@ -14,7 +14,8 @@ class Constraint {
     Location location;
     float timeStart;
     float timeEnd;
-    std::string toString();
+    std::string toString() const;
+    bool operator==(const Constraint&);
 };
 
 #endif

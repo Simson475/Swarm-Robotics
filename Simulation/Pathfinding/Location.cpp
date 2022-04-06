@@ -10,6 +10,6 @@ Location::Location(ELocationType type, std::shared_ptr<Edge> edge){
     this->edge = edge;
 }
 
-std::string Location::toString(){
+std::string Location::toString() const {
     return (type == ELocationType::EDGE_LOCATION) ? edge->toString() : vertex->toString();
 }

@@ -11,6 +11,8 @@ class HighLevelCBS;
 #include <vector>
 #include <queue>
 #include <memory>
+#include <deque>
+#include <array>
 #include "Conflict.hpp"
 #include "Solution.hpp"
 #include "TestController.hpp"

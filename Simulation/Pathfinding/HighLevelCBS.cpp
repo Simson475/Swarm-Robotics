@@ -11,16 +11,18 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     /**
      * Insert Root to OPEN
      */
-    std::priority_queue<std::shared_ptr<ConstraintTree>> open;
+    std::priority_queue<std::shared_ptr<ConstraintTree>, std::vector<std::shared_ptr<ConstraintTree>>, ConstraintTree> open;
     open.push(root);
+    std::vector<std::shared_ptr<ConstraintTree>> cts;
+    cts.push_back(root);
     /**
      * While OPEN not empty do
      */
     int iterations = 0;
     while (open.size() > 0) {
-        if (++iterations == 10000){
+        if (++iterations == 1000){
             Error::log("Max highlevel iterations reached!\n");
-            exit(1);
+            exit(0);
         }
         /**
          * p <-- best node from OPEN (the node with the lowest solution cost)
@@ -81,12 +83,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             // }
             /**
              * A.solution <-- P.solution
-             */
-            a->setSolution(p->getSolution());
-            /**
              * Update A.solution by invoking low level(ai)
              */
-            Solution s = a->getSolution();
+            Solution s = p->getSolution();
             Path newPath = lowLevel.getIndividualPath(graph, agent, a->constraints);
             s.paths[agent.getId()] = newPath;
             a->setSolution(s);
@@ -97,7 +96,24 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              * If A.cost < INF then insert A to OPEN
              */
             if (a->getCost() < INFINITY) {
+                for (auto ct : cts){
+                    if (a->constraints.size() == ct->constraints.size()){
+                        bool equals = true;
+                        int siz = a->constraints.size();
+                        for (int i = 0; i < siz; ++i){
+                            if (!(a->constraints[i] == ct->constraints[i])){
+                                equals = false;
+                                break;
+                            }
+                        }
+                        if (equals){
+                            std::cout << "DUBLICATES!\n";
+                            exit(1);
+                        }
+                    }
+                }
                 open.push(a);
+                cts.push_back(a);
             }
         }
     }

@@ -56,7 +56,7 @@ set(UNIT_TESTS ./Unit)
 set(INTEGRATION_TESTS ./Integration)
 
 # Emit all warning messages
-add_definitions(-Wall)# -Werror
+add_definitions(-Wall -pg)# -Werror
 
 add_executable(run_tests
     

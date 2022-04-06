@@ -122,20 +122,6 @@ void ConstraintTreeTests::it_gets_sorted_in_priority_queue(){
     auto v2 = std::make_shared<Vertex>(1);
     auto v3 = std::make_shared<Vertex>(1);
     auto v4 = std::make_shared<Vertex>(1);
-    std::vector<std::shared_ptr<Edge>> v1edges = {
-        std::make_shared<Edge>(v1, v2, 1),
-    };
-    std::vector<std::shared_ptr<Edge>> v2edges = {
-        std::make_shared<Edge>(v2, v3, 4),
-        std::make_shared<Edge>(v2, v1, 1),
-    };
-    std::vector<std::shared_ptr<Edge>> v3edges = {
-        std::make_shared<Edge>(v3, v2, 4),
-        std::make_shared<Edge>(v3, v4, 7),
-    };
-    std::vector<std::shared_ptr<Edge>> v4edges = {
-        std::make_shared<Edge>(v4, v3, 7),
-    };
     Solution s1, s2, s3;
     Path p1, p2, p3;
     p1.actions = {
