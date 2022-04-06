@@ -62,16 +62,20 @@ std::vector<Conflict> ConstraintTree::findConflicts(){
                     if (maxStart <= minEnd){
                         if (isVertexConflict(a1, a2)){
                             conflicts.push_back(getVertexConflict({i, j}, a1, a2));
+                            return conflicts;
                         }
                         else if (isSwapConflict(a1, a2)){ //Perhaps make the checks tighter so else isnt needed
                             conflicts.push_back(getSwapConflict(i, a1, a2));
                             conflicts.push_back(getSwapConflict(j, a2, a1));
+                            return conflicts;
                         }
                         else if (isEdgeConflict(a1, a2)){
                             conflicts.push_back(getEdgeConflict({i, j}, a1, a2));
+                            return conflicts;
                         } 
                         else if (isFollowConflict(a1, a2)){
                             conflicts.push_back(getFollowConflict({i, j}, a1, a2));
+                            return conflicts;
                         }
                     }
                 }

@@ -46,7 +46,7 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories(${CMAKE_SOURCE_DIR})
 
 # Emit all warning messages
-add_definitions(-Wall)# -Werror
+add_definitions(-Wall -O3)# -Werror
 
 # Make the experiments dir
 add_custom_target(build-time-make-directory ALL
