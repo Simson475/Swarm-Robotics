@@ -21,15 +21,15 @@ private:
 public:
     void run(){// This is placed in the header to help ensure all tests are run
         it_can_find_vertex_conflicts();
-        it_can_find_edge_conflicts();
+        //it_can_find_edge_conflicts();
         it_can_find_swap_conflicts();
         it_gets_sorted_in_priority_queue();
         it_is_vertex_conflict();
-        it_is_edge_conflict();
+        //it_is_edge_conflict();
         it_is_swap_conflict();
         it_is_follow_conflict();
         it_can_get_vertex_conflict();
-        it_can_get_edge_conflict();
+        //it_can_get_edge_conflict();
         it_can_get_swap_conflict();
         it_can_get_follow_conflict();
     }

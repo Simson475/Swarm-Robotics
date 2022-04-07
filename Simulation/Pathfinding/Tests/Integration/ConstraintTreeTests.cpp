@@ -62,7 +62,7 @@ void ConstraintTreeTests::it_can_find_edge_conflicts(){
         std::make_shared<Edge>(v2, v1, 1000),
     };
     p1.actions = {
-        Action(100, v1, v2, 1100),
+        Action(500, v1, v2, 1000),
     };
     p2.actions = {
         Action(0, v1, v2, 1000),

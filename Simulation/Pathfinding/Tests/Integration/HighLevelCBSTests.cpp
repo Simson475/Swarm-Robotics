@@ -254,3 +254,64 @@ void HighLevelCBSTests::it_can_find_a_solution_in_a_big_graph(){
     //assert(solution.paths[0].cost == 761);
     //assert(solution.paths[1].cost == 440);
 }
+
+void HighLevelCBSTests::it_can_find_a_solution_in_a_graph_with_many_vertices(){
+    // Arrange
+    // We will construct a grid graph
+    int gridWidth = 5;
+    int gridHeight = 3;
+    // Create vertices
+    std::vector<std::shared_ptr<Vertex>> vertices{gridWidth*gridHeight};
+    for (int i = 0; i < gridWidth; ++i){
+        for (int j = 0; j < gridHeight; ++j){
+            vertices[i + j * gridWidth] = std::make_shared<Vertex>(i + j*gridWidth);
+        }
+    }
+    // Create edges
+    for (int i = 0; i < gridWidth; i++){
+        for (int j = 0; j < gridHeight; ++j){
+            std::vector<std::shared_ptr<Edge>> edges;
+            for (int k = i - 1; k <= i + 1; ++k){
+                for (int l = j - 1; l <= j + 1; ++l){
+                    // If we are within bounds
+                    if (((k != i && l == j) || (l != j && k == i)) && !(k < 0 || k == gridWidth || l < 0 || l == gridHeight)){
+                        edges.emplace_back(std::make_shared<Edge>(vertices[i + j * gridWidth], vertices[k + l * gridWidth], 100));
+                    }
+                }
+            }
+            vertices[i + j * gridWidth]->setEdges(edges);
+        }
+    }
+    
+    // for (int i = 0; i < gridWidth*gridHeight; i++){
+    //     std::vector<std::shared_ptr<Edge>> edges; //Edges to various vertices
+    //     if (i-1 >= 0 || i-1 != gridWidth) edges.emplace_back(std::make_shared<Edge>(vertices[i], vertices[i-1], 100)); //The vertex right befre
+    //     if (i+1 < gridWidth*gridHeight) edges.emplace_back(std::make_shared<Edge>(vertices[i], vertices[i+1], 100)); //The vertex right after
+    //     if (i+gridWidth < gridWidth*gridHeight) edges.emplace_back(std::make_shared<Edge>(vertices[i], vertices[i+gridWidth], 100)); //The vertex below
+    //     if (i-gridWidth >= 0) edges.emplace_back(std::make_shared<Edge>(vertices[i], vertices[i-gridWidth], 100)); //The vertex above
+    //     vertices[i]->setEdges(edges);
+    //     std::cout << i << "-" << edges.size() << "\n";
+    // }
+
+    auto graph = std::make_shared<Graph>(vertices);
+
+    //AgentInfo(id, action, dest)
+    int agentCount = 4;
+    std::vector<AgentInfo> agents{agentCount};
+    for (int i = 0; i < agentCount; ++i){
+        agents[i] = AgentInfo(i, Action(0, vertices[i], vertices[i], 0), vertices[gridWidth*gridHeight-1-i]);
+    }
+    
+    // Act
+    Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
+
+    // Assert
+    assert(solution.paths.size() == agentCount);
+    int i = 0;
+    for (auto p : solution.paths){
+        std::cout << "Path" << i << " cost: " << solution.paths[i].cost << "\n";
+        i++;
+    }
+    //assert(solution.paths[0].cost == 761);
+    //assert(solution.paths[1].cost == 440);
+}

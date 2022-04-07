@@ -50,7 +50,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         /**
          * Get one of the conflicts
          */
-        //Conflict &c = conflicts.front();
+        // Conflict &c = conflicts.front();
         Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel);
         /**
          * Foreach agent ai in C do
