@@ -60,7 +60,7 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
     for (auto edge : edges){
         bool edgeIsPossible = true;
         for (Constraint &constraint : constraints){//TODO if this is too slow, we can extract the relevant constraints before the outer loop
-            if (constraint.agent.getId() != agent.getId()
+            if (constraint.agentId != agent.getId()
             || (constraint.timeEnd < currentTime)
             ){
                 continue;//This constraint is irrelevant (not this agent or over before this time)

@@ -20,7 +20,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      */
     int iterations = 0;
     while (open.size() > 0) {
-        if (++iterations == 1000){
+        if (++iterations == 20000){
             Error::log("Max highlevel iterations reached!\n");
             exit(0);
         }
@@ -50,12 +50,12 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         /**
          * Get one of the conflicts
          */
-        Conflict &c = conflicts.front();
+        //Conflict &c = conflicts.front();
+        Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel);
         /**
          * Foreach agent ai in C do
          */
         for(int agentId : c.getAgentIds()){
-            AgentInfo agent = agents[agentId];
             /**
              * A <-- new node
              * A.constraints = p.constraints union (ai,v,t)
@@ -65,7 +65,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             //std::cout << c.getLocation().toString() << "<-- get location  get time start-->"<< c.getTimeStart()<< "\n"
             //<< "Constraints.size: " << a->constraints.size() << "\n";
             Constraint constraint = Constraint(
-                agent,
+                agentId,
                 c.getLocation(),
                 c.getTimeStart() - 1,
                 c.getTimeEnd() + 1
@@ -86,8 +86,8 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              * Update A.solution by invoking low level(ai)
              */
             Solution s = p->getSolution();
-            Path newPath = lowLevel.getIndividualPath(graph, agent, a->constraints);
-            s.paths[agent.getId()] = newPath;
+            Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], a->constraints);
+            s.paths[agentId] = newPath;
             a->setSolution(s);
             // for (auto pa : a->getSolution().paths){
             //     std::cout << pa.toString() << "\n";
@@ -95,7 +95,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             /**
              * If A.cost < INF then insert A to OPEN
              */
-            if (a->getCost() < INFINITY) {
+            if (a->getCost() < std::numeric_limits<float>::infinity()) {
                 for (auto ct : cts){
                     if (a->constraints.size() == ct->constraints.size()){
                         bool equals = true;
@@ -120,4 +120,45 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     // We did not find any solution (No possible solution)
     Error::log("ERROR: HighLevelCBS: No possible solution\n");
     exit(1);
+}
+
+Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Conflict> conflicts, LowLevelCBS lowLevel){
+    std::vector<Conflict> semiCardinalConflicts;
+    for (auto c : conflicts){
+        // Make a copy of the solution
+        auto solution = node->getSolution();
+        // It is a cardinal conflict if adding any of the constraints derived from the conflict
+        // increase the cost.
+        // It is a semi cardinal conflict if adding one of the derived constraints increase the cost
+        // We see: If we find the condition for semi cardinal to be true > 1 it is a cardinal.
+        bool semiCardinal = false;
+        for (auto agentId : c.getAgentIds()){
+            // Get the derived constraint for the current agent from the conflict
+            Constraint constraint = Constraint(
+                agentId,
+                c.getLocation(),
+                c.getTimeStart() - 1,
+                c.getTimeEnd() + 1
+            );
+            // Get a container of the current constraints union the new constraint
+            auto constraints = node->constraints;
+            constraints.push_back(constraint);
+            // Get the new path from low level so we can see if the cost increases
+            int currentCost = solution.paths[agentId].cost;
+            Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], constraints);
+            bool increasesCost = newPath.cost > currentCost;
+
+            if (increasesCost){
+                if (semiCardinal){
+                    return c;
+                }
+                else {
+                    semiCardinalConflicts.push_back(c);
+                    semiCardinal = true;
+                }
+            }
+        }
+    }
+    // Return a semi cardinal if one was found, otherwise return a random conflict
+    return semiCardinalConflicts.empty() ? conflicts.front() : semiCardinalConflicts.front();
 }

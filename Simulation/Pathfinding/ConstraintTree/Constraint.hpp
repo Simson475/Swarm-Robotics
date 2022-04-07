@@ -9,8 +9,8 @@ class Constraint;
 
 class Constraint {
   public:
-    Constraint(AgentInfo, Location, float, float);
-    AgentInfo agent;
+    Constraint(int, Location, float, float);
+    int agentId;
     Location location;
     float timeStart;
     float timeEnd;
