@@ -12,6 +12,7 @@ public:
     void log(std::string msg);
     std::ofstream* begin();
     void end();
+    static std::string experimentPrefix;
 private:
     std::string logFile;
     std::ofstream ostream;

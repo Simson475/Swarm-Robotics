@@ -16,7 +16,6 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
         firstAction.timestamp + firstAction.duration + graph->heuristicCost(firstAction.endVertex, goal),
         nullptr
     ));
-    Logger logger = Logger("LowLevel.txt", false);
     this->iterations = 0;
     while( ! priorityQueue.empty()){
         this->iterations++;
@@ -51,7 +50,6 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
                 }
             }
             if (canSpendNeededTimeAtGoal){
-                (*logger.begin()) << iterations << "\n"; logger.end();
                 return top.getPath();
             }
         }
@@ -71,20 +69,26 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
             }
             if (visited) continue;
             //TODO We can probably also restrict cycles to only be allowed iff there is a constraint at some point on the vertex you are cycling to
-            // bool visitedAtAnyTime = ! vertexVisits[action.endVertex->getId()].empty();
-            // bool hasConstraint = false;
-            // for (Constraint &constraint : constraints){//TODO if this is too slow, we can extract the relevant constraints before
-            //     // If there is a constraint for the agent at the actions end vertex
-            //     if (constraint.agentId == agent.getId()
-            //      && constraint.location.type == ELocationType::VERTEX_LOCATION
-            //      && constraint.location.vertex == action.endVertex
-            //     ){
-            //         hasConstraint = true;
-            //         break;
-            //     }
-            // }
+            bool visitedAtAnyTime = false;
+            for (Action a : top.getPath().actions){
+                if (a.startVertex == action.endVertex || a.endVertex == action.endVertex){
+                    visitedAtAnyTime = true;
+                    break;
+                }
+            }
+            bool hasConstraint = false;
+            for (Constraint &constraint : constraints){//TODO if this is too slow, we can extract the relevant constraints before
+                // If there is a constraint for the agent at the actions end vertex
+                if (constraint.agentId == agent.getId()
+                 && constraint.location.type == ELocationType::VERTEX_LOCATION
+                 && constraint.location.vertex == action.endVertex
+                ){
+                    hasConstraint = true;
+                    break;
+                }
+            }
             // std::cout << visitedAtAnyTime << (! hasConstraint) << (visitedAtAnyTime && (! hasConstraint)) << "\n";
-            // if (visitedAtAnyTime && ! hasConstraint) continue;
+            if (visitedAtAnyTime && ! hasConstraint && ! action.isWaitAction()) continue;
             
             vertexVisits[action.endVertex->getId()].push_back(action.timestamp + action.duration);
 

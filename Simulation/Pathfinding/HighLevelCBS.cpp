@@ -7,7 +7,6 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      * Root.cost = SIC(Root.solution)
      */
     std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>();
-    Logger("LowLevel.txt", false).log("initial paths\n");
     // std::cout << "initial paths\n";
     root->setSolution(lowLevel.getAllPaths(graph, agents, std::vector<Constraint>{}), agents);
     /**
@@ -23,14 +22,18 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     Logger logger = Logger("HighLevel.txt", false);
     int iterations = 0;
     while (open.size() > 0) {
+        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
         if (++iterations == 5000){
             Error::log("Max highlevel iterations reached!\n");
             exit(0);
         }
+        (*logger.begin()) << "Iteration: " << iterations << "\n"; logger.end();
         /**
          * p <-- best node from OPEN (the node with the lowest solution cost)
          */
         std::shared_ptr<ConstraintTree> p = open.top();open.pop();
+        (*logger.begin()) << "Constraints: " << p->constraints.size() << "\n";
         // std::cout << "Popped this solution:\n";
         // for (auto pa : p->getSolution().paths){
         //     std::cout << pa.toString() << "\n";
@@ -47,8 +50,8 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         /**
          * If P has no conflicts then return P.solution
          */
-        (*logger.begin()) << iterations << "\n"; logger.end();
         if (conflicts.size() == 0) {
+            (*logger.begin()) << "Done\n"; logger.end();
             return p->getSolution();
         }
         /**
@@ -91,9 +94,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              * Update A.solution by invoking low level(ai)
              */
             Solution s = p->getSolution();
-            Logger("LowLevel.txt", false).log("individual path\n");
             // std::cout << "individual path\n";
             Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], a->constraints);
+            (*logger.begin()) << "Lowlevel used " << lowLevel.iterations << "\n"; logger.end();
             s.paths[agentId] = newPath;
             a->setSolution(s);
             // for (auto pa : a->getSolution().paths){
@@ -123,6 +126,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
                 cts.push_back(a);
             }
         }
+        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+        (*logger.begin()) << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl; logger.end();
     }
     // We did not find any solution (No possible solution)
     Error::log("ERROR: HighLevelCBS: No possible solution\n");
@@ -132,7 +138,6 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
 Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Conflict> conflicts, LowLevelCBS lowLevel){
     if (conflicts.size() == 1) return conflicts.front();
 
-    Logger("LowLevel.txt", false).log("best conflict\n");
     std::vector<Conflict> semiCardinalConflicts;
     for (auto c : conflicts){
         // Make a copy of the solution

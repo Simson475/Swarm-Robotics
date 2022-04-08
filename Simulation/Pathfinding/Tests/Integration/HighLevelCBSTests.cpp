@@ -258,7 +258,7 @@ void HighLevelCBSTests::it_can_find_a_solution_in_a_big_graph(){
 void HighLevelCBSTests::it_can_find_a_solution_in_a_graph_with_many_vertices(){
     // Arrange
     // We will construct a grid graph
-    int gridWidth = 7;
+    int gridWidth = 15;
     int gridHeight = 3;
     // Create vertices
     std::vector<std::shared_ptr<Vertex>> vertices{(long unsigned int)(gridWidth*gridHeight)};
@@ -296,22 +296,28 @@ void HighLevelCBSTests::it_can_find_a_solution_in_a_graph_with_many_vertices(){
     auto graph = std::make_shared<Graph>(vertices);
 
     //AgentInfo(id, action, dest)
-    int agentCount = 1;
-    std::vector<AgentInfo> agents{(long unsigned int)agentCount};
-    for (int i = 0; i < agentCount; ++i){
-        agents[i] = AgentInfo(i, Action(0, vertices[i], vertices[i], 0), vertices[gridWidth*gridHeight-1-i]);
-    }
-    
-    Logger("HighLevel.txt");Logger("LowLevel.txt");
+    for (int z = 1; z < 15; z++){
+        Logger::experimentPrefix = std::to_string(z) + "agent_";
+        int agentCount = z;
+        std::cout << "Running experiment with " << z << " agents\n";
+        std::vector<AgentInfo> agents{(long unsigned int)agentCount};
+        for (int i = 0; i < agentCount; ++i){
+            agents[i] = AgentInfo(i, Action(0, vertices[i], vertices[i], 0), vertices[gridWidth*gridHeight-1-i]);
+        }
+        
+        Logger("HighLevel.txt");
 
-    // Act
-    Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
+        // Act
+        Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
 
-    // Assert
-    assert((int)solution.paths.size() == agentCount);
-    int i = 0;
-    for (auto p : solution.paths){
-        std::cout << "Path" << i << " cost: " << solution.paths[i].cost << "\n";
-        i++;
+        // Assert
+        // assert((int)solution.paths.size() == agentCount);
+        // int i = 0;
+        // for (auto p : solution.paths){
+        //     std::cout << "Path" << i << " cost: " << solution.paths[i].cost << "\n";
+        //     i++;
+        // }
+
+        std::cout << "Experiment done\n";
     }
 }
