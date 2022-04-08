@@ -77,8 +77,8 @@ void LowLevelCBSTests::pathfinding_is_correct_with_constraints(){
      * 1---2---3
      *   \ | /
      *     4
-     * straight lines are length 1
-     * diagonal lines are length 1.4 (0-3 is 1.5 so 0-1 should be prioritised)
+     * straight lines are length 100
+     * diagonal lines are length 140 (0-3 is 150 so 0-1 should be prioritised)
     */
     auto v0 = std::make_shared<Vertex>(0);
     auto v1 = std::make_shared<Vertex>(1);
@@ -134,6 +134,7 @@ void LowLevelCBSTests::pathfinding_is_correct_with_constraints(){
 
     //Assert
     //Assert the correct path is output
+    std::cout << path.toString() << "\n";
     assert(path.actions[0].endVertex == v0);
     assert(path.actions[1].endVertex == v1);
     assert(path.actions[2].endVertex == v4);

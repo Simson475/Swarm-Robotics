@@ -16,6 +16,8 @@ class LowLevelCBS;
 #include "Vertex.hpp"
 #include "Graph.hpp"
 #include "ConstraintTree.hpp"
+#include "Logger.hpp"
+#include "GLOBALS.hpp"
 
 class LowLevelCBS {
 public:

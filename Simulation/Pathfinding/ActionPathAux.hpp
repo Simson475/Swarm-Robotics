@@ -4,17 +4,20 @@
 #include "Action.hpp"
 #include "_path.hpp"
 #include <memory>
+#include "Debugging.hpp"
+#include "GLOBALS.hpp"
 
 class ActionPathAux{
 public:
-    ActionPathAux(Action action, float priority, std::shared_ptr<ActionPathAux> predecessor);
+    ActionPathAux(Action action, float heuristic, std::shared_ptr<ActionPathAux> predecessor);
     ActionPathAux(const ActionPathAux &a);
     Path getPath();
 
     Action action;
-    float priority;
+    float heuristic;
     std::shared_ptr<ActionPathAux> predecessor;
     void operator=(const ActionPathAux &a);
+    std::string toString();
 };
 
 bool operator< (const ActionPathAux &a, const ActionPathAux &b);//Comparison function for priority queue

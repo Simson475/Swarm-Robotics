@@ -7,6 +7,8 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      * Root.cost = SIC(Root.solution)
      */
     std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>();
+    Logger("LowLevel.txt", false).log("initial paths\n");
+    // std::cout << "initial paths\n";
     root->setSolution(lowLevel.getAllPaths(graph, agents, std::vector<Constraint>{}), agents);
     /**
      * Insert Root to OPEN
@@ -18,9 +20,10 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     /**
      * While OPEN not empty do
      */
+    Logger logger = Logger("HighLevel.txt", false);
     int iterations = 0;
     while (open.size() > 0) {
-        if (++iterations == 20000){
+        if (++iterations == 5000){
             Error::log("Max highlevel iterations reached!\n");
             exit(0);
         }
@@ -39,11 +42,12 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         // std::cout << "Found these conflicts:\n";
         // std::cout << conflicts.size() << "\n";
         // for (auto conf : conflicts){
-        //     std::cout << conf.toString();
+        //     std::cout << conf.toString() << "\n";
         // }
         /**
          * If P has no conflicts then return P.solution
          */
+        (*logger.begin()) << iterations << "\n"; logger.end();
         if (conflicts.size() == 0) {
             return p->getSolution();
         }
@@ -51,6 +55,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
          * Get one of the conflicts
          */
         // Conflict &c = conflicts.front();
+        // std::cout << "Finding best conflict..\n";
         Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel);
         /**
          * Foreach agent ai in C do
@@ -75,7 +80,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             //     for (auto pa : p->getSolution().paths){
             //         std::cout << pa.toString() << "\n";
             //     }
-            //     std::cout << constraint.toString() << "\n";
+            // std::cout << constraint.toString() << "\n" << agentId << "\n";
             // }
             a->constraints.push_back(constraint);
             // for (auto constr : a->constraints){
@@ -86,6 +91,8 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              * Update A.solution by invoking low level(ai)
              */
             Solution s = p->getSolution();
+            Logger("LowLevel.txt", false).log("individual path\n");
+            // std::cout << "individual path\n";
             Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], a->constraints);
             s.paths[agentId] = newPath;
             a->setSolution(s);
@@ -123,6 +130,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
 }
 
 Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Conflict> conflicts, LowLevelCBS lowLevel){
+    if (conflicts.size() == 1) return conflicts.front();
+
+    Logger("LowLevel.txt", false).log("best conflict\n");
     std::vector<Conflict> semiCardinalConflicts;
     for (auto c : conflicts){
         // Make a copy of the solution

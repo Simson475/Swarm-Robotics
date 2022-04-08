@@ -64,6 +64,8 @@ set(PathfindingFiles
         ${MapDir}/map_structure.cpp
 
         ${PathfindingDir}/Debugging.hpp
+        ${PathfindingDir}/Logger.hpp
+        ${PathfindingDir}/Logger.cpp
 )
 
 # Add a library target called BotImplementations from the source files listed

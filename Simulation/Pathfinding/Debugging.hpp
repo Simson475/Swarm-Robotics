@@ -11,6 +11,7 @@ class Error;
 class Error {
 public: 
     static void log(std::string err){
+        std::cout << err;
         std::ofstream errFile;
         errFile.open(std::string{std::filesystem::current_path()} + "/err.txt", std::ofstream::app);
         errFile << err;

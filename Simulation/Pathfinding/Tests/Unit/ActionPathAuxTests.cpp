@@ -13,11 +13,11 @@ void ActionPathAuxTests::it_can_compare_in_priority_queue(){
 
     // Assert 
     auto aux = priorityQueue.top();priorityQueue.pop();
-    assert(aux.priority == 10);
+    assert(aux.heuristic == 10);
     aux = priorityQueue.top();priorityQueue.pop();
-    assert(aux.priority == 20);
+    assert(aux.heuristic == 20);
     aux = priorityQueue.top();priorityQueue.pop();
-    assert(aux.priority == 30);
+    assert(aux.heuristic == 30);
 }
 
 void ActionPathAuxTests::it_can_get_path(){

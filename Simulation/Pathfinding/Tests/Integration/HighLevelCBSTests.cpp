@@ -61,8 +61,8 @@ void HighLevelCBSTests::it_gets_a_path_that_has_no_conflicts(){
 
     // Assert
     assert(solution.paths.size() == 2);
-    assert(solution.paths[0].cost == 221 || solution.paths[0].cost == 200);
-    assert(solution.paths[1].cost == 221 || solution.paths[1].cost == 200);
+    assert(solution.paths[0].cost == 521 || solution.paths[0].cost == 500);
+    assert(solution.paths[1].cost == 521 || solution.paths[1].cost == 500);
     assert(solution.paths[0].cost != solution.paths[1].cost);
 }
 
@@ -75,8 +75,8 @@ void HighLevelCBSTests::it_can_find_a_solution_if_agents_have_same_goal(){
      * 1---2---3
      *   \ | /
      *     4
-     * straight lines are length 1
-     * diagonal lines are length 1.4
+     * straight lines are length 100
+     * diagonal lines are length 140 (except 0-3 which is 150)
     */
     auto v0 = std::make_shared<Vertex>(0);
     auto v1 = std::make_shared<Vertex>(1);
@@ -258,10 +258,10 @@ void HighLevelCBSTests::it_can_find_a_solution_in_a_big_graph(){
 void HighLevelCBSTests::it_can_find_a_solution_in_a_graph_with_many_vertices(){
     // Arrange
     // We will construct a grid graph
-    int gridWidth = 5;
+    int gridWidth = 7;
     int gridHeight = 3;
     // Create vertices
-    std::vector<std::shared_ptr<Vertex>> vertices{gridWidth*gridHeight};
+    std::vector<std::shared_ptr<Vertex>> vertices{(long unsigned int)(gridWidth*gridHeight)};
     for (int i = 0; i < gridWidth; ++i){
         for (int j = 0; j < gridHeight; ++j){
             vertices[i + j * gridWidth] = std::make_shared<Vertex>(i + j*gridWidth);
@@ -296,22 +296,22 @@ void HighLevelCBSTests::it_can_find_a_solution_in_a_graph_with_many_vertices(){
     auto graph = std::make_shared<Graph>(vertices);
 
     //AgentInfo(id, action, dest)
-    int agentCount = 4;
-    std::vector<AgentInfo> agents{agentCount};
+    int agentCount = 1;
+    std::vector<AgentInfo> agents{(long unsigned int)agentCount};
     for (int i = 0; i < agentCount; ++i){
         agents[i] = AgentInfo(i, Action(0, vertices[i], vertices[i], 0), vertices[gridWidth*gridHeight-1-i]);
     }
     
+    Logger("HighLevel.txt");Logger("LowLevel.txt");
+
     // Act
     Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
 
     // Assert
-    assert(solution.paths.size() == agentCount);
+    assert((int)solution.paths.size() == agentCount);
     int i = 0;
     for (auto p : solution.paths){
         std::cout << "Path" << i << " cost: " << solution.paths[i].cost << "\n";
         i++;
     }
-    //assert(solution.paths[0].cost == 761);
-    //assert(solution.paths[1].cost == 440);
 }

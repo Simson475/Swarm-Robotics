@@ -50,6 +50,8 @@ set(PathfindingFiles
     ${PathfindingDir}/Interfaces/Vertex.cpp
 
     ${PathfindingDir}/Debugging.hpp
+    ${PathfindingDir}/Logger.hpp
+    ${PathfindingDir}/Logger.cpp
 )
 
 set(UNIT_TESTS ./Unit)

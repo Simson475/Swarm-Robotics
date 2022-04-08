@@ -22,6 +22,7 @@ class HighLevelCBS;
 #include "ExperimentData.hpp"
 
 #include "Debugging.hpp"
+#include "Logger.hpp"
 
 class HighLevelCBS {    
 public:

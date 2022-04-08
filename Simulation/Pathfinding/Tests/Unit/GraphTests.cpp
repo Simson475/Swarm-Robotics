@@ -34,11 +34,13 @@ void GraphTests::heuristic_costs_are_correct(){
     Graph g = Graph(vertices);
 
     // Act
+    float v1v1Cost = g.heuristicCost(v1, v1);
     float v1v3Cost = g.heuristicCost(v1, v3);
     float v1v4Cost = g.heuristicCost(v1, v4);
     float v1v5Cost = g.heuristicCost(v1, v5);
 
     // Assert
+    assert(v1v1Cost == 0);
     assert(v1v3Cost == 2);
     assert(v1v4Cost == 102);
     assert(v1v5Cost == std::numeric_limits<float>::infinity());

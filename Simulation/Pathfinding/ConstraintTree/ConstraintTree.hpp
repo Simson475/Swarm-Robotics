@@ -1,6 +1,5 @@
 #ifndef CONSTRAINT_TREE_HPP
 #define CONSTRAINT_TREE_HPP
-#define DELTA 20
 class ConstraintTree;
 
 #include <vector>
@@ -9,7 +8,7 @@ class ConstraintTree;
 #include "Solution.hpp"
 #include "Conflict.hpp"
 #include "AgentInfo.hpp"
-
+#include "GLOBALS.hpp"
 
 class ConstraintTree : public std::enable_shared_from_this<ConstraintTree> {
 public:
