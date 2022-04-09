@@ -1,6 +1,8 @@
 #include "HighLevelCBS.hpp"
 
 Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS lowLevel){
+    auto logger = Logger::get_instance();
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     /**
      * Root.constraints = {}
      * Root.solution = find individual paths by the low level
@@ -8,36 +10,44 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      */
     std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>();
     // std::cout << "initial paths\n";
+    if (Logger::enabled) {
+        logger.log("Finding initial paths\n");
+    }
     root->setSolution(lowLevel.getAllPaths(graph, agents, std::vector<Constraint>{}), agents);
     /**
      * Insert Root to OPEN
      */
     std::priority_queue<std::shared_ptr<ConstraintTree>, std::vector<std::shared_ptr<ConstraintTree>>, ConstraintTree> open;
     open.push(root);
-    std::vector<std::shared_ptr<ConstraintTree>> cts;
-    cts.push_back(root);
     /**
      * While OPEN not empty do
      */
-    Logger logger = Logger("HighLevel.txt", false);
-    int iterations = 0;
+    iterations = 0;
     while (open.size() > 0) {
-        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+        std::chrono::steady_clock::time_point iterationBegin = std::chrono::steady_clock::now();
 
-        if (++iterations == 5000){
+        if (++iterations == 10000){
             Error::log("Max highlevel iterations reached!\n");
             exit(0);
         }
-        (*logger.begin()) << "Iteration: " << iterations << "\n"; logger.end();
+        if (Logger::enabled) {
+            (*logger.begin()) << "High level iteration: " << iterations << "\n"; logger.end();
+        }
         /**
          * p <-- best node from OPEN (the node with the lowest solution cost)
          */
         std::shared_ptr<ConstraintTree> p = open.top();open.pop();
-        (*logger.begin()) << "Constraints: " << p->constraints.size() << "\n";
-        // std::cout << "Popped this solution:\n";
+        if (Logger::enabled) {
+            (*logger.begin()) << "Constraints: " << p->getConstraints().size() << "\n"; logger.end();
+        }
+        // Error::log("Popped this solution:\n");
         // for (auto pa : p->getSolution().paths){
-        //     std::cout << pa.toString() << "\n";
+        //     Error::log(pa.toString() + "\n");
         // }
+        std::cout << "Popped this solution:\n";
+        for (auto pa : p->getSolution().paths){
+            std::cout << pa.toString() << "\n";
+        }
         /**
          * Validate the paths in P until a conflict occurs
          */
@@ -51,7 +61,10 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
          * If P has no conflicts then return P.solution
          */
         if (conflicts.size() == 0) {
-            (*logger.begin()) << "Done\n"; logger.end();
+            if (Logger::enabled) {
+                auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count();
+                (*logger.begin()) << "Highlevel solution took " << timeDiff << "[µs]\n"; logger.end();
+            }
             return p->getSolution();
         }
         /**
@@ -60,6 +73,8 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         // Conflict &c = conflicts.front();
         // std::cout << "Finding best conflict..\n";
         Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel);
+        Error::log(c.toString() + "\n");
+        std::cout << c.toString() + "\n";
         /**
          * Foreach agent ai in C do
          */
@@ -69,15 +84,17 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              * A.constraints = p.constraints union (ai,v,t)
              */
             std::shared_ptr<ConstraintTree> a = std::make_shared<ConstraintTree>();//TODO should we connect this to P or is it irrelevant in implementation?
-            a->constraints = p->constraints;
+            a->setConstraints(p->getConstraints());
             //std::cout << c.getLocation().toString() << "<-- get location  get time start-->"<< c.getTimeStart()<< "\n"
             //<< "Constraints.size: " << a->constraints.size() << "\n";
             Constraint constraint = Constraint(
                 agentId,
                 c.getLocation(),
-                c.getTimeStart() - 1,
-                c.getTimeEnd() + 1
+                c.getTimeStart(),
+                c.getTimeEnd()
             );
+            // Error::log(constraint.toString() + "\n");
+            std::cout << constraint.toString() << "\n";
             // if (agentId == c.getAgentIds()[0]){
             //     std::cout << "X\n";
             //     for (auto pa : p->getSolution().paths){
@@ -85,7 +102,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             //     }
             // std::cout << constraint.toString() << "\n" << agentId << "\n";
             // }
-            a->constraints.push_back(constraint);
+            a->addConstraint(constraint);
             // for (auto constr : a->constraints){
             //     std::cout << constr.toString() << "\n";
             // }
@@ -95,8 +112,8 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              */
             Solution s = p->getSolution();
             // std::cout << "individual path\n";
-            Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], a->constraints);
-            (*logger.begin()) << "Lowlevel used " << lowLevel.iterations << "\n"; logger.end();
+            
+            Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], a->getConstraints(agentId));
             s.paths[agentId] = newPath;
             a->setSolution(s);
             // for (auto pa : a->getSolution().paths){
@@ -106,29 +123,14 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              * If A.cost < INF then insert A to OPEN
              */
             if (a->getCost() < std::numeric_limits<float>::infinity()) {
-                for (auto ct : cts){
-                    if (a->constraints.size() == ct->constraints.size()){
-                        bool equals = true;
-                        int siz = a->constraints.size();
-                        for (int i = 0; i < siz; ++i){
-                            if (!(a->constraints[i] == ct->constraints[i])){
-                                equals = false;
-                                break;
-                            }
-                        }
-                        if (equals){
-                            std::cout << "DUBLICATES!\n";
-                            exit(1);
-                        }
-                    }
-                }
                 open.push(a);
-                cts.push_back(a);
             }
         }
-        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
-        (*logger.begin()) << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl; logger.end();
+        if (Logger::enabled) {
+            auto iterationTimeDiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - iterationBegin).count();
+            (*logger.begin()) << "High level iteration took " << iterationTimeDiff << "[µs]\n"; logger.end();
+        }
     }
     // We did not find any solution (No possible solution)
     Error::log("ERROR: HighLevelCBS: No possible solution\n");
@@ -156,7 +158,7 @@ Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std
                 c.getTimeEnd() + 1
             );
             // Get a container of the current constraints union the new constraint
-            auto constraints = node->constraints;
+            auto constraints = node->getConstraints(agentId);
             constraints.push_back(constraint);
             // Get the new path from low level so we can see if the cost increases
             int currentCost = solution.paths[agentId].cost;

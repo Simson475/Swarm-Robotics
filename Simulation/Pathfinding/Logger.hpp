@@ -5,14 +5,22 @@
 #include <iostream>
 #include <cstdio>
 #include <filesystem>
+#include <memory>
 
 class Logger {
 public:
-    Logger(std::string logFile, bool clear = true);
+    // Singleton
+    static Logger &get_instance() {
+        static Logger instance;
+        return instance;
+    }
+    Logger() = default;
+    Logger(const Logger&);
+    static bool enabled;
+    void setLogFile(std::string);
     void log(std::string msg);
     std::ofstream* begin();
     void end();
-    static std::string experimentPrefix;
 private:
     std::string logFile;
     std::ofstream ostream;

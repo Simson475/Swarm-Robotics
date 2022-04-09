@@ -9,8 +9,11 @@
 #include "AgentInfo.hpp"
 #include "HighLevelCBS.hpp"
 #include "Solution.hpp"
+#include "_path.hpp"
+#include "Action.hpp"
 
 #include "Debugging.hpp"
+#include "Logger.hpp"
 
 class ExperimentData{
 public:

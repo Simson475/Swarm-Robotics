@@ -11,6 +11,7 @@ std::vector<int> TestController::constructWaypointPlan(){
     if ( ! path.actions.empty()){
         return getNextPointAndUpdateState();
     }
+
     //We do not have a plan
     if (ExperimentData::get_instance().requestSolution(agentId)){
         return getNextPointAndUpdateState();

@@ -34,6 +34,7 @@ public:
     }
     Solution findSolution(std::shared_ptr<Graph>, std::vector<AgentInfo>, LowLevelCBS);
     Conflict getBestConflict(std::shared_ptr<ConstraintTree>, std::shared_ptr<Graph>, std::vector<AgentInfo>, std::vector<Conflict>, LowLevelCBS);
+    uint iterations;
 };
 
 #endif

@@ -9,8 +9,8 @@ void HighLevelCBSTests::it_gets_a_path_that_has_no_conflicts(){
      * 1---2---3
      *   \ | /
      *     4
-     * straight lines are length 1
-     * diagonal lines are length 1.4
+     * straight lines are length 100
+     * diagonal lines are length 140
     */
     auto v0 = std::make_shared<Vertex>(0);
     auto v1 = std::make_shared<Vertex>(1);
@@ -61,8 +61,10 @@ void HighLevelCBSTests::it_gets_a_path_that_has_no_conflicts(){
 
     // Assert
     assert(solution.paths.size() == 2);
-    assert(solution.paths[0].cost == 521 || solution.paths[0].cost == 500);
-    assert(solution.paths[1].cost == 521 || solution.paths[1].cost == 500);
+    std::cout << "Path0 cost: " << solution.paths[0].cost << "\n";
+    std::cout << "Path1 cost: " << solution.paths[1].cost << "\n";
+    assert(solution.paths[0].cost == 501 + DELTA || solution.paths[0].cost == 500);
+    assert(solution.paths[1].cost == 501 + DELTA || solution.paths[1].cost == 500);
     assert(solution.paths[0].cost != solution.paths[1].cost);
 }
 
@@ -129,7 +131,7 @@ void HighLevelCBSTests::it_can_find_a_solution_if_agents_have_same_goal(){
     assert(solution.paths.size() == 2);
     std::cout << "Path0 cost: " << solution.paths[0].cost << "\n";
     std::cout << "Path1 cost: " << solution.paths[1].cost << "\n";
-    assert(solution.paths[0].cost == 761);
+    assert(solution.paths[0].cost == 741 + DELTA);
     assert(solution.paths[1].cost == 440);
 }
 
@@ -258,7 +260,7 @@ void HighLevelCBSTests::it_can_find_a_solution_in_a_big_graph(){
 void HighLevelCBSTests::it_can_find_a_solution_in_a_graph_with_many_vertices(){
     // Arrange
     // We will construct a grid graph
-    int gridWidth = 15;
+    int gridWidth = 30;
     int gridHeight = 3;
     // Create vertices
     std::vector<std::shared_ptr<Vertex>> vertices{(long unsigned int)(gridWidth*gridHeight)};
@@ -296,16 +298,22 @@ void HighLevelCBSTests::it_can_find_a_solution_in_a_graph_with_many_vertices(){
     auto graph = std::make_shared<Graph>(vertices);
 
     //AgentInfo(id, action, dest)
-    for (int z = 1; z < 15; z++){
-        Logger::experimentPrefix = std::to_string(z) + "agent_";
+    for (int z = 1; z < gridWidth; z++){
         int agentCount = z;
         std::cout << "Running experiment with " << z << " agents\n";
         std::vector<AgentInfo> agents{(long unsigned int)agentCount};
         for (int i = 0; i < agentCount; ++i){
             agents[i] = AgentInfo(i, Action(0, vertices[i], vertices[i], 0), vertices[gridWidth*gridHeight-1-i]);
         }
-        
-        Logger("HighLevel.txt");
+        // Create folder for results
+        std::string experimentResultDir = "30w";
+        mkdir(&experimentResultDir[0], 0777);
+
+        std::string experimentResultFile = experimentResultDir + "/" + std::to_string(z) + "agent_analysis.txt";
+        // Remove any existing results if they exist
+        remove(&experimentResultFile[0]);
+        //remove(&(std::string{std::filesystem::current_path()} + "/" + experimentPrefix + logFile)[0]);
+        Logger::get_instance().setLogFile(experimentResultFile);
 
         // Act
         Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
@@ -317,6 +325,279 @@ void HighLevelCBSTests::it_can_find_a_solution_in_a_graph_with_many_vertices(){
         //     std::cout << "Path" << i << " cost: " << solution.paths[i].cost << "\n";
         //     i++;
         // }
+
+        std::cout << "Experiment done\n";
+    }
+}
+
+void HighLevelCBSTests::bottleneck_conflicts_are_complex(){
+    for (int z = 1; z < 15; z++){
+        std::cout << "Running experiment with " << z << " agents\n";
+        // Arrange
+        // We will construct a graph with a choke point
+        int agentCount = z;
+        // Create vertices
+        int vertexCount = agentCount + 1 + agentCount;
+        std::vector<std::shared_ptr<Vertex>> vertices{(long unsigned int)(vertexCount)};
+        
+        for (int i = 0; i < vertexCount; ++i){
+            vertices[i] = std::make_shared<Vertex>(i);
+        }
+        /// Create edges (one directional)
+        int chokepointIndex = agentCount;
+        // Edges from agent start to chokepoint
+        for (int i = 0; i < agentCount; i++){
+            std::vector<std::shared_ptr<Edge>> edges;
+            edges.emplace_back(std::make_shared<Edge>(vertices[i], vertices[chokepointIndex], 100));
+            vertices[i]->setEdges(edges);
+        }
+        // Edges from chokepoint to agent goal
+        std::vector<std::shared_ptr<Edge>> edges;
+        for (int i = chokepointIndex + 1; i < vertexCount; i++){
+            edges.emplace_back(std::make_shared<Edge>(vertices[chokepointIndex], vertices[i], 100));
+        }
+        vertices[chokepointIndex]->setEdges(edges);
+
+        auto graph = std::make_shared<Graph>(vertices);
+
+        //AgentInfo(id, action, dest)
+        std::vector<AgentInfo> agents{(long unsigned int)agentCount};
+        for (int i = 0; i < agentCount; ++i){
+            agents[i] = AgentInfo(i, Action(0, vertices[i], vertices[i], 0), vertices[chokepointIndex + 1 + i]);
+        }
+        // Create folder for results
+        std::string experimentResultDir = "chokepoint";
+        mkdir(&experimentResultDir[0], 0777);
+
+        std::string experimentResultFile = experimentResultDir + "/" + std::to_string(z) + "agent_analysis.txt";
+        // Remove any existing results if they exist
+        remove(&experimentResultFile[0]);
+        // Configure the logger
+        Logger logger = Logger::get_instance();
+        Logger::enabled = true;
+        logger.setLogFile(experimentResultFile);
+
+        // Act
+
+        Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
+
+        // Assert
+        uint expectedLowLevelIterations = 1;// k! + hard-to-tell-extra-from-best-conflict
+        for (int i = 2; i <= agentCount; ++i){
+            expectedLowLevelIterations *= i;
+        }
+        // Optimal high level iterations = 
+        // k (one for each agent in the chokepoint)
+        // * k-1 (one for each agent in chokepoint not waiting)
+        // * k-2
+        // ...
+        // * 1 (when all agents expect one is waiting we will find a solution)
+        // = k!
+        // Expected high level iterations = 
+        // 2 (best conflicts two agents' constraints)
+        // * 2 (best conflicts two agents' constraints) (now two agents are waiting)
+        // * 2 (best conflicts two agents' constraints) (now two agents are waiting)
+        // ...
+        // (until k-1 agents are waiting = 2^(k-1))
+        // ... now 1 agent can pass without conflict
+        // for 2 agents to pass without conflict * 2^(k-2)
+        // ...
+        // = 2^(k-1)*2^(k-2)*...*2 = 2^(k-1 + k-2 + ... + 1) = 2^((k-1)*k/2)
+
+        uint expectedHighLevelIterations = std::pow(2, (agentCount - 1) * agentCount / 2);
+        (*logger.begin())
+         << "Total low level: " << (LowLevelCBS::get_instance().totalIterations) << " iterations. "
+         << "Expected >" << expectedLowLevelIterations << " iterations.\n"
+         << "Total high level: " << (HighLevelCBS::get_instance().iterations) << " iterations. "
+         << "Expected " << expectedHighLevelIterations << " iterations.\n";
+        logger.end();
+
+        std::cout << "Experiment done\n";
+    }
+}
+
+void HighLevelCBSTests::divided_bottlenecks_conflicts_are_complex(){
+    for (int z = 1; z < 15; z++){
+        std::cout << "Running experiment with " << z << " agents\n";
+        // Arrange
+        // We will construct a graph with a choke point
+        int agentCount = z;
+        // Create vertices
+        int vertexCount = agentCount + 2 + agentCount;
+        std::vector<std::shared_ptr<Vertex>> vertices{(long unsigned int)(vertexCount)};
+        
+        for (int i = 0; i < vertexCount; ++i){
+            vertices[i] = std::make_shared<Vertex>(i);
+        }
+        /// Create edges (one directional)
+        int chokepoint1Index = agentCount;
+        int chokepoint2Index = agentCount + 1;
+        // Edges from agent start to chokepoints
+        for (int i = 0; i < agentCount; i++){
+            std::vector<std::shared_ptr<Edge>> edges;
+            edges.emplace_back(std::make_shared<Edge>(vertices[i], vertices[chokepoint1Index], 100));
+            vertices[i]->setEdges(edges);
+            edges.clear();
+            edges.emplace_back(std::make_shared<Edge>(vertices[i], vertices[chokepoint2Index], 100));
+            vertices[i]->setEdges(edges);
+        }
+        // Edges from chokepoints to agent goal
+        std::vector<std::shared_ptr<Edge>> cp1Edges, cp2Edges;
+        for (int i = chokepoint2Index + 1; i < vertexCount; i++){
+            cp1Edges.emplace_back(std::make_shared<Edge>(vertices[chokepoint1Index], vertices[i], 100));
+            cp2Edges.emplace_back(std::make_shared<Edge>(vertices[chokepoint2Index], vertices[i], 100));
+        }
+        vertices[chokepoint1Index]->setEdges(cp1Edges);
+        vertices[chokepoint2Index]->setEdges(cp2Edges);
+
+        auto graph = std::make_shared<Graph>(vertices);
+
+        //AgentInfo(id, action, dest)
+        std::vector<AgentInfo> agents{(long unsigned int)agentCount};
+        for (int i = 0; i < agentCount; ++i){
+            agents[i] = AgentInfo(i, Action(0, vertices[i], vertices[i], 0), vertices[chokepoint2Index + 1 + i]);
+        }
+        // Create folder for results
+        std::string experimentResultDir = "divided_chokepoint";
+        mkdir(&experimentResultDir[0], 0777);
+
+        std::string experimentResultFile = experimentResultDir + "/" + std::to_string(z) + "agent_analysis.txt";
+        // Remove any existing results if they exist
+        remove(&experimentResultFile[0]);
+        // Configure the logger
+        Logger logger = Logger::get_instance();
+        Logger::enabled = true;
+        logger.setLogFile(experimentResultFile);
+
+        // Act
+
+        Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
+
+        // Assert
+        uint expectedLowLevelIterations = 1;// k! + hard-to-tell-extra-from-best-conflict
+        for (int i = 2; i <= agentCount; ++i){
+            expectedLowLevelIterations *= i;
+        }
+        // Optimal high level iterations = 
+        // k (one for each agent in the chokepoint)
+        // * k-1 (one for each agent in chokepoint not waiting)
+        // * k-2
+        // ...
+        // * 1 (when all agents expect one is waiting we will find a solution)
+        // = k!
+        // Expected high level iterations = 
+        // 2 (best conflicts two agents' constraints)
+        // * 2 (best conflicts two agents' constraints) (now two agents are waiting)
+        // * 2 (best conflicts two agents' constraints) (now two agents are waiting)
+        // ...
+        // (until k-1 agents are waiting = 2^(k-1))
+        // ... now 1 agent can pass without conflict
+        // for 2 agents to pass without conflict * 2^(k-2)
+        // ...
+        // = 2^(k-1)*2^(k-2)*...*2 = 2^(k-1 + k-2 + ... + 1) = 2^((k-1)*k/2)
+
+        uint expectedHighLevelIterations = std::pow(2, (agentCount - 1) * agentCount / 2);
+        (*logger.begin())
+         << "Total low level: " << (LowLevelCBS::get_instance().totalIterations) << " iterations. "
+         << "Expected >" << expectedLowLevelIterations << " iterations.\n"
+         << "Total high level: " << (HighLevelCBS::get_instance().iterations) << " iterations. "
+         << "Expected " << expectedHighLevelIterations << " iterations.\n";
+        logger.end();
+
+        std::cout << "Experiment done\n";
+    }
+}
+
+void HighLevelCBSTests::divided_connected_bottlenecks_conflicts_are_complex(){
+    for (int z = 1; z < 15; z++){
+        std::cout << "Running experiment with " << z << " agents\n";
+        // Arrange
+        // We will construct a graph with a choke point
+        int agentCount = z;
+        // Create vertices
+        int vertexCount = agentCount + 2 + agentCount;
+        std::vector<std::shared_ptr<Vertex>> vertices{(long unsigned int)(vertexCount)};
+        
+        for (int i = 0; i < vertexCount; ++i){
+            vertices[i] = std::make_shared<Vertex>(i);
+        }
+        /// Create edges (one directional)
+        int chokepoint1Index = agentCount;
+        int chokepoint2Index = agentCount + 1;
+        // Edges from agent start to chokepoints
+        for (int i = 0; i < agentCount; i++){
+            std::vector<std::shared_ptr<Edge>> edges;
+            edges.emplace_back(std::make_shared<Edge>(vertices[i], vertices[chokepoint1Index], 100));
+            vertices[i]->setEdges(edges);
+            edges.clear();
+            edges.emplace_back(std::make_shared<Edge>(vertices[i], vertices[chokepoint2Index], 100));
+            vertices[i]->setEdges(edges);
+        }
+        // Edges from chokepoints to agent goal
+        std::vector<std::shared_ptr<Edge>> cp1Edges, cp2Edges;
+        for (int i = chokepoint2Index + 1; i < vertexCount; i++){
+            cp1Edges.emplace_back(std::make_shared<Edge>(vertices[chokepoint1Index], vertices[i], 100));
+            cp2Edges.emplace_back(std::make_shared<Edge>(vertices[chokepoint2Index], vertices[i], 100));
+        }
+        // Edges between chokepoints
+        cp1Edges.emplace_back(std::make_shared<Edge>(vertices[chokepoint1Index], vertices[chokepoint2Index], 100));
+        cp2Edges.emplace_back(std::make_shared<Edge>(vertices[chokepoint2Index], vertices[chokepoint1Index], 100));
+        vertices[chokepoint1Index]->setEdges(cp1Edges);
+        vertices[chokepoint2Index]->setEdges(cp2Edges);
+
+        auto graph = std::make_shared<Graph>(vertices);
+
+        //AgentInfo(id, action, dest)
+        std::vector<AgentInfo> agents{(long unsigned int)agentCount};
+        for (int i = 0; i < agentCount; ++i){
+            agents[i] = AgentInfo(i, Action(0, vertices[i], vertices[i], 0), vertices[chokepoint2Index + 1 + i]);
+        }
+        // Create folder for results
+        std::string experimentResultDir = "divided_connected_chokepoint";
+        mkdir(&experimentResultDir[0], 0777);
+
+        std::string experimentResultFile = experimentResultDir + "/" + std::to_string(z) + "agent_analysis.txt";
+        // Remove any existing results if they exist
+        remove(&experimentResultFile[0]);
+        // Configure the logger
+        Logger logger = Logger::get_instance();
+        Logger::enabled = true;
+        logger.setLogFile(experimentResultFile);
+
+        // Act
+
+        Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
+
+        // Assert
+        uint expectedLowLevelIterations = 1;// k! + hard-to-tell-extra-from-best-conflict
+        for (int i = 2; i <= agentCount; ++i){
+            expectedLowLevelIterations *= i;
+        }
+        // Optimal high level iterations = 
+        // k (one for each agent in the chokepoint)
+        // * k-1 (one for each agent in chokepoint not waiting)
+        // * k-2
+        // ...
+        // * 1 (when all agents expect one is waiting we will find a solution)
+        // = k!
+        // Expected high level iterations = 
+        // 2 (best conflicts two agents' constraints)
+        // * 2 (best conflicts two agents' constraints) (now two agents are waiting)
+        // * 2 (best conflicts two agents' constraints) (now two agents are waiting)
+        // ...
+        // (until k-1 agents are waiting = 2^(k-1))
+        // ... now 1 agent can pass without conflict
+        // for 2 agents to pass without conflict * 2^(k-2)
+        // ...
+        // = 2^(k-1)*2^(k-2)*...*2 = 2^(k-1 + k-2 + ... + 1) = 2^((k-1)*k/2)
+
+        uint expectedHighLevelIterations = std::pow(2, (agentCount - 1) * agentCount / 2);
+        (*logger.begin())
+         << "Total low level: " << (LowLevelCBS::get_instance().totalIterations) << " iterations. "
+         << "Expected >" << expectedLowLevelIterations << " iterations.\n"
+         << "Total high level: " << (HighLevelCBS::get_instance().iterations) << " iterations. "
+         << "Expected " << expectedHighLevelIterations << " iterations.\n";
+        logger.end();
 
         std::cout << "Experiment done\n";
     }

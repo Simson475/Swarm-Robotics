@@ -16,7 +16,6 @@ public:
     std::shared_ptr<ConstraintTree> getParent();
     void setChildren(std::vector<std::shared_ptr<ConstraintTree>> children);
     std::shared_ptr<ConstraintTree> getLowestCostNode();
-    std::vector<Constraint> constraints;
 
     /* More CBS specific */
     Solution getSolution();
@@ -33,6 +32,10 @@ public:
     Conflict getVertexConflict(std::vector<int> conflictAgents, Action a1, Action a2);
     Conflict getFollowConflict(std::vector<int> conflictAgents, Action a1, Action a2);
     Conflict getSwapConflict(int conflictAgents, Action a1, Action a2);
+    std::vector<Constraint> getConstraints(int agent);
+    std::vector<Constraint> getConstraints();
+    void setConstraints(std::vector<Constraint> constraints);
+    void addConstraint(Constraint constraint);
 
 private:
     std::shared_ptr<ConstraintTree> parent;
@@ -41,6 +44,8 @@ private:
     std::vector<std::shared_ptr<Conflict>> conflicts;
     bool actionsOverlap(Action a1, Action a2);
     bool arriveWithinDelta(Action a1, Action a2);
+    bool arriveWithinActionAndDelta(Action a1, Action a2);
+    std::vector<Constraint> constraints;
 };
 
 #endif

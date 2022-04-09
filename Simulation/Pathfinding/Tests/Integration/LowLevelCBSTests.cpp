@@ -198,7 +198,7 @@ void LowLevelCBSTests::pathfinding_is_correct_with_constraints2(){
     };
     //Constraint(agentInfo, location, timeStart, timeEnd);
     std::vector<Constraint> constraints = {
-        Constraint(agents[0].getId(), Location(ELocationType::VERTEX_LOCATION, v4), 199, 441),
+        Constraint(agents[0].getId(), Location(ELocationType::VERTEX_LOCATION, v4), 200, 440),
     };
 
     //Act

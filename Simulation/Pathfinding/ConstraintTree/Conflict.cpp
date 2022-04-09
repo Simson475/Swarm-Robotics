@@ -41,5 +41,5 @@ Location Conflict::getLocation(){
 }
 
 std::string Conflict::toString(){
-    return "{" + this->location.toString() + " [" + std::to_string(this->timeStart) + "," + std::to_string(this->timeEnd) + "]}";
+    return "{{" + std::to_string(this->agentIds[0]) + "," + std::to_string(this->agentIds[1]) + "} " + this->location.toString() + " [" + std::to_string(this->timeStart) + "," + std::to_string(this->timeEnd) + "]}";
 }

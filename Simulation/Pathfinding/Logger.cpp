@@ -1,24 +1,21 @@
 #include "Logger.hpp"
 
-std::string Logger::experimentPrefix = "";
+bool Logger::enabled = false;
 
-Logger::Logger(std::string logFile, bool clear){
+Logger::Logger(const Logger& other){
+    this->logFile = other.logFile;
+}
+
+void Logger::setLogFile(std::string logFile){
     this->logFile = logFile;
-    if (clear) {
-        remove(&(std::string{std::filesystem::current_path()} + "/" + experimentPrefix + logFile)[0]);
-    }
 }
 
 void Logger::log(std::string msg){
-    // std::ofstream logFile;
-    // logFile.open(std::string{std::filesystem::current_path()} + "/" + logFile, std::ofstream::app);
-    // logFile << msg;
-    // logFile.close();
     (*begin()) << msg; end();
 }
 
 std::ofstream* Logger::begin(){
-    ostream.open(std::string{std::filesystem::current_path()} + "/" + experimentPrefix + logFile, std::ofstream::app);
+    ostream.open(std::string{std::filesystem::current_path()} + "/" + logFile, std::ofstream::app);
     return &ostream;
 }
 void Logger::end(){
