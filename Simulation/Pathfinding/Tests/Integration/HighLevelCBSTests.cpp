@@ -135,6 +135,79 @@ void HighLevelCBSTests::it_can_find_a_solution_if_agents_have_same_goal(){
     assert(solution.paths[1].cost == 440);
 }
 
+void HighLevelCBSTests::it_can_find_a_solution_if_agents_intersect_at_one_agents_goal(){
+    // Arrange
+    /**
+     * We will construct a + shaped graph
+     *     0
+     *   / | \
+     * 1---2---3
+     *   \ | /
+     *     4----5
+     * straight lines are length 100
+     * diagonal lines are length 140 (except 0-3 which is 150)
+    */
+    auto v0 = std::make_shared<Vertex>(0);
+    auto v1 = std::make_shared<Vertex>(1);
+    auto v2 = std::make_shared<Vertex>(2);
+    auto v3 = std::make_shared<Vertex>(3);
+    auto v4 = std::make_shared<Vertex>(4);
+    auto v5 = std::make_shared<Vertex>(5);
+    std::vector<std::shared_ptr<Edge>> v0edges = {
+        std::make_shared<Edge>(v0, v1, 140),
+        std::make_shared<Edge>(v0, v2, 100),
+        std::make_shared<Edge>(v0, v3, 150),
+    };
+    std::vector<std::shared_ptr<Edge>> v1edges = {
+        std::make_shared<Edge>(v1, v0, 140),
+        std::make_shared<Edge>(v1, v2, 100),
+        std::make_shared<Edge>(v1, v4, 140),
+    };
+    std::vector<std::shared_ptr<Edge>> v2edges = {
+        std::make_shared<Edge>(v2, v0, 100),
+        std::make_shared<Edge>(v2, v1, 100),
+        std::make_shared<Edge>(v2, v3, 100),
+        std::make_shared<Edge>(v2, v4, 100),
+    };
+    std::vector<std::shared_ptr<Edge>> v3edges = {
+        std::make_shared<Edge>(v3, v0, 150),
+        std::make_shared<Edge>(v3, v2, 100),
+        std::make_shared<Edge>(v3, v4, 140),
+    };
+    std::vector<std::shared_ptr<Edge>> v4edges = {
+        std::make_shared<Edge>(v4, v1, 140),
+        std::make_shared<Edge>(v4, v2, 100),
+        std::make_shared<Edge>(v4, v3, 140),
+        std::make_shared<Edge>(v4, v5, 100),
+    };
+    std::vector<std::shared_ptr<Edge>> v5edges = {
+        std::make_shared<Edge>(v5, v4, 100),
+    };
+    
+    v0->setEdges(v0edges);
+    v1->setEdges(v1edges);
+    v2->setEdges(v2edges);
+    v3->setEdges(v3edges);
+    v4->setEdges(v4edges);
+    v5->setEdges(v5edges);
+    std::vector<std::shared_ptr<Vertex>> vertices = {v0, v1, v2, v3, v4, v5};
+    auto g = std::make_shared<Graph>(vertices);
+    //AgentInfo(id, action, dest)
+    std::vector<AgentInfo> agents = {
+        AgentInfo(0, Action(0, v0, v0, 0), v5), // Starting in v0, going to v5
+        AgentInfo(1, Action(0, v1, v1, 0), v4), // Starting in v1, going to v4
+    };
+    // Act
+    Solution solution = HighLevelCBS::get_instance().findSolution(g, agents, LowLevelCBS::get_instance());
+
+    // Assert
+    assert(solution.paths.size() == 2);
+    std::cout << "Path0 cost: " << solution.paths[0].cost << "\n" << solution.paths[0].toString() << "\n";
+    std::cout << "Path1 cost: " << solution.paths[1].cost << "\n" << solution.paths[1].toString() << "\n";
+    assert(solution.paths[0].cost == 300 + TIME_AT_GOAL);
+    assert(solution.paths[1].cost == 200 + TIME_AT_VERTEX + DELTA + TIME_AT_GOAL);
+}
+
 void HighLevelCBSTests::it_can_find_a_solution_in_a_big_graph(){
     // Arrange
     /**

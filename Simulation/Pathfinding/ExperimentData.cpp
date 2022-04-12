@@ -89,7 +89,7 @@ std::vector<AgentInfo> ExperimentData::getAgentsInfo(){
 int ExperimentData::getNextStation(){
     auto stations = getStations();
     int station = stations[nextStation];
-    nextStation = ++nextStation == stations.size() ? 0 : nextStation;
+    nextStation = ++nextStation == (int)stations.size() ? 0 : nextStation;
     return station;
 }
 
