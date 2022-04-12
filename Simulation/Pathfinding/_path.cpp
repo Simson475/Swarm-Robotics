@@ -16,3 +16,12 @@ std::string Path::toString(){
   }
   return str;
 }
+
+Path Path::operator+(const Path& path){
+  auto actions = this->actions;
+  for (auto a : path.actions){
+    actions.push_back(a);
+  }
+  Path p = {actions, this->cost + path.cost};
+  return p;
+}

@@ -9,8 +9,8 @@ void LowLevelCBSTests::pathfinding_is_correct(){
      * 1---2---3
      *   \ | /
      *     4
-     * straight lines are length 1
-     * diagonal lines are length 1.4
+     * straight lines are length 100
+     * diagonal lines are length 140
     */
     auto v0 = std::make_shared<Vertex>(0);
     auto v1 = std::make_shared<Vertex>(1);
@@ -58,7 +58,7 @@ void LowLevelCBSTests::pathfinding_is_correct(){
 
     //Act
     Path path = LowLevelCBS::get_instance().getIndividualPath(g, agents[0], std::vector<Constraint>{});
-
+std::cout << path.toString() << "\n";
     //Assert
     //Assert the correct path is output
     assert(path.actions[0].endVertex == v0);

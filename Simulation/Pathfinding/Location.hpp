@@ -19,6 +19,9 @@ public:
     std::shared_ptr<Edge> edge;
     std::shared_ptr<Vertex> vertex;
     std::string toString() const;
+    bool operator==(const Location& location);
+    bool operator==(std::shared_ptr<Vertex> vertex);
+    bool operator==(std::shared_ptr<Edge> edge);
 };
 
 #endif

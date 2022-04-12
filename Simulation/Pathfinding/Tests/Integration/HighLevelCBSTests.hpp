@@ -13,6 +13,7 @@ private:
     void bottleneck_conflicts_are_complex();
     void divided_bottlenecks_conflicts_are_complex();
     void divided_connected_bottlenecks_conflicts_are_complex();
+    void it_can_find_solution_in_custom_graph();
 public:
     void run(){// This is placed in the header to help ensure all tests are run
         it_gets_a_path_that_has_no_conflicts();
@@ -22,6 +23,7 @@ public:
         // bottleneck_conflicts_are_complex();
         // divided_bottlenecks_conflicts_are_complex();
         // divided_connected_bottlenecks_conflicts_are_complex();
+        //it_can_find_solution_in_custom_graph();
     }
 };
 

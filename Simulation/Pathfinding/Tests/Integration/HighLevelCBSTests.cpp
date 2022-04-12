@@ -63,8 +63,8 @@ void HighLevelCBSTests::it_gets_a_path_that_has_no_conflicts(){
     assert(solution.paths.size() == 2);
     std::cout << "Path0 cost: " << solution.paths[0].cost << "\n";
     std::cout << "Path1 cost: " << solution.paths[1].cost << "\n";
-    assert(solution.paths[0].cost == 501 + DELTA || solution.paths[0].cost == 500);
-    assert(solution.paths[1].cost == 501 + DELTA || solution.paths[1].cost == 500);
+    assert(solution.paths[0].cost == 501 + TIME_AT_VERTEX || solution.paths[0].cost == 500);
+    assert(solution.paths[1].cost == 501 + TIME_AT_VERTEX || solution.paths[1].cost == 500);
     assert(solution.paths[0].cost != solution.paths[1].cost);
 }
 
@@ -129,9 +129,9 @@ void HighLevelCBSTests::it_can_find_a_solution_if_agents_have_same_goal(){
 
     // Assert
     assert(solution.paths.size() == 2);
-    std::cout << "Path0 cost: " << solution.paths[0].cost << "\n";
-    std::cout << "Path1 cost: " << solution.paths[1].cost << "\n";
-    assert(solution.paths[0].cost == 741 + DELTA);
+    std::cout << "Path0 cost: " << solution.paths[0].cost << "\n" << solution.paths[0].toString() << "\n";
+    std::cout << "Path1 cost: " << solution.paths[1].cost << "\n" << solution.paths[1].toString() << "\n";
+    assert(solution.paths[0].cost == 741 + TIME_AT_VERTEX);
     assert(solution.paths[1].cost == 440);
 }
 

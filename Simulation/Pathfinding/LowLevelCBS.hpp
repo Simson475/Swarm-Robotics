@@ -13,6 +13,7 @@ class LowLevelCBS;
 #include "Location.hpp"
 #include "Constraint.hpp"
 #include "ActionPathAux.hpp"
+#include "BackwardsActionPathAux.hpp"
 #include "Vertex.hpp"
 #include "Graph.hpp"
 #include "ConstraintTree.hpp"
@@ -32,10 +33,11 @@ public:
     uint iterations = 0;
     uint totalIterations = 0;
 protected:
-    std::vector<Action> getPossibleActions(std::shared_ptr<Vertex> vertex, AgentInfo agent, std::vector<Constraint> constraints, float currentTime);
+    std::vector<Action> getPossibleActions(std::shared_ptr<Vertex> vertex, std::vector<Constraint> constraints, float currentTime);
     bool isViolatingConstraint(Constraint constraint, Action action);
     bool isViolatingConstraint(Constraint constraint, std::shared_ptr<Edge> edge, float startTime);
     bool isViolatingConstraint(Constraint constraint, std::shared_ptr<Vertex> vertex, float startTime, float endTime);
+    bool endsAtValidGoal(Action action, std::shared_ptr<Vertex> goal, std::vector<Constraint> constraints);
 };
 
 #endif

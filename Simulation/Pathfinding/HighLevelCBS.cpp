@@ -40,22 +40,21 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         if (Logger::enabled) {
             (*logger.begin()) << "Constraints: " << p->getConstraints().size() << "\n"; logger.end();
         }
-        // Error::log("Popped this solution:\n");
-        // for (auto pa : p->getSolution().paths){
-        //     Error::log(pa.toString() + "\n");
-        // }
-        std::cout << "Popped this solution:\n";
+        Error::log("Popped this solution:\n");
         for (auto pa : p->getSolution().paths){
-            std::cout << pa.toString() << "\n";
+            Error::log(pa.toString() + "\n");
         }
+        // std::cout << "Popped this solution:\n";
+        // for (auto pa : p->getSolution().paths){
+        //     std::cout << pa.toString() << "\n";
+        // }
         /**
          * Validate the paths in P until a conflict occurs
          */
         std::vector<Conflict> conflicts = p->findConflicts();
-        // std::cout << "Found these conflicts:\n";
-        // std::cout << conflicts.size() << "\n";
+        // Error::log("Found these conflicts:\n");
         // for (auto conf : conflicts){
-        //     std::cout << conf.toString() << "\n";
+        //     Error::log(conf.toString() + "\n");
         // }
         /**
          * If P has no conflicts then return P.solution
@@ -74,7 +73,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         // std::cout << "Finding best conflict..\n";
         Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel);
         Error::log(c.toString() + "\n");
-        std::cout << c.toString() + "\n";
+        // std::cout << c.toString() + "\n";
         /**
          * Foreach agent ai in C do
          */
@@ -93,8 +92,23 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
                 c.getTimeStart(),
                 c.getTimeEnd()
             );
+            
+            // Only add the constraint if the agent can avoid it
+            auto currentAgentAction = agents[agentId].getCurrentAction();
+            bool constraintIsOnEndVertex = constraint.location == currentAgentAction.endVertex;
+            bool constraintIsOnInitialWaitAction = currentAgentAction.isWaitAction() && constraintIsOnEndVertex;
+            bool constraintIsBeforeDeltaAfterAction = constraint.timeStart <= (currentAgentAction.timestamp + currentAgentAction.duration + TIME_AT_VERTEX);
+            bool constraintIsOnInitialEdgeAction = ! currentAgentAction.isWaitAction()
+             && constraint.location == currentAgentAction.getLocation();
+            bool constraintIsBeforeActionEnds = constraint.timeStart <= (currentAgentAction.timestamp + currentAgentAction.duration);
+
+            if ((constraintIsOnInitialWaitAction && constraintIsBeforeDeltaAfterAction)
+             || ((constraintIsOnInitialEdgeAction && constraintIsBeforeActionEnds) || (constraintIsOnEndVertex && constraintIsBeforeDeltaAfterAction))
+            ){
+                break; // This agent has no way of avoiding the constraint, so it should not be added.
+            }
             // Error::log(constraint.toString() + "\n");
-            std::cout << constraint.toString() << "\n";
+            // std::cout << constraint.toString() << "\n";
             // if (agentId == c.getAgentIds()[0]){
             //     std::cout << "X\n";
             //     for (auto pa : p->getSolution().paths){
@@ -103,9 +117,14 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             // std::cout << constraint.toString() << "\n" << agentId << "\n";
             // }
             a->addConstraint(constraint);
-            // for (auto constr : a->constraints){
-            //     std::cout << constr.toString() << "\n";
+            // Error::log("A constraints: \n");
+            // for (auto constr : a->getConstraints()){
+            //     Error::log(constr.toString() + "\n");
             // }
+            Error::log("A constraints for agent: \n");
+            for (auto constr : a->getConstraints(agentId)){
+                Error::log(constr.toString() + "\n");
+            }
             /**
              * A.solution <-- P.solution
              * Update A.solution by invoking low level(ai)
@@ -114,8 +133,10 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             // std::cout << "individual path\n";
             
             Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], a->getConstraints(agentId));
+            Error::log(newPath.toString() + "\n");
             s.paths[agentId] = newPath;
             a->setSolution(s);
+            Error::log(a->getSolution().paths[agentId].toString() + "\n");
             // for (auto pa : a->getSolution().paths){
             //     std::cout << pa.toString() << "\n";
             // }
@@ -124,6 +145,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              */
             if (a->getCost() < std::numeric_limits<float>::infinity()) {
                 open.push(a);
+                Error::log("A was pushed\n");
             }
         }
 

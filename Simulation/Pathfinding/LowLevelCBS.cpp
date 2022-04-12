@@ -9,14 +9,20 @@
  * @return Path 
  */
 Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agent, std::vector<Constraint> constraints){
+    // Error::log("Agent" + std::to_string(agent.getId()) + "\n");
+    // Error::log("A constraints for agent: \n");
+    // for (auto constr : constraints){
+    //     Error::log(constr.toString() + "\n");
+    // }
+    // Error::log("Goal is " + agent.getGoal()->toString() + "\n");
     Logger logger = Logger::get_instance();
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-
-    Error::log("Agent" + std::to_string(agent.getId()) + "\n");
 
     std::shared_ptr<Vertex> u;
     Action firstAction = agent.getCurrentAction();
     std::shared_ptr<Vertex> goal = agent.getGoal();
+
+    float timeLimit = std::numeric_limits<float>::infinity();
 
     // Compute path from after the current action
     std::priority_queue<ActionPathAux, std::vector<ActionPathAux>, std::greater<ActionPathAux>> priorityQueue{};
@@ -24,6 +30,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     // we will need more than a regular visited list/set. To run faster, we will
     // have a list for each vertex, that contains the timesteps that we have visited the vertex.
     std::vector<std::vector<float>> vertexVisits{graph->getVertices().size()};
+
     priorityQueue.push(ActionPathAux(
         firstAction,
         firstAction.timestamp + firstAction.duration + graph->heuristicCost(firstAction.endVertex, goal),
@@ -42,36 +49,31 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
             Error::log("Max iterations reached.\n");
             exit(1);
         }
-        // If the action leads to the goal we are done only if we can wait there for the time we need at the goal
-        if (u->getId() == goal->getId()){
-            float currentTime = top.action.timestamp + top.action.duration;
-            bool canSpendNeededTimeAtGoal = true;
-            for (Constraint &constraint : constraints){
-                if (constraint.location.type == ELocationType::EDGE_LOCATION){
-                    continue;//This constraint is irrelevant
-                }
-                // We want to check if the vertex constraint applies to the goal within the time the agent will be at the goal
-                if (isViolatingConstraint(constraint, goal, currentTime, currentTime + TIME_AT_GOAL)){
-                    canSpendNeededTimeAtGoal = false;
-                    break;
-                }
+        if (endsAtValidGoal(top.action, goal, constraints)){
+            if (Logger::enabled) {
+                std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+                auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+                (*logger.begin()) << iterations << " iterations took " << timeDiff << "[µs] for low level individual path\n"; logger.end();
             }
-            if (canSpendNeededTimeAtGoal){
-                if (Logger::enabled) {
-                    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-                    auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-                    (*logger.begin()) << iterations << " iterations took " << timeDiff << "[µs] for low level individual path\n"; logger.end();
-                }
-                this->totalIterations += this->iterations;
-                // Return the path, we have found a path that violates no constraints.
-                // Error::log(top.getPath().toString() + "\n");
-                return top.getPath();
-            }
+            this->totalIterations += this->iterations;
+            // Return the path, we have found a path that violates no constraints.
+            // Error::log(top.getPath().toString() + "\n");;
+            return top.getPath();
         }
 
         // Expand frontier
-        std::vector<Action> possibleActions = getPossibleActions(u, agent, constraints, top.action.timestamp + top.action.duration);
+        std::vector<Action> possibleActions = getPossibleActions(u, constraints, top.action.timestamp + top.action.duration);
         for (Action action : possibleActions){
+            // If the actions end is not reachable skip it
+            if (graph->heuristicCost(goal, action.endVertex) > timeLimit){
+                continue;
+            }
+            // If the action is a wait action, update the reachable vertices
+            if (action.isWaitAction()){
+                //float timeToGoal = action.duration + graph->heuristicCost(action.endVertex, goal);
+                float newTimeLimit = graph->heuristicCost(goal, action.startVertex);
+                timeLimit = std::min(timeLimit, newTimeLimit);
+            }
             // Check if we have already visited the vertex the action is taking us to
             // Checking end vertices will cover both wait and edge actions.
             bool visited = false;
@@ -85,24 +87,24 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
             if (visited) continue;
             
             // We can probably also restrict cycles to only be allowed iff there is a constraint at some point on the vertex you are cycling to
-            bool visitedAtAnyTime = false;
-            for (Action a : top.getPath().actions){
-                if (a.startVertex == action.endVertex || a.endVertex == action.endVertex){
-                    visitedAtAnyTime = true;
-                    break;
-                }
-            }
-            bool hasConstraint = false;
-            for (Constraint &constraint : constraints){//TODO if this is too slow, we can extract the relevant constraints before
-                // If there is a constraint for the agent at the actions end vertex
-                if (constraint.location.type == ELocationType::VERTEX_LOCATION
-                 && constraint.location.vertex == action.endVertex
-                ){
-                    hasConstraint = true;
-                    break;
-                }
-            }
-            if (visitedAtAnyTime && ! hasConstraint && ! action.isWaitAction()) continue;
+            // bool visitedAtAnyTime = false;
+            // for (Action a : top.getPath().actions){
+            //     if (a.startVertex == action.endVertex || a.endVertex == action.endVertex){
+            //         visitedAtAnyTime = true;
+            //         break;
+            //     }
+            // }
+            // bool hasConstraint = false;
+            // for (Constraint &constraint : constraints){//TODO if this is too slow, we can extract the relevant constraints before
+            //     // If there is a constraint for the agent at the actions end vertex
+            //     if (constraint.location.type == ELocationType::VERTEX_LOCATION
+            //      && constraint.location.vertex == action.endVertex
+            //     ){
+            //         hasConstraint = true;
+            //         break;
+            //     }
+            // }
+            // if (visitedAtAnyTime && ! hasConstraint && ! action.isWaitAction()) continue;
             
             // Add the vertex to the visited vertices
             vertexVisits[action.endVertex->getId()].push_back(action.timestamp + action.duration);
@@ -113,14 +115,6 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
                 std::make_shared<ActionPathAux>(top)
             );
             // Error::log("aux: " + aux.toString() + "\n");
-
-            // TODO we need something like the following, but it only works for 2 agents. For >2 agents, the problem will persist one step further out
-            // // If this action is a wait action for the goal, speed up by not trying to find another path to it (TODO it should not make sense to do so?)
-            // if (action.isWaitAction() && action.endVertex->getEdge(goal) != nullptr){
-            //     priorityQueue = {};// Clear the priority queue
-            //     priorityQueue.push(aux);
-            //     break;
-            // }
 
             priorityQueue.push(aux);
         }
@@ -139,25 +133,27 @@ std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::ve
     return paths;
 }
 
-std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vertex, AgentInfo agent, std::vector<Constraint> constraints, float currentTime){
+std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vertex, std::vector<Constraint> constraints, float currentTime){
     std::vector<Action> actions; // The actions we will return later (gets filled in)
     std::vector<std::shared_ptr<Edge>> edges = vertex->getEdges();
     float minWaitTime = std::numeric_limits<float>::infinity();
-    float delta = 1;
     // Edge actions
     for (auto edge : edges){
         bool edgeIsPossible = true;
-        for (Constraint &constraint : constraints){//TODO if this is too slow, we can extract the relevant constraints before the outer loop
+        for (Constraint &constraint : constraints){
+            // Error::log("C: " + constraint.toString() + "\n");
+            // Error::log("E: " + std::to_string(currentTime) + " --> " + std::to_string(currentTime + edge->getCost()) + "\n");
             // Edge constraints
             if (isViolatingConstraint(constraint, edge, currentTime)){
-                minWaitTime = std::min(minWaitTime, constraint.timeEnd + delta);
+                minWaitTime = std::min(minWaitTime, constraint.timeEnd + DELTA);
                 edgeIsPossible = false;
                 continue;
             }
 
             // Vertex constraints
-            if (isViolatingConstraint(constraint, edge->getEndVertex(), currentTime + edge->getCost(), currentTime + edge->getCost())){
-                minWaitTime = std::min(minWaitTime, constraint.timeEnd - (currentTime + edge->getCost()) + delta);
+            if (isViolatingConstraint(constraint, edge->getEndVertex(), currentTime + edge->getCost(), currentTime + edge->getCost() + TIME_AT_VERTEX)){
+                // Error::log("Violated!\n");
+                minWaitTime = std::min(minWaitTime, constraint.timeEnd - (currentTime + edge->getCost()) + DELTA);
                 edgeIsPossible = false;
                 continue;
             }
@@ -179,6 +175,11 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
     }
 
     // Wait action
+    for (Constraint &constraint : constraints){
+        if (isViolatingConstraint(constraint, vertex, currentTime + minWaitTime, currentTime + minWaitTime + TIME_AT_VERTEX)){
+            return actions;// We cant wait here to take the edge that set min wait time, so no point in waiting here.
+        }
+    }
     actions.push_back(Action(currentTime, vertex, vertex, minWaitTime));
 
     return actions;
@@ -239,4 +240,18 @@ bool LowLevelCBS::isViolatingConstraint(Constraint constraint, std::shared_ptr<V
     // Violating constraint location
     return (constraint.location.type == ELocationType::VERTEX_LOCATION
          && vertex == constraint.location.vertex);
+}
+
+
+
+bool LowLevelCBS::endsAtValidGoal(Action action, std::shared_ptr<Vertex> goal, std::vector<Constraint> constraints){
+    if (action.endVertex != goal) return false;
+
+    float arrivalTime = action.timestamp + action.duration;
+    for (auto c : constraints){
+        if (isViolatingConstraint(c, goal, arrivalTime, arrivalTime + TIME_AT_GOAL)){
+            return false;
+        }
+    }
+    return true;
 }

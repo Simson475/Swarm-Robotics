@@ -15,6 +15,7 @@ class Path {
     /* Methods */
     std::vector<int> asWaypointPlan();
     std::string toString();
+    Path operator+(const Path& path);
 };
 
 #endif

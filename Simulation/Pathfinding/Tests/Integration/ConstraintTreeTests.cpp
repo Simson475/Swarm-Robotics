@@ -153,12 +153,20 @@ void ConstraintTreeTests::it_gets_sorted_in_priority_queue(){
     pq.push(ct1);
 
     // Assert
-    assert(pq.top() == ct1);
-    pq.pop();
-    assert(pq.top() == ct2);
-    pq.pop();
-    assert(pq.top() == ct3);
-    pq.pop();
+    int i = 0;
+    while( ! pq.empty()){
+        auto top = pq.top();pq.pop();
+        if (i == 0){ assert(top == ct1);}
+        if (i == 1){ assert(top == ct2);}
+        if (i == 2){ assert(top == ct3);}
+        i++;
+    }
+    // assert(pq.top() == ct1);
+    // pq.pop();
+    // assert(pq.top() == ct2);
+    // pq.pop();
+    // assert(pq.top() == ct3);
+    // pq.pop();
 }
 
 void ConstraintTreeTests::it_is_vertex_conflict(){
@@ -253,7 +261,7 @@ void ConstraintTreeTests::it_is_follow_conflict(){
     assert(ct.isFollowConflict(a1, a2));
 
     // a1 moves to the vertex a2 waited at > delta ago
-    a2 = Action(a1.timestamp + a1.duration + DELTA + 1, v2, v2, 100);
+    a2 = Action(a1.timestamp + a1.duration + TIME_AT_VERTEX + 1, v2, v2, 100);
     assert( ! ct.isFollowConflict(a1, a2));
 }
 
@@ -275,8 +283,9 @@ void ConstraintTreeTests::it_can_get_vertex_conflict(){
     assert(c1.getAgentIds()[0] == agents[0]);
     assert(c1.getAgentIds()[1] == agents[1]);
     assert(c1.getLocation().toString() == "v2");
-    assert(c1.getTimeStart() == a1.timestamp + a1.duration);
-    assert(c1.getTimeEnd() == (a1.timestamp + a1.duration + DELTA));
+    std::cout << c1.toString() << "\n";
+    assert(c1.getTimeStart() == a2.timestamp + a2.duration);
+    assert(c1.getTimeEnd() == (a1.timestamp + a1.duration + TIME_AT_VERTEX));
 }
 
 void ConstraintTreeTests::it_can_get_follow_conflict(){
@@ -298,7 +307,7 @@ void ConstraintTreeTests::it_can_get_follow_conflict(){
     assert(c1.getAgentIds()[1] == agents[1]);
     assert(c1.getLocation().toString() == "v2");
     assert(c1.getTimeStart() == a2.timestamp);
-    assert(c1.getTimeEnd() == (a1.timestamp + a1.duration + DELTA));
+    assert(c1.getTimeEnd() == (a1.timestamp + a1.duration + TIME_AT_VERTEX));
 }
 
 void ConstraintTreeTests::it_can_get_edge_conflict(){
