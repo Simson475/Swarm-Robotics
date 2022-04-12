@@ -3,8 +3,8 @@
 std::shared_ptr<Graph> ExperimentData::getGraph(){
     if ( graph != nullptr ) { return graph; }
 
-    auto g = std::make_shared<MapStructureGraph>(Map_Structure::get_instance());
-    graph = std::static_pointer_cast<Graph>(g);
+    mapStructureGraph = std::make_shared<MapStructureGraph>(Map_Structure::get_instance());
+    graph = std::static_pointer_cast<Graph>(mapStructureGraph);
     return graph;
 }
 
@@ -84,4 +84,18 @@ std::vector<AgentInfo> ExperimentData::getAgentsInfo(){
         agentInfo[i] = agents[i]->getAgentInfo();
     }
     return agentInfo;
+}
+
+int ExperimentData::getNextStation(){
+    auto stations = getStations();
+    int station = stations[nextStation];
+    nextStation = ++nextStation == stations.size() ? 0 : nextStation;
+    return station;
+}
+
+std::vector<int> ExperimentData::getStations(){
+    if (mapStructureGraph == nullptr) {
+        getGraph();
+    }
+    return mapStructureGraph->getStations();
 }

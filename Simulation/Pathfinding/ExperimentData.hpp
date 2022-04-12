@@ -25,11 +25,15 @@ public:
     std::vector<std::shared_ptr<Agent>> getAgents();
     std::vector<AgentInfo> getAgentsInfo();
     bool requestSolution(int agentId);
-    // std::vector<AgentInfo> getAgentInfo();
+    int getNextStation();
 private:
     std::shared_ptr<Graph> graph;
+    std::shared_ptr<MapStructureGraph> mapStructureGraph;
     std::vector<std::shared_ptr<Agent>> agents;
     void distributeSolution(Solution solution);
+    int nextStation = 0;
+    std::vector<int> stations;
+    std::vector<int> getStations();
 };
 
 #endif

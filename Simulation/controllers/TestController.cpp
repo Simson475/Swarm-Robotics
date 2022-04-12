@@ -3,7 +3,8 @@
 
 std::vector<int> TestController::constructStationPlan(){    
     // std::cout << "Testing station plan";
-    return SingleThreadBotGreedy::constructStationPlan();
+    // TestControllers dont have an ID before first call of waypoint plan??
+    return { ExperimentData::get_instance().getNextStation() };
 }
 
 std::vector<int> TestController::constructWaypointPlan(){

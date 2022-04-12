@@ -18,8 +18,6 @@ public:
     int getId();
     std::string toString();
 protected:
-    float x;
-    float y;
     std::vector<std::shared_ptr<Edge>> edges;
     int id;
 };

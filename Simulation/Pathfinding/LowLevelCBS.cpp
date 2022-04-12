@@ -44,7 +44,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
         u = top.action.endVertex;
         // Error::log("Top action: " + top.action.toString() + "\n");
 
-        if (this->iterations > 5000){
+        if (this->iterations > 5000000){
             this->totalIterations += this->iterations;
             Error::log("Max iterations reached.\n");
             exit(1);
@@ -69,11 +69,11 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
                 continue;
             }
             // If the action is a wait action, update the reachable vertices
-            if (action.isWaitAction()){
-                //float timeToGoal = action.duration + graph->heuristicCost(action.endVertex, goal);
-                float newTimeLimit = graph->heuristicCost(goal, action.startVertex);
-                timeLimit = std::min(timeLimit, newTimeLimit);
-            }
+            // if (action.isWaitAction()){
+            //     //float timeToGoal = action.duration + graph->heuristicCost(action.endVertex, goal);
+            //     float newTimeLimit = graph->heuristicCost(goal, action.startVertex);
+            //     timeLimit = std::min(timeLimit, newTimeLimit);
+            // }
             // Check if we have already visited the vertex the action is taking us to
             // Checking end vertices will cover both wait and edge actions.
             bool visited = false;

@@ -245,7 +245,7 @@ void HighLevelCBSTests::it_can_find_a_solution_in_a_big_graph(){
         AgentInfo(5, Action(0, v8, v8, 0), v3), // Solvable
         AgentInfo(6, Action(0, v9, v9, 0), v2), // No longer solvable
         // AgentInfo(7, Action(0, va, va, 0), v1),
-    };
+    };// 2^(k*(k-1)/2) 2^(5+4+3+2+1) = = 32768
     // Act
     Solution solution = HighLevelCBS::get_instance().findSolution(g, agents, LowLevelCBS::get_instance());
 
@@ -313,18 +313,11 @@ void HighLevelCBSTests::it_can_find_a_solution_in_a_graph_with_many_vertices(){
         // Remove any existing results if they exist
         remove(&experimentResultFile[0]);
         //remove(&(std::string{std::filesystem::current_path()} + "/" + experimentPrefix + logFile)[0]);
+        Logger::enabled = true;
         Logger::get_instance().setLogFile(experimentResultFile);
 
         // Act
         Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
-
-        // Assert
-        // assert((int)solution.paths.size() == agentCount);
-        // int i = 0;
-        // for (auto p : solution.paths){
-        //     std::cout << "Path" << i << " cost: " << solution.paths[i].cost << "\n";
-        //     i++;
-        // }
 
         std::cout << "Experiment done\n";
     }
@@ -382,17 +375,10 @@ void HighLevelCBSTests::bottleneck_conflicts_are_complex(){
         Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
 
         // Assert
-        uint expectedLowLevelIterations = 1;// k! + hard-to-tell-extra-from-best-conflict
+        uint expectedLowLevelIterations = 1;//high-level-iterations + something + hard-to-tell-extra-from-best-conflict
         for (int i = 2; i <= agentCount; ++i){
             expectedLowLevelIterations *= i;
         }
-        // Optimal high level iterations = 
-        // k (one for each agent in the chokepoint)
-        // * k-1 (one for each agent in chokepoint not waiting)
-        // * k-2
-        // ...
-        // * 1 (when all agents expect one is waiting we will find a solution)
-        // = k!
         // Expected high level iterations = 
         // 2 (best conflicts two agents' constraints)
         // * 2 (best conflicts two agents' constraints) (now two agents are waiting)

@@ -7,6 +7,10 @@ MapStructureGraph::MapStructureGraph(Map_Structure& map){
     for (Point point : map.points){
         int id = point.getId();
         vertices[id] = std::make_shared<Vertex>(id);//TODO params for constructor
+
+        if (point.getType() == 2){
+            stations.push_back(id);
+        }
     }
     this->vertices = vertices;
 
@@ -30,4 +34,8 @@ MapStructureGraph::MapStructureGraph(Map_Structure& map){
     for (std::shared_ptr<Vertex> v : vertices){
         v->setEdges(edges[v->getId()]);
     }
+}
+
+std::vector<int> MapStructureGraph::getStations(){
+    return this->stations;
 }

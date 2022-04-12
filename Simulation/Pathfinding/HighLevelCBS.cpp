@@ -26,7 +26,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     while (open.size() > 0) {
         std::chrono::steady_clock::time_point iterationBegin = std::chrono::steady_clock::now();
 
-        if (++iterations == 10000){
+        if (++iterations == 5000000){
             Error::log("Max highlevel iterations reached!\n");
             exit(0);
         }
@@ -121,10 +121,10 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             // for (auto constr : a->getConstraints()){
             //     Error::log(constr.toString() + "\n");
             // }
-            Error::log("A constraints for agent: \n");
-            for (auto constr : a->getConstraints(agentId)){
-                Error::log(constr.toString() + "\n");
-            }
+            // Error::log("A constraints for agent: \n");
+            // for (auto constr : a->getConstraints(agentId)){
+            //     Error::log(constr.toString() + "\n");
+            // }
             /**
              * A.solution <-- P.solution
              * Update A.solution by invoking low level(ai)
@@ -133,10 +133,10 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             // std::cout << "individual path\n";
             
             Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], a->getConstraints(agentId));
-            Error::log(newPath.toString() + "\n");
+            //Error::log(newPath.toString() + "\n");
             s.paths[agentId] = newPath;
             a->setSolution(s);
-            Error::log(a->getSolution().paths[agentId].toString() + "\n");
+            //Error::log(a->getSolution().paths[agentId].toString() + "\n");
             // for (auto pa : a->getSolution().paths){
             //     std::cout << pa.toString() << "\n";
             // }
@@ -145,7 +145,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              */
             if (a->getCost() < std::numeric_limits<float>::infinity()) {
                 open.push(a);
-                Error::log("A was pushed\n");
+                //Error::log("A was pushed\n");
             }
         }
 

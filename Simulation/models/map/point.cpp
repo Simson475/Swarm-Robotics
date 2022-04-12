@@ -104,3 +104,7 @@ void Point::adjustPointToMid(const Point &p) {
     this->SetY((this->getY() + p.getY()) / 2);
     this->setName(getName() + "Merged" + p.getName());
 }
+
+int Point::getType() const{
+    return this->pType;
+}

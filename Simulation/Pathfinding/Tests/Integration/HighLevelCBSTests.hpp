@@ -17,9 +17,9 @@ private:
 public:
     void run(){// This is placed in the header to help ensure all tests are run
         it_gets_a_path_that_has_no_conflicts();
-        it_can_find_a_solution_if_agents_have_same_goal();
-        // it_can_find_a_solution_in_a_big_graph();
-        // it_can_find_a_solution_in_a_graph_with_many_vertices();
+        // it_can_find_a_solution_if_agents_have_same_goal(); // Infeasible
+        // it_can_find_a_solution_in_a_big_graph(); // Too hard of a problem
+        it_can_find_a_solution_in_a_graph_with_many_vertices();
         // bottleneck_conflicts_are_complex();
         // divided_bottlenecks_conflicts_are_complex();
         // divided_connected_bottlenecks_conflicts_are_complex();

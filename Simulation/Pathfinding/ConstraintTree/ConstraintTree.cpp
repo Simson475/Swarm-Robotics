@@ -53,31 +53,31 @@ std::vector<Conflict> ConstraintTree::findConflicts(){
                     int a1End = a1Start + a1.duration;
                     int a2Start = a2.timestamp;
                     int a2End = a1Start + a2.duration;
-                    if (a2Start > a1End) { break; }// Skip the remainding actions in p2 since they can't have overlaps
+                    if (a2Start > a1End + TIME_AT_VERTEX) { break; }// Skip the remainding actions in p2 since they can't have overlaps
                     if (a1End > a2End) { p2Index++; }// Update p2Index to only start looking at the actions in p2 that can overlap with the next a1
                     int maxStart = ((a1Start > a2Start) ? a1Start : a2Start);//max start
                     int minEnd = ((a1End < a2End) ? a1End : a2End);//min end
 
                     // These actions overlap
-                    if (maxStart <= minEnd){
+                    if (maxStart <= minEnd + TIME_AT_VERTEX){
                         if (isVertexConflict(a1, a2)){
-                            std::cout << "Vertex conflict\n";
+                            // std::cout << "Vertex conflict\n";
                             conflicts.push_back(getVertexConflict({i, j}, a1, a2));
                             // return conflicts;
                         }
                         else if (isSwapConflict(a1, a2)){ //Perhaps make the checks tighter so else isnt needed
-                            std::cout << "Swap conflict\n";
+                            // std::cout << "Swap conflict\n";
                             conflicts.push_back(getSwapConflict(i, a1, a2));
                             conflicts.push_back(getSwapConflict(j, a2, a1));
                             // return conflicts;
                         }
                         else if (isEdgeConflict(a1, a2)){
-                            std::cout << "Edge conflict\n";
+                            // std::cout << "Edge conflict\n";
                             conflicts.push_back(getEdgeConflict({i, j}, a1, a2));
                             // return conflicts;
                         } 
                         else if (isFollowConflict(a1, a2)){
-                            std::cout << "Follow conflict\n";
+                            // std::cout << "Follow conflict\n";
                             conflicts.push_back(getFollowConflict({i, j}, a1, a2));
                             // return conflicts;
                         }

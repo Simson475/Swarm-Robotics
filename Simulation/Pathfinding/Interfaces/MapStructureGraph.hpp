@@ -13,6 +13,9 @@ class MapStructureGraph : public Graph{
 public:
     virtual ~MapStructureGraph() = default;
     MapStructureGraph(Map_Structure& map);
+    std::vector<int> getStations();
+private:
+    std::vector<int> stations;
 };
 
 #endif

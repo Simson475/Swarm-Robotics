@@ -7,7 +7,8 @@ void ConstraintTreeTests::it_can_find_swap_conflicts(){
     Solution solution;
     Path p1, p2;
     /**
-     * We will construct a L shaped graph
+     * We make the following graph
+     *
      * 1--2
     */
     auto v1 = std::make_shared<Vertex>(1);
@@ -78,28 +79,90 @@ void ConstraintTreeTests::it_can_find_edge_conflicts(){
     //TODO more asserts
 }
 
-void ConstraintTreeTests::it_can_find_vertex_conflicts(){
+void ConstraintTreeTests::it_can_find_vertex_conflicts_moving_to_same_vertex(){
     // Arrange
-    ConstraintTree ct;
+    ConstraintTree ct1, ct2, ct3;
     Solution solution;
     Path p1, p2;
     /**
      * We will construct the following graph
-     * 1--2
+     * 1--2--3
     */
     auto v1 = std::make_shared<Vertex>(0);
     auto v2 = std::make_shared<Vertex>(1);
+    auto v3 = std::make_shared<Vertex>(2);
+    
     std::vector<std::shared_ptr<Edge>> v1edges = {
-        std::make_shared<Edge>(v1, v2, 1),
+        std::make_shared<Edge>(v1, v2, 100),
     };
     std::vector<std::shared_ptr<Edge>> v2edges = {
-        std::make_shared<Edge>(v2, v1, 1),
+        std::make_shared<Edge>(v2, v1, 100),
+        std::make_shared<Edge>(v2, v3, 100),
     };
+    std::vector<std::shared_ptr<Edge>> v3edges = {
+        std::make_shared<Edge>(v3, v2, 100),
+    };
+    // Arrive exactly at same time
     p1.actions = {
-        Action(0, v1, v2, 1),
+        Action(0, v1, v2, 100),
     };
     p2.actions = {
-        Action(1, v2, v2, 2),
+        Action(0, v3, v2, 100),
+    };
+    solution.paths = { p1, p2 };
+    ct1.setSolution(solution);
+    
+    // p1 arrives within delta before p2
+    p1.actions = {
+        Action(0, v1, v2, 100),
+    };
+    p2.actions = {
+        Action(TIME_AT_VERTEX / 2, v3, v2, 100),
+    };
+    solution.paths = { p1, p2 };
+    ct2.setSolution(solution);
+
+    // p2 arrives within delta before p1
+    p1.actions = {
+        Action(TIME_AT_VERTEX / 2, v1, v2, 100),
+    };
+    p2.actions = {
+        Action(0, v3, v2, 100),
+    };
+    solution.paths = { p1, p2 };
+    ct3.setSolution(solution);
+
+    // Act
+    auto conflicts1 = ct1.findConflicts();
+    auto conflicts2 = ct2.findConflicts();
+    auto conflicts3 = ct3.findConflicts();
+
+    // Assert
+    assert(conflicts1.size() == 1);
+    assert(conflicts2.size() == 1);
+    assert(conflicts3.size() == 1);
+
+    assert(conflicts1[0].getTimeStart() == 100);
+    assert(conflicts1[0].getTimeEnd() == 100 + TIME_AT_VERTEX);
+
+    assert(conflicts2[0].getTimeStart() == 100 + TIME_AT_VERTEX / 2);
+    assert(conflicts2[0].getTimeEnd() == 100 + TIME_AT_VERTEX);
+
+    assert(conflicts3[0].getTimeStart() == 100 + TIME_AT_VERTEX / 2);
+    assert(conflicts3[0].getTimeEnd() == 100 + TIME_AT_VERTEX);
+}
+
+void ConstraintTreeTests::it_can_find_vertex_conflicts_waiting_on_same_vertex(){
+    // Arrange
+    ConstraintTree ct;
+    Solution solution;
+    Path p1, p2;
+    auto v1 = std::make_shared<Vertex>(0);
+    p1.actions = {
+        Action(0, v1, v1, 100),
+    };
+    p2.actions = {
+        Action(50, v1, v1, 100),
     };
     solution.paths = { p1, p2 };
     ct.setSolution(solution);
@@ -109,7 +172,73 @@ void ConstraintTreeTests::it_can_find_vertex_conflicts(){
 
     // Assert
     assert(conflicts.size() == 1);
-    //TODO more asserts
+}
+
+void ConstraintTreeTests::it_can_find_vertex_conflicts_moves_to_vertex_occupied_by_wait(){
+    // Arrange
+    ConstraintTree ct1, ct2, ct3;
+    Solution solution;
+    Path p1, p2;
+    /**
+     * We will construct the following graph
+     * 1--2
+    */
+    auto v1 = std::make_shared<Vertex>(0);
+    auto v2 = std::make_shared<Vertex>(1);
+    std::vector<std::shared_ptr<Edge>> v1edges = {
+        std::make_shared<Edge>(v1, v2, 100),
+    };
+    std::vector<std::shared_ptr<Edge>> v2edges = {
+        std::make_shared<Edge>(v2, v1, 100),
+    };
+    // Moving to mid of wait action
+    p1.actions = {
+        Action(0, v1, v2, 100),
+    };
+    p2.actions = {
+        Action(50, v2, v2, 100),
+    };
+    solution.paths = { p1, p2 };
+    ct1.setSolution(solution);
+
+    // Moving to vertex that a wait action will occur on within delta
+    p1.actions = {
+        Action(0, v1, v2, 100),
+    };
+    p2.actions = {
+        Action(100 + TIME_AT_VERTEX / 2, v2, v2, 100),
+    };
+    solution.paths = { p1, p2 };
+    ct2.setSolution(solution);
+
+    // Moving to vertex that a wait action just finished, but within delta
+    p1.actions = {
+        Action(TIME_AT_VERTEX / 2, v1, v2, 100),
+    };
+    p2.actions = {
+        Action(0, v2, v2, 100),
+    };
+    solution.paths = { p1, p2 };
+    ct3.setSolution(solution);
+
+    // Act
+    auto conflicts1 = ct1.findConflicts();
+    auto conflicts2 = ct2.findConflicts();
+    auto conflicts3 = ct3.findConflicts();
+
+    // Assert
+    assert(conflicts1.size() == 1);
+    assert(conflicts2.size() == 1);
+    assert(conflicts3.size() == 1);
+
+    assert(conflicts1[0].getTimeStart() == 100);
+    assert(conflicts1[0].getTimeEnd() == 100 + TIME_AT_VERTEX);
+
+    assert(conflicts2[0].getTimeStart() == 100 + TIME_AT_VERTEX / 2);
+    assert(conflicts2[0].getTimeEnd() == 100 + TIME_AT_VERTEX);
+
+    assert(conflicts3[0].getTimeStart() == 100 + TIME_AT_VERTEX / 2);
+    assert(conflicts3[0].getTimeEnd() == 100 + TIME_AT_VERTEX);
 }
 
 void ConstraintTreeTests::it_gets_sorted_in_priority_queue(){
