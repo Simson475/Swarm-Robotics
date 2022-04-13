@@ -2,10 +2,6 @@
 
 bool Logger::enabled = false;
 
-Logger::Logger(const Logger& other){
-    this->logFile = other.logFile;
-}
-
 void Logger::setLogFile(std::string logFile){
     this->logFile = logFile;
 }

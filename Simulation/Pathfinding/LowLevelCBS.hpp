@@ -20,6 +20,7 @@ class LowLevelCBS;
 #include "Logger.hpp"
 #include "GLOBALS.hpp"
 #include <chrono>
+#include "DEFINITIONS.hpp"
 
 class LowLevelCBS {
 public:
@@ -31,7 +32,7 @@ public:
     Path getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agent, std::vector<Constraint> constraints);
     std::vector<Path> getAllPaths(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Constraint> constraints);
     uint iterations = 0;
-    uint totalIterations = 0;
+    unsigned long int totalIterations = 0;
 protected:
     std::vector<Action> getPossibleActions(std::shared_ptr<Vertex> vertex, std::vector<Constraint> constraints, float currentTime);
     bool isViolatingConstraint(Constraint constraint, Action action);

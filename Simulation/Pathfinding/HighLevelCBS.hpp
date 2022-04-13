@@ -20,10 +20,10 @@ class HighLevelCBS;
 #include "AgentInfo.hpp"
 #include "LowLevelCBS.hpp"
 #include "ExperimentData.hpp"
-
 #include "Debugging.hpp"
 #include "Logger.hpp"
 #include <chrono>
+#include "DEFINITIONS.hpp"
 
 class HighLevelCBS {    
 public:

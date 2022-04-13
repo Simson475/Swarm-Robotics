@@ -379,7 +379,7 @@ void HighLevelCBSTests::it_can_find_a_solution_in_a_graph_with_many_vertices(){
             agents[i] = AgentInfo(i, Action(0, vertices[i], vertices[i], 0), vertices[gridWidth*gridHeight-1-i]);
         }
         // Create folder for results
-        std::string experimentResultDir = "30w";
+        std::string experimentResultDir = "30x3";
         mkdir(&experimentResultDir[0], 0777);
 
         std::string experimentResultFile = experimentResultDir + "/" + std::to_string(z) + "agent_analysis.txt";
@@ -432,26 +432,25 @@ void HighLevelCBSTests::bottleneck_conflicts_are_complex(){
             agents[i] = AgentInfo(i, Action(0, vertices[i], vertices[i], 0), vertices[chokepointIndex + 1 + i]);
         }
         // Create folder for results
-        std::string experimentResultDir = "chokepoint";
+        std::string experimentResultDir = "chokepoint_define_test";
         mkdir(&experimentResultDir[0], 0777);
 
         std::string experimentResultFile = experimentResultDir + "/" + std::to_string(z) + "agent_analysis.txt";
         // Remove any existing results if they exist
         remove(&experimentResultFile[0]);
         // Configure the logger
-        Logger logger = Logger::get_instance();
         Logger::enabled = true;
-        logger.setLogFile(experimentResultFile);
+        Logger::get_instance().setLogFile(experimentResultFile);
 
         // Act
 
         Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
 
         // Assert
-        uint expectedLowLevelIterations = 1;//high-level-iterations + something + hard-to-tell-extra-from-best-conflict
-        for (int i = 2; i <= agentCount; ++i){
-            expectedLowLevelIterations *= i;
-        }
+        // uint expectedLowLevelIterations = 1;//high-level-iterations + something + hard-to-tell-extra-from-best-conflict
+        // for (int i = 2; i <= agentCount; ++i){
+        //     expectedLowLevelIterations *= i;
+        // }
         // Expected high level iterations = 
         // 2 (best conflicts two agents' constraints)
         // * 2 (best conflicts two agents' constraints) (now two agents are waiting)
@@ -464,9 +463,10 @@ void HighLevelCBSTests::bottleneck_conflicts_are_complex(){
         // = 2^(k-1)*2^(k-2)*...*2 = 2^(k-1 + k-2 + ... + 1) = 2^((k-1)*k/2)
 
         uint expectedHighLevelIterations = std::pow(2, (agentCount - 1) * agentCount / 2);
+        auto logger = Logger::get_instance();
         (*logger.begin())
-         << "Total low level: " << (LowLevelCBS::get_instance().totalIterations) << " iterations. "
-         << "Expected >" << expectedLowLevelIterations << " iterations.\n"
+        //  << "Total low level: " << (LowLevelCBS::get_instance().totalIterations) << " iterations. "
+        //  << "Expected >" << expectedLowLevelIterations << " iterations.\n"
          << "Total high level: " << (HighLevelCBS::get_instance().iterations) << " iterations. "
          << "Expected " << expectedHighLevelIterations << " iterations.\n";
         logger.end();

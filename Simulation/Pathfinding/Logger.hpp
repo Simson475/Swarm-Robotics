@@ -15,7 +15,7 @@ public:
         return instance;
     }
     Logger() = default;
-    Logger(const Logger&);
+    Logger(const Logger&) = delete;
     static bool enabled;
     void setLogFile(std::string);
     void log(std::string msg);

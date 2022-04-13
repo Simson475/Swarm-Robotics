@@ -15,8 +15,10 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     //     Error::log(constr.toString() + "\n");
     // }
     // Error::log("Goal is " + agent.getGoal()->toString() + "\n");
+    #ifdef EXPERIMENT
     Logger logger = Logger::get_instance();
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    #endif
 
     std::shared_ptr<Vertex> u;
     Action firstAction = agent.getCurrentAction();
@@ -50,12 +52,14 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
             exit(1);
         }
         if (endsAtValidGoal(top.action, goal, constraints)){
+            this->totalIterations += this->iterations;
+            #ifdef EXPERIMENT
             if (Logger::enabled) {
                 std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
                 auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-                (*logger.begin()) << iterations << " iterations took " << timeDiff << "[µs] for low level individual path\n"; logger.end();
+                (*logger.begin()) << this->iterations << " iterations took " << timeDiff << "[µs] for low level individual path\n"; logger.end();
             }
-            this->totalIterations += this->iterations;
+            #endif
             // Return the path, we have found a path that violates no constraints.
             // Error::log(top.getPath().toString() + "\n");;
             return top.getPath();

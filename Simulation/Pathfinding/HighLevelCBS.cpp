@@ -1,8 +1,11 @@
 #include "HighLevelCBS.hpp"
 
 Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS lowLevel){
+    #ifdef EXPERIMENT
     auto logger = Logger::get_instance();
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    Error::log("Test\n");
+    #endif
     /**
      * Root.constraints = {}
      * Root.solution = find individual paths by the low level
@@ -10,9 +13,11 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      */
     std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>();
     // std::cout << "initial paths\n";
+    #ifdef EXPERIMENT
     if (Logger::enabled) {
         logger.log("Finding initial paths\n");
     }
+    #endif
     root->setSolution(lowLevel.getAllPaths(graph, agents, std::vector<Constraint>{}), agents);
     /**
      * Insert Root to OPEN
@@ -24,26 +29,32 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      */
     iterations = 0;
     while (open.size() > 0) {
+        #ifdef EXPERIMENT
         std::chrono::steady_clock::time_point iterationBegin = std::chrono::steady_clock::now();
+        #endif
 
         if (++iterations == 5000000){
             Error::log("Max highlevel iterations reached!\n");
             exit(0);
         }
+        #ifdef EXPERIMENT
         if (Logger::enabled) {
             (*logger.begin()) << "High level iteration: " << iterations << "\n"; logger.end();
         }
+        #endif
         /**
          * p <-- best node from OPEN (the node with the lowest solution cost)
          */
         std::shared_ptr<ConstraintTree> p = open.top();open.pop();
+        #ifdef EXPERIMENT
         if (Logger::enabled) {
             (*logger.begin()) << "Constraints: " << p->getConstraints().size() << "\n"; logger.end();
         }
-        Error::log("Popped this solution:\n");
-        for (auto pa : p->getSolution().paths){
-            Error::log(pa.toString() + "\n");
-        }
+        #endif
+        // Error::log("Popped this solution:\n");
+        // for (auto pa : p->getSolution().paths){
+        //     Error::log(pa.toString() + "\n");
+        // }
         // std::cout << "Popped this solution:\n";
         // for (auto pa : p->getSolution().paths){
         //     std::cout << pa.toString() << "\n";
@@ -60,10 +71,12 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
          * If P has no conflicts then return P.solution
          */
         if (conflicts.size() == 0) {
+            #ifdef EXPERIMENT
             if (Logger::enabled) {
                 auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count();
                 (*logger.begin()) << "Highlevel solution took " << timeDiff << "[µs]\n"; logger.end();
             }
+            #endif
             return p->getSolution();
         }
         /**
@@ -72,7 +85,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         // Conflict &c = conflicts.front();
         // std::cout << "Finding best conflict..\n";
         Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel);
-        Error::log(c.toString() + "\n");
+        // Error::log(c.toString() + "\n");
         // std::cout << c.toString() + "\n";
         /**
          * Foreach agent ai in C do
@@ -148,11 +161,12 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
                 //Error::log("A was pushed\n");
             }
         }
-
+        #ifdef EXPERIMENT
         if (Logger::enabled) {
             auto iterationTimeDiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - iterationBegin).count();
             (*logger.begin()) << "High level iteration took " << iterationTimeDiff << "[µs]\n"; logger.end();
         }
+        #endif
     }
     // We did not find any solution (No possible solution)
     Error::log("ERROR: HighLevelCBS: No possible solution\n");
