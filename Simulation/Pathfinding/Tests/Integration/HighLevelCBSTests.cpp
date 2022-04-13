@@ -463,7 +463,7 @@ void HighLevelCBSTests::bottleneck_conflicts_are_complex(){
         // = 2^(k-1)*2^(k-2)*...*2 = 2^(k-1 + k-2 + ... + 1) = 2^((k-1)*k/2)
 
         uint expectedHighLevelIterations = std::pow(2, (agentCount - 1) * agentCount / 2);
-        auto logger = Logger::get_instance();
+        Logger& logger = Logger::get_instance();
         (*logger.begin())
         //  << "Total low level: " << (LowLevelCBS::get_instance().totalIterations) << " iterations. "
         //  << "Expected >" << expectedLowLevelIterations << " iterations.\n"
@@ -524,7 +524,7 @@ void HighLevelCBSTests::divided_bottlenecks_conflicts_are_complex(){
         // Remove any existing results if they exist
         remove(&experimentResultFile[0]);
         // Configure the logger
-        Logger logger = Logger::get_instance();
+        Logger& logger = Logger::get_instance();
         Logger::enabled = true;
         logger.setLogFile(experimentResultFile);
 
@@ -619,7 +619,7 @@ void HighLevelCBSTests::divided_connected_bottlenecks_conflicts_are_complex(){
         // Remove any existing results if they exist
         remove(&experimentResultFile[0]);
         // Configure the logger
-        Logger logger = Logger::get_instance();
+        Logger& logger = Logger::get_instance();
         Logger::enabled = true;
         logger.setLogFile(experimentResultFile);
 

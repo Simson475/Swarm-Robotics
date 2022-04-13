@@ -2,7 +2,7 @@
 
 Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS lowLevel){
     #ifdef EXPERIMENT
-    auto logger = Logger::get_instance();
+    Logger& logger = Logger::get_instance();
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     Error::log("Test\n");
     #endif

@@ -1,4 +1,4 @@
-#include "_path.hpp"
+#include "Path.hpp"
 
 std::vector<int> Path::asWaypointPlan(){
   std::vector<int> waypointPlan = {1};//First element will be "popped" before being used

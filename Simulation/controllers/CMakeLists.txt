@@ -1,7 +1,5 @@
 include_directories(.)
 include_directories(../Pathfinding/)
-include_directories(../Pathfinding/ConstraintTree/)
-include_directories(../Pathfinding/Interfaces/)
 include_directories(../models/map/)
 
 # Find the QtWidgets library
@@ -21,10 +19,10 @@ set(PathfindingDir ../Pathfinding)
 set(ControllersDir .)
 set(MapDir ../models/map)
 set(PathfindingFiles
-        ${PathfindingDir}/ConstraintTree/Conflict.hpp
-        ${PathfindingDir}/ConstraintTree/Conflict.cpp
-        ${PathfindingDir}/ConstraintTree/ConstraintTree.hpp
-        ${PathfindingDir}/ConstraintTree/ConstraintTree.cpp
+        ${PathfindingDir}/Conflict.hpp
+        ${PathfindingDir}/Conflict.cpp
+        ${PathfindingDir}/ConstraintTree.hpp
+        ${PathfindingDir}/ConstraintTree.cpp
         ${PathfindingDir}/Action.hpp
         ${PathfindingDir}/Action.cpp
         ${PathfindingDir}/ActionPathAux.hpp
@@ -35,28 +33,28 @@ set(PathfindingFiles
         ${PathfindingDir}/ExperimentData.cpp
         ${PathfindingDir}/Agent.hpp
         ${PathfindingDir}/Agent.cpp
-        ${PathfindingDir}/ConstraintTree/Constraint.hpp
-        ${PathfindingDir}/ConstraintTree/Constraint.cpp
+        ${PathfindingDir}/Constraint.hpp
+        ${PathfindingDir}/Constraint.cpp
         ${PathfindingDir}/HighLevelCBS.hpp
         ${PathfindingDir}/HighLevelCBS.cpp
         ${PathfindingDir}/LowLevelCBS.hpp
         ${PathfindingDir}/LowLevelCBS.cpp
-        ${PathfindingDir}/_path.hpp
-        ${PathfindingDir}/_path.cpp
+        ${PathfindingDir}/Path.hpp
+        ${PathfindingDir}/Path.cpp
         ${PathfindingDir}/Solution.hpp
         ${PathfindingDir}/Solution.cpp
 
         ${ControllersDir}/TestController.hpp
         ${ControllersDir}/TestController.cpp
 
-        ${PathfindingDir}/Interfaces/Edge.hpp
-        ${PathfindingDir}/Interfaces/Edge.cpp
-        ${PathfindingDir}/Interfaces/Graph.hpp
-        ${PathfindingDir}/Interfaces/Graph.cpp
-        ${PathfindingDir}/Interfaces/MapStructureGraph.hpp
-        ${PathfindingDir}/Interfaces/MapStructureGraph.cpp
-        ${PathfindingDir}/Interfaces/Vertex.hpp
-        ${PathfindingDir}/Interfaces/Vertex.cpp
+        ${PathfindingDir}/Edge.hpp
+        ${PathfindingDir}/Edge.cpp
+        ${PathfindingDir}/Graph.hpp
+        ${PathfindingDir}/Graph.cpp
+        ${PathfindingDir}/MapStructureGraph.hpp
+        ${PathfindingDir}/MapStructureGraph.cpp
+        ${PathfindingDir}/Vertex.hpp
+        ${PathfindingDir}/Vertex.cpp
         ${PathfindingDir}/AgentInfo.hpp
         ${PathfindingDir}/AgentInfo.cpp
         ${PathfindingDir}/Location.hpp

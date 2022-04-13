@@ -5,7 +5,7 @@ class Solution;
 
 #include <vector>
 #include <memory>
-#include "_path.hpp"
+#include "Path.hpp"
 
 class Solution {
   public:

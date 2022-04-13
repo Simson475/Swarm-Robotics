@@ -16,7 +16,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     // }
     // Error::log("Goal is " + agent.getGoal()->toString() + "\n");
     #ifdef EXPERIMENT
-    Logger logger = Logger::get_instance();
+    Logger& logger = Logger::get_instance();
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     #endif
 

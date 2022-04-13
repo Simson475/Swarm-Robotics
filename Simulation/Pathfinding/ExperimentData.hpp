@@ -9,7 +9,7 @@
 #include "AgentInfo.hpp"
 #include "HighLevelCBS.hpp"
 #include "Solution.hpp"
-#include "_path.hpp"
+#include "Path.hpp"
 #include "Action.hpp"
 
 #include "Debugging.hpp"

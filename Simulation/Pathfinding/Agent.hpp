@@ -2,7 +2,7 @@
 #define AGENT_HPP
 class Agent;
 
-#include "_path.hpp"
+#include "Path.hpp"
 #include "point.hpp"
 #include <queue>
 #include "TestController.hpp"
