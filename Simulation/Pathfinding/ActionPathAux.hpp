@@ -11,7 +11,7 @@ class ActionPathAux{
 public:
     ActionPathAux(Action action, float heuristic, std::shared_ptr<ActionPathAux> predecessor);
     ActionPathAux(const ActionPathAux &a);
-    Path getPath();
+    Path getPath() const;
 
     Action action;
     float heuristic;

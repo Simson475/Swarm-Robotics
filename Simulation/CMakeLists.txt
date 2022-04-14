@@ -58,6 +58,8 @@ add_subdirectory(loop_functions)
 
 add_subdirectory(Pathfinding/Tests)
 
+add_subdirectory(Pathfinding/Experiments)
+
 #add_custom_command(OUTPUT run_a_scene.sh POST_BUILD
 #        COMMAND ${CMAKE_COMMAND} -E copy
 #        ../../experiment/runtime_scripts/run_a_scene.sh

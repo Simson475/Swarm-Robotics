@@ -12,7 +12,24 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      * Root.cost = SIC(Root.solution)
      */
     std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>();
-    // std::cout << "initial paths\n";
+    // Set initial constraints to avoid conflicts on initial actions
+    for (auto a : agents){
+        for (auto b : agents){
+            if (a.getId() != b.getId()){
+                auto initialAction = a.getCurrentAction();
+                if (initialAction.isWaitAction()){
+                    // Constraint the initial vertex
+                    root->addConstraint(Constraint(b.getId(), initialAction.getLocation(), initialAction.timestamp, initialAction.timestamp + initialAction.duration + TIME_AT_VERTEX));
+                }
+                else {
+                    // Constraint the edge action and the vertex it arrives at
+                    root->addConstraint(Constraint(b.getId(), initialAction.getLocation(), initialAction.timestamp, initialAction.timestamp + initialAction.duration));
+                    root->addConstraint(Constraint(b.getId(), Location(initialAction.endVertex), initialAction.timestamp, initialAction.timestamp + initialAction.duration + TIME_AT_VERTEX));
+                }
+            }
+        }
+    }
+
     #ifdef EXPERIMENT
     if (Logger::enabled) {
         logger.log("Finding initial paths\n");
@@ -51,22 +68,16 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             (*logger.begin()) << "Constraints: " << p->getConstraints().size() << "\n"; logger.end();
         }
         #endif
-        // Error::log("Popped this solution:\n");
-        // for (auto pa : p->getSolution().paths){
-        //     Error::log(pa.toString() + "\n");
-        // }
-        // std::cout << "Popped this solution:\n";
-        // for (auto pa : p->getSolution().paths){
-        //     std::cout << pa.toString() << "\n";
-        // }
+        #ifdef DEBUG
+        Error::log("Popped this solution:\n");
+        for (auto pa : p->getSolution().paths){
+            Error::log(pa.toString() + "\n");
+        }
+        #endif
         /**
          * Validate the paths in P until a conflict occurs
          */
         std::vector<Conflict> conflicts = p->findConflicts();
-        // Error::log("Found these conflicts:\n");
-        // for (auto conf : conflicts){
-        //     Error::log(conf.toString() + "\n");
-        // }
         /**
          * If P has no conflicts then return P.solution
          */
@@ -82,10 +93,10 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         /**
          * Get one of the conflicts
          */
-        // Conflict &c = conflicts.front();
-        // std::cout << "Finding best conflict..\n";
         Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel);
-        // Error::log(c.toString() + "\n");
+        #ifdef DEBUG
+        Error::log(c.toString() + "\n");
+        #endif
         // std::cout << c.toString() + "\n";
         /**
          * Foreach agent ai in C do
@@ -97,8 +108,6 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              */
             std::shared_ptr<ConstraintTree> a = std::make_shared<ConstraintTree>();//TODO should we connect this to P or is it irrelevant in implementation?
             a->setConstraints(p->getConstraints());
-            //std::cout << c.getLocation().toString() << "<-- get location  get time start-->"<< c.getTimeStart()<< "\n"
-            //<< "Constraints.size: " << a->constraints.size() << "\n";
             Constraint constraint = Constraint(
                 agentId,
                 c.getLocation(),
@@ -120,24 +129,13 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             ){
                 break; // This agent has no way of avoiding the constraint, so it should not be added.
             }
-            // Error::log(constraint.toString() + "\n");
-            // std::cout << constraint.toString() << "\n";
-            // if (agentId == c.getAgentIds()[0]){
-            //     std::cout << "X\n";
-            //     for (auto pa : p->getSolution().paths){
-            //         std::cout << pa.toString() << "\n";
-            //     }
-            // std::cout << constraint.toString() << "\n" << agentId << "\n";
-            // }
             a->addConstraint(constraint);
-            // Error::log("A constraints: \n");
-            // for (auto constr : a->getConstraints()){
-            //     Error::log(constr.toString() + "\n");
-            // }
-            // Error::log("A constraints for agent: \n");
-            // for (auto constr : a->getConstraints(agentId)){
-            //     Error::log(constr.toString() + "\n");
-            // }
+            #ifdef DEBUG
+            Error::log("A constraints for agent: \n");
+            for (auto constr : a->getConstraints(agentId)){
+                Error::log(constr.toString() + "\n");
+            }
+            #endif
             /**
              * A.solution <-- P.solution
              * Update A.solution by invoking low level(ai)
@@ -146,19 +144,19 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             // std::cout << "individual path\n";
             
             Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], a->getConstraints(agentId));
-            //Error::log(newPath.toString() + "\n");
+            #ifdef DEBUG
+            Error::log(newPath.toString() + "\n");
+            #endif
             s.paths[agentId] = newPath;
             a->setSolution(s);
-            //Error::log(a->getSolution().paths[agentId].toString() + "\n");
-            // for (auto pa : a->getSolution().paths){
-            //     std::cout << pa.toString() << "\n";
-            // }
             /**
              * If A.cost < INF then insert A to OPEN
              */
             if (a->getCost() < std::numeric_limits<float>::infinity()) {
                 open.push(a);
-                //Error::log("A was pushed\n");
+                #ifdef DEBUG
+                Error::log("A was pushed\n");
+                #endif
             }
         }
         #ifdef EXPERIMENT

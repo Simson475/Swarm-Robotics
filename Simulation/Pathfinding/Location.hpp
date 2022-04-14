@@ -13,8 +13,8 @@ enum ELocationType{
 class Location {
 public:
     Location(){type=VERTEX_LOCATION;}
-    Location(ELocationType, std::shared_ptr<Vertex>);
-    Location(ELocationType, std::shared_ptr<Edge>);
+    Location(std::shared_ptr<Vertex>);
+    Location(std::shared_ptr<Edge>);
     ELocationType type;
     std::shared_ptr<Edge> edge;
     std::shared_ptr<Vertex> vertex;

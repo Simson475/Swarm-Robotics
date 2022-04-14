@@ -1,8 +1,6 @@
 #ifndef ACTION_HPP
 #define ACTION_HPP
 
-#include "models/map/map_structure.hpp"
-#include "point.hpp"
 #include "Vertex.hpp"
 #include "Location.hpp"
 

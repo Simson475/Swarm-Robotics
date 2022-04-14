@@ -100,15 +100,51 @@
     <distribute>  
       <position method="grid"
                 center="0,10,0"
-                distances="0.3,0.3,0"
-                layout="5,10,1" />
+                distances="2.0,2.0,0"
+                layout="4,1,1" />
       <orientation method="constant" values="-45,0,0" />
-      <entity quantity="2" max_trials="1">
+      <entity quantity="4" max_trials="1">
         <foot-bot id="fb">
           <controller config="fdc" />
         </foot-bot>
       </entity>
     </distribute>
+    <distribute>  
+      <position method="grid"
+                center="0,-10,0"
+                distances="2.0,2.0,0"
+                layout="4,1,1" />
+      <orientation method="constant" values="-45,0,0" />
+      <entity quantity="4" max_trials="1">
+        <foot-bot id="fbc">
+          <controller config="fdc" />
+        </foot-bot>
+      </entity>
+    </distribute>
+    <distribute>  
+      <position method="grid"
+                center="10,0,0"
+                distances="2.0,2.0,0"
+                layout="1,4,1" />
+      <orientation method="constant" values="-45,0,0" />
+      <entity quantity="4" max_trials="1">
+        <foot-bot id="fbd">
+          <controller config="fdc" />
+        </foot-bot>
+      </entity>
+    </distribute>
+    <!-- <distribute>  
+      <position method="grid"
+                center="-10,0,0"
+                distances="2.0,2.0,0"
+                layout="1,4,1" />
+      <orientation method="constant" values="-45,0,0" />
+      <entity quantity="4" max_trials="1">
+        <foot-bot id="fbe">
+          <controller config="fdc" />
+        </foot-bot>
+      </entity>
+    </distribute> -->
 
     <!-- ********************************* -->
     <!-- * Distribution of obstacles * -->

@@ -12,7 +12,7 @@ ActionPathAux::ActionPathAux(const ActionPathAux &a){
     this->predecessor = a.predecessor;
 }
 
-Path ActionPathAux::getPath(){
+Path ActionPathAux::getPath() const{
     Path path{};
     path.actions.emplace(path.actions.begin(), this->action);
     path.cost = this->action.duration;
@@ -40,14 +40,14 @@ bool operator> (const ActionPathAux &a, const ActionPathAux &b){
     float bPriority = b.action.timestamp + b.action.duration + b.heuristic;
     // Use the complete priority if they are not equal, otherwise use the heuristic
     // This avoids a lot of extra states being explores when it might not be necesary
-    return aPriority == bPriority ? a.heuristic > b.heuristic : aPriority > bPriority;
+    return aPriority == bPriority ? (a.heuristic == b.heuristic ? a.getPath().actions.size() > b.getPath().actions.size() : a.heuristic > b.heuristic) : aPriority > bPriority;
 }
 bool operator< (const ActionPathAux &a, const ActionPathAux &b){
     float aPriority = a.action.timestamp + a.action.duration + a.heuristic;
     float bPriority = b.action.timestamp + b.action.duration + b.heuristic;
     // Use the complete priority if they are not equal, otherwise use the heuristic
     // This avoids a lot of extra states being explores when it might not be necesary
-    return aPriority == bPriority ? a.heuristic < b.heuristic : aPriority < bPriority;
+    return aPriority == bPriority ? (a.heuristic == b.heuristic ? a.getPath().actions.size() < b.getPath().actions.size() : a.heuristic < b.heuristic) : aPriority < bPriority;
 }
 
 std::string ActionPathAux::toString(){

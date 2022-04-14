@@ -184,7 +184,7 @@ Conflict ConstraintTree::getEdgeConflict(std::vector<int> conflictAgents, Action
         }
     }
     return Conflict(conflictAgents, cStart, cEnd,
-        Location(ELocationType::EDGE_LOCATION, edge));
+        Location(edge));
 }
 
 /**
@@ -219,7 +219,7 @@ Conflict ConstraintTree::getVertexConflict(std::vector<int> conflictAgents, Acti
         auto conflict = Conflict(
             conflictAgents,
             cStart, cEnd,
-            Location(ELocationType::VERTEX_LOCATION, a1.endVertex));
+            Location(a1.endVertex));
         // Error::log(conflict.toString() + "\n");
         return conflict;
     }
@@ -234,7 +234,7 @@ Conflict ConstraintTree::getVertexConflict(std::vector<int> conflictAgents, Acti
         auto conflict = Conflict(
             conflictAgents,
             cStart, cEnd,
-            Location(ELocationType::VERTEX_LOCATION, a1.endVertex));
+            Location(a1.endVertex));
         // Error::log(conflict.toString() + "\n");
         return conflict;
     }
@@ -247,7 +247,7 @@ Conflict ConstraintTree::getVertexConflict(std::vector<int> conflictAgents, Acti
         auto conflict = Conflict(
             conflictAgents,
             cStart, cEnd,
-            Location(ELocationType::VERTEX_LOCATION, a1.endVertex));
+            Location(a1.endVertex));
         // Error::log(conflict.toString() + "\n");
         return conflict;
     }
@@ -272,7 +272,7 @@ Conflict ConstraintTree::getFollowConflict(std::vector<int> conflictAgents, Acti
     auto conflict = Conflict(
         conflictAgents,
         cStart, cEnd,
-        Location(ELocationType::VERTEX_LOCATION, a2.startVertex));
+        Location(a2.startVertex));
     return conflict;
 }
 
@@ -300,7 +300,7 @@ Conflict ConstraintTree::getSwapConflict(int conflictAgent, Action a1, Action a2
         conflictAgents,
         cStart,
         cEnd,
-        Location(ELocationType::EDGE_LOCATION, edge)
+        Location(edge)
     );
 }
 

@@ -1,12 +1,12 @@
 #include "Location.hpp"
 
-Location::Location(ELocationType type, std::shared_ptr<Vertex> v){
-    this->type = type;
+Location::Location(std::shared_ptr<Vertex> v){
+    this->type = ELocationType::VERTEX_LOCATION;
     this->vertex = v;
 }
 
-Location::Location(ELocationType type, std::shared_ptr<Edge> edge){
-    this->type = type;
+Location::Location(std::shared_ptr<Edge> edge){
+    this->type = ELocationType::EDGE_LOCATION;
     this->edge = edge;
 }
 

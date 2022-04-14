@@ -432,7 +432,7 @@ void HighLevelCBSTests::bottleneck_conflicts_are_complex(){
             agents[i] = AgentInfo(i, Action(0, vertices[i], vertices[i], 0), vertices[chokepointIndex + 1 + i]);
         }
         // Create folder for results
-        std::string experimentResultDir = "chokepoint_define_test";
+        std::string experimentResultDir = "chokepoint";
         mkdir(&experimentResultDir[0], 0777);
 
         std::string experimentResultFile = experimentResultDir + "/" + std::to_string(z) + "agent_analysis.txt";
@@ -657,6 +657,67 @@ void HighLevelCBSTests::divided_connected_bottlenecks_conflicts_are_complex(){
          << "Total high level: " << (HighLevelCBS::get_instance().iterations) << " iterations. "
          << "Expected " << expectedHighLevelIterations << " iterations.\n";
         logger.end();
+
+        std::cout << "Experiment done\n";
+    }
+}
+
+void HighLevelCBSTests::it_can_find_solution_in_simulation_map(){
+    for (int z = 2; z <= 15; z++){
+        std::cout << "Running experiment with " << z << " agents\n";
+        // Arrange
+        // We will construct a graph with a choke point
+        int agentCount = z;
+        // Create vertices
+        int vertexCount = agentCount + 1 + agentCount;
+        std::vector<std::shared_ptr<Vertex>> vertices{(long unsigned int)(vertexCount)};
+        
+        for (int i = 0; i < vertexCount; ++i){
+            vertices[i] = std::make_shared<Vertex>(i);
+        }
+        /// Create edges (one directional)
+        int chokepointIndex = agentCount;
+        // Edges from agent start to chokepoint
+        for (int i = 0; i < agentCount; i++){
+            std::vector<std::shared_ptr<Edge >> edges;
+            edges.emplace_back(std::make_shared<Edge>(vertices[i], vertices[chokepointIndex], 100));
+            // Edges between agent starts
+            if (i - 1 >= 0){
+                edges.emplace_back(std::make_shared<Edge>(vertices[i], vertices[i-1], 3));
+            }
+            if (i + 1 < agentCount){
+                edges.emplace_back(std::make_shared<Edge>(vertices[i], vertices[i+1], 3));
+            }
+            vertices[i]->setEdges(edges);
+        }
+        // Edges from chokepoint to agent goal
+        std::vector<std::shared_ptr<Edge>> edges;
+        for (int i = chokepointIndex + 1; i < vertexCount; i++){
+            edges.emplace_back(std::make_shared<Edge>(vertices[chokepointIndex], vertices[i], 100));
+        }
+        vertices[chokepointIndex]->setEdges(edges);
+
+        auto graph = std::make_shared<Graph>(vertices);
+
+        //AgentInfo(id, action, dest)
+        std::vector<AgentInfo> agents{(long unsigned int)agentCount};
+        for (int i = 0; i < agentCount; ++i){
+            agents[i] = AgentInfo(i, Action(0, vertices[i], vertices[i], 0), vertices[chokepointIndex + 1 + i]);
+        }
+        // Create folder for results
+        std::string experimentResultDir = "simulation_like_situation";
+        mkdir(&experimentResultDir[0], 0777);
+
+        std::string experimentResultFile = experimentResultDir + "/" + std::to_string(z) + "agent_analysis.txt";
+        // Remove any existing results if they exist
+        remove(&experimentResultFile[0]);
+        // Configure the logger
+        Logger::enabled = true;
+        Logger::get_instance().setLogFile(experimentResultFile);
+
+        // Act
+
+        Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
 
         std::cout << "Experiment done\n";
     }
