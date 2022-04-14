@@ -15,6 +15,9 @@
 #include "Debugging.hpp"
 #include "Logger.hpp"
 
+#include "argos3/core/control_interface/ci_controller.h"
+#include "argos3/core/simulator/loop_functions.h"
+
 class ExperimentData{
 public:
     static ExperimentData &get_instance() {
@@ -25,7 +28,8 @@ public:
     std::vector<std::shared_ptr<Agent>> getAgents();
     std::vector<AgentInfo> getAgentsInfo();
     bool requestSolution(int agentId);
-    int getNextStation();
+    int getNextStation(int agentId);
+    float getSimulationTime();
 private:
     std::shared_ptr<Graph> graph;
     std::shared_ptr<MapStructureGraph> mapStructureGraph;
@@ -34,6 +38,9 @@ private:
     int nextStation = 0;
     std::vector<int> stations;
     std::vector<int> getStations();
+    std::vector<int> lastAgentGoals;
+    std::vector<int> getLastAgentGoals();
+    void setLastAgentGoal(int agentId, int goalStation);
 };
 
 #endif

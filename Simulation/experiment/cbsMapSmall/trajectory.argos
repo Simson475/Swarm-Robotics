@@ -98,48 +98,52 @@
     <!-- * Distribution of the foot bots * -->
     <!-- ********************************* -->
     <distribute>  
+      <!-- Left side -->
       <position method="grid"
                 center="0,10,0"
-                distances="2.0,2.0,0"
-                layout="4,1,1" />
+                distances="2.6,2.0,0"
+                layout="5,1,1" />
       <orientation method="constant" values="-45,0,0" />
-      <entity quantity="4" max_trials="1">
+      <entity quantity="5" max_trials="1">
         <foot-bot id="fb">
           <controller config="fdc" />
         </foot-bot>
       </entity>
     </distribute>
+    <!-- Right side -->
     <distribute>  
       <position method="grid"
                 center="0,-10,0"
-                distances="2.0,2.0,0"
-                layout="4,1,1" />
+                distances="2.6,2.0,0"
+                layout="5,1,1" />
       <orientation method="constant" values="-45,0,0" />
-      <entity quantity="4" max_trials="1">
+      <entity quantity="5" max_trials="1">
         <foot-bot id="fbc">
           <controller config="fdc" />
         </foot-bot>
       </entity>
     </distribute>
+    <!-- Top side -->
     <distribute>  
       <position method="grid"
                 center="10,0,0"
-                distances="2.0,2.0,0"
-                layout="1,4,1" />
+                distances="2.0,1.2,0"
+                layout="1,11,1" />
       <orientation method="constant" values="-45,0,0" />
-      <entity quantity="4" max_trials="1">
+      <entity quantity="3" max_trials="1">
         <foot-bot id="fbd">
           <controller config="fdc" />
         </foot-bot>
       </entity>
     </distribute>
+    <!-- Bottom side -->
     <!-- <distribute>  
       <position method="grid"
                 center="-10,0,0"
-                distances="2.0,2.0,0"
-                layout="1,4,1" />
+                distances="2.0,1.2,0"
+                layout="1,11,1" />
       <orientation method="constant" values="-45,0,0" />
-      <entity quantity="4" max_trials="1">
+      <entity quantity="5" max_trials="1">
         <foot-bot id="fbe">
           <controller config="fdc" />
         </foot-bot>

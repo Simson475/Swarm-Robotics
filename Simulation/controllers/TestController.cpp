@@ -4,7 +4,7 @@
 std::vector<int> TestController::constructStationPlan(){    
     // std::cout << "Testing station plan";
     // TestControllers dont have an ID before first call of waypoint plan??
-    return { ExperimentData::get_instance().getNextStation() };
+    return { ExperimentData::get_instance().getNextStation(this->agentId) };
 }
 
 std::vector<int> TestController::constructWaypointPlan(){
@@ -17,10 +17,11 @@ std::vector<int> TestController::constructWaypointPlan(){
     if (ExperimentData::get_instance().requestSolution(agentId)){
         return getNextPointAndUpdateState();
     }
-    
+
     //If we requested a solution, but did not get one, we just wait where we are.
     auto currentVertex = ExperimentData::get_instance().getGraph()->getVertices()[lastLocation];
-    path.actions.push_back(Action(time, currentVertex, currentVertex, 1));
+    // This should only happen at the very first time step before all agents have received a station plan
+    path.actions.push_back(Action(0, currentVertex, currentVertex, 1));
     return getNextPointAndUpdateState();
 }
 
@@ -40,7 +41,9 @@ std::vector<int> TestController::getNextPointAndUpdateState(){
     vec.push_back(action.endVertex->getId());
     
     // Set state depending on the action
-    currentState = (action.startVertex->getId() == action.endVertex->getId()) ? state::waiting : state::moving;
+    if (action.isWaitAction()){
+        startWaiting();
+    }
 
     return vec;
 }
@@ -92,8 +95,9 @@ void TestController::updateCurrentLocation(Action action){
 
 /* Called when current state == waiting */
 void TestController::wait(){
+    waitClock++;
     // If waiting action is over change state to moving so we can get the next action automatically
-    if ((currentAction.timestamp + currentAction.duration) <= time){
+    if (currentAction.duration <= waitClock){
         currentState = state::moving;
         resetWaypointPlan();
     }
@@ -105,6 +109,11 @@ void TestController::setCurrentAction(Action action){
 
 Action TestController::getCurrentAction(){
     return this->currentAction;
+}
+
+void TestController::startWaiting(){
+    waitClock = 0;
+    currentState = state::waiting;
 }
 
 REGISTER_CONTROLLER(TestController, "TestController")

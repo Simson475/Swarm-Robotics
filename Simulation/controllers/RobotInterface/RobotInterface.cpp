@@ -134,7 +134,6 @@ void RobotInterface::Init(argos::TConfigurationNode &t_node) {
  * Controls how it does the jobs, chooses stations and moves.
 */
 void RobotInterface::ControlStep() {
-    time++;
     if (currentState == state::waiting) {
         wait();
     }

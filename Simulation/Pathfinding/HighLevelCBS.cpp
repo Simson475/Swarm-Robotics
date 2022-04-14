@@ -68,7 +68,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             (*logger.begin()) << "Constraints: " << p->getConstraints().size() << "\n"; logger.end();
         }
         #endif
-        #ifdef DEBUG
+        #ifdef DEBUG_LOGS_ON
         Error::log("Popped this solution:\n");
         for (auto pa : p->getSolution().paths){
             Error::log(pa.toString() + "\n");
@@ -94,7 +94,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
          * Get one of the conflicts
          */
         Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel);
-        #ifdef DEBUG
+        #ifdef DEBUG_LOGS_ON
         Error::log(c.toString() + "\n");
         #endif
         // std::cout << c.toString() + "\n";
@@ -130,7 +130,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
                 break; // This agent has no way of avoiding the constraint, so it should not be added.
             }
             a->addConstraint(constraint);
-            #ifdef DEBUG
+            #ifdef DEBUG_LOGS_ON
             Error::log("A constraints for agent: \n");
             for (auto constr : a->getConstraints(agentId)){
                 Error::log(constr.toString() + "\n");
@@ -144,7 +144,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             // std::cout << "individual path\n";
             
             Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], a->getConstraints(agentId));
-            #ifdef DEBUG
+            #ifdef DEBUG_LOGS_ON
             Error::log(newPath.toString() + "\n");
             #endif
             s.paths[agentId] = newPath;
@@ -154,7 +154,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              */
             if (a->getCost() < std::numeric_limits<float>::infinity()) {
                 open.push(a);
-                #ifdef DEBUG
+                #ifdef DEBUG_LOGS_ON
                 Error::log("A was pushed\n");
                 #endif
             }

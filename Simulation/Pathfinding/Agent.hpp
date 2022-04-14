@@ -13,7 +13,6 @@ class Agent;
 class Agent {
   public:
     Agent(int id, TestController* controller);
-    Path getPath();
     void setBot(TestController*);
     TestController* getBot();
     Location getLocation();
@@ -22,8 +21,6 @@ class Agent {
     std::shared_ptr<Vertex> getGoal();
     AgentInfo getAgentInfo();
   private:
-    Path path;
-    std::vector<Point> plan;
     TestController *bot;
     int id;
     Action currentAction;
