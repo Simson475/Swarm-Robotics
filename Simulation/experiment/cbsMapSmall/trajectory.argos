@@ -111,7 +111,7 @@
       </entity>
     </distribute>
     <!-- Right side -->
-    <distribute>  
+    <!-- <distribute>  
       <position method="grid"
                 center="0,-10,0"
                 distances="2.6,2.0,0"
@@ -122,9 +122,9 @@
           <controller config="fdc" />
         </foot-bot>
       </entity>
-    </distribute>
+    </distribute> -->
     <!-- Top side -->
-    <distribute>  
+    <!-- <distribute>  
       <position method="grid"
                 center="10,0,0"
                 distances="2.0,1.2,0"
@@ -135,7 +135,7 @@
           <controller config="fdc" />
         </foot-bot>
       </entity>
-    </distribute>
+    </distribute> -->
     <!-- Bottom side -->
     <!-- <distribute>  
       <position method="grid"
@@ -193,7 +193,7 @@
                       label="CTrajectoryQTUserFunctions" />
 
       <camera>
-        <placement idx="0" position="0,0,30.0" look_at="0.1,0,0" />
+        <placement idx="0" position="0,0,30.0" look_at="0.1,0,0" up="0,1,0" lens_focal_length="35"/>
       </camera>
     </qt-opengl>
 

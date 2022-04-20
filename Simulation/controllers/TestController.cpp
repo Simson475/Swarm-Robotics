@@ -28,7 +28,7 @@ std::vector<int> TestController::constructWaypointPlan(){
 /* PRE: path.actions.size() > 0 */
 std::vector<int> TestController::getNextPointAndUpdateState(){
     std::vector<int> vec;
-    Action action = path.actions.front();
+    Action& action = path.actions.front();
     path.actions.erase(path.actions.begin());
 
     /** Update current action and location to the new action
@@ -104,6 +104,7 @@ void TestController::wait(){
 }
 
 void TestController::setCurrentAction(Action action){
+    action.timestamp = ExperimentData::get_instance().getSimulationTime();
     this->currentAction = action;
 }
 

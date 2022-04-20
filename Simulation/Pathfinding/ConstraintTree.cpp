@@ -49,14 +49,14 @@ std::vector<Conflict> ConstraintTree::findConflicts(){
                 int numActions = p2.actions.size();
                 for (int k = p2Index; k < numActions; ++k){
                     auto a2 = p2.actions[k];
-                    int a1Start = a1.timestamp;
-                    int a1End = a1Start + a1.duration;
-                    int a2Start = a2.timestamp;
-                    int a2End = a1Start + a2.duration;
+                    auto a1Start = a1.timestamp;
+                    auto a1End = a1Start + a1.duration;
+                    auto a2Start = a2.timestamp;
+                    auto a2End = a1Start + a2.duration;
                     if (a2Start > a1End + TIME_AT_VERTEX) { break; }// Skip the remainding actions in p2 since they can't have overlaps
                     if (a1End > a2End) { p2Index++; }// Update p2Index to only start looking at the actions in p2 that can overlap with the next a1
-                    int maxStart = ((a1Start > a2Start) ? a1Start : a2Start);//max start
-                    int minEnd = ((a1End < a2End) ? a1End : a2End);//min end
+                    auto maxStart = ((a1Start > a2Start) ? a1Start : a2Start);//max start
+                    auto minEnd = ((a1End < a2End) ? a1End : a2End);//min end
 
                     // These actions overlap
                     if (maxStart <= minEnd + TIME_AT_VERTEX){
@@ -170,12 +170,12 @@ bool ConstraintTree::isSwapConflict(Action a1, Action a2){
  * @return An edge conflict
  */
 Conflict ConstraintTree::getEdgeConflict(std::vector<int> conflictAgents, Action a1, Action a2){
-    int a1Start = a1.timestamp;
-    int a1End = a1Start + a1.duration;
-    int a2Start = a2.timestamp;
-    int a2End = a1Start + a2.duration;
-    int cStart = ((a1Start > a2Start) ? a1Start : a2Start);//max start
-    int cEnd = ((a1End < a2End) ? a1End : a2End);//min end
+    auto a1Start = a1.timestamp;
+    auto a1End = a1Start + a1.duration;
+    auto a2Start = a2.timestamp;
+    auto a2End = a1Start + a2.duration;
+    auto cStart = ((a1Start > a2Start) ? a1Start : a2Start);//max start
+    auto cEnd = ((a1End < a2End) ? a1End : a2End);//min end
     std::shared_ptr<Edge> edge;
     for (auto e : a1.startVertex->getEdges()){
         if (e->getEndVertex() == a2.endVertex){
@@ -183,8 +183,7 @@ Conflict ConstraintTree::getEdgeConflict(std::vector<int> conflictAgents, Action
             break;
         }
     }
-    return Conflict(conflictAgents, cStart, cEnd,
-        Location(edge));
+    return Conflict(conflictAgents, cStart, cEnd, Location(edge), "Edge");
 }
 
 /**
@@ -200,10 +199,10 @@ Conflict ConstraintTree::getVertexConflict(std::vector<int> conflictAgents, Acti
     // Case 1: Both agents are moving to the same vertex
     // Case 2: An agent is moving to a vertex an agent is waiting on
     // Case 3: Both are waiting on the same vertex
-    float a1Start = a1.timestamp;
-    float a2Start = a2.timestamp;
-    float a1End = a1.timestamp + a1.duration;
-    float a2End = a2.timestamp + a2.duration;
+    auto a1Start = a1.timestamp;
+    auto a2Start = a2.timestamp;
+    auto a1End = a1.timestamp + a1.duration;
+    auto a2End = a2.timestamp + a2.duration;
     float cStart, cEnd;
     
     bool arriveAtSameTime = a1.endVertex == a2.endVertex && (arriveWithinDelta(a1, a2) || arriveWithinDelta(a2, a1))
@@ -219,23 +218,37 @@ Conflict ConstraintTree::getVertexConflict(std::vector<int> conflictAgents, Acti
         auto conflict = Conflict(
             conflictAgents,
             cStart, cEnd,
-            Location(a1.endVertex));
+            Location(a1.endVertex),
+            "Vertex (Arrive at same time)");
         // Error::log(conflict.toString() + "\n");
         return conflict;
     }
-    else if ((a1w && !a2w) || (!a1w && a2w)){ //case2 (an agent is moving to a vertex and agent is waiting on)
+    else if ((a1w && !a2w) || (!a1w && a2w)){ //case2 (an agent is moving to a vertex an agent is waiting on)
         // Error::log("One waits\n");
-        // Error::log(a1.toString() + "\n");
-        // Error::log(a2.toString() + "\n");
-        cStart = a1.isWaitAction() ? a2End : a1End;// arrival time of moving action
-        float endOfWait = (a1.isWaitAction() ? a1End : a2End) + TIME_AT_VERTEX;//end of the wait action + delta
-        float endOfMove = cStart + TIME_AT_VERTEX;
+        Error::log(a1.toString() + "\n");
+        Error::log(a2.toString() + "\n");
+        // case 1 ()
+        //------ move action (a1)
+        //   ----- wait action (a2)
+
+        // case 2 ()
+        //------ move action (a1)
+        //       ----- wait action (a2)
+
+        // case 3 ()
+        //------ move action (a1)
+        //----- wait action (a2)
+        cStart = a1.isWaitAction() ? std::max(a2End, a1Start) : std::max(a1End, a2Start);// arrival time of moving action
+        auto endOfWait = (a1.isWaitAction() ? a1End : a2End) + TIME_AT_VERTEX;//end of the wait action + delta
+        auto endOfMove = (a1.isWaitAction() ? a2End : a1End) + TIME_AT_VERTEX;
         cEnd = std::min(endOfWait, endOfMove);
+
         auto conflict = Conflict(
             conflictAgents,
             cStart, cEnd,
-            Location(a1.endVertex));
-        // Error::log(conflict.toString() + "\n");
+            Location(a1.endVertex),
+            "Vertex (Move to wait vertex)");
+        Error::log(conflict.toString() + "\n");
         return conflict;
     }
     else{//case3 (both are waiting)
@@ -247,7 +260,8 @@ Conflict ConstraintTree::getVertexConflict(std::vector<int> conflictAgents, Acti
         auto conflict = Conflict(
             conflictAgents,
             cStart, cEnd,
-            Location(a1.endVertex));
+            Location(a1.endVertex),
+            "Vertex (both waiting)");
         // Error::log(conflict.toString() + "\n");
         return conflict;
     }
@@ -262,17 +276,18 @@ Conflict ConstraintTree::getVertexConflict(std::vector<int> conflictAgents, Acti
  * @return A vertex conflict
  */
 Conflict ConstraintTree::getFollowConflict(std::vector<int> conflictAgents, Action a1, Action a2){
-    float a1Start = a1.timestamp;
-    float a2Start = a2.timestamp;
-    float a1End = a1.timestamp + a1.duration;
-    float a2End = a2.timestamp + a2.duration;
-    float cStart = std::max(a1Start, a2Start);//max start time
-    float cEnd = std::min(a1End, a2End) + TIME_AT_VERTEX;//min end time + delta
+    auto a1Start = a1.timestamp;
+    auto a2Start = a2.timestamp;
+    auto a1End = a1.timestamp + a1.duration;
+    auto a2End = a2.timestamp + a2.duration;
+    auto cStart = std::max(a1Start, a2Start);//max start time
+    auto cEnd = std::min(a1End, a2End) + TIME_AT_VERTEX;//min end time + delta
 
     auto conflict = Conflict(
         conflictAgents,
         cStart, cEnd,
-        Location(a2.startVertex));
+        Location(a2.startVertex),
+        "Follow");
     return conflict;
 }
 
@@ -288,29 +303,30 @@ Conflict ConstraintTree::getSwapConflict(int conflictAgent, Action a1, Action a2
     // Conflict agents
     std::vector<int> conflictAgents = { conflictAgent };
     // Conflict timespan
-    int a1Start = a1.timestamp;
-    int a1End = a1Start + a1.duration;
-    int a2Start = a2.timestamp;
-    int a2End = a2Start + a2.duration;
-    float cStart = std::max(a1Start, a2Start);//max start time
-    float cEnd = std::min(a1End, a2End);//min end time
+    auto a1Start = a1.timestamp;
+    auto a1End = a1Start + a1.duration;
+    auto a2Start = a2.timestamp;
+    auto a2End = a2Start + a2.duration;
+    auto cStart = std::max(a1Start, a2Start);//max start time
+    auto cEnd = std::min(a1End, a2End);//min end time
     // Conflict location
     auto edge = a1.startVertex->getEdge(a1.endVertex);
     return Conflict(
         conflictAgents,
         cStart,
         cEnd,
-        Location(edge)
+        Location(edge),
+        "Swap"
     );
 }
 
 bool ConstraintTree::actionsOverlap(Action a1, Action a2){
-    int a1Start = a1.timestamp;
-    int a1End = a1Start + a1.duration;
-    int a2Start = a2.timestamp;
-    int a2End = a2Start + a2.duration;
-    int maxStart = std::max(a1Start, a2Start);//max start
-    int minEnd = std::min(a1End, a2End);//min end
+    auto a1Start = a1.timestamp;
+    auto a1End = a1Start + a1.duration;
+    auto a2Start = a2.timestamp;
+    auto a2End = a2Start + a2.duration;
+    auto maxStart = std::max(a1Start, a2Start);//max start
+    auto minEnd = std::min(a1End, a2End);//min end
     return maxStart <= minEnd;
 }
 
@@ -322,10 +338,10 @@ bool ConstraintTree::actionsOverlap(Action a1, Action a2){
  * @return true|false
  */
 bool ConstraintTree::arriveWithinDelta(Action a1, Action a2){
-    float a1Start = a1.timestamp;
-    float a1End = a1Start + a1.duration;
-    float a2Start = a2.timestamp;
-    float a2End = a2Start + a2.duration;
+    auto a1Start = a1.timestamp;
+    auto a1End = a1Start + a1.duration;
+    auto a2Start = a2.timestamp;
+    auto a2End = a2Start + a2.duration;
     
     return (a1End + TIME_AT_VERTEX >= a2End && a1End <= a2End + TIME_AT_VERTEX);
 }
@@ -338,12 +354,23 @@ bool ConstraintTree::arriveWithinDelta(Action a1, Action a2){
  * @return true|false
  */
 bool ConstraintTree::arriveWithinActionAndDelta(Action a1, Action a2){
-    int a1Start = a1.timestamp;
-    int a1End = a1Start + a1.duration;
-    int a2Start = a2.timestamp;
-    int a2End = a2Start + a2.duration;
+    auto a1Start = a1.timestamp;
+    auto a1End = a1Start + a1.duration;
+    auto a2Start = a2.timestamp;
+    auto a2End = a2Start + a2.duration;
     
-    return (a1End >= a2Start && a1End <= a2End + TIME_AT_VERTEX);
+    // case 1 (true)
+    //------ move action (a1)
+    //   ----- wait action (a2)
+
+    // case 2 (true)
+    //------ move action (a1)
+    //       ----- wait action (a2)
+
+    // case 3 (true)
+    //------ move action (a1)
+    //----- wait action (a2)
+    return (a1End + TIME_AT_VERTEX >= a2Start && a1End <= a2End + TIME_AT_VERTEX);
 }
 
 std::vector<Constraint> ConstraintTree::getConstraints(int agentId){
@@ -370,11 +397,11 @@ void ConstraintTree::addConstraint(Constraint constraint){
         if (c.location == constraint.location
             && c.agentId == constraint.agentId
         ){
-            float maxStart = std::max(constraint.timeStart, c.timeStart);
-            float minEnd = std::min(constraint.timeEnd, c.timeEnd);
+            auto maxStart = std::max(constraint.timeStart, c.timeStart);
+            auto minEnd = std::min(constraint.timeEnd, c.timeEnd);
             if (maxStart <= minEnd){
-                float minStart = std::min(constraint.timeStart, c.timeStart);
-                float maxEnd = std::max(constraint.timeEnd, c.timeEnd);
+                auto minStart = std::min(constraint.timeStart, c.timeStart);
+                auto maxEnd = std::max(constraint.timeEnd, c.timeEnd);
                 this->constraints.erase(iterator);
                 this->constraints.push_back(Constraint(c.agentId, c.location, minStart, maxEnd));
                 addedConstraint = true;

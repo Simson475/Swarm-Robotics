@@ -72,7 +72,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
             if (graph->heuristicCost(goal, action.endVertex) > timeLimit){
                 continue;
             }
-            // If the action is a wait action, update the reachable vertices
+            // // If the action is a wait action, update the reachable vertices
             // if (action.isWaitAction()){
             //     //float timeToGoal = action.duration + graph->heuristicCost(action.endVertex, goal);
             //     float newTimeLimit = graph->heuristicCost(goal, action.startVertex);
@@ -123,8 +123,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
             priorityQueue.push(aux);
         }
     }
-    Error::log("ERROR: No path could be found\n");
-    exit(1);
+    throw std::string("No path could be found\n");
 }
 
 std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Constraint> constraints){

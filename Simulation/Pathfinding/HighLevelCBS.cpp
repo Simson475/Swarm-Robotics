@@ -93,7 +93,8 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         /**
          * Get one of the conflicts
          */
-        Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel);
+        //Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel);
+        Conflict c = conflicts.front();
         #ifdef DEBUG_LOGS_ON
         Error::log(c.toString() + "\n");
         #endif
@@ -123,11 +124,14 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             bool constraintIsOnInitialEdgeAction = ! currentAgentAction.isWaitAction()
              && constraint.location == currentAgentAction.getLocation();
             bool constraintIsBeforeActionEnds = constraint.timeStart <= (currentAgentAction.timestamp + currentAgentAction.duration);
+            bool constraintIsOnStartVertex = constraint.location == currentAgentAction.startVertex;
 
             if ((constraintIsOnInitialWaitAction && constraintIsBeforeDeltaAfterAction)
-             || ((constraintIsOnInitialEdgeAction && constraintIsBeforeActionEnds) || (constraintIsOnEndVertex && constraintIsBeforeDeltaAfterAction))
+             || (constraintIsOnInitialEdgeAction && constraintIsBeforeActionEnds)
+             || (constraintIsOnEndVertex && constraintIsBeforeDeltaAfterAction)
+             || (constraintIsOnStartVertex && constraintIsBeforeActionEnds)
             ){
-                break; // This agent has no way of avoiding the constraint, so it should not be added.
+                continue; // This agent has no way of avoiding the constraint, so it should not be added.
             }
             a->addConstraint(constraint);
             #ifdef DEBUG_LOGS_ON
@@ -142,12 +146,20 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              */
             Solution s = p->getSolution();
             // std::cout << "individual path\n";
+            try {
+                Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], a->getConstraints(agentId));
+                #ifdef DEBUG_LOGS_ON
+                Error::log(newPath.toString() + "\n");
+                #endif
+                s.paths[agentId] = newPath;
+            }
+            catch (std::string exception){
+                #ifdef DEBUG_LOGS_ON
+                Error::log(exception);
+                #endif
+                continue;
+            }
             
-            Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], a->getConstraints(agentId));
-            #ifdef DEBUG_LOGS_ON
-            Error::log(newPath.toString() + "\n");
-            #endif
-            s.paths[agentId] = newPath;
             a->setSolution(s);
             /**
              * If A.cost < INF then insert A to OPEN

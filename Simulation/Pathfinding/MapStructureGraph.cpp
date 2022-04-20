@@ -11,13 +11,15 @@ MapStructureGraph::MapStructureGraph(Map_Structure& map){
         if (point.getType() == 2){
             stations.push_back(id);
         }
+
+        Error::log(vertices[id]->toString() + "(" + std::to_string(point.GetX()) + "," + std::to_string(point.GetY()) + ")\n");
     }
     this->vertices = vertices;
 
     // All edges
     size_t lineCount = map.lines.size();
     std::vector<std::vector<std::shared_ptr<Edge>>> edges{lineCount};
-    float robotSpeed = 0.05;
+    float robotSpeed = 0.061;
     for (Line line : map.lines){
         if (line.GetDistance() <= 0) { continue; }
         if ( ! (line.Geta().getId() < 4 || line.Getb().getId() < 4)){

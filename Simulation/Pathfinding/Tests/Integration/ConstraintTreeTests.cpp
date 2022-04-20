@@ -230,7 +230,7 @@ void ConstraintTreeTests::it_can_find_vertex_conflicts_moves_to_vertex_occupied_
     assert(conflicts1.size() == 1);
     assert(conflicts2.size() == 1);
     assert(conflicts3.size() == 1);
-
+std::cout << conflicts2[0].toString() << "\n";
     assert(conflicts1[0].getTimeStart() == 100);
     assert(conflicts1[0].getTimeEnd() == 100 + TIME_AT_VERTEX);
 
@@ -239,6 +239,31 @@ void ConstraintTreeTests::it_can_find_vertex_conflicts_moves_to_vertex_occupied_
 
     assert(conflicts3[0].getTimeStart() == 100 + TIME_AT_VERTEX / 2);
     assert(conflicts3[0].getTimeEnd() == 100 + TIME_AT_VERTEX);
+}
+
+void ConstraintTreeTests::it_does_not_find_vertex_conflict(){
+    // Arrange
+    ConstraintTree ct1;
+    Solution solution;
+    Path p1, p2;
+    auto v1 = std::make_shared<Vertex>(0);
+    auto v2 = std::make_shared<Vertex>(1);
+    // Arrive exactly at same time
+    p1.actions = {
+        //Action(9, v1, v2, 61-9),
+        Action(9.000004, v1, v2, 61-9.000004),
+    };
+    p2.actions = {
+        Action(0, v2, v2, 10),
+    };
+    solution.paths = { p1, p2 };
+    ct1.setSolution(solution);
+
+    // Act
+    auto conflicts1 = ct1.findConflicts();
+
+    // Assert
+    assert(conflicts1.size() == 0);
 }
 
 void ConstraintTreeTests::it_gets_sorted_in_priority_queue(){

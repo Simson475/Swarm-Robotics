@@ -11,7 +11,7 @@ class Conflict
 {
 public:
     //TODO can any of the constructors/destructors be pruned
-    Conflict(std::vector<int> agentIds, float timeStart, float timeEnd, Location location);
+    Conflict(std::vector<int> agentIds, float timeStart, float timeEnd, Location location, std::string type);
     Conflict() = default;
     Conflict(Conflict*);
     Conflict(const Conflict&);
@@ -28,6 +28,7 @@ private:
     float timeStart;
     float timeEnd;
     Location location;
+    std::string type;
 };
 
 #endif

@@ -38,17 +38,11 @@ bool ExperimentData::requestSolution(int agentId){
     auto agentInfos = getAgentsInfo();
 
     for (auto a1 : agentInfos){
-        Error::log("Agent" + std::to_string(a1.getId()) + "\n");
-        Error::log(std::to_string(getAgents().size()) + "\n");
-        Error::log(std::to_string(agentInfos.size()) + "\n");
+        // Error::log("Agent" + std::to_string(a1.getId()) + "\n");
+        // Error::log(std::to_string(getAgents().size()) + "\n");
+        // Error::log(std::to_string(agentInfos.size()) + "\n");
         Error::log("Agent" + std::to_string(a1.getId()) + ": " + getGraph()->getVertices()[getAgents()[a1.getId()]->getBot()->getLastLocation()]->toString() + " --> " + a1.getGoal()->toString() + "\n");
     }
-    Error::log("..\n");
-    Error::log("Heuristic cost between starting points is "
-     + std::to_string(getGraph()->heuristicCost(
-         getGraph()->getVertices()[37],
-         getGraph()->getVertices()[38]))
-     + "\n");
 
     Solution solution = HighLevelCBS::get_instance()
         .findSolution(getGraph(), agentInfos, LowLevelCBS::get_instance());
@@ -60,8 +54,19 @@ bool ExperimentData::requestSolution(int agentId){
 }
 
 void ExperimentData::distributeSolution(Solution solution){
+    // auto agents = getAgents();
+    // auto vertices = this->getGraph()->getVertices();
+    // Path p1, p2;
+    // p1.actions = { Action(0, vertices[38], vertices[39], 80), Action(80, vertices[39], vertices[42], 24) };
+    // p2.actions = { Action(0, vertices[37], vertices[37], 50), Action(50, vertices[37], vertices[38], 51.999996), Action(51.999996, vertices[38], vertices[38], 100) };
+    // agents[0]->getBot()->setPath(p2);
+    // agents[1]->getBot()->setPath(p1);
     for (auto agent : getAgents()){
-        agent->getBot()->setPath(solution.paths[agent->getId()]);
+        // Remove the inserted TIME_AT_GOAL duration wait action
+        auto path = solution.paths[agent->getId()];
+        path.actions.erase(path.actions.end());
+        // Set path
+        agent->getBot()->setPath(path);
     }
 }
 

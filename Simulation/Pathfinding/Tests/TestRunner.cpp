@@ -19,8 +19,8 @@ int main (int argc, char *argv[]) {
     // ActionPathAuxTests().run();
     // GraphTests().run();
     // LowLevelCBSTests().run();
-    // ConstraintTreeTests().run();
-    HighLevelCBSTests().run();
+    ConstraintTreeTests().run();
+    // HighLevelCBSTests().run();
     //NEXT_TEST_RUNNER
     // The above line should not be edited or deleted
 
