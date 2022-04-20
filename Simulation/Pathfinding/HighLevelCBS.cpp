@@ -207,7 +207,7 @@ Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std
             auto constraints = node->getConstraints(agentId);
             constraints.push_back(constraint);
             // Get the new path from low level so we can see if the cost increases
-            int currentCost = solution.paths[agentId].cost;
+            float currentCost = solution.paths[agentId].cost;
             Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], constraints);
             bool increasesCost = newPath.cost > currentCost;
 
