@@ -123,8 +123,6 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
     for (auto edge : edges){
         bool edgeIsPossible = true;
         for (Constraint &constraint : constraints){
-            // Error::log("C: " + constraint.toString() + "\n");
-            // Error::log("E: " + std::to_string(currentTime) + " --> " + std::to_string(currentTime + edge->getCost()) + "\n");
             // Edge constraints
             if (isViolatingConstraint(constraint, edge, currentTime)){
                 minWaitTime = std::min(minWaitTime, constraint.timeEnd + DELTA);
@@ -134,7 +132,6 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
 
             // Vertex constraints
             if (isViolatingConstraint(constraint, edge->getEndVertex(), currentTime + edge->getCost(), currentTime + edge->getCost() + TIME_AT_VERTEX)){
-                // Error::log("Violated!\n");
                 minWaitTime = std::min(minWaitTime, constraint.timeEnd - (currentTime + edge->getCost()) + DELTA);
                 edgeIsPossible = false;
                 continue;
