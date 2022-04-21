@@ -6,13 +6,14 @@ MapStructureGraph::MapStructureGraph(Map_Structure& map){
     std::vector<std::shared_ptr<Vertex>> vertices{pointCount};
     for (Point point : map.points){
         int id = point.getId();
-        vertices[id] = std::make_shared<Vertex>(id);//TODO params for constructor
+        vertices[id] = std::make_shared<Vertex>(id);
 
         if (point.getType() == 2){
             stations.push_back(id);
         }
-
+        #ifdef DEBUG_LOGS_ON
         Error::log(vertices[id]->toString() + "(" + std::to_string(point.GetX()) + "," + std::to_string(point.GetY()) + ")\n");
+        #endif
     }
     this->vertices = vertices;
 
@@ -37,7 +38,9 @@ MapStructureGraph::MapStructureGraph(Map_Structure& map){
             line.GetDistance() / robotSpeed
         ));
         edges[a].push_back(edge);
+        #ifdef DEBUG_LOGS_ON
         Error::log(edge->toString() + " " + std::to_string(edge->getCost()) + "\n");
+        #endif
     }
     this->edges = edges;
 
