@@ -315,12 +315,6 @@ void ConstraintTreeTests::it_gets_sorted_in_priority_queue(){
         if (i == 2){ assert(top == ct3);}
         i++;
     }
-    // assert(pq.top() == ct1);
-    // pq.pop();
-    // assert(pq.top() == ct2);
-    // pq.pop();
-    // assert(pq.top() == ct3);
-    // pq.pop();
 }
 
 void ConstraintTreeTests::it_is_vertex_conflict(){
