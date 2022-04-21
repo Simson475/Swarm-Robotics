@@ -9,12 +9,6 @@
  * @return Path 
  */
 Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agent, std::vector<Constraint> constraints){
-    // Error::log("Agent" + std::to_string(agent.getId()) + "\n");
-    // Error::log("A constraints for agent: \n");
-    // for (auto constr : constraints){
-    //     Error::log(constr.toString() + "\n");
-    // }
-    // Error::log("Goal is " + agent.getGoal()->toString() + "\n");
     #ifdef EXPERIMENT
     Logger& logger = Logger::get_instance();
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -23,8 +17,6 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     std::shared_ptr<Vertex> u;
     Action firstAction = agent.getCurrentAction();
     std::shared_ptr<Vertex> goal = agent.getGoal();
-
-    float timeLimit = std::numeric_limits<float>::infinity();
 
     // Compute path from after the current action
     std::priority_queue<ActionPathAux, std::vector<ActionPathAux>, std::greater<ActionPathAux>> priorityQueue{};
@@ -44,7 +36,6 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
         // Next action
         auto top = priorityQueue.top(); priorityQueue.pop();
         u = top.action.endVertex;
-        // Error::log("Top action: " + top.action.toString() + "\n");
 
         if (this->iterations > 5000000){
             this->totalIterations += this->iterations;
@@ -61,24 +52,13 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
             }
             #endif
             // Return the path, we have found a path that violates no constraints.
-            // Error::log(top.getPath().toString() + "\n");;
             return top.getPath();
         }
 
         // Expand frontier
         std::vector<Action> possibleActions = getPossibleActions(u, constraints, top.action.timestamp + top.action.duration);
         for (Action action : possibleActions){
-            // If the actions end is not reachable skip it
-            if (graph->heuristicCost(goal, action.endVertex) > timeLimit){
-                continue;
-            }
-            // // If the action is a wait action, update the reachable vertices
-            // if (action.isWaitAction()){
-            //     //float timeToGoal = action.duration + graph->heuristicCost(action.endVertex, goal);
-            //     float newTimeLimit = graph->heuristicCost(goal, action.startVertex);
-            //     timeLimit = std::min(timeLimit, newTimeLimit);
-            // }
-            // Check if we have already visited the vertex the action is taking us to
+            // Check if we have already visited the vertex (at the given time) the action is taking us to
             // Checking end vertices will cover both wait and edge actions.
             bool visited = false;
             for (float t : vertexVisits[action.endVertex->getId()]){
@@ -99,7 +79,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
             //     }
             // }
             // bool hasConstraint = false;
-            // for (Constraint &constraint : constraints){//TODO if this is too slow, we can extract the relevant constraints before
+            // for (Constraint &constraint : constraints){
             //     // If there is a constraint for the agent at the actions end vertex
             //     if (constraint.location.type == ELocationType::VERTEX_LOCATION
             //      && constraint.location.vertex == action.endVertex
@@ -118,7 +98,6 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
                 graph->heuristicCost(action.endVertex, goal),
                 std::make_shared<ActionPathAux>(top)
             );
-            // Error::log("aux: " + aux.toString() + "\n");
 
             priorityQueue.push(aux);
         }
