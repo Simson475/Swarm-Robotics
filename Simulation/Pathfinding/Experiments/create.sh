@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 
 # Add the executable to CMakeList.txt
 replaceLineExperimentExe="#NEXT_EXPERIMENT_EXECUTABLE"
-sed "s/$replaceLineExperimentExe/add_executable($1_experiment \${PathfindingFiles})\n$replaceLineExperimentExe/" < "CMakeLists.txt" > "TempCMakeLists.txt"
+sed "s/$replaceLineExperimentExe/add_executable($1_experiment .\/Experiments\/$1.cpp \${PathfindingFiles})\n$replaceLineExperimentExe/" < "CMakeLists.txt" > "TempCMakeLists.txt"
 
 # Add the command to move the executable to external/bin
 replaceLineMoveCommand="#NEXT_EXPERIMENT_MOVE_COMMAND"

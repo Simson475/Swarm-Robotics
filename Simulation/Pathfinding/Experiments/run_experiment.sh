@@ -1,18 +1,21 @@
 #!/bin/bash
 
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
 # $1 is the name of the experiment
-if [ ! $# -eq 1 ]
-then
-echo "Missing arguments. Expected format is:"
-echo "./run_experiment.sh EXPERIMENT_NAME"
-exit 0
-fi
-
-# If the experiment exists
-if [ -f "./$1" ]
-then
-echo "Experiment does not exists"
-exit 0
-fi
-
-./$1 
+while read experiment
+do
+    if [ ! $experiment = "run_experiment.sh" ]
+    then
+        echo -e "${GREEN}>>> Running $experiment <<<${NC}"
+        # If the experiment exists
+        if [ ! -f "./$experiment" ]
+        then
+        echo "Experiment does not exists ($experiment)"
+        exit 0
+        fi
+        # Run the experiment
+        ./$experiment
+    fi
+done

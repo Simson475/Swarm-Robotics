@@ -13,7 +13,6 @@ class LowLevelCBS;
 #include "Location.hpp"
 #include "Constraint.hpp"
 #include "ActionPathAux.hpp"
-#include "BackwardsActionPathAux.hpp"
 #include "Vertex.hpp"
 #include "Graph.hpp"
 #include "ConstraintTree.hpp"
