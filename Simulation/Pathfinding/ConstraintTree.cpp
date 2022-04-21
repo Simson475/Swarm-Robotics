@@ -148,7 +148,7 @@ bool ConstraintTree::isFollowConflict(Action a1, Action a2){ //TODO Should this 
  * @param a2 
  * @return true|false 
  */
-bool ConstraintTree::isSwapConflict(Action a1, Action a2){ //TODO Should this be checked the other way around?
+bool ConstraintTree::isSwapConflict(Action a1, Action a2){
     return a1.startVertex == a2.endVertex && a2.startVertex == a1.endVertex && a1.startVertex != a2.startVertex && actionsOverlap(a1, a2);
 }
 
