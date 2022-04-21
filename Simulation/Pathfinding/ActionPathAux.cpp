@@ -23,7 +23,7 @@ Path ActionPathAux::getPath() const{
         predecessor = predecessor->predecessor;
     }
     // Add a wait action at the end which is the work time
-    path.actions.push_back(Action(path.cost, this->action.endVertex, this->action.endVertex, TIME_AT_GOAL));//TODO good value?
+    path.actions.push_back(Action(path.cost, this->action.endVertex, this->action.endVertex, TIME_AT_GOAL));
     path.cost += TIME_AT_GOAL;
     return path;
 }
@@ -39,6 +39,7 @@ bool operator> (const ActionPathAux &a, const ActionPathAux &b){
     float aPriority = a.action.timestamp + a.action.duration + a.heuristic;
     float bPriority = b.action.timestamp + b.action.duration + b.heuristic;
     // Use the complete priority if they are not equal, otherwise use the heuristic
+    // If the heuristics are equal, compare number of actions in the path
     // This avoids a lot of extra states being explores when it might not be necesary
     return aPriority == bPriority ? (a.heuristic == b.heuristic ? a.getPath().actions.size() > b.getPath().actions.size() : a.heuristic > b.heuristic) : aPriority > bPriority;
 }
@@ -46,6 +47,7 @@ bool operator< (const ActionPathAux &a, const ActionPathAux &b){
     float aPriority = a.action.timestamp + a.action.duration + a.heuristic;
     float bPriority = b.action.timestamp + b.action.duration + b.heuristic;
     // Use the complete priority if they are not equal, otherwise use the heuristic
+    // If the heuristics are equal, compare number of actions in the path
     // This avoids a lot of extra states being explores when it might not be necesary
     return aPriority == bPriority ? (a.heuristic == b.heuristic ? a.getPath().actions.size() < b.getPath().actions.size() : a.heuristic < b.heuristic) : aPriority < bPriority;
 }

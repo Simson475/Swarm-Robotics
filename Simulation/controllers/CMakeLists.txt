@@ -27,8 +27,6 @@ set(PathfindingFiles
         ${PathfindingDir}/Action.cpp
         ${PathfindingDir}/ActionPathAux.hpp
         ${PathfindingDir}/ActionPathAux.cpp
-        ${PathfindingDir}/BackwardsActionPathAux.hpp
-        ${PathfindingDir}/BackwardsActionPathAux.cpp
         ${PathfindingDir}/ExperimentData.hpp
         ${PathfindingDir}/ExperimentData.cpp
         ${PathfindingDir}/Agent.hpp

@@ -5,10 +5,7 @@ Agent::Agent(int id, TestController* controller){
     this->bot = controller;
     controller->setAgentId(id);
     auto initVertex = ExperimentData::get_instance().getGraph()->getVertices()[controller->getLastLocation()];
-    this->getBot()->setCurrentAction(Action(0, initVertex, initVertex, 10));
-    // Path path;
-    // path.actions = {this->getCurrentAction()};
-    // this->getBot()->setPath(path);
+    this->getBot()->setCurrentAction(Action(0, initVertex, initVertex, 0));
 }
 
 void Agent::setBot(TestController* bot){

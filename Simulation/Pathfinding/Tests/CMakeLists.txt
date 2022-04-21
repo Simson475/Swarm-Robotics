@@ -18,8 +18,6 @@ set(PathfindingFiles
     ${PathfindingDir}/Action.cpp
     ${PathfindingDir}/ActionPathAux.hpp
     ${PathfindingDir}/ActionPathAux.cpp
-    ${PathfindingDir}/BackwardsActionPathAux.hpp
-    ${PathfindingDir}/BackwardsActionPathAux.cpp
     ${PathfindingDir}/AgentInfo.hpp
     ${PathfindingDir}/AgentInfo.cpp
     ${PathfindingDir}/Constraint.hpp
