@@ -4,7 +4,6 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     #ifdef EXPERIMENT
     Logger& logger = Logger::get_instance();
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    Error::log("Test\n");
     #endif
     /**
      * Root.constraints = {}
@@ -95,7 +94,6 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
          */
         Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel);
         // Conflict c = conflicts.front();
-        Error::log("Best conflict done\n");
         #ifdef DEBUG_LOGS_ON
         Error::log(c.toString() + "\n");
         #endif
@@ -190,7 +188,6 @@ Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std
 
     std::vector<Conflict> semiCardinalConflicts;
     for (auto c : conflicts){
-        Error::log(c.toString() + "\n");
         // Make a copy of the solution
         auto solution = node->getSolution();
         // It is a cardinal conflict if adding any of the constraints derived from the conflict
@@ -203,14 +200,12 @@ Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std
         for (int i = 0; i < agentCount; ++i){
             int agentId = agentIds[i];
             // Get the derived constraint for the current agent from the conflict
-            Error::log("agentid " + std::to_string(agentId) + "\n");
             Constraint constraint = Constraint(
                 agentId,
                 c.getLocation(i),
                 c.getTimeStart() - 1,
                 c.getTimeEnd() + 1
             );
-            Error::log(constraint.location.toString() + "\n");
             // Get a container of the current constraints union the new constraint
             auto constraints = node->getConstraints(agentId);
             constraints.push_back(constraint);
@@ -230,7 +225,7 @@ Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std
                     }
                 }
             }catch(std::string exception){
-                Error::log("SHIT GOES DOWN YO\n");
+                continue;
             }
         }
     }
