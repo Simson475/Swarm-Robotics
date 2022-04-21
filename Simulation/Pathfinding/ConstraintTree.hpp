@@ -10,12 +10,11 @@ class ConstraintTree;
 #include "AgentInfo.hpp"
 #include "GLOBALS.hpp"
 
-class ConstraintTree : public std::enable_shared_from_this<ConstraintTree> {
+class ConstraintTree {
 public:
     /* Tree elements */
     std::shared_ptr<ConstraintTree> getParent();
     void setChildren(std::vector<std::shared_ptr<ConstraintTree>> children);
-    std::shared_ptr<ConstraintTree> getLowestCostNode();
 
     /* More CBS specific */
     Solution getSolution();
@@ -43,8 +42,8 @@ private:
     Solution solution;
     std::vector<std::shared_ptr<Conflict>> conflicts;
     bool actionsOverlap(Action a1, Action a2);
-    bool arriveWithinDelta(Action a1, Action a2);
-    bool arriveWithinActionAndDelta(Action a1, Action a2);
+    bool arriveWithinTimeAtVertex(Action a1, Action a2);
+    bool arriveWithinActionAndTimeAtVertex(Action a1, Action a2);
     std::vector<Constraint> constraints;
 };
 

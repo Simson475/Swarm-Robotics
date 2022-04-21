@@ -13,5 +13,8 @@ std::string Constraint::toString() const {
 }
 
 bool Constraint::operator==(const Constraint& other){
-    return this->toString() == other.toString();
-}
+    return agentId == other.agentId &&
+            location == other.location &&
+            timeStart == other.timeStart &&
+            timeEnd == other.timeEnd;
+ }

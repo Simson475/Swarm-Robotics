@@ -42,7 +42,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
             Error::log("Max iterations reached.\n");
             exit(1);
         }
-        if (endsAtValidGoal(top.action, goal, constraints)){
+        if (top.action.endVertex == goal && canWorkAtGoalWithoutViolatingConstraints(top.action, goal, constraints)){
             this->totalIterations += this->iterations;
             #ifdef EXPERIMENT
             if (Logger::enabled) {
@@ -222,10 +222,16 @@ bool LowLevelCBS::isViolatingConstraint(Constraint constraint, std::shared_ptr<V
 }
 
 
-
-bool LowLevelCBS::endsAtValidGoal(Action action, std::shared_ptr<Vertex> goal, std::vector<Constraint> constraints){
-    if (action.endVertex != goal) return false;
-
+/**
+ * PRE: action ends at goal
+ * 
+ * @param action 
+ * @param goal 
+ * @param constraints 
+ * @return true 
+ * @return false 
+ */
+bool LowLevelCBS::canWorkAtGoalWithoutViolatingConstraints(Action action, std::shared_ptr<Vertex> goal, std::vector<Constraint> constraints){
     float arrivalTime = action.timestamp + action.duration;
     for (auto c : constraints){
         if (isViolatingConstraint(c, goal, arrivalTime, arrivalTime + TIME_AT_GOAL)){

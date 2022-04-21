@@ -7,18 +7,6 @@ std::shared_ptr<ConstraintTree> ConstraintTree::getParent(){
 void ConstraintTree::setChildren(std::vector<std::shared_ptr<ConstraintTree>> children){
     this->children = children;
 }
-std::shared_ptr<ConstraintTree> ConstraintTree::getLowestCostNode(){
-    std::shared_ptr<ConstraintTree> lowestCostNode = shared_from_this();
-
-    for (auto child : children){
-        auto lowestFromChild = child->getLowestCostNode();
-        if (lowestFromChild->getCost() < lowestCostNode->getCost()){
-            lowestCostNode = lowestFromChild;
-        }
-    }
-
-    return lowestCostNode;
-}
 Solution ConstraintTree::getSolution(){
     return solution;
 }
@@ -46,11 +34,11 @@ std::vector<Conflict> ConstraintTree::findConflicts(){
             // Check if there is a conflict between path i (p1) and j (p2)
             int p2Index = 0;
             for (auto a1 : p1.actions){
+                auto a1Start = a1.timestamp;
+                auto a1End = a1Start + a1.duration;
                 int numActions = p2.actions.size();
                 for (int k = p2Index; k < numActions; ++k){
                     auto a2 = p2.actions[k];
-                    auto a1Start = a1.timestamp;
-                    auto a1End = a1Start + a1.duration;
                     auto a2Start = a2.timestamp;
                     auto a2End = a1Start + a2.duration;
                     if (a2Start > a1End + TIME_AT_VERTEX) { break; }// Skip the remainding actions in p2 since they can't have overlaps
@@ -87,6 +75,14 @@ float ConstraintTree::getCost(){
     return cost;
 }
 
+/**
+ * Comparison function, so this class can be used as a comparator in priority queues
+ * 
+ * @param a 
+ * @param b 
+ * @return true 
+ * @return false 
+ */
 bool ConstraintTree::operator() (std::shared_ptr<ConstraintTree> a, std::shared_ptr<ConstraintTree> b){
     return a->getCost() > b->getCost();
 }
@@ -122,9 +118,9 @@ bool ConstraintTree::isVertexConflict(Action a1, Action a2){
     // Case 1: Both agents are moving to the same vertex
     // Case 2: An agent is moving to a vertex an agent is waiting on
     // Case 3: Both agents are waiting on the same vertex (covered by case 2)
-    bool movingToSameVertexWithinDelta = a1.endVertex == a2.endVertex && (arriveWithinDelta(a1, a2) || arriveWithinDelta(a2, a1));
-    bool a2MovesToa1WaitVertex = (a2.endVertex == a1.startVertex && a1.isWaitAction() && arriveWithinActionAndDelta(a2, a1));
-    bool a1MovesToa2WaitVertex = (a1.endVertex == a2.startVertex && a2.isWaitAction() && arriveWithinActionAndDelta(a1, a2));
+    bool movingToSameVertexWithinDelta = a1.endVertex == a2.endVertex && (arriveWithinTimeAtVertex(a1, a2) || arriveWithinTimeAtVertex(a2, a1));
+    bool a2MovesToa1WaitVertex = (a2.endVertex == a1.startVertex && a1.isWaitAction() && arriveWithinActionAndTimeAtVertex(a2, a1));
+    bool a1MovesToa2WaitVertex = (a1.endVertex == a2.startVertex && a2.isWaitAction() && arriveWithinActionAndTimeAtVertex(a1, a2));
 
     return movingToSameVertexWithinDelta || a2MovesToa1WaitVertex || a1MovesToa2WaitVertex;
 }
@@ -199,11 +195,9 @@ Conflict ConstraintTree::getVertexConflict(std::vector<int> conflictAgents, Acti
     bool a1w = a1.isWaitAction();
     bool a2w = a2.isWaitAction();
 
-    bool arriveAtSameTime = a1.endVertex == a2.endVertex && (arriveWithinDelta(a1, a2) || arriveWithinDelta(a2, a1))
+    bool arriveAtSameTime = a1.endVertex == a2.endVertex && (arriveWithinTimeAtVertex(a1, a2) || arriveWithinTimeAtVertex(a2, a1))
         && !a1w && !a2w;
     
-
-    Error::log("VertexC\n");
     if (arriveAtSameTime){
         cStart = std::max(a1End, a2End);
         cEnd = std::min(a1End, a2End) + TIME_AT_VERTEX;
@@ -259,7 +253,6 @@ Conflict ConstraintTree::getVertexConflict(std::vector<int> conflictAgents, Acti
  * @return A vertex conflict
  */
 Conflict ConstraintTree::getFollowConflict(std::vector<int> conflictAgents, Action a1, Action a2){
-    Error::log("FollowC\n");
     auto a1Start = a1.timestamp;
     auto a2Start = a2.timestamp;
     auto a1End = a1.timestamp + a1.duration;
@@ -284,7 +277,6 @@ Conflict ConstraintTree::getFollowConflict(std::vector<int> conflictAgents, Acti
  * @return A swap conflict
  */
 Conflict ConstraintTree::getSwapConflict(std::vector<int> conflictAgents, Action a1, Action a2){
-    Error::log("SwapC\n");
     // Conflict timespan
     auto a1Start = a1.timestamp;
     auto a1End = a1Start + a1.duration;
@@ -320,7 +312,7 @@ bool ConstraintTree::actionsOverlap(Action a1, Action a2){
  * @param a2 
  * @return true|false
  */
-bool ConstraintTree::arriveWithinDelta(Action a1, Action a2){
+bool ConstraintTree::arriveWithinTimeAtVertex(Action a1, Action a2){
     auto a1Start = a1.timestamp;
     auto a1End = a1Start + a1.duration;
     auto a2Start = a2.timestamp;
@@ -336,7 +328,7 @@ bool ConstraintTree::arriveWithinDelta(Action a1, Action a2){
  * @param a2 
  * @return true|false
  */
-bool ConstraintTree::arriveWithinActionAndDelta(Action a1, Action a2){
+bool ConstraintTree::arriveWithinActionAndTimeAtVertex(Action a1, Action a2){
     auto a1Start = a1.timestamp;
     auto a1End = a1Start + a1.duration;
     auto a2Start = a2.timestamp;

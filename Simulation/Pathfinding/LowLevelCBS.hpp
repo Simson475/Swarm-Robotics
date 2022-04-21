@@ -37,7 +37,7 @@ protected:
     bool isViolatingConstraint(Constraint constraint, Action action);
     bool isViolatingConstraint(Constraint constraint, std::shared_ptr<Edge> edge, float startTime);
     bool isViolatingConstraint(Constraint constraint, std::shared_ptr<Vertex> vertex, float startTime, float endTime);
-    bool endsAtValidGoal(Action action, std::shared_ptr<Vertex> goal, std::vector<Constraint> constraints);
+    bool canWorkAtGoalWithoutViolatingConstraints(Action action, std::shared_ptr<Vertex> goal, std::vector<Constraint> constraints);
 };
 
 #endif

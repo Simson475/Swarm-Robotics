@@ -45,23 +45,6 @@ MapStructureGraph::MapStructureGraph(Map_Structure& map){
         #endif
     }
     this->edges = edges;
-
-    // // Prune transitive closure edges
-    // for (auto& ve : edges){
-    //     auto it = ve.begin();
-    //     for (auto e : ve){
-    //         for (auto e1 : e->getEndVertex()->getEdges()){
-    //             for (auto e2 : e1->getEndVertex()->getEdges()){
-    //                 if (e2->getEndVertex() == e->getStartVertex()){
-    //                     // We found a transitive edge
-    //                     ve.erase(it);
-    //                     Error::log("We deleted an edge\n");
-    //                 }
-    //             }
-    //         }
-    //         it++;
-    //     }
-    // }
     
     // Add reference to edges in the vertices
     for (std::shared_ptr<Vertex> v : vertices){
