@@ -58,7 +58,6 @@ void LowLevelCBSTests::pathfinding_is_correct(){
 
     //Act
     Path path = LowLevelCBS::get_instance().getIndividualPath(g, agents[0], std::vector<Constraint>{});
-std::cout << path.toString() << "\n";
     //Assert
     //Assert the correct path is output
     assert(path.actions[0].endVertex == v0);

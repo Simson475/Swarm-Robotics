@@ -31,7 +31,7 @@ public:
     Conflict getEdgeConflict(std::vector<int> conflictAgents, Action a1, Action a2);
     Conflict getVertexConflict(std::vector<int> conflictAgents, Action a1, Action a2);
     Conflict getFollowConflict(std::vector<int> conflictAgents, Action a1, Action a2);
-    Conflict getSwapConflict(int conflictAgents, Action a1, Action a2);
+    Conflict getSwapConflict(std::vector<int> conflictAgents, Action a1, Action a2);
     std::vector<Constraint> getConstraints(int agent);
     std::vector<Constraint> getConstraints();
     void setConstraints(std::vector<Constraint> constraints);

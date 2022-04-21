@@ -20,15 +20,17 @@ MapStructureGraph::MapStructureGraph(Map_Structure& map){
     // All edges
     size_t lineCount = map.lines.size();
     std::vector<std::vector<std::shared_ptr<Edge>>> edges{lineCount};
-    float robotSpeed = 0.061;
+    float robotSpeed = 0.061; //An approximation of the actual robot speed
     for (Line line : map.lines){
+        //this only works if robots are spawned at the top or bottom of the map
         if (line.GetDistance() <= 0) { continue; }
-        if ( ! (line.Geta().getId() < 4 || line.Getb().getId() < 4)){
-            if ((std::abs(line.Geta().GetX() - line.Getb().GetX()) > 1) && (std::abs(line.Geta().GetY() - line.Getb().GetY()) > 1)
+        //This avoids diagonal lines except for those to goal vertices, or those "too" close
+        if ( ! (line.Geta().getId() < 4 || line.Getb().getId() < 4)){ //The id of the vertices (geta and getb), are delivery stations if below 4.
+            if ((std::abs(line.Geta().GetX() - line.Getb().GetX()) > 0.01) && (std::abs(line.Geta().GetY() - line.Getb().GetY()) > 0.01) //If both deltax and deltay are greater, the line is a diagonal, which we dont have in our map?
             ){
                 continue;
             }
-            if (line.GetDistance() / robotSpeed > 90) continue;
+            if (line.GetDistance() / robotSpeed > 90) continue; //90 is a magic number for distance, so if the line is too long dont add it
         }
         int a = line.Geta().getId();
         int b = line.Getb().getId();

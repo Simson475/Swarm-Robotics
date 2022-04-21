@@ -34,15 +34,12 @@ void ConstraintTreeTests::it_can_find_swap_conflicts(){
     auto conflicts = ct.findConflicts();
 
     // Assert
-    assert(conflicts.size() == 2);
-    assert(conflicts[0].getAgentIds().size() == 1);
-    assert(conflicts[1].getAgentIds().size() == 1); 
-    assert(conflicts[0].getLocation().toString() == "e[1,2]");
+    assert(conflicts.size() == 1);
+    assert(conflicts[0].getAgentIds().size() == 2);
+    assert(conflicts[0].getLocation(0).toString() == "e[1,2]");
+    assert(conflicts[0].getLocation(1).toString() == "e[2,1]");
     assert(conflicts[0].getTimeStart() == 0);
-    assert(conflicts[0].getTimeEnd() == 1000); 
-    assert(conflicts[1].getLocation().toString() == "e[2,1]");
-    assert(conflicts[1].getTimeStart() == 0);
-    assert(conflicts[1].getTimeEnd() == 1000);
+    assert(conflicts[0].getTimeEnd() == 1000);
 }
 
 void ConstraintTreeTests::it_can_find_edge_conflicts(){
@@ -230,7 +227,7 @@ void ConstraintTreeTests::it_can_find_vertex_conflicts_moves_to_vertex_occupied_
     assert(conflicts1.size() == 1);
     assert(conflicts2.size() == 1);
     assert(conflicts3.size() == 1);
-std::cout << conflicts2[0].toString() << "\n";
+
     assert(conflicts1[0].getTimeStart() == 100);
     assert(conflicts1[0].getTimeEnd() == 100 + TIME_AT_VERTEX);
 
@@ -430,8 +427,7 @@ void ConstraintTreeTests::it_can_get_vertex_conflict(){
     // Assert
     assert(c1.getAgentIds()[0] == agents[0]);
     assert(c1.getAgentIds()[1] == agents[1]);
-    assert(c1.getLocation().toString() == "v2");
-    std::cout << c1.toString() << "\n";
+    assert(c1.getLocation(0).toString() == "v2");
     assert(c1.getTimeStart() == a2.timestamp + a2.duration);
     assert(c1.getTimeEnd() == (a1.timestamp + a1.duration + TIME_AT_VERTEX));
 }
@@ -453,7 +449,7 @@ void ConstraintTreeTests::it_can_get_follow_conflict(){
     // Assert
     assert(c1.getAgentIds()[0] == agents[0]);
     assert(c1.getAgentIds()[1] == agents[1]);
-    assert(c1.getLocation().toString() == "v2");
+    assert(c1.getLocation(0).toString() == "v2");
     assert(c1.getTimeStart() == a2.timestamp);
     assert(c1.getTimeEnd() == (a1.timestamp + a1.duration + TIME_AT_VERTEX));
 }
@@ -482,7 +478,7 @@ void ConstraintTreeTests::it_can_get_edge_conflict(){
     // Assert
     assert(c1.getAgentIds()[0] == agents[0]);
     assert(c1.getAgentIds()[1] == agents[1]);
-    assert(c1.getLocation().toString() == "e[1,2]");
+    assert(c1.getLocation(0).toString() == "e[1,2]");
     assert(c1.getTimeStart() == a2.timestamp);
     assert(c1.getTimeEnd() == (a1.timestamp + a1.duration));
 }
@@ -506,16 +502,13 @@ void ConstraintTreeTests::it_can_get_swap_conflict(){
     std::vector<int> agents = {1, 2};
 
     // Act
-    Conflict c1 = ct.getSwapConflict(agents[0], a1, a2);
-    Conflict c2 = ct.getSwapConflict(agents[1], a2, a1);
+    Conflict c1 = ct.getSwapConflict(agents, a1, a2);
 
     // Assert
     assert(c1.getAgentIds()[0] == agents[0]);
-    assert(c2.getAgentIds()[0] == agents[1]);
-    assert(c1.getLocation().toString() == "e[1,2]");
-    assert(c2.getLocation().toString() == "e[2,1]");
+    assert(c1.getAgentIds()[1] == agents[1]);
+    assert(c1.getLocation(0).toString() == "e[1,2]");
+    assert(c1.getLocation(1).toString() == "e[2,1]");
     assert(c1.getTimeStart() == a2.timestamp);
     assert(c1.getTimeEnd() == (a1.timestamp + a1.duration));
-    assert(c1.getTimeStart() == c2.getTimeStart());
-    assert(c1.getTimeEnd() == c2.getTimeEnd());
 }

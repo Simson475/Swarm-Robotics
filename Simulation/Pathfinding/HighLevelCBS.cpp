@@ -93,16 +93,19 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         /**
          * Get one of the conflicts
          */
-        //Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel);
-        Conflict c = conflicts.front();
+        Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel);
+        // Conflict c = conflicts.front();
+        Error::log("Best conflict done\n");
         #ifdef DEBUG_LOGS_ON
         Error::log(c.toString() + "\n");
         #endif
-        // std::cout << c.toString() + "\n";
         /**
          * Foreach agent ai in C do
          */
-        for(int agentId : c.getAgentIds()){
+        std::vector<int> agentIds = c.getAgentIds();
+        int agentCount = agentIds.size();
+        for (int i = 0; i < agentCount; ++i){
+            int agentId = agentIds[i];
             /**
              * A <-- new node
              * A.constraints = p.constraints union (ai,v,t)
@@ -111,7 +114,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             a->setConstraints(p->getConstraints());
             Constraint constraint = Constraint(
                 agentId,
-                c.getLocation(),
+                c.getLocation(i),
                 c.getTimeStart(),
                 c.getTimeEnd()
             );
@@ -156,7 +159,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
                 #ifdef DEBUG_LOGS_ON
                 Error::log(exception);
                 #endif
-                continue;
+                continue; // If the agent cant create a path to its goal with the new constraints, try adding the constraint to the other agent involved in the conflict
             }
             
             a->setSolution(s);
@@ -187,6 +190,7 @@ Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std
 
     std::vector<Conflict> semiCardinalConflicts;
     for (auto c : conflicts){
+        Error::log(c.toString() + "\n");
         // Make a copy of the solution
         auto solution = node->getSolution();
         // It is a cardinal conflict if adding any of the constraints derived from the conflict
@@ -194,30 +198,39 @@ Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std
         // It is a semi cardinal conflict if adding one of the derived constraints increase the cost
         // We see: If we find the condition for semi cardinal to be true > 1 it is a cardinal.
         bool semiCardinal = false;
-        for (auto agentId : c.getAgentIds()){
+        std::vector<int> agentIds = c.getAgentIds();
+        int agentCount = agentIds.size();
+        for (int i = 0; i < agentCount; ++i){
+            int agentId = agentIds[i];
             // Get the derived constraint for the current agent from the conflict
+            Error::log("agentid " + std::to_string(agentId) + "\n");
             Constraint constraint = Constraint(
                 agentId,
-                c.getLocation(),
+                c.getLocation(i),
                 c.getTimeStart() - 1,
                 c.getTimeEnd() + 1
             );
+            Error::log(constraint.location.toString() + "\n");
             // Get a container of the current constraints union the new constraint
             auto constraints = node->getConstraints(agentId);
             constraints.push_back(constraint);
             // Get the new path from low level so we can see if the cost increases
             float currentCost = solution.paths[agentId].cost;
-            Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], constraints);
-            bool increasesCost = newPath.cost > currentCost;
+            try{
+                Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], constraints);
+                bool increasesCost = newPath.cost > currentCost;
 
-            if (increasesCost){
-                if (semiCardinal){
-                    return c;
+                if (increasesCost){
+                    if (semiCardinal){
+                        return c;
+                    }
+                    else {
+                        semiCardinalConflicts.push_back(c);
+                        semiCardinal = true;
+                    }
                 }
-                else {
-                    semiCardinalConflicts.push_back(c);
-                    semiCardinal = true;
-                }
+            }catch(std::string exception){
+                Error::log("SHIT GOES DOWN YO\n");
             }
         }
     }
