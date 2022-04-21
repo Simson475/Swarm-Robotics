@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Can run all experiments be using:
+# ls | grep _experiment | ./run_experiment.sh
+
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
