@@ -41,11 +41,11 @@ bool Action::isWaitAction(){
 
 Location Action::getLocation(){
     if (isWaitAction()){
-        return Location(ELocationType::VERTEX_LOCATION, startVertex);
+        return Location(startVertex);
     }
     for (auto e : startVertex->getEdges()){
         if (e->getEndVertex()->getId() == endVertex->getId())
-        return Location(ELocationType::EDGE_LOCATION, e);
+        return Location(e);
     }
     exit(1);
 }

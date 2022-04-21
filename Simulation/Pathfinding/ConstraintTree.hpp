@@ -8,14 +8,13 @@ class ConstraintTree;
 #include "Solution.hpp"
 #include "Conflict.hpp"
 #include "AgentInfo.hpp"
+#include "GLOBALS.hpp"
 
-class ConstraintTree : public std::enable_shared_from_this<ConstraintTree> {
+class ConstraintTree {
 public:
     /* Tree elements */
     std::shared_ptr<ConstraintTree> getParent();
     void setChildren(std::vector<std::shared_ptr<ConstraintTree>> children);
-    std::shared_ptr<ConstraintTree> getLowestCostNode();
-    std::vector<Constraint> constraints;
 
     /* More CBS specific */
     Solution getSolution();
@@ -31,14 +30,21 @@ public:
     Conflict getEdgeConflict(std::vector<int> conflictAgents, Action a1, Action a2);
     Conflict getVertexConflict(std::vector<int> conflictAgents, Action a1, Action a2);
     Conflict getFollowConflict(std::vector<int> conflictAgents, Action a1, Action a2);
-    Conflict getSwapConflict(int conflictAgents, Action a1, Action a2);
+    Conflict getSwapConflict(std::vector<int> conflictAgents, Action a1, Action a2);
+    std::vector<Constraint> getConstraints(int agent);
+    std::vector<Constraint> getConstraints();
+    void setConstraints(std::vector<Constraint> constraints);
+    void addConstraint(Constraint constraint);
 
-    const float delta = 20; // Small time delta aprx the time it takes a robot to move through a vertex.
 private:
     std::shared_ptr<ConstraintTree> parent;
     std::vector<std::shared_ptr<ConstraintTree>> children;
     Solution solution;
     std::vector<std::shared_ptr<Conflict>> conflicts;
+    bool actionsOverlap(Action a1, Action a2);
+    bool arriveWithinTimeAtVertex(Action a1, Action a2);
+    bool arriveWithinActionAndTimeAtVertex(Action a1, Action a2);
+    std::vector<Constraint> constraints;
 };
 
 #endif

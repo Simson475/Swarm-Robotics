@@ -1,4 +1,4 @@
-#include "_path.hpp"
+#include "Path.hpp"
 
 std::vector<int> Path::asWaypointPlan(){
   std::vector<int> waypointPlan = {1};//First element will be "popped" before being used
@@ -10,9 +10,18 @@ std::vector<int> Path::asWaypointPlan(){
 
 std::string Path::toString(){
   std::string str = "";
-  str += "v" + std::to_string(actions[0].startVertex->getId());
+  str += "v" + std::to_string(actions[0].startVertex->getId()) + " ";
   for(Action a : actions){
     str += "v" + std::to_string(a.endVertex->getId()) + "t" + std::to_string(a.timestamp + a.duration) + " ";
   }
   return str;
+}
+
+Path Path::operator+(const Path& path){
+  auto actions = this->actions;
+  for (auto a : path.actions){
+    actions.push_back(a);
+  }
+  Path p = {actions, this->cost + path.cost};
+  return p;
 }

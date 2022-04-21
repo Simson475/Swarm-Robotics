@@ -3,6 +3,7 @@
 
 #include "Vertex.hpp"
 #include "Edge.hpp"
+#include <iostream>
 
 enum ELocationType{
     VERTEX_LOCATION,
@@ -12,12 +13,15 @@ enum ELocationType{
 class Location {
 public:
     Location(){type=VERTEX_LOCATION;}
-    Location(ELocationType, std::shared_ptr<Vertex>);
-    Location(ELocationType, std::shared_ptr<Edge>);
+    Location(std::shared_ptr<Vertex>);
+    Location(std::shared_ptr<Edge>);
     ELocationType type;
     std::shared_ptr<Edge> edge;
     std::shared_ptr<Vertex> vertex;
-    std::string toString();
+    std::string toString() const;
+    bool operator==(const Location& location);
+    bool operator==(std::shared_ptr<Vertex> vertex);
+    bool operator==(std::shared_ptr<Edge> edge);
 };
 
 #endif

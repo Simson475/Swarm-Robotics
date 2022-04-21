@@ -16,11 +16,11 @@ using namespace std;
 int main (int argc, char *argv[]) {
     cout << "Running Tests!\n";
 
-    // ActionPathAuxTests().run();
-    // GraphTests().run();
-    // LowLevelCBSTests().run();
+    ActionPathAuxTests().run();
+    GraphTests().run();
+    LowLevelCBSTests().run();
     ConstraintTreeTests().run();
-    HighLevelCBSTests().run();
+    // HighLevelCBSTests().run();
     //NEXT_TEST_RUNNER
     // The above line should not be edited or deleted
 

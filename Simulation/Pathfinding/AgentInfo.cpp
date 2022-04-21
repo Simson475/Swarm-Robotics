@@ -24,10 +24,10 @@ AgentInfo::AgentInfo(int id, Action currentAction, std::shared_ptr<Vertex> desti
     this->goal = destination;
 }
 
-int AgentInfo::getId(){ return id; }
-Action AgentInfo::getCurrentAction(){ return currentAction; }
-std::shared_ptr<Vertex> AgentInfo::getGoal(){ return goal; }
-int AgentInfo::getTimeAtVertex(std::shared_ptr<Vertex> vertex){ return (vertex == goal) ? 300 : 20; }//TODO improve estimates
+
+int AgentInfo::getId() const { return id; }
+Action AgentInfo::getCurrentAction() const { return currentAction; }
+std::shared_ptr<Vertex> AgentInfo::getGoal() const { return goal; }
 
 void AgentInfo::operator=(const AgentInfo& other){
     id = other.id;

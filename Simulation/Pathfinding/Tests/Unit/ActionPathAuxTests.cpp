@@ -4,7 +4,7 @@ void ActionPathAuxTests::it_can_compare_in_priority_queue(){
     // Arrange
     auto v = std::make_shared<Vertex>(0);
     Action a = Action(0, v, v, 0);
-    std::priority_queue<ActionPathAux> priorityQueue{};
+    std::priority_queue<ActionPathAux, std::vector<ActionPathAux>, std::greater<ActionPathAux>> priorityQueue{};
 
     // Act
     priorityQueue.push(ActionPathAux(a, 30, nullptr));
@@ -13,11 +13,11 @@ void ActionPathAuxTests::it_can_compare_in_priority_queue(){
 
     // Assert 
     auto aux = priorityQueue.top();priorityQueue.pop();
-    assert(aux.priority == 10);
+    assert(aux.heuristic == 10);
     aux = priorityQueue.top();priorityQueue.pop();
-    assert(aux.priority == 20);
+    assert(aux.heuristic == 20);
     aux = priorityQueue.top();priorityQueue.pop();
-    assert(aux.priority == 30);
+    assert(aux.heuristic == 30);
 }
 
 void ActionPathAuxTests::it_can_get_path(){
@@ -43,5 +43,5 @@ void ActionPathAuxTests::it_can_get_path(){
     assert(p.actions[1] == a1);
     assert(p.actions[2] == a2);
     assert(p.actions[3] == a3);
-    assert(p.cost == 10);
+    assert(p.cost == TIME_AT_GOAL + 10);
 }

@@ -1,19 +1,18 @@
 #include "ActionPathAux.hpp"
-#include "Debugging.hpp"
 
-ActionPathAux::ActionPathAux(Action action, float priority, std::shared_ptr<ActionPathAux> predecessor){
+ActionPathAux::ActionPathAux(Action action, float heuristic, std::shared_ptr<ActionPathAux> predecessor){
     this->action = action;
-    this->priority = priority;
+    this->heuristic = heuristic;
     this->predecessor = predecessor;
 }
 
 ActionPathAux::ActionPathAux(const ActionPathAux &a){
     this->action = a.action;
-    this->priority = a.priority;
+    this->heuristic = a.heuristic;
     this->predecessor = a.predecessor;
 }
 
-Path ActionPathAux::getPath(){
+Path ActionPathAux::getPath() const{
     Path path{};
     path.actions.emplace(path.actions.begin(), this->action);
     path.cost = this->action.duration;
@@ -23,19 +22,43 @@ Path ActionPathAux::getPath(){
         path.cost += predecessor->action.duration;
         predecessor = predecessor->predecessor;
     }
+    // Add a wait action at the end which is the work time
+    path.actions.push_back(Action(path.cost, this->action.endVertex, this->action.endVertex, TIME_AT_GOAL));
+    path.cost += TIME_AT_GOAL;
     return path;
 }
 
 void ActionPathAux::operator=(const ActionPathAux &a){
     action = a.action;
-    priority = a.priority;
+    heuristic = a.heuristic;
     predecessor = a.predecessor;
 }
 
 /* Comparator for use in priority queue (must be global or you will need a compare class) */
 bool operator> (const ActionPathAux &a, const ActionPathAux &b){
-    return a.priority > b.priority;
+    float aPriority = a.action.timestamp + a.action.duration + a.heuristic;
+    float bPriority = b.action.timestamp + b.action.duration + b.heuristic;
+    // Use the complete priority if they are not equal, otherwise use the heuristic
+    // If the heuristics are equal, compare number of actions in the path
+    // This avoids a lot of extra states being explores when it might not be necesary
+    if(aPriority != bPriority) return aPriority > bPriority;
+    if(a.heuristic != b.heuristic) return a.heuristic > b.heuristic;
+    return a.getPath().actions.size() > b.getPath().actions.size();
+
 }
+
 bool operator< (const ActionPathAux &a, const ActionPathAux &b){
-    return a.priority < b.priority;
+    float aPriority = a.action.timestamp + a.action.duration + a.heuristic;
+    float bPriority = b.action.timestamp + b.action.duration + b.heuristic;
+    // Use the complete priority if they are not equal, otherwise use the heuristic
+    // If the heuristics are equal, compare number of actions in the path
+    // This avoids a lot of extra states being explores when it might not be necesary
+    if(aPriority != bPriority) return aPriority < bPriority;
+    if(a.heuristic != b.heuristic) return  a.heuristic < b.heuristic;
+    return a.getPath().actions.size() < b.getPath().actions.size();
+
+}
+
+std::string ActionPathAux::toString(){
+    return "{action:" + this->action.toString() + ",prio:" + std::to_string(this->action.timestamp + this->action.duration + this->heuristic) + "}";
 }

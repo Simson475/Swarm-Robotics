@@ -3,8 +3,8 @@
 std::shared_ptr<Graph> ExperimentData::getGraph(){
     if ( graph != nullptr ) { return graph; }
 
-    auto g = std::make_shared<MapStructureGraph>(Map_Structure::get_instance());
-    graph = std::static_pointer_cast<Graph>(g);
+    mapStructureGraph = std::make_shared<MapStructureGraph>(Map_Structure::get_instance());
+    graph = std::static_pointer_cast<Graph>(mapStructureGraph);
     return graph;
 }
 
@@ -36,13 +36,9 @@ bool ExperimentData::requestSolution(int agentId){
     }
     Error::log("Going to find a solution\n");
     auto agentInfos = getAgentsInfo();
+
     for (auto a1 : agentInfos){
-        for (auto a2 : agentInfos){
-            if (a1.getId() != a2.getId() && a1.getGoal() == a2.getGoal()){
-                Error::log("Impossible to find a solution.\n");
-                exit(2);
-            }
-        }
+        Error::log("Agent" + std::to_string(a1.getId()) + ": " + getGraph()->getVertices()[getAgents()[a1.getId()]->getBot()->getLastLocation()]->toString() + " --> " + a1.getGoal()->toString() + "\n");
     }
 
     Solution solution = HighLevelCBS::get_instance()
@@ -56,7 +52,11 @@ bool ExperimentData::requestSolution(int agentId){
 
 void ExperimentData::distributeSolution(Solution solution){
     for (auto agent : getAgents()){
-        agent->getBot()->setPath(solution.paths[agent->getId()]);
+        // Remove the inserted TIME_AT_GOAL duration wait action
+        auto path = solution.paths[agent->getId()];
+        path.actions.erase(path.actions.end());
+        // Set path
+        agent->getBot()->setPath(path);
     }
 }
 
@@ -68,4 +68,44 @@ std::vector<AgentInfo> ExperimentData::getAgentsInfo(){
         agentInfo[i] = agents[i]->getAgentInfo();
     }
     return agentInfo;
+}
+
+int ExperimentData::getNextStation(int agentId){
+    auto stations = getStations();
+    auto currentStations = getLastAgentGoals();
+    int currentStationCount = currentStations.size();
+    int station;
+    bool stationIsFree = false;
+    do {
+        stationIsFree = true;
+        station = stations[nextStation];
+        nextStation = ++nextStation == (int)stations.size() ? 0 : nextStation;
+        for (int i = 0; i < currentStationCount; ++i){
+            if (currentStations[i] == station && agentId != i){
+                stationIsFree = false;
+                break;
+            }
+        }
+    }
+    while(stationIsFree == false);
+    return station;
+}
+
+std::vector<int> ExperimentData::getStations(){
+    if (mapStructureGraph == nullptr) {
+        getGraph();
+    }
+    return mapStructureGraph->getStations();
+}
+
+std::vector<int> ExperimentData::getLastAgentGoals(){
+    return this->lastAgentGoals;
+}
+
+void ExperimentData::setLastAgentGoal(int agentId, int goalStation){
+    this->lastAgentGoals[agentId] = goalStation;
+}
+
+float ExperimentData::getSimulationTime(){
+    return argos::CSimulator::GetInstance().GetSpace().GetSimulationClock();
 }

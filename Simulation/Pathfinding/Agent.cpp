@@ -15,10 +15,6 @@ TestController* Agent::getBot(){
     return this->bot;
 }
 
-Path Agent::getPath(){
-    return path;
-}
-
 Location Agent::getLocation(){
     return bot->getCurrentLocation();
 }

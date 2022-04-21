@@ -9,12 +9,13 @@ class Constraint;
 
 class Constraint {
   public:
-    Constraint(AgentInfo, Location, float, float);
-    AgentInfo agent;
+    Constraint(int agentId, Location location, float timeStart, float timeEnd);
+    int agentId;
     Location location;
     float timeStart;
     float timeEnd;
-    std::string toString();
+    std::string toString() const;
+    bool operator==(const Constraint&);
 };
 
 #endif

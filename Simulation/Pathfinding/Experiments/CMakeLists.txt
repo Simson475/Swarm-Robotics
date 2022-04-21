@@ -1,13 +1,8 @@
+include_directories(./Experiments/)
 include_directories(.)
-include_directories(./Unit/)
-include_directories(./Integration/)
 include_directories(..)
-include_directories(../../models/map/)
-include_directories(../../controllers/)
 
 set(PathfindingDir ..)
-set(ControllersDir ../../controllers)
-set(MapDir ../../models/map)
 # We must be able to compile with these files alone (so map_structure wont work without argos files, which makes a lot of our files untestable atm)
 set(PathfindingFiles
     ${PathfindingDir}/Conflict.hpp
@@ -44,40 +39,20 @@ set(PathfindingFiles
     ${PathfindingDir}/Logger.cpp
 )
 
-set(UNIT_TESTS ./Unit)
-set(INTEGRATION_TESTS ./Integration)
-
 # Emit all warning messages
 add_definitions(-Wall -O3)# -Werror
 
-add_executable(run_tests
-    
-    ${PathfindingFiles}
-    
-    TestRunner.cpp
-    TestInterface.hpp
-    
-    CBSTests.hpp
-    CBSTests.cpp
+# Add the experiment executables
+add_executable(chokepoint_experiment ./Experiments/chokepoint.cpp ${PathfindingFiles})
+#NEXT_EXPERIMENT_EXECUTABLE
+# The above line should not be edited or deleted
 
-    ${UNIT_TESTS}/ActionPathAuxTests.hpp
-    ${UNIT_TESTS}/ActionPathAuxTests.cpp
-    ${UNIT_TESTS}/GraphTests.hpp
-    ${UNIT_TESTS}/GraphTests.cpp
-    ${INTEGRATION_TESTS}/LowLevelCBSTests.hpp
-    ${INTEGRATION_TESTS}/LowLevelCBSTests.cpp
-    ${INTEGRATION_TESTS}/HighLevelCBSTests.hpp
-    ${INTEGRATION_TESTS}/HighLevelCBSTests.cpp
-    ${INTEGRATION_TESTS}/ConstraintTreeTests.hpp
-    ${INTEGRATION_TESTS}/ConstraintTreeTests.cpp
-    #TEST_SOURCE_FILES_LAST_LINE
-    # The above line should not be edited or deleted
-)
+# Move the experiment executables to the external/bin/
+add_custom_command(TARGET chokepoint_experiment POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ./chokepoint_experiment ${CMAKE_BINARY_DIR}/external/bin/chokepoint_experiment COMMENT "Copying chokepoint_experiment to external/bin/" )
+#NEXT_EXPERIMENT_MOVE_COMMAND
+# The above line should not be edited or deleted
 
-# Move the run_tests script to the external/bin/
-add_custom_command(TARGET run_tests POST_BUILD
+add_custom_target(move_run_experiment_script ALL
     COMMAND ${CMAKE_COMMAND} -E copy
-    ./run_tests
-    ${CMAKE_BINARY_DIR}/external/bin/run_tests
-    COMMENT "Copying run_tests to external/bin/"
-    )
+    ../../../Pathfinding/Experiments/run_experiment.sh
+    ${CMAKE_BINARY_DIR}/external/bin/run_experiment.sh)

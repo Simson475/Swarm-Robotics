@@ -44,6 +44,9 @@ protected:
     std::vector<int> getNextPointAndUpdateState();
     void updateCurrentLocation(Action currentAction);
 
+    float waitClock;
+    void startWaiting();
+
 };
 
 #endif
