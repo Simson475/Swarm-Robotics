@@ -16,9 +16,9 @@ using namespace std;
 int main (int argc, char *argv[]) {
     cout << "Running Tests!\n";
 
-    // ActionPathAuxTests().run();
-    // GraphTests().run();
-    // LowLevelCBSTests().run();
+    ActionPathAuxTests().run();
+    GraphTests().run();
+    LowLevelCBSTests().run();
     ConstraintTreeTests().run();
     // HighLevelCBSTests().run();
     //NEXT_TEST_RUNNER
