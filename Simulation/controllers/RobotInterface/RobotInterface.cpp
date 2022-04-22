@@ -274,6 +274,7 @@ void RobotInterface::obtainOtherBots(Map_Structure &sMap) {
 
 void RobotInterface::resetWaypointPlan() {
     waypointPlan.clear();
+
 }
 
 void RobotInterface::resetStationPlan() {
@@ -640,6 +641,10 @@ void RobotInterface::advanceClock() {
 
     if (clock > clockLimit)
         throw std::logic_error("Working clock exceeds the limit of work to do.");
+    
+    if (! clock % 5) {
+        Point Point(argos::CVector3(), 4, "tempPoint");
+    }
 }
 
 bool RobotInterface::isActive() {

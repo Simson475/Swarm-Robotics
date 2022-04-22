@@ -34,7 +34,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         logger.log("Finding initial paths\n");
     }
     #endif
-    root->setSolution(lowLevel.getAllPaths(graph, agents, std::vector<Constraint>{}), agents);
+    root->setSolution(lowLevel.getAllPaths(graph, agents, std::vector<Constraint>{}));
     /**
      * Insert Root to OPEN
      */
