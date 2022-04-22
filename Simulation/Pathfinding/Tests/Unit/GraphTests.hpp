@@ -7,9 +7,11 @@
 class GraphTests : public TestInterface {
 private:
     void heuristic_costs_are_correct();
+    void ArgosMapButArtificial();
 public:
     void run(){// In header so it is easier to see if all tests are run
         heuristic_costs_are_correct();
+        ArgosMapButArtificial();
     }
 };
 
