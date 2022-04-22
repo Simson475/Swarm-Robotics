@@ -9,7 +9,7 @@
  * @return Path 
  */
 Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agent, std::vector<Constraint> constraints){
-    #ifdef EXPERIMENT
+    #ifdef LOWLEVEL_ANALYSIS_LOGS_ON
     Logger& logger = Logger::get_instance();
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     #endif
@@ -44,12 +44,10 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
         }
         if (top.action.endVertex == goal && canWorkAtGoalWithoutViolatingConstraints(top.action, goal, constraints)){
             this->totalIterations += this->iterations;
-            #ifdef EXPERIMENT
-            if (Logger::enabled) {
-                std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-                auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-                (*logger.begin()) << this->iterations << " iterations took " << timeDiff << "[µs] for low level individual path\n"; logger.end();
-            }
+            #ifdef LOWLEVEL_ANALYSIS_LOGS_ON
+            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+            auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+            (*logger.begin()) << this->iterations << " iterations took " << timeDiff << "[µs] for low level individual path\n"; logger.end();
             #endif
             // Return the path, we have found a path that violates no constraints.
             return top.getPath();
@@ -234,7 +232,7 @@ bool LowLevelCBS::isViolatingConstraint(Constraint constraint, std::shared_ptr<V
 bool LowLevelCBS::canWorkAtGoalWithoutViolatingConstraints(Action action, std::shared_ptr<Vertex> goal, std::vector<Constraint> constraints){
     float arrivalTime = action.timestamp + action.duration;
     for (auto c : constraints){
-        if (isViolatingConstraint(c, goal, arrivalTime, arrivalTime + TIME_AT_GOAL)){
+        if (isViolatingConstraint(c, goal, arrivalTime, arrivalTime + TIME_AT_GOAL + TIME_AT_VERTEX)){
             return false;
         }
     }

@@ -1,7 +1,7 @@
 #include "HighLevelCBS.hpp"
 
 Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel){
-    #ifdef EXPERIMENT
+    #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
     Logger& logger = Logger::get_instance();
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     #endif
@@ -29,10 +29,8 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         }
     }
 
-    #ifdef EXPERIMENT
-    if (Logger::enabled) {
-        logger.log("Finding initial paths\n");
-    }
+    #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
+    logger.log("Finding initial paths\n");
     #endif
     root->setSolution(lowLevel.getAllPaths(graph, agents, std::vector<Constraint>{}), agents);
     /**
@@ -45,7 +43,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      */
     iterations = 0;
     while (open.size() > 0) {
-        #ifdef EXPERIMENT
+        #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
         std::chrono::steady_clock::time_point iterationBegin = std::chrono::steady_clock::now();
         #endif
 
@@ -53,19 +51,15 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             Error::log("Max highlevel iterations reached!\n");
             exit(0);
         }
-        #ifdef EXPERIMENT
-        if (Logger::enabled) {
-            (*logger.begin()) << "High level iteration: " << iterations << "\n"; logger.end();
-        }
+        #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
+        (*logger.begin()) << "High level iteration: " << iterations << "\n"; logger.end();
         #endif
         /**
          * p <-- best node from OPEN (the node with the lowest solution cost)
          */
         std::shared_ptr<ConstraintTree> p = open.top();open.pop();
-        #ifdef EXPERIMENT
-        if (Logger::enabled) {
-            (*logger.begin()) << "Constraints: " << p->getConstraints().size() << "\n"; logger.end();
-        }
+        #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
+        (*logger.begin()) << "Constraints: " << p->getConstraints().size() << "\n"; logger.end();
         #endif
         #ifdef DEBUG_LOGS_ON
         Error::log("Popped this solution:\n");
@@ -81,11 +75,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
          * If P has no conflicts then return P.solution
          */
         if (conflicts.size() == 0) {
-            #ifdef EXPERIMENT
-            if (Logger::enabled) {
-                auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count();
-                (*logger.begin()) << "Highlevel solution took " << timeDiff << "[µs]\n"; logger.end();
-            }
+            #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
+            auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count();
+            (*logger.begin()) << "Highlevel solution took " << timeDiff << "[µs]\n"; logger.end();
             #endif
             return p->getSolution();
         }
@@ -167,15 +159,14 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             if (a->getCost() < std::numeric_limits<float>::infinity()) {
                 open.push(a);
                 #ifdef DEBUG_LOGS_ON
+                Error::log("A cost is " + std::to_string(a->getCost()) + "\n");
                 Error::log("A was pushed\n");
                 #endif
             }
         }
-        #ifdef EXPERIMENT
-        if (Logger::enabled) {
-            auto iterationTimeDiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - iterationBegin).count();
-            (*logger.begin()) << "High level iteration took " << iterationTimeDiff << "[µs]\n"; logger.end();
-        }
+        #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
+        auto iterationTimeDiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - iterationBegin).count();
+        (*logger.begin()) << "High level iteration took " << iterationTimeDiff << "[µs]\n"; logger.end();
         #endif
     }
     // We did not find any solution (No possible solution)

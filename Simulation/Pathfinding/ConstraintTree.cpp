@@ -40,7 +40,7 @@ std::vector<Conflict> ConstraintTree::findConflicts(){
                 for (int k = p2Index; k < numActions; ++k){
                     auto a2 = p2.actions[k];
                     auto a2Start = a2.timestamp;
-                    auto a2End = a1Start + a2.duration;
+                    auto a2End = a2Start + a2.duration;
                     if (a2Start > a1End + TIME_AT_VERTEX) { break; }// Skip the remainding actions in p2 since they can't have overlaps
                     if (a1End > a2End) { p2Index++; }// Update p2Index to only start looking at the actions in p2 that can overlap with the next a1
                     auto maxStart = ((a1Start > a2Start) ? a1Start : a2Start);//max start
@@ -374,7 +374,7 @@ void ConstraintTree::addConstraint(Constraint constraint){
         ){
             auto maxStart = std::max(constraint.timeStart, c.timeStart);
             auto minEnd = std::min(constraint.timeEnd, c.timeEnd);
-            if (maxStart <= minEnd){
+            if (maxStart - DELTA <= minEnd){
                 auto minStart = std::min(constraint.timeStart, c.timeStart);
                 auto maxEnd = std::max(constraint.timeEnd, c.timeEnd);
                 this->constraints.erase(iterator);

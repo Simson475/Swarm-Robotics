@@ -22,4 +22,5 @@ do
     else
         ./$experiment
     fi
+    echo ""
 done
