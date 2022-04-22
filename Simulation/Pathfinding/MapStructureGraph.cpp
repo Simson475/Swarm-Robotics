@@ -12,7 +12,7 @@ MapStructureGraph::MapStructureGraph(Map_Structure& map){
             stations.push_back(id);
         }
         #ifdef DEBUG_LOGS_ON
-        Error::log(vertices[id]->toString() + "(" + std::to_string(point.GetX()) + "," + std::to_string(point.GetY()) + ")\n");
+        Error::log(vertices[id]->toString() /*+ "(" + std::to_string(point.GetX()) + "," + std::to_string(point.GetY()) + ")*/+"\n");
         #endif
     }
     this->vertices = vertices;
@@ -21,6 +21,7 @@ MapStructureGraph::MapStructureGraph(Map_Structure& map){
     size_t lineCount = map.lines.size();
     std::vector<std::vector<std::shared_ptr<Edge>>> edges{lineCount};
     float robotSpeed = 0.061; //An approximation of the actual robot speed
+    int prevStartVertex = -1;
     for (Line line : map.lines){
         //this only works if robots are spawned at the top or bottom of the map
         if (line.GetDistance() <= 0) { continue; }
@@ -41,9 +42,20 @@ MapStructureGraph::MapStructureGraph(Map_Structure& map){
         ));
         edges[a].push_back(edge);
         #ifdef DEBUG_LOGS_ON
-        Error::log(edge->toString() + " " + std::to_string(edge->getCost()) + "\n");
+        if (prevStartVertex != edge->getStartVertex()->getId()){
+            if(prevStartVertex!= -1){
+                Error::log("};\n");
+                Error::log("v"+std::to_string(prevStartVertex)+"->setEdges(v"+std::to_string(prevStartVertex)+"edges);\n");
+            }
+            Error::log("std::vector<std::shared_ptr<Edge>> v"+std::to_string(edge->getStartVertex()->getId())+"edges = {\n");
+            prevStartVertex=edge->getStartVertex()->getId();
+        }
+        Error::log(edge->toString() + /*" " + std::to_string(edge->getCost()) + */",\n");
         #endif
     }
+
+                Error::log("};\n");
+                Error::log("v"+std::to_string(prevStartVertex)+"->setEdges(v"+std::to_string(prevStartVertex)+"edges);\n");
     this->edges = edges;
     
     // Add reference to edges in the vertices

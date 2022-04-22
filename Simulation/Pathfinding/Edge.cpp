@@ -17,5 +17,6 @@ float Edge::getCost(){
 }
 
 std::string Edge::toString(){
+    return "std::make_shared<Edge>(v" + std::to_string( startVertex->getId()) + ", v" + std::to_string( endVertex->getId()) +", " +std::to_string( cost) +")";
     return "e["+(std::to_string(startVertex->getId()))+"," + (std::to_string(endVertex->getId())) +"]";
 }

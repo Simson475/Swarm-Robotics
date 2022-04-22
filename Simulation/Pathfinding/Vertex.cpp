@@ -20,5 +20,6 @@ int Vertex::getId(){
 }
 
 std::string Vertex::toString(){
+    return "auto v" + std::to_string(id) + " = std::make_shared<Vertex>(" + std::to_string(id) + ");";
     return "v" + std::to_string(id);
 }
