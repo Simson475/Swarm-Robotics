@@ -44,13 +44,11 @@ add_definitions(-Wall -O3)# -Werror
 
 # Add the experiment executables
 add_executable(chokepoint_experiment ./Experiments/chokepoint.cpp ${PathfindingFiles})
-add_executable(InfiniteLoop_experiment ./Experiments/InfiniteLoop.cpp ${PathfindingFiles})
 #NEXT_EXPERIMENT_EXECUTABLE
 # The above line should not be edited or deleted
 
 # Move the experiment executables to the external/bin/
 add_custom_command(TARGET chokepoint_experiment POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ./chokepoint_experiment ${CMAKE_BINARY_DIR}/external/bin/chokepoint_experiment COMMENT "Copying chokepoint_experiment to external/bin/" )
-add_custom_command(TARGET InfiniteLoop_experiment POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ./InfiniteLoop_experiment ${CMAKE_BINARY_DIR}/external/bin/InfiniteLoop_experiment COMMENT "Copying InfiniteLoop_experiment to external/bin/" )
 #NEXT_EXPERIMENT_MOVE_COMMAND
 # The above line should not be edited or deleted
 
