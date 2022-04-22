@@ -8,6 +8,7 @@
 #include "map_structure.hpp"
 #include "Graph.hpp"
 #include "Debugging.hpp"
+#include "DEFINITIONS.hpp"
 
 class MapStructureGraph : public Graph{
 public:
