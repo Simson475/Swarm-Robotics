@@ -134,6 +134,8 @@ void RobotInterface::Init(argos::TConfigurationNode &t_node) {
  * Controls how it does the jobs, chooses stations and moves.
 */
 void RobotInterface::ControlStep() {
+
+
     if (currentState == state::waiting) {
         wait();
     }
@@ -641,10 +643,6 @@ void RobotInterface::advanceClock() {
 
     if (clock > clockLimit)
         throw std::logic_error("Working clock exceeds the limit of work to do.");
-    
-    if (! clock % 5) {
-        Point Point(argos::CVector3(), 4, "tempPoint");
-    }
 }
 
 bool RobotInterface::isActive() {

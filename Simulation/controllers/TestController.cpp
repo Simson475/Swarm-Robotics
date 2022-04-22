@@ -8,7 +8,6 @@ std::vector<int> TestController::constructStationPlan(){
 }
 
 std::vector<int> TestController::constructWaypointPlan(){
-    
     // If we already have a plan
     if ( ! path.actions.empty()){
         if(resyncNeeded()){
@@ -59,6 +58,23 @@ bool TestController::resyncNeeded(){
     float actualTime = ExperimentData::get_instance().getSimulationTime();
     float timeDiff = actualTime - action.timestamp;
     Error::log("timeDifference is" + std::to_string(timeDiff) + "\n");
+    // if(std::abs(timeDiff) >150){
+    // if (timeDiff<0){
+    //     path.actions.insert(path.actions.begin(), Action(actualTime, action.startVertex, action.startVertex,-timeDiff));
+    //     for (Action a : path.actions){
+    //         a.timestamp += -timeDiff;
+    //     }
+    // } else if (timeDiff >0){
+    //     for (std::shared_ptr<Agent> agent : ExperimentData::get_instance().getAgents()){
+    //         auto bot = agent->getBot();
+    //         auto currentAction = bot->getCurrentAction();
+    //         bot->path.actions.insert(bot->path.actions.begin(), Action(currentAction.timestamp+currentAction.duration, currentAction.endVertex, currentAction.endVertex,timeDiff));
+    //         for (Action a : bot->path.actions){
+    //         a.timestamp += timeDiff;
+    //         }
+    //     }
+    // }
+    // }
     action.timestamp += timeDiff;
     for (Action a : path.actions){
         a.timestamp += timeDiff;
