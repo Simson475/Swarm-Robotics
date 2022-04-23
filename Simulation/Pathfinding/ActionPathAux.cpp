@@ -15,14 +15,14 @@ ActionPathAux::ActionPathAux(const ActionPathAux &a){
 Path ActionPathAux::getPath() const{
     Path path{};
     path.actions.emplace(path.actions.begin(), this->action);
-    path.cost = this->action.duration;
+    path.cost = this->action.timestamp + this->action.duration;// Adding timestamp, so the cost is the complete cost it took to reach this from start
     std::shared_ptr<ActionPathAux> predecessor = this->predecessor;
     while (predecessor != nullptr){
         path.actions.emplace(path.actions.begin(), predecessor->action);
         path.cost += predecessor->action.duration;
         predecessor = predecessor->predecessor;
     }
-    // Add a wait action at the end which is the work time
+    // Add a wait action at the end which is the work time (but only if it is not already added)
     path.actions.push_back(Action(path.cost, this->action.endVertex, this->action.endVertex, TIME_AT_GOAL));
     path.cost += TIME_AT_GOAL;
     return path;

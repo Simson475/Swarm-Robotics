@@ -18,6 +18,11 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     Action firstAction = agent.getCurrentAction();
     std::shared_ptr<Vertex> goal = agent.getGoal();
 
+    // If the first action is a goal work action, do nothing
+    if ((firstAction.duration == TIME_AT_GOAL || firstAction.duration == 0) && firstAction.isWaitAction() && firstAction.getLocation() == goal){
+        return {{firstAction}, firstAction.timestamp + firstAction.duration };
+    }
+
     // Compute path from after the current action
     std::priority_queue<ActionPathAux, std::vector<ActionPathAux>, std::greater<ActionPathAux>> priorityQueue{};
     // Since we can legally visit each vertex multiple times at different time steps
