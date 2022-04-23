@@ -1,6 +1,6 @@
 #include "HighLevelCBS.hpp"
 
-Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel){
+Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel, float currentTime){
     #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
     Logger& logger = Logger::get_instance();
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -10,7 +10,8 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      * Root.solution = find individual paths by the low level
      * Root.cost = SIC(Root.solution)
      */
-    std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>();
+    std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>(agents.size());
+
     // Set initial constraints to avoid conflicts on initial actions
     for (auto a : agents){
         for (auto b : agents){
@@ -18,7 +19,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
                 auto initialAction = a.getCurrentAction();
                 if (initialAction.isWaitAction()){
                     // Constraint the initial vertex
-                    root->addConstraint(Constraint(b.getId(), initialAction.getLocation(), initialAction.timestamp, initialAction.timestamp + initialAction.duration + TIME_AT_VERTEX));
+                    root->addConstraint(Constraint(b.getId(), initialAction.getLocation(), currentTime, currentTime + TIME_AT_VERTEX));
                 }
                 else {
                     // Constraint the edge action and the vertex it arrives at
@@ -32,7 +33,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
     logger.log("Finding initial paths\n");
     #endif
-    root->setSolution(lowLevel.getAllPaths(graph, agents, std::vector<Constraint>{}), agents);
+    root->setSolution(lowLevel.getAllPaths(graph, agents, root->getConstraints(), currentTime), agents);
     /**
      * Insert Root to OPEN
      */
@@ -79,12 +80,15 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count();
             (*logger.begin()) << "Highlevel solution took " << timeDiff << "[µs]\n"; logger.end();
             #endif
+            #ifdef DEBUG_LOGS_ON
+            Error::log("Found solution with no conflicts\n");
+            #endif
             return p->getSolution();
         }
         /**
          * Get one of the conflicts
          */
-        Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel);
+        Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel, currentTime);
         // Conflict c = conflicts.front();
         #ifdef DEBUG_LOGS_ON
         Error::log(c.toString() + "\n");
@@ -100,7 +104,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              * A <-- new node
              * A.constraints = p.constraints union (ai,v,t)
              */
-            std::shared_ptr<ConstraintTree> a = std::make_shared<ConstraintTree>();//TODO should we connect this to P or is it irrelevant in implementation?
+            std::shared_ptr<ConstraintTree> a = std::make_shared<ConstraintTree>(agents.size());//TODO should we connect this to P or is it irrelevant in implementation?
             a->setConstraints(p->getConstraints());
             Constraint constraint = Constraint(
                 agentId,
@@ -111,35 +115,17 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             
             // Only add the constraint if the agent can avoid it
             auto currentAgentAction = agents[agentId].getCurrentAction();
-            bool constraintIsOnEndVertex = constraint.location == currentAgentAction.endVertex;
-            bool constraintIsOnInitialWaitAction = currentAgentAction.isWaitAction() && constraintIsOnEndVertex;
-            bool constraintIsBeforeDeltaAfterAction = constraint.timeStart <= (currentAgentAction.timestamp + currentAgentAction.duration + TIME_AT_VERTEX);
-            bool constraintIsOnInitialEdgeAction = ! currentAgentAction.isWaitAction()
-             && constraint.location == currentAgentAction.getLocation();
-            bool constraintIsBeforeActionEnds = constraint.timeStart <= (currentAgentAction.timestamp + currentAgentAction.duration);
-            bool constraintIsOnStartVertex = constraint.location == currentAgentAction.startVertex;
-
-            if ((constraintIsOnInitialWaitAction && constraintIsBeforeDeltaAfterAction)
-             || (constraintIsOnInitialEdgeAction && constraintIsBeforeActionEnds)
-             || (constraintIsOnEndVertex && constraintIsBeforeDeltaAfterAction)
-             || (constraintIsOnStartVertex && constraintIsBeforeActionEnds)
-            ){
+            if (ConstraintUtils::constraintCannotBeAvoided(constraint, currentAgentAction)) {
                 continue; // This agent has no way of avoiding the constraint, so it should not be added.
             }
             a->addConstraint(constraint);
-            #ifdef DEBUG_LOGS_ON
-            Error::log("A constraints for agent: \n");
-            for (auto constr : a->getConstraints(agentId)){
-                Error::log(constr.toString() + "\n");
-            }
-            #endif
             /**
              * A.solution <-- P.solution
              * Update A.solution by invoking low level(ai)
              */
             Solution s = p->getSolution();
             try {
-                Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], a->getConstraints(agentId));
+                Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], a->getConstraints(agentId), currentTime);
                 #ifdef DEBUG_LOGS_ON
                 Error::log(newPath.toString() + "\n");
                 #endif
@@ -174,7 +160,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     exit(1);
 }
 
-Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Conflict> conflicts, LowLevelCBS& lowLevel){
+Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Conflict> conflicts, LowLevelCBS& lowLevel, float currentTime){
     if (conflicts.size() == 1) return conflicts.front();
 
     std::vector<Conflict> semiCardinalConflicts;
@@ -203,7 +189,7 @@ Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std
             // Get the new path from low level so we can see if the cost increases
             float currentCost = solution.paths[agentId].cost;
             try{
-                Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], constraints);
+                Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], constraints, currentTime);
                 bool increasesCost = newPath.cost > currentCost;
 
                 if (increasesCost){
@@ -216,6 +202,9 @@ Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std
                     }
                 }
             }catch(std::string exception){
+                #ifdef DEBUG_LOGS_ON
+                Error::log(exception + "\n");
+                #endif
                 continue;
             }
         }

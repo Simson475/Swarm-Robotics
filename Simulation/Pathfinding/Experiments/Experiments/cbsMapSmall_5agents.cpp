@@ -43,19 +43,15 @@ int main(int argc, char *argv[]) {
             auto goalVertex = agentJobs[i][0];// TODO set to actual goal
             agents[i] = AgentInfo(i, Action(0, startVertex, startVertex, 0), goalVertex);
         }
-        for(auto agent : agents){
-            std::cout << agent.getCurrentAction().startVertex->toString() << " --> " << agent.getGoal()->toString() << "\n";
-        }
 
         // Act
         std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
-        Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
+        Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance(), 0);
         while (true){
             // Find the path that finish first (lowest cost path)
             int agentThatFinishFirst = -1;
             float minCost = std::numeric_limits<float>::infinity();
             for (int i = 0; i < agentCount; ++i){
-                std::cout << "Path cost: " << solution.paths[i].cost << " " << solution.paths[i].toString() << "\n";
                 if ( ! agentHasFinished[i]){
                     if (solution.paths[i].cost < minCost){
                         minCost = solution.paths[i].cost;
@@ -66,16 +62,17 @@ int main(int argc, char *argv[]) {
             if (agentThatFinishFirst == -1){
                 break;// We are done
             }
-            std::cout << agentThatFinishFirst << " finished at " << minCost << "\n";
             // Update job for the agent that finished
             if (agentJobs[agentThatFinishFirst].size() > 0){
-                std::cout << "Erasing from a job\n";
                 agentJobs[agentThatFinishFirst].erase(agentJobs[agentThatFinishFirst].begin());
+            }
+            else{
+                agentHasFinished[agentThatFinishFirst] = true;
             }
             // Update the agents to have a new current action at the current time
             for (int i = 0; i < agentCount; ++i){
                 // Current action = 0 duration wait action at time of earlist finished path
-                auto currentAction = Action(minCost, solution.paths[i].actions.back().endVertex, solution.paths[i].actions.back().endVertex, 0);
+                auto currentAction = solution.paths[i].actions.back();// Action(minCost, solution.paths[i].actions.back().endVertex, solution.paths[i].actions.back().endVertex, 0);
                 // Since the above is only true for the finishing agent, we need to find the current action for the rest
                 for (auto& action : solution.paths[i].actions){
                     // Get the first action that did not end yet
@@ -84,17 +81,13 @@ int main(int argc, char *argv[]) {
                         break;
                     }
                 }
-                std::cout << "Current action = " << currentAction.toString();
-                std::cout << "Updating agents\n";
                 auto goalVertex = agentJobs[i].size() > 0 ? agentJobs[i].front() : vertices[spawnPointVertexIndexOffset + i];
                 agents[i] = AgentInfo(i, currentAction, goalVertex);
             }
-            std::cout << "Going to find new solution\n";
-            for(auto agent : agents){
-                std::cout << agent.getCurrentAction().startVertex->toString() << " --> " << agent.getGoal()->toString() << "\n";
-            }
             // Find new solution
-            solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
+            if ( ! agentHasFinished[agentThatFinishFirst]){
+                solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance(), minCost);
+            }
             // Repeat until all jobs are done...
         }
         auto experimentTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - experimentBeginTime).count();

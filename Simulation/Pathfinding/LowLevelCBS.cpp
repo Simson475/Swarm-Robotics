@@ -1,6 +1,20 @@
 #include "LowLevelCBS.hpp"
 
 /**
+ * Current problems
+ * - Constraints probably need to be sorted in order of starting time
+ * - The current time is needed when calculating the plans unless the current action starts at the exact time we are at
+ *   - Should be simplest by modifying timestamp to the current time for all actions before calling highlevel?
+ * - If we split goal actions during second plan generation we need to fix it in the controllers so they leave working state to follow plan
+ *   - 
+ * - We hit a blocked goal problem, that needs fixing
+ */
+/**
+ * Current room for improvement
+ * - Actions etc can most likely be references and speed things up
+ */
+
+/**
  * PRE: all the constraints must be for the agent
  * 
  * @param graph 
@@ -8,7 +22,13 @@
  * @param constraints 
  * @return Path 
  */
-Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agent, std::vector<Constraint> constraints){
+Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agent, std::vector<Constraint> constraints, float currentTime){
+    #ifdef DEBUG_LOGS_ON
+    Error::log("A constraints for agent: \n");
+    for (auto constr : constraints){
+        Error::log(constr.toString() + "\n");
+    }
+    #endif
     #ifdef LOWLEVEL_ANALYSIS_LOGS_ON
     Logger& logger = Logger::get_instance();
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -18,9 +38,19 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     Action firstAction = agent.getCurrentAction();
     std::shared_ptr<Vertex> goal = agent.getGoal();
 
-    // If the first action is a goal work action, do nothing
-    if ((firstAction.duration == TIME_AT_GOAL || firstAction.duration == 0) && firstAction.isWaitAction() && firstAction.getLocation() == goal){
-        return {{firstAction}, firstAction.timestamp + firstAction.duration };
+    // If the initial action is a wait action we can reduce the wait time if there is a constraint on it
+    if (firstAction.isWaitAction() && ConstraintUtils::isViolatingConstraint(constraints, firstAction)){
+        Constraint constraint = ConstraintUtils::getViolatedConstraint(constraints, firstAction);
+        float timeUntilConstraint = constraint.timeStart - currentTime;
+        if (timeUntilConstraint <= TIME_AT_VERTEX){
+            throw std::string("No path could be found\n");
+        }
+        firstAction.duration = timeUntilConstraint - TIME_AT_VERTEX;
+    }
+    
+    // If the first action is the goal action (special case if duration == 0, since it means the agent is done and needs no path)
+    if (firstAction.isWaitAction() && firstAction.endVertex == goal && (firstAction.duration == TIME_AT_GOAL || firstAction.duration == 0)){
+        return {{firstAction}, firstAction.timestamp + firstAction.duration};
     }
 
     // Compute path from after the current action
@@ -108,11 +138,11 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     throw std::string("No path could be found\n");
 }
 
-std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Constraint> constraints){
+std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<std::vector<Constraint>> constraints, float currentTime){
     std::vector<Path> paths{agents.size()};
     int i = 0;
     for (AgentInfo agent : agents){
-        paths[i] = getIndividualPath(graph, agent, constraints);
+        paths[i] = getIndividualPath(graph, agent, constraints[agent.getId()], currentTime);
         i++;
     }
     return paths;
@@ -127,14 +157,14 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
         bool edgeIsPossible = true;
         for (Constraint &constraint : constraints){
             // Edge constraints
-            if (isViolatingConstraint(constraint, edge, currentTime)){
+            if (ConstraintUtils::isViolatingConstraint(constraint, edge, currentTime)){
                 minWaitTime = std::min(minWaitTime, constraint.timeEnd + DELTA);
                 edgeIsPossible = false;
                 continue;
             }
 
             // Vertex constraints
-            if (isViolatingConstraint(constraint, edge->getEndVertex(), currentTime + edge->getCost(), currentTime + edge->getCost() + TIME_AT_VERTEX)){
+            if (ConstraintUtils::isViolatingConstraint(constraint, edge->getEndVertex(), currentTime + edge->getCost(), currentTime + edge->getCost() + TIME_AT_VERTEX)){
                 minWaitTime = std::min(minWaitTime, constraint.timeEnd - (currentTime + edge->getCost()) + DELTA);
                 edgeIsPossible = false;
                 continue;
@@ -158,7 +188,7 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
 
     // Wait action
     for (Constraint &constraint : constraints){
-        if (isViolatingConstraint(constraint, vertex, currentTime + minWaitTime, currentTime + minWaitTime + TIME_AT_VERTEX)){
+        if (ConstraintUtils::isViolatingConstraint(constraint, vertex, currentTime + minWaitTime, currentTime + minWaitTime + TIME_AT_VERTEX)){
             return actions;// We cant wait here to take the edge that set min wait time, so no point in waiting here.
         }
     }
@@ -168,67 +198,9 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
 }
 
 /**
- * PRE: The constraint and action are for the same agent
- * 
- * @param constraint 
- * @param action 
- * @return true
- * @return false 
- */
-bool LowLevelCBS::isViolatingConstraint(Constraint constraint, Action action){
-    if (constraint.location.type == ELocationType::EDGE_LOCATION){
-        if (action.isWaitAction()) return false;
-        auto edge = action.startVertex->getEdge(action.endVertex);
-        return isViolatingConstraint(constraint, edge, action.timestamp);
-    }
-    return isViolatingConstraint(constraint, action.endVertex, action.timestamp + action.duration, action.timestamp + action.duration);
-}
-
-/**
- * PRE: The constraint and action are for the same agent
- * 
- * @param constraint 
- * @param action 
- * @return true
- * @return false 
- */
-bool LowLevelCBS::isViolatingConstraint(Constraint constraint, std::shared_ptr<Edge> edge, float startTime){
-    // Within constraint timespan
-    float maxStart = std::max(constraint.timeStart, startTime);
-    float minEnd = std::min(constraint.timeEnd, startTime + edge->getCost());
-    bool withinConstraintsTimespan = maxStart <= minEnd;
-    if (withinConstraintsTimespan == false) return false;
-
-    // Violating constraint location
-    return (constraint.location.type == ELocationType::EDGE_LOCATION
-         && edge == constraint.location.edge);
-}
-
-/**
- * PRE: The constraint and action are for the same agent
- * 
- * @param constraint 
- * @param action 
- * @return true
- * @return false 
- */
-bool LowLevelCBS::isViolatingConstraint(Constraint constraint, std::shared_ptr<Vertex> vertex, float startTime, float endTime){
-    // Within constraint timespan
-    float maxStart = std::max(constraint.timeStart, startTime);
-    float minEnd = std::min(constraint.timeEnd, endTime);
-    bool withinConstraintsTimespan = maxStart <= minEnd;
-    if (withinConstraintsTimespan == false) return false;
-
-    // Violating constraint location
-    return (constraint.location.type == ELocationType::VERTEX_LOCATION
-         && vertex == constraint.location.vertex);
-}
-
-
-/**
  * PRE: action ends at goal
  * 
- * @param action 
+ * @param action
  * @param goal 
  * @param constraints 
  * @return true 
@@ -237,7 +209,7 @@ bool LowLevelCBS::isViolatingConstraint(Constraint constraint, std::shared_ptr<V
 bool LowLevelCBS::canWorkAtGoalWithoutViolatingConstraints(Action action, std::shared_ptr<Vertex> goal, std::vector<Constraint> constraints){
     float arrivalTime = action.timestamp + action.duration;
     for (auto c : constraints){
-        if (isViolatingConstraint(c, goal, arrivalTime, arrivalTime + TIME_AT_GOAL + TIME_AT_VERTEX)){
+        if (ConstraintUtils::isViolatingConstraint(c, goal, arrivalTime, arrivalTime + TIME_AT_GOAL + TIME_AT_VERTEX)){
             return false;
         }
     }

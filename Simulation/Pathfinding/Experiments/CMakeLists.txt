@@ -37,6 +37,8 @@ set(PathfindingFiles
     ${PathfindingDir}/Debugging.hpp
     ${PathfindingDir}/Logger.hpp
     ${PathfindingDir}/Logger.cpp
+    ${PathfindingDir}/ConstraintUtils.hpp
+    ${PathfindingDir}/ConstraintUtils.cpp
 )
 
 # Emit all warning messages
