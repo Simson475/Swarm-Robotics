@@ -33,7 +33,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
     logger.log("Finding initial paths\n");
     #endif
-    root->setSolution(lowLevel.getAllPaths(graph, agents, root->getConstraints(), currentTime), agents);
+    root->setSolution(lowLevel.getAllPaths(graph, agents, root->getConstraints()), agents);
     /**
      * Insert Root to OPEN
      */
@@ -88,7 +88,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         /**
          * Get one of the conflicts
          */
-        Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel, currentTime);
+        Conflict c = getBestConflict(p, graph, agents, conflicts, lowLevel);
         // Conflict c = conflicts.front();
         #ifdef DEBUG_LOGS_ON
         Error::log(c.toString() + "\n");
@@ -125,7 +125,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
              */
             Solution s = p->getSolution();
             try {
-                Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], a->getConstraints(agentId), currentTime);
+                Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], a->getConstraints(agentId));
                 #ifdef DEBUG_LOGS_ON
                 Error::log(newPath.toString() + "\n");
                 #endif
@@ -160,7 +160,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     exit(1);
 }
 
-Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Conflict> conflicts, LowLevelCBS& lowLevel, float currentTime){
+Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Conflict> conflicts, LowLevelCBS& lowLevel){
     if (conflicts.size() == 1) return conflicts.front();
 
     std::vector<Conflict> semiCardinalConflicts;
@@ -189,7 +189,7 @@ Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std
             // Get the new path from low level so we can see if the cost increases
             float currentCost = solution.paths[agentId].cost;
             try{
-                Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], constraints, currentTime);
+                Path newPath = lowLevel.getIndividualPath(graph, agents[agentId], constraints);
                 bool increasesCost = newPath.cost > currentCost;
 
                 if (increasesCost){

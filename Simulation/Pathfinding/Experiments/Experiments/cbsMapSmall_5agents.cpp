@@ -71,7 +71,6 @@ int main(int argc, char *argv[]) {
             }
             // Update the agents to have a new current action at the current time
             for (int i = 0; i < agentCount; ++i){
-                // Current action = 0 duration wait action at time of earlist finished path
                 auto currentAction = solution.paths[i].actions.back();// Action(minCost, solution.paths[i].actions.back().endVertex, solution.paths[i].actions.back().endVertex, 0);
                 // Since the above is only true for the finishing agent, we need to find the current action for the rest
                 for (auto& action : solution.paths[i].actions){
@@ -83,18 +82,12 @@ int main(int argc, char *argv[]) {
                 }
                 auto goalVertex = agentJobs[i].size() > 0 ? agentJobs[i].front() : vertices[spawnPointVertexIndexOffset + i];
                 bool isWorking = currentAction.isWaitAction() && currentAction.endVertex == goalVertex && currentAction.duration == TIME_AT_GOAL;
-                agents[i] = AgentInfo(i, currentAction, goalVertex, isWorking);
+                bool shouldWorkAtGoal = (goalVertex != vertices[spawnPointVertexIndexOffset + i]);
+                agents[i] = AgentInfo(i, currentAction, goalVertex, isWorking, shouldWorkAtGoal);
             }
             // Find new solution
             if ( ! agentHasFinished[agentThatFinishFirst]){
                 solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance(), minCost);
-                // Strip the final wait action from path if it is just returning to the initial position
-                for (int i = 0; i < agentCount; ++i){
-                    if (agents[i].getGoal() == vertices[spawnPointVertexIndexOffset + i]){
-                        solution.paths[i].actions.erase(solution.paths[i].actions.end());
-                        solution.paths[i].cost -= TIME_AT_GOAL;
-                    }
-                }
             }
             // Repeat until all jobs are done...
         }

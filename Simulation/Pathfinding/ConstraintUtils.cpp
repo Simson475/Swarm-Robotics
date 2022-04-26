@@ -83,6 +83,9 @@ Constraint ConstraintUtils::getViolatedConstraint(std::vector<Constraint> constr
 
 bool ConstraintUtils::constraintCannotBeAvoided(Constraint constraint, Action action){
     if (action.isWaitAction()){
+        if (action.duration == TIME_AT_GOAL){
+            return ConstraintUtils::isViolatingConstraint(constraint, action.endVertex, action.timestamp, action.timestamp + action.duration + TIME_AT_VERTEX);
+        }
         // We can avoid it if we can reduce the wait time and avoid violating it
         return ConstraintUtils::isViolatingConstraint(constraint, action.endVertex, action.timestamp, action.timestamp + TIME_AT_VERTEX);
     }

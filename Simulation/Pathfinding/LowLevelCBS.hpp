@@ -29,8 +29,8 @@ public:
         static LowLevelCBS instance;
         return instance;
     }
-    Path getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agent, std::vector<Constraint> constraints, float currentTime = 0);
-    std::vector<Path> getAllPaths(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<std::vector<Constraint>> constraints, float currentTime = 0);
+    Path getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agent, std::vector<Constraint> constraints);
+    std::vector<Path> getAllPaths(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<std::vector<Constraint>> constraints);
     uint iterations = 0;
     unsigned long int totalIterations = 0;
 protected:

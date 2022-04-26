@@ -28,10 +28,6 @@ Path ActionPathAux::getPath() const{
     // Adding timestamp, so the cost is the complete cost it took to reach this from start
     path.cost += path.actions.front().timestamp;
     
-    // Add a wait action at the end which is the work time
-    path.actions.push_back(Action(path.cost, this->action.endVertex, this->action.endVertex, TIME_AT_GOAL));
-    path.cost += TIME_AT_GOAL;
-    
     return path;
 }
 

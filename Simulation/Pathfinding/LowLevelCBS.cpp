@@ -8,7 +8,7 @@
  * @param constraints 
  * @return Path 
  */
-Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agent, std::vector<Constraint> constraints, float currentTime){
+Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agent, std::vector<Constraint> constraints){
     #ifdef DEBUG_LOGS_ON
     Error::log("A constraints for agent: \n");
     for (auto constr : constraints){
@@ -23,24 +23,17 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     std::shared_ptr<Vertex> u;
     Action firstAction = agent.getCurrentAction();
     std::shared_ptr<Vertex> goal = agent.getGoal();
-
-    // If the initial action is a wait action we can reduce the wait time if there is a constraint on it
-    if (firstAction.isWaitAction() && ConstraintUtils::isViolatingConstraint(constraints, firstAction)){
-        // But only if the agent is not working. We can't cancel a working robot
-        if (agent.isWorking()){
-            throw std::string("No path could be found\n");
-        }
-        Constraint constraint = ConstraintUtils::getViolatedConstraint(constraints, firstAction);
-        float timeUntilConstraint = constraint.timeStart - currentTime;
-        if (timeUntilConstraint <= TIME_AT_VERTEX){
-            throw std::string("No path could be found\n");
-        }
-        firstAction.duration = timeUntilConstraint - TIME_AT_VERTEX;
-    }
     
     // If the first action is the goal action (special case if duration == 0, since it means the agent is done and needs no path)
     if (firstAction.isWaitAction() && firstAction.endVertex == goal && (firstAction.duration == TIME_AT_GOAL || firstAction.duration == 0)){
         return {{firstAction}, firstAction.timestamp + firstAction.duration};
+    }
+    // If the first action is not a goal action
+    if (firstAction.isWaitAction() && firstAction.duration != TIME_AT_GOAL){
+        firstAction.duration = 0;
+        if (ConstraintUtils::isViolatingConstraint(constraints, firstAction)){
+            throw std::string("No path could be found\n");
+        }
     }
 
     // Compute path from after the current action
@@ -67,7 +60,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
             Error::log("Max iterations reached.\n");
             exit(1);
         }
-        if (top.action.endVertex == goal && canWorkAtGoalWithoutViolatingConstraints(top.action, goal, constraints)){
+        if (top.action.endVertex == goal && (canWorkAtGoalWithoutViolatingConstraints(top.action, goal, constraints) || ! agent.shouldWorkAtGoal())){
             this->totalIterations += this->iterations;
             #ifdef LOWLEVEL_ANALYSIS_LOGS_ON
             std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
@@ -75,6 +68,16 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
             (*logger.begin()) << this->iterations << " iterations took " << timeDiff << "[µs] for low level individual path\n"; logger.end();
             #endif
             // Return the path, we have found a path that violates no constraints.
+            #ifdef DEBUG_LOGS_ON
+            Error::log(top.getPath().toString() + "\n");
+            #endif
+            if (agent.shouldWorkAtGoal()){
+                top = ActionPathAux(
+                    Action(top.action.timestamp + top.action.duration, goal, goal, TIME_AT_GOAL),
+                    0,
+                    std::make_shared<ActionPathAux>(top)
+                );
+            }
             return top.getPath();
         }
 
@@ -128,11 +131,11 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     throw std::string("No path could be found\n");
 }
 
-std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<std::vector<Constraint>> constraints, float currentTime){
+std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<std::vector<Constraint>> constraints){
     std::vector<Path> paths{agents.size()};
     int i = 0;
     for (AgentInfo agent : agents){
-        paths[i] = getIndividualPath(graph, agent, constraints[agent.getId()], currentTime);
+        paths[i] = getIndividualPath(graph, agent, constraints[agent.getId()]);
         i++;
     }
     return paths;
