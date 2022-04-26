@@ -1,20 +1,6 @@
 #include "LowLevelCBS.hpp"
 
 /**
- * Current problems
- * - Constraints probably need to be sorted in order of starting time
- * - The current time is needed when calculating the plans unless the current action starts at the exact time we are at
- *   - Should be simplest by modifying timestamp to the current time for all actions before calling highlevel?
- * - If we split goal actions during second plan generation we need to fix it in the controllers so they leave working state to follow plan
- *   - 
- * - We hit a blocked goal problem, that needs fixing
- */
-/**
- * Current room for improvement
- * - Actions etc can most likely be references and speed things up
- */
-
-/**
  * PRE: all the constraints must be for the agent
  * 
  * @param graph 
@@ -40,6 +26,10 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
 
     // If the initial action is a wait action we can reduce the wait time if there is a constraint on it
     if (firstAction.isWaitAction() && ConstraintUtils::isViolatingConstraint(constraints, firstAction)){
+        // But only if the agent is not working. We can't cancel a working robot
+        if (agent.isWorking()){
+            throw std::string("No path could be found\n");
+        }
         Constraint constraint = ConstraintUtils::getViolatedConstraint(constraints, firstAction);
         float timeUntilConstraint = constraint.timeStart - currentTime;
         if (timeUntilConstraint <= TIME_AT_VERTEX){
