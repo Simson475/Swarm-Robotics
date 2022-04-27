@@ -42,6 +42,8 @@ set(PathfindingFiles
     ${PathfindingDir}/Debugging.hpp
     ${PathfindingDir}/Logger.hpp
     ${PathfindingDir}/Logger.cpp
+    ${PathfindingDir}/ConstraintUtils.hpp
+    ${PathfindingDir}/ConstraintUtils.cpp
 )
 
 set(UNIT_TESTS ./Unit)

@@ -12,6 +12,8 @@ class ConstraintTree;
 
 class ConstraintTree {
 public:
+    ConstraintTree();
+    ConstraintTree(int agentCount);
     /* Tree elements */
     std::shared_ptr<ConstraintTree> getParent();
     void setChildren(std::vector<std::shared_ptr<ConstraintTree>> children);
@@ -32,8 +34,8 @@ public:
     Conflict getFollowConflict(std::vector<int> conflictAgents, Action a1, Action a2);
     Conflict getSwapConflict(std::vector<int> conflictAgents, Action a1, Action a2);
     std::vector<Constraint> getConstraints(int agent);
-    std::vector<Constraint> getConstraints();
-    void setConstraints(std::vector<Constraint> constraints);
+    std::vector<std::vector<Constraint>> getConstraints();
+    void setConstraints(std::vector<std::vector<Constraint>> constraints);
     void addConstraint(Constraint constraint);
 
 private:
@@ -44,7 +46,7 @@ private:
     bool actionsOverlap(Action a1, Action a2);
     bool arriveWithinTimeAtVertex(Action a1, Action a2);
     bool arriveWithinActionAndTimeAtVertex(Action a1, Action a2);
-    std::vector<Constraint> constraints;
+    std::vector<std::vector<Constraint>> constraints;
 };
 
 #endif

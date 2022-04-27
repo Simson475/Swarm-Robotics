@@ -9,7 +9,13 @@
  * @return Path 
  */
 Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agent, std::vector<Constraint> constraints){
-    #ifdef EXPERIMENT
+    #ifdef DEBUG_LOGS_ON
+    Error::log("A constraints for agent: \n");
+    for (auto constr : constraints){
+        Error::log(constr.toString() + "\n");
+    }
+    #endif
+    #ifdef LOWLEVEL_ANALYSIS_LOGS_ON
     Logger& logger = Logger::get_instance();
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     #endif
@@ -17,6 +23,18 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     std::shared_ptr<Vertex> u;
     Action firstAction = agent.getCurrentAction();
     std::shared_ptr<Vertex> goal = agent.getGoal();
+    
+    // If the first action is the goal action (special case if duration == 0, since it means the agent is done and needs no path)
+    if (firstAction.isWaitAction() && firstAction.endVertex == goal && (firstAction.duration == TIME_AT_GOAL || firstAction.duration == 0)){
+        return {{firstAction}, firstAction.timestamp + firstAction.duration};
+    }
+    // If the first action is not a goal action
+    if (firstAction.isWaitAction() && firstAction.duration != TIME_AT_GOAL){
+        firstAction.duration = 0;
+        if (ConstraintUtils::isViolatingConstraint(constraints, firstAction)){
+            throw std::string("No path could be found\n");
+        }
+    }
 
     // Compute path from after the current action
     std::priority_queue<ActionPathAux, std::vector<ActionPathAux>, std::greater<ActionPathAux>> priorityQueue{};
@@ -42,16 +60,24 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
             Error::log("Max iterations reached.\n");
             exit(1);
         }
-        if (top.action.endVertex == goal && canWorkAtGoalWithoutViolatingConstraints(top.action, goal, constraints)){
+        if (top.action.endVertex == goal && (canWorkAtGoalWithoutViolatingConstraints(top.action, goal, constraints) || ! agent.shouldWorkAtGoal())){
             this->totalIterations += this->iterations;
-            #ifdef EXPERIMENT
-            if (Logger::enabled) {
-                std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-                auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-                (*logger.begin()) << this->iterations << " iterations took " << timeDiff << "[µs] for low level individual path\n"; logger.end();
-            }
+            #ifdef LOWLEVEL_ANALYSIS_LOGS_ON
+            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+            auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+            (*logger.begin()) << this->iterations << " iterations took " << timeDiff << "[µs] for low level individual path\n"; logger.end();
             #endif
             // Return the path, we have found a path that violates no constraints.
+            #ifdef DEBUG_LOGS_ON
+            Error::log(top.getPath().toString() + "\n");
+            #endif
+            if (agent.shouldWorkAtGoal()){
+                top = ActionPathAux(
+                    Action(top.action.timestamp + top.action.duration, goal, goal, TIME_AT_GOAL),
+                    0,
+                    std::make_shared<ActionPathAux>(top)
+                );
+            }
             return top.getPath();
         }
 
@@ -105,11 +131,11 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     throw std::string("No path could be found\n");
 }
 
-std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Constraint> constraints){
+std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<std::vector<Constraint>> constraints){
     std::vector<Path> paths{agents.size()};
     int i = 0;
     for (AgentInfo agent : agents){
-        paths[i] = getIndividualPath(graph, agent, constraints);
+        paths[i] = getIndividualPath(graph, agent, constraints[agent.getId()]);
         i++;
     }
     return paths;
@@ -124,14 +150,14 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
         bool edgeIsPossible = true;
         for (Constraint &constraint : constraints){
             // Edge constraints
-            if (isViolatingConstraint(constraint, edge, currentTime)){
+            if (ConstraintUtils::isViolatingConstraint(constraint, edge, currentTime)){
                 minWaitTime = std::min(minWaitTime, constraint.timeEnd + DELTA);
                 edgeIsPossible = false;
                 continue;
             }
 
             // Vertex constraints
-            if (isViolatingConstraint(constraint, edge->getEndVertex(), currentTime + edge->getCost(), currentTime + edge->getCost() + TIME_AT_VERTEX)){
+            if (ConstraintUtils::isViolatingConstraint(constraint, edge->getEndVertex(), currentTime + edge->getCost(), currentTime + edge->getCost() + TIME_AT_VERTEX)){
                 minWaitTime = std::min(minWaitTime, constraint.timeEnd - (currentTime + edge->getCost()) + DELTA);
                 edgeIsPossible = false;
                 continue;
@@ -155,7 +181,7 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
 
     // Wait action
     for (Constraint &constraint : constraints){
-        if (isViolatingConstraint(constraint, vertex, currentTime + minWaitTime, currentTime + minWaitTime + TIME_AT_VERTEX)){
+        if (ConstraintUtils::isViolatingConstraint(constraint, vertex, currentTime + minWaitTime, currentTime + minWaitTime + TIME_AT_VERTEX)){
             return actions;// We cant wait here to take the edge that set min wait time, so no point in waiting here.
         }
     }
@@ -165,67 +191,9 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
 }
 
 /**
- * PRE: The constraint and action are for the same agent
- * 
- * @param constraint 
- * @param action 
- * @return true
- * @return false 
- */
-bool LowLevelCBS::isViolatingConstraint(Constraint constraint, Action action){
-    if (constraint.location.type == ELocationType::EDGE_LOCATION){
-        if (action.isWaitAction()) return false;
-        auto edge = action.startVertex->getEdge(action.endVertex);
-        return isViolatingConstraint(constraint, edge, action.timestamp);
-    }
-    return isViolatingConstraint(constraint, action.endVertex, action.timestamp + action.duration, action.timestamp + action.duration);
-}
-
-/**
- * PRE: The constraint and action are for the same agent
- * 
- * @param constraint 
- * @param action 
- * @return true
- * @return false 
- */
-bool LowLevelCBS::isViolatingConstraint(Constraint constraint, std::shared_ptr<Edge> edge, float startTime){
-    // Within constraint timespan
-    float maxStart = std::max(constraint.timeStart, startTime);
-    float minEnd = std::min(constraint.timeEnd, startTime + edge->getCost());
-    bool withinConstraintsTimespan = maxStart <= minEnd;
-    if (withinConstraintsTimespan == false) return false;
-
-    // Violating constraint location
-    return (constraint.location.type == ELocationType::EDGE_LOCATION
-         && edge == constraint.location.edge);
-}
-
-/**
- * PRE: The constraint and action are for the same agent
- * 
- * @param constraint 
- * @param action 
- * @return true
- * @return false 
- */
-bool LowLevelCBS::isViolatingConstraint(Constraint constraint, std::shared_ptr<Vertex> vertex, float startTime, float endTime){
-    // Within constraint timespan
-    float maxStart = std::max(constraint.timeStart, startTime);
-    float minEnd = std::min(constraint.timeEnd, endTime);
-    bool withinConstraintsTimespan = maxStart <= minEnd;
-    if (withinConstraintsTimespan == false) return false;
-
-    // Violating constraint location
-    return (constraint.location.type == ELocationType::VERTEX_LOCATION
-         && vertex == constraint.location.vertex);
-}
-
-
-/**
  * PRE: action ends at goal
  * 
- * @param action 
+ * @param action
  * @param goal 
  * @param constraints 
  * @return true 
@@ -234,7 +202,7 @@ bool LowLevelCBS::isViolatingConstraint(Constraint constraint, std::shared_ptr<V
 bool LowLevelCBS::canWorkAtGoalWithoutViolatingConstraints(Action action, std::shared_ptr<Vertex> goal, std::vector<Constraint> constraints){
     float arrivalTime = action.timestamp + action.duration;
     for (auto c : constraints){
-        if (isViolatingConstraint(c, goal, arrivalTime, arrivalTime + TIME_AT_GOAL)){
+        if (ConstraintUtils::isViolatingConstraint(c, goal, arrivalTime, arrivalTime + TIME_AT_GOAL + TIME_AT_VERTEX)){
             return false;
         }
     }

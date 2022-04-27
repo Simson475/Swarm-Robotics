@@ -3,7 +3,7 @@
 
 void ConstraintTreeTests::it_can_find_swap_conflicts(){
     // Arrange
-    ConstraintTree ct;
+    ConstraintTree ct = ConstraintTree(0);
     Solution solution;
     Path p1, p2;
     /**
@@ -44,7 +44,7 @@ void ConstraintTreeTests::it_can_find_swap_conflicts(){
 
 void ConstraintTreeTests::it_can_find_edge_conflicts(){
     // Arrange
-    ConstraintTree ct;
+    ConstraintTree ct = ConstraintTree(0);
     Solution solution;
     Path p1, p2;
     /**
@@ -151,7 +151,7 @@ void ConstraintTreeTests::it_can_find_vertex_conflicts_moving_to_same_vertex(){
 
 void ConstraintTreeTests::it_can_find_vertex_conflicts_waiting_on_same_vertex(){
     // Arrange
-    ConstraintTree ct;
+    ConstraintTree ct = ConstraintTree(0);
     Solution solution;
     Path p1, p2;
     auto v1 = std::make_shared<Vertex>(0);
@@ -290,9 +290,9 @@ void ConstraintTreeTests::it_gets_sorted_in_priority_queue(){
     s1.paths = { p1 };
     s2.paths = { p2 };
     s3.paths = { p3 };
-    auto ct3 = std::make_shared<ConstraintTree>();
-    auto ct1 = std::make_shared<ConstraintTree>();
-    auto ct2 = std::make_shared<ConstraintTree>();
+    auto ct3 = std::make_shared<ConstraintTree>(0);
+    auto ct1 = std::make_shared<ConstraintTree>(0);
+    auto ct2 = std::make_shared<ConstraintTree>(0);
     ct1->setSolution(s1);
     ct2->setSolution(s2);
     ct3->setSolution(s3);
@@ -316,7 +316,7 @@ void ConstraintTreeTests::it_gets_sorted_in_priority_queue(){
 
 void ConstraintTreeTests::it_is_vertex_conflict(){
     // Arrange
-    ConstraintTree ct;
+    ConstraintTree ct = ConstraintTree(0);
     Action a1, a2;
     auto v1 = std::make_shared<Vertex>(1);
     auto v2 = std::make_shared<Vertex>(2);
@@ -345,7 +345,7 @@ void ConstraintTreeTests::it_is_vertex_conflict(){
 
 void ConstraintTreeTests::it_is_edge_conflict(){
     // Arrange
-    ConstraintTree ct;
+    ConstraintTree ct = ConstraintTree(0);
     Action a1, a2;
     auto v1 = std::make_shared<Vertex>(1);
     auto v2 = std::make_shared<Vertex>(2);
@@ -366,7 +366,7 @@ void ConstraintTreeTests::it_is_edge_conflict(){
 
 void ConstraintTreeTests::it_is_swap_conflict(){
     // Arrange
-    ConstraintTree ct;
+    ConstraintTree ct = ConstraintTree(0);
     Action a1, a2;
     auto v1 = std::make_shared<Vertex>(1);
     auto v2 = std::make_shared<Vertex>(2);
@@ -389,7 +389,7 @@ void ConstraintTreeTests::it_is_swap_conflict(){
 
 void ConstraintTreeTests::it_is_follow_conflict(){
     // Arrange
-    ConstraintTree ct;
+    ConstraintTree ct = ConstraintTree(0);
     Action a1, a2;
     auto v1 = std::make_shared<Vertex>(1);
     auto v2 = std::make_shared<Vertex>(2);
@@ -412,7 +412,7 @@ void ConstraintTreeTests::it_is_follow_conflict(){
 
 void ConstraintTreeTests::it_can_get_vertex_conflict(){
     // Arrange
-    ConstraintTree ct;
+    ConstraintTree ct = ConstraintTree(2);
     Action a1, a2;
     auto v1 = std::make_shared<Vertex>(1);
     auto v2 = std::make_shared<Vertex>(2);
@@ -434,7 +434,7 @@ void ConstraintTreeTests::it_can_get_vertex_conflict(){
 
 void ConstraintTreeTests::it_can_get_follow_conflict(){
     // Arrange
-    ConstraintTree ct;
+    ConstraintTree ct = ConstraintTree(2);
     Action a1, a2;
     auto v1 = std::make_shared<Vertex>(1);
     auto v2 = std::make_shared<Vertex>(2);
@@ -456,7 +456,7 @@ void ConstraintTreeTests::it_can_get_follow_conflict(){
 
 void ConstraintTreeTests::it_can_get_edge_conflict(){
     // Arrange
-    ConstraintTree ct;
+    ConstraintTree ct = ConstraintTree(2);
     Action a1, a2;
     auto v1 = std::make_shared<Vertex>(1);
     auto v2 = std::make_shared<Vertex>(2);
@@ -485,7 +485,7 @@ void ConstraintTreeTests::it_can_get_edge_conflict(){
 
 void ConstraintTreeTests::it_can_get_swap_conflict(){
     // Arrange
-    ConstraintTree ct;
+    ConstraintTree ct = ConstraintTree(2);
     Action a1, a2;
     auto v1 = std::make_shared<Vertex>(1);
     auto v2 = std::make_shared<Vertex>(2);
