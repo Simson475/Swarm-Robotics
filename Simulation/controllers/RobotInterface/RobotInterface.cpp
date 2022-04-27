@@ -135,7 +135,6 @@ void RobotInterface::Init(argos::TConfigurationNode &t_node) {
 */
 void RobotInterface::ControlStep() {
 
-
     if (currentState == state::waiting) {
         wait();
     }
