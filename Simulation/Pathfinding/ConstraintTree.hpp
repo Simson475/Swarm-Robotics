@@ -21,7 +21,7 @@ public:
     /* More CBS specific */
     Solution getSolution();
     void setSolution(Solution);
-    void setSolution(std::vector<Path>, std::vector<AgentInfo>);
+    void setSolution(std::vector<Path>);
     std::vector<Conflict> findConflicts();
     float getCost();
     bool operator() (std::shared_ptr<ConstraintTree> a, std::shared_ptr<ConstraintTree> b);//Comparison function for priority queue

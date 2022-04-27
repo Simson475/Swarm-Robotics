@@ -25,7 +25,7 @@ void ConstraintTree::setSolution(Solution s){
  * @param paths 
  * @param agents 
  */
-void ConstraintTree::setSolution(std::vector<Path> paths, std::vector<AgentInfo> agents){
+void ConstraintTree::setSolution(std::vector<Path> paths){
     Solution solution;
     solution.paths = paths;
     setSolution(solution);

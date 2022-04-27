@@ -43,7 +43,7 @@ protected:
     Action currentAction;
     std::vector<int> getNextPointAndUpdateState();
     void updateCurrentLocation(Action currentAction);
-
+    bool resyncNeeded();
     float waitClock;
     void startWaiting();
 

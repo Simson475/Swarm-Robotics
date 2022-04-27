@@ -10,6 +10,10 @@ std::vector<int> TestController::constructStationPlan(){
 std::vector<int> TestController::constructWaypointPlan(){
     // If we already have a plan
     if ( ! path.actions.empty()){
+        if(resyncNeeded()){
+            Error::log("Conflict because of desync \n");
+            ExperimentData::get_instance().requestSolution(agentId);
+        }
         return getNextPointAndUpdateState();
     }
 
@@ -46,6 +50,47 @@ std::vector<int> TestController::getNextPointAndUpdateState(){
     }
 
     return vec;
+}
+
+bool TestController::resyncNeeded(){
+    //Resync if Argos caused desync
+    Action& action = path.actions.front();
+    float actualTime = ExperimentData::get_instance().getSimulationTime();
+    float timeDiff = actualTime - action.timestamp;
+    Error::log("timeDifference is" + std::to_string(timeDiff) + "\n");
+    // if(std::abs(timeDiff) >150){
+    // if (timeDiff<0){
+    //     path.actions.insert(path.actions.begin(), Action(actualTime, action.startVertex, action.startVertex,-timeDiff));
+    //     for (Action a : path.actions){
+    //         a.timestamp += -timeDiff;
+    //     }
+    // } else if (timeDiff >0){
+    //     for (std::shared_ptr<Agent> agent : ExperimentData::get_instance().getAgents()){
+    //         auto bot = agent->getBot();
+    //         auto currentAction = bot->getCurrentAction();
+    //         bot->path.actions.insert(bot->path.actions.begin(), Action(currentAction.timestamp+currentAction.duration, currentAction.endVertex, currentAction.endVertex,timeDiff));
+    //         for (Action a : bot->path.actions){
+    //         a.timestamp += timeDiff;
+    //         }
+    //     }
+    // }
+    // }
+    action.timestamp += timeDiff;
+    for (Action a : path.actions){
+        a.timestamp += timeDiff;
+    }
+
+    //See if the resynced times cause conflicts
+    std::vector<Path> allAgentPaths;
+    for (std::shared_ptr<Agent> agent : ExperimentData::get_instance().getAgents()){
+        allAgentPaths.push_back(agent->getBot()->path);
+        
+    }
+    std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>();
+    root->setSolution(allAgentPaths);
+    int conflicts = root->findConflicts().size();
+    
+    return conflicts;
 }
 
 int TestController::getAgentId(){
@@ -104,7 +149,6 @@ void TestController::wait(){
 }
 
 void TestController::setCurrentAction(Action action){
-    action.timestamp = ExperimentData::get_instance().getSimulationTime();
     this->currentAction = action;
 }
 

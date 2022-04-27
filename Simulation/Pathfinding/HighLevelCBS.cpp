@@ -33,7 +33,8 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
     logger.log("Finding initial paths\n");
     #endif
-    root->setSolution(lowLevel.getAllPaths(graph, agents, root->getConstraints()), agents);
+  
+    root->setSolution(lowLevel.getAllPaths(graph, agents, root->getConstraints()));
     /**
      * Insert Root to OPEN
      */
