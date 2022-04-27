@@ -57,6 +57,10 @@ void ExperimentData::distributeSolution(Solution solution){
         path.actions.erase(path.actions.end());
         // Set path
         agent->getBot()->setPath(path);
+        if (agent->getCurrentAction().isWaitAction()){
+            agent->getBot()->setCurrentAction(path.actions.front());
+            path.actions.erase(path.actions.begin());
+        }
     }
 }
 
