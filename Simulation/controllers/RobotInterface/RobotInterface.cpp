@@ -275,7 +275,6 @@ void RobotInterface::obtainOtherBots(Map_Structure &sMap) {
 
 void RobotInterface::resetWaypointPlan() {
     waypointPlan.clear();
-
 }
 
 void RobotInterface::resetStationPlan() {
