@@ -40,8 +40,7 @@ int main(int argc, char *argv[]) {
                 auto goalVertex = vertices[getAvailableStation(availableStations)];
                 agents[i] = AgentInfo(i, Action(0, startVertex, startVertex, 0), goalVertex);
             }
-            std::vector<float> makeSpans(agentCount);
-            int totalJobs = 10;
+            int totalJobs = agentCount * 100;
             int totalJobsLeft = totalJobs;
             int stationsPerJob = 3;
             std::vector<int> agentJobsFinished(agentCount);
@@ -73,6 +72,7 @@ int main(int argc, char *argv[]) {
                 }
                 // If the agent was at a delivery station
                 int goalId = agents[agentThatFinishFirst].getGoal()->getId();
+                int newGoalId = goalId;
                 if (goalId == spawnPointVertexIndexOffset + agentThatFinishFirst){
                     agentJobsFinished[agentThatFinishFirst]++;
                     totalJobsLeft--;
@@ -82,14 +82,7 @@ int main(int argc, char *argv[]) {
                     }
                     // If the agent needs to complete more jobs (visit more stations)
                     else{
-                        // Update agent
-                        agents[agentThatFinishFirst] = AgentInfo(
-                            agentThatFinishFirst,
-                            agents[agentThatFinishFirst].getCurrentAction(),
-                            vertices[getAvailableStation(availableStations)],
-                            false,
-                            true);
-                        Error::log(agents[agentThatFinishFirst].getCurrentAction().toString() + "\n\n");
+                        newGoalId = getAvailableStation(availableStations);
                     }
                 }
                 // If the agent was working at a station
@@ -98,13 +91,9 @@ int main(int argc, char *argv[]) {
                     if (agentStationsWorked[agentThatFinishFirst] + 1 < stationsPerJob){
                         agentStationsWorked[agentThatFinishFirst]++;
                         int goalStation = agents[agentThatFinishFirst].getGoal()->getId();
-                        // Update agent
-                        agents[agentThatFinishFirst] = AgentInfo(
-                            agentThatFinishFirst,
-                            agents[agentThatFinishFirst].getCurrentAction(),
-                            vertices[getAvailableStation(availableStations)],
-                            true,
-                            true);
+                        
+                        newGoalId = getAvailableStation(availableStations);
+
                         // Add the currently finished station back to available stations
                         availableStations.push_back(goalStation);
                     }
@@ -113,14 +102,9 @@ int main(int argc, char *argv[]) {
                         agentStationsWorked[agentThatFinishFirst] = 0;
                         // Goal station should now be a delivery station
                         int goalStation = agents[agentThatFinishFirst].getGoal()->getId();
-                        // Update agent
-                        agents[agentThatFinishFirst] = AgentInfo(
-                            agentThatFinishFirst,
-                            agents[agentThatFinishFirst].getCurrentAction(),
-                            //vertices[rand() % deliveryStationCount],//Random delivery station
-                            vertices[spawnPointVertexIndexOffset + agentThatFinishFirst],// Use spawn point as delivery station
-                            false,
-                            true);
+                        
+                        newGoalId = vertices[spawnPointVertexIndexOffset + agentThatFinishFirst]->getId();// Use spawn point as delivery station
+
                         // Add the currently finished station back to available stations
                         availableStations.push_back(goalStation);
                     }
@@ -139,7 +123,8 @@ int main(int argc, char *argv[]) {
                     auto goalVertex = agents[i].getGoal();
                     bool isWorking = currentAction.isWaitAction() && currentAction.endVertex == goalVertex && currentAction.duration == TIME_AT_GOAL;
                     bool shouldWorkAtGoal = true;
-                    agents[i] = AgentInfo(i, currentAction, goalVertex, isWorking, shouldWorkAtGoal);
+                    auto goal = i == agentThatFinishFirst ? vertices[newGoalId] : goalVertex;
+                    agents[i] = AgentInfo(i, currentAction, goal, isWorking, shouldWorkAtGoal);
                 }
                 // Find new solution
                 if ( ! agentHasFinished[agentThatFinishFirst]){
@@ -156,8 +141,7 @@ int main(int argc, char *argv[]) {
             for (auto path : solution.paths){
                 sumOfCosts += path.cost;
                 (*logger.begin())
-                << "Agent" << i << " finished its job with cost " << path.cost << "\n"
-                << "Makespan for agent is " << makeSpans[i] << "\n";
+                << "Agent" << i << " finished its " << agentJobsFinished[i] << " jobs with cost " << path.cost << "\n";
                 logger.end();
                 i++;
             }
