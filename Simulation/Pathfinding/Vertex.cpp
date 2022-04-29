@@ -22,3 +22,7 @@ int Vertex::getId(){
 std::string Vertex::toString(){
     return "v" + std::to_string(id);
 }
+
+void Vertex::addEdge(std::shared_ptr<Edge> edge){
+    this->edges.push_back(edge);
+}

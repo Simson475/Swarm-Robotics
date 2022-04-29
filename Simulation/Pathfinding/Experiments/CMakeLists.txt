@@ -49,6 +49,7 @@ add_executable(chokepoint_experiment ./Experiments/chokepoint.cpp ${PathfindingF
 add_executable(same_goal_experiment ./Experiments/same_goal.cpp ${PathfindingFiles})
 add_executable(same_goal_bidirectional_experiment ./Experiments/same_goal_bidirectional.cpp ${PathfindingFiles})
 add_executable(cbsMapSmall_5agents_experiment ./Experiments/cbsMapSmall_5agents.cpp ${PathfindingFiles})
+add_executable(SuperScalable_experiment ./Experiments/SuperScalable.cpp ${PathfindingFiles})
 #NEXT_EXPERIMENT_EXECUTABLE
 # The above line should not be edited or deleted
 
@@ -57,6 +58,7 @@ add_custom_command(TARGET chokepoint_experiment POST_BUILD COMMAND ${CMAKE_COMMA
 add_custom_command(TARGET same_goal_experiment POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ./same_goal_experiment ${CMAKE_BINARY_DIR}/external/bin/same_goal_experiment COMMENT "Copying same_goal_experiment to external/bin/" )
 add_custom_command(TARGET same_goal_bidirectional_experiment POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ./same_goal_bidirectional_experiment ${CMAKE_BINARY_DIR}/external/bin/same_goal_bidirectional_experiment COMMENT "Copying same_goal_bidirectional_experiment to external/bin/" )
 add_custom_command(TARGET cbsMapSmall_5agents_experiment POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ./cbsMapSmall_5agents_experiment ${CMAKE_BINARY_DIR}/external/bin/cbsMapSmall_5agents_experiment COMMENT "Copying cbsMapSmall_5agents_experiment to external/bin/" )
+add_custom_command(TARGET SuperScalable_experiment POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ./SuperScalable_experiment ${CMAKE_BINARY_DIR}/external/bin/SuperScalable_experiment COMMENT "Copying SuperScalable_experiment to external/bin/" )
 #NEXT_EXPERIMENT_MOVE_COMMAND
 # The above line should not be edited or deleted
 
