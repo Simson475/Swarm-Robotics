@@ -1,109 +1,165 @@
 #include "HighLevelCBS.hpp"
 
 std::shared_ptr<Graph> getCbsMapSmallGraph();
+int getAvailableStation(std::vector<int>&);
 
 int main(int argc, char *argv[]) {
-    Logger& logger = Logger::get_instance();
-    // Create folder for results
-    std::string experimentResultDir = "cbsMapSmall_5agents_experiment_result";
-    mkdir(&experimentResultDir[0], 0777);
+    try {
+        Logger& logger = Logger::get_instance();
+        // Create folder for results
+        std::string experimentResultDir = "cbsMapSmall_5agents_experiment_result";
+        mkdir(&experimentResultDir[0], 0777);
 
-    for (int agentCount = 5; agentCount <= 5; ++agentCount){
-        std::cout << "Running experiment with " << agentCount << " agents..";
-        std::cout.flush();
-        std::string experimentResultFile = experimentResultDir + "/" + std::to_string(agentCount) + "agents_cbsMapSmall_5agents.txt";
-        // Remove any existing results if they exist
-        remove(&experimentResultFile[0]);
-        logger.setLogFile(experimentResultFile);
+        for (int agentCount = 5; agentCount <= 5; ++agentCount){
+            std::cout << "Running experiment with " << agentCount << " agents..";
+            std::cout.flush();
+            std::string experimentResultFile = experimentResultDir + "/" + std::to_string(agentCount) + "agents_cbsMapSmall_5agents.txt";
+            // Remove any existing results if they exist
+            remove(&experimentResultFile[0]);
+            logger.setLogFile(experimentResultFile);
 
-        // Arrange experiment
-        auto graph = getCbsMapSmallGraph();
-        auto vertices = graph->getVertices();
-        int spawnPointVertexIndexOffset = 37;
-        std::vector<std::shared_ptr<Vertex>> stations = {
-            vertices[6],
-            vertices[8],
-            vertices[10],
-            vertices[12],
-            vertices[14],
-            vertices[16],
-            vertices[18]
-        };
-        std::vector<std::vector<std::shared_ptr<Vertex>>> agentJobs = {
-            {stations[0]},
-            {stations[1]},
-            {stations[2]},
-            {stations[3]},
-            {stations[4]}
-        };
-        std::vector<bool> agentHasFinished = { 0, 0, 0, 0, 0 };
-        std::vector<AgentInfo> agents{(long unsigned int)agentCount};
-        for (int i = 0; i < agentCount; ++i){
-            auto startVertex = vertices[spawnPointVertexIndexOffset + i];
-            auto goalVertex = agentJobs[i][0];// TODO set to actual goal
-            agents[i] = AgentInfo(i, Action(0, startVertex, startVertex, 0), goalVertex);
-        }
-
-        // Act
-        std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
-        Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance(), 0);
-        while (true){
-            // Find the path that finish first (lowest cost path)
-            int agentThatFinishFirst = -1;
-            float minCost = std::numeric_limits<float>::infinity();
+            // Arrange experiment
+            auto graph = getCbsMapSmallGraph();
+            auto vertices = graph->getVertices();
+            int spawnPointVertexIndexOffset = 37;
+            int deliveryStationCount = 4;
+            std::vector<std::shared_ptr<Vertex>> deliveryStations;
+            for (int i = 0; i < deliveryStationCount; ++i){
+                deliveryStations.push_back(vertices[i]);
+            }
+            std::vector<std::shared_ptr<Vertex>> stations;
+            std::vector<int> availableStations;
+            for (int i = deliveryStationCount; i < spawnPointVertexIndexOffset; ++i){
+                stations.push_back(vertices[i]);
+                availableStations.push_back(i);
+            }
+            std::vector<bool> agentHasFinished = { 0, 0, 0, 0, 0 };
+            std::vector<AgentInfo> agents{(long unsigned int)agentCount};
             for (int i = 0; i < agentCount; ++i){
-                if ( ! agentHasFinished[i]){
-                    if (solution.paths[i].cost < minCost){
-                        minCost = solution.paths[i].cost;
-                        agentThatFinishFirst = i;
+                auto startVertex = vertices[spawnPointVertexIndexOffset + i];
+                auto goalVertex = vertices[getAvailableStation(availableStations)];
+                agents[i] = AgentInfo(i, Action(0, startVertex, startVertex, 0), goalVertex);
+            }
+            int totalJobs = agentCount * 100;
+            int totalJobsLeft = totalJobs;
+            int stationsPerJob = 3;
+            std::vector<int> agentJobsFinished(agentCount);
+            std::vector<int> agentStationsWorked(agentCount);
+
+            // Act
+    //v7(180.508194) v7(480.508179)
+    //{agentId: 2, location: v37, timeStart:1833.966797, timeEnd:2176.589844}
+    // Error::log(LowLevelCBS::get_instance().getIndividualPath(graph, AgentInfo(2, Action(180.508194, vertices[7], vertices[7], TIME_AT_GOAL), vertices[13], true), {Constraint(2, Location(vertices[37]), 1833.966797, 2176.589844)}).toString());
+    // exit(1);
+
+            std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
+            Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance(), 0);
+            while (true){
+                // Find the path that finish first (lowest cost path)
+                int agentThatFinishFirst = -1;
+                
+                float minCost = std::numeric_limits<float>::infinity();
+                for (int i = 0; i < agentCount; ++i){
+                    if ( ! agentHasFinished[i]){
+                        if (solution.paths[i].cost < minCost){
+                            minCost = solution.paths[i].cost;
+                            agentThatFinishFirst = i;
+                        }
                     }
                 }
-            }
-            if (agentThatFinishFirst == -1){
-                break;// We are done
-            }
-            // Update job for the agent that finished
-            if (agentJobs[agentThatFinishFirst].size() > 0){
-                agentJobs[agentThatFinishFirst].erase(agentJobs[agentThatFinishFirst].begin());
-            }
-            else{
-                agentHasFinished[agentThatFinishFirst] = true;
-            }
-            // Update the agents to have a new current action at the current time
-            for (int i = 0; i < agentCount; ++i){
-                auto currentAction = solution.paths[i].actions.back();// Action(minCost, solution.paths[i].actions.back().endVertex, solution.paths[i].actions.back().endVertex, 0);
-                // Since the above is only true for the finishing agent, we need to find the current action for the rest
-                for (auto& action : solution.paths[i].actions){
-                    // Get the first action that did not end yet
-                    if (action.timestamp + action.duration >= minCost){
-                        currentAction = action;
+                if (agentThatFinishFirst == -1){
+                    break;// We are done
+                }
+                // If the agent was at a delivery station
+                int goalId = agents[agentThatFinishFirst].getGoal()->getId();
+                int newGoalId = goalId;
+                if (goalId == spawnPointVertexIndexOffset + agentThatFinishFirst){
+                    agentJobsFinished[agentThatFinishFirst]++;
+                    totalJobsLeft--;
+                    // If the needed amount of completed jobs for the experiment are done, we stop.
+                    if(totalJobsLeft == 0){
                         break;
                     }
+                    // If the agent needs to complete more jobs (visit more stations)
+                    else{
+                        newGoalId = getAvailableStation(availableStations);
+                    }
                 }
-                auto goalVertex = agentJobs[i].size() > 0 ? agentJobs[i].front() : vertices[spawnPointVertexIndexOffset + i];
-                bool isWorking = currentAction.isWaitAction() && currentAction.endVertex == goalVertex && currentAction.duration == TIME_AT_GOAL;
-                bool shouldWorkAtGoal = (goalVertex != vertices[spawnPointVertexIndexOffset + i]);
-                agents[i] = AgentInfo(i, currentAction, goalVertex, isWorking, shouldWorkAtGoal);
-            }
-            // Find new solution
-            if ( ! agentHasFinished[agentThatFinishFirst]){
-                solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance(), minCost);
-            }
-            // Repeat until all jobs are done...
-        }
-        auto experimentTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - experimentBeginTime).count();
+                // If the agent was working at a station
+                else{
+                    // If the agent needs to work at more stations
+                    if (agentStationsWorked[agentThatFinishFirst] + 1 < stationsPerJob){
+                        agentStationsWorked[agentThatFinishFirst]++;
+                        int goalStation = agents[agentThatFinishFirst].getGoal()->getId();
+                        
+                        newGoalId = getAvailableStation(availableStations);
 
-        // Results
-        (*logger.begin()) << "Experiment took "<< experimentTime << "[µs]\n"; logger.end();
-        float sumOfCosts = 0;
-        int i = 0;
-        for (auto path : solution.paths){
-            sumOfCosts += path.cost;
-            (*logger.begin()) << "Agent" << i++ << " finished its job with cost " << path.cost << "\n"; logger.end();
+                        // Add the currently finished station back to available stations
+                        availableStations.push_back(goalStation);
+                    }
+                    // If the agent has worked at the needed stations and must go to a delivery station
+                    else if (agentStationsWorked[agentThatFinishFirst] + 1 == stationsPerJob){
+                        agentStationsWorked[agentThatFinishFirst] = 0;
+                        // Goal station should now be a delivery station
+                        int goalStation = agents[agentThatFinishFirst].getGoal()->getId();
+                        
+                        newGoalId = vertices[spawnPointVertexIndexOffset + agentThatFinishFirst]->getId();// Use spawn point as delivery station
+
+                        // Add the currently finished station back to available stations
+                        availableStations.push_back(goalStation);
+                    }
+                }
+                // Update the agents to have a new current action at the current time
+                for (int i = 0; i < agentCount; ++i){
+                    auto currentAction = solution.paths[i].actions.back();// Action(minCost, solution.paths[i].actions.back().endVertex, solution.paths[i].actions.back().endVertex, 0);
+                    // Since the above is only true for the finishing agent, we need to find the current action for the rest
+                    for (auto& action : solution.paths[i].actions){
+                        // Get the first action that did not end yet
+                        if (action.timestamp + action.duration >= minCost){
+                            currentAction = action;
+                            break;
+                        }
+                    }
+                    auto goalVertex = agents[i].getGoal();
+                    bool isWorking = currentAction.isWaitAction() && currentAction.endVertex == goalVertex && currentAction.duration == TIME_AT_GOAL;
+                    bool shouldWorkAtGoal = true;
+                    auto goal = i == agentThatFinishFirst ? vertices[newGoalId] : goalVertex;
+                    agents[i] = AgentInfo(i, currentAction, goal, isWorking, shouldWorkAtGoal);
+                }
+                // Find new solution
+                if ( ! agentHasFinished[agentThatFinishFirst]){
+                    solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance(), minCost);
+                }
+                // Repeat until all jobs are done...
+            }
+            auto experimentTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - experimentBeginTime).count();
+
+            // Results
+            (*logger.begin()) << "Experiment took "<< experimentTime << "[µs]\n"; logger.end();
+            float sumOfCosts = 0;
+            int i = 0;
+            for (auto path : solution.paths){
+                sumOfCosts += path.cost;
+                (*logger.begin())
+                << "Agent" << i << " finished its " << agentJobsFinished[i] << " jobs with cost " << path.cost << "\n";
+                logger.end();
+                i++;
+            }
+            (*logger.begin()) << "Sum of costs = "<< sumOfCosts << "\n"; logger.end();
+            std::cout << "Done\n";
         }
-        (*logger.begin()) << "Sum of costs = "<< sumOfCosts << "\n"; logger.end();
-        std::cout << "Done\n";
     }
+    catch(std::string exception){
+        Error::log(exception + "\n");
+        exit(1);
+    }
+}
+
+int getAvailableStation(std::vector<int>& stations){
+    int stationIndex = rand() % stations.size();
+    int station = stations[stationIndex];
+    stations.erase(stations.begin() + stationIndex);
+    return station;
 }
 
 std::shared_ptr<Graph> getCbsMapSmallGraph()

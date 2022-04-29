@@ -5,6 +5,11 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     Logger& logger = Logger::get_instance();
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     #endif
+    #ifdef DEBUG_LOGS_ON
+    for (auto a : agents){
+        Error::log("Agent" + std::to_string(a.getId()) + ": " + agents[a.getId()].getCurrentAction().getLocation().toString() + " --> " + a.getGoal()->toString() + "\n");
+    }
+    #endif
     /**
      * Root.constraints = {}
      * Root.solution = find individual paths by the low level
@@ -19,12 +24,16 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
                 auto initialAction = a.getCurrentAction();
                 if (initialAction.isWaitAction()){
                     // Constraint the initial vertex
-                    root->addConstraint(Constraint(b.getId(), initialAction.getLocation(), currentTime, currentTime + TIME_AT_VERTEX));
+                    float earliestActionEnd = (initialAction.duration == TIME_AT_GOAL && initialAction.endVertex == a.getGoal())
+                     ? initialAction.timestamp + initialAction.duration : currentTime;
+                    root->addConstraint(Constraint(b.getId(), initialAction.getLocation(), currentTime, earliestActionEnd + TIME_AT_VERTEX));
                 }
                 else {
                     // Constraint the edge action and the vertex it arrives at
+                    // Constraint the edge
                     root->addConstraint(Constraint(b.getId(), initialAction.getLocation(), initialAction.timestamp, initialAction.timestamp + initialAction.duration));
-                    root->addConstraint(Constraint(b.getId(), Location(initialAction.endVertex), initialAction.timestamp, initialAction.timestamp + initialAction.duration + TIME_AT_VERTEX));
+                    // Constraint the end vertex
+                    root->addConstraint(Constraint(b.getId(), Location(initialAction.endVertex), initialAction.timestamp + initialAction.duration, initialAction.timestamp + initialAction.duration + TIME_AT_VERTEX));
                 }
             }
         }
@@ -72,7 +81,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         /**
          * Validate the paths in P until a conflict occurs
          */
+        blockGoalsForever(p->getSolution());
         std::vector<Conflict> conflicts = p->findConflicts();
+        removeInfiniteBlocksOnGoals(p->getSolution());
         /**
          * If P has no conflicts then return P.solution
          */
@@ -84,7 +95,22 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             #ifdef DEBUG_LOGS_ON
             Error::log("Found solution with no conflicts\n");
             #endif
-            return p->getSolution();
+            // Prune floppy paths from solution
+            Solution& solution = p->getSolution();
+            int i = 0;
+            for (auto& p : solution.paths){
+                std::vector<Action> prunedActions;
+                for (auto& a : p.actions){
+                    prunedActions.push_back(a);
+                    if (a.isWaitAction() && a.endVertex == agents[i].getGoal() && a.duration == TIME_AT_GOAL){
+                        p.cost = a.timestamp + a.duration;
+                        break;
+                    }
+                }
+                p.actions = prunedActions;
+                i++;
+            }
+            return solution;
         }
         /**
          * Get one of the conflicts
@@ -163,9 +189,14 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
 
 Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Conflict> conflicts, LowLevelCBS& lowLevel){
     if (conflicts.size() == 1) return conflicts.front();
-
+    #ifdef DEBUG_LOGS_ON
+    Error::log("Finding best conflict\n");
+    #endif
     std::vector<Conflict> semiCardinalConflicts;
     for (auto c : conflicts){
+        #ifdef DEBUG_LOGS_ON
+        Error::log(c.toString() + "\n");
+        #endif
         // Make a copy of the solution
         auto solution = node->getSolution();
         // It is a cardinal conflict if adding any of the constraints derived from the conflict
@@ -195,6 +226,9 @@ Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std
 
                 if (increasesCost){
                     if (semiCardinal){
+                        #ifdef DEBUG_LOGS_ON
+                        Error::log("Found cardinal conflict\n");
+                        #endif
                         return c;
                     }
                     else {
@@ -210,6 +244,28 @@ Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std
             }
         }
     }
+    #ifdef DEBUG_LOGS_ON
+    Error::log("Returning semi cardinal / front\n");
+    #endif
     // Return a semi cardinal if one was found, otherwise return a random conflict
     return semiCardinalConflicts.empty() ? conflicts.front() : semiCardinalConflicts.front();
+}
+
+void HighLevelCBS::blockGoalsForever(Solution& solution){
+    float maxPathCost = 0;
+    for (auto& p : solution.paths){
+        maxPathCost = std::max(p.cost, maxPathCost);
+    }
+    for (auto& p : solution.paths){
+        p.actions.push_back(
+            Action(p.cost, p.actions.back().endVertex, p.actions.back().endVertex,
+                maxPathCost - (p.actions.back().timestamp + p.actions.back().duration))
+        );
+    }
+}
+
+void HighLevelCBS::removeInfiniteBlocksOnGoals(Solution& solution){
+    for (auto& p : solution.paths){
+        p.actions.erase(p.actions.end());
+    }
 }

@@ -19,7 +19,7 @@ public:
     void setChildren(std::vector<std::shared_ptr<ConstraintTree>> children);
 
     /* More CBS specific */
-    Solution getSolution();
+    Solution& getSolution();
     void setSolution(Solution);
     void setSolution(std::vector<Path>);
     std::vector<Conflict> findConflicts();

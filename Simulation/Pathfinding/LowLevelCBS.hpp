@@ -34,7 +34,7 @@ public:
     uint iterations = 0;
     unsigned long int totalIterations = 0;
 protected:
-    std::vector<Action> getPossibleActions(std::shared_ptr<Vertex> vertex, std::vector<Constraint> constraints, float currentTime);
+    std::vector<Action> getPossibleActions(std::shared_ptr<Vertex> vertex, std::vector<Constraint> constraints, float currentTime, float pathMinimumCost = -1);
     bool canWorkAtGoalWithoutViolatingConstraints(Action action, std::shared_ptr<Vertex> goal, std::vector<Constraint> constraints);
 };
 
