@@ -2,6 +2,12 @@ include_directories(./Experiments/)
 include_directories(.)
 include_directories(..)
 
+project(test)
+
+SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -pthread")
+
+find_package (Threads)
+
 set(PathfindingDir ..)
 # We must be able to compile with these files alone (so map_structure wont work without argos files, which makes a lot of our files untestable atm)
 set(PathfindingFiles
@@ -42,7 +48,7 @@ set(PathfindingFiles
 )
 
 # Emit all warning messages
-add_definitions(-Wall -O3)# -Werror
+add_definitions(-Wall -O3 -lpthread)# -Werror
 
 # Add the experiment executables
 add_executable(chokepoint_experiment ./Experiments/chokepoint.cpp ${PathfindingFiles})
@@ -52,7 +58,7 @@ add_executable(cbsMapSmall_5agents_experiment ./Experiments/cbsMapSmall_5agents.
 add_executable(SuperScalable_experiment ./Experiments/SuperScalable.cpp ${PathfindingFiles})
 #NEXT_EXPERIMENT_EXECUTABLE
 # The above line should not be edited or deleted
-
+target_link_libraries (SuperScalable_experiment ${CMAKE_THREAD_LIBS_INIT})
 # Move the experiment executables to the external/bin/
 add_custom_command(TARGET chokepoint_experiment POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ./chokepoint_experiment ${CMAKE_BINARY_DIR}/external/bin/chokepoint_experiment COMMENT "Copying chokepoint_experiment to external/bin/" )
 add_custom_command(TARGET same_goal_experiment POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ./same_goal_experiment ${CMAKE_BINARY_DIR}/external/bin/same_goal_experiment COMMENT "Copying same_goal_experiment to external/bin/" )
@@ -61,8 +67,3 @@ add_custom_command(TARGET cbsMapSmall_5agents_experiment POST_BUILD COMMAND ${CM
 add_custom_command(TARGET SuperScalable_experiment POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ./SuperScalable_experiment ${CMAKE_BINARY_DIR}/external/bin/SuperScalable_experiment COMMENT "Copying SuperScalable_experiment to external/bin/" )
 #NEXT_EXPERIMENT_MOVE_COMMAND
 # The above line should not be edited or deleted
-
-add_custom_target(move_run_experiments_script ALL
-    COMMAND ${CMAKE_COMMAND} -E copy
-    ../../../Pathfinding/Experiments/run_experiments.sh
-    ${CMAKE_BINARY_DIR}/external/bin/run_experiments.sh)
