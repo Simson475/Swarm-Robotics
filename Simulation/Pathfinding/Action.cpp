@@ -28,11 +28,15 @@ void Action::operator=(const Action &a){
     duration = a.duration;
 }
 
-bool Action::operator==(const Action &a){
+bool Action::operator==(const Action &a) const{
     return timestamp == a.timestamp
         && startVertex == a.startVertex
         && endVertex == a.endVertex
         && duration == a.duration;
+}
+
+bool Action::operator!=(const Action &a) const{
+    return ! this->operator==(a);
 }
 
 bool Action::isWaitAction(){

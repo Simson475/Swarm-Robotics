@@ -37,10 +37,6 @@ bool ExperimentData::requestSolution(int agentId){
     Error::log("Going to find a solution\n");
     auto agentInfos = getAgentsInfo();
 
-    for (auto a1 : agentInfos){
-        Error::log("Agent" + std::to_string(a1.getId()) + ": " + getGraph()->getVertices()[getAgents()[a1.getId()]->getBot()->getLastLocation()]->toString() + " --> " + a1.getGoal()->toString() + "\n");
-    }
-
     Solution solution = HighLevelCBS::get_instance()
         .findSolution(getGraph(), agentInfos, LowLevelCBS::get_instance());
     

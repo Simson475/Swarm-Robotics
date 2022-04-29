@@ -6,12 +6,14 @@
 #include <memory>
 #include "Debugging.hpp"
 #include "GLOBALS.hpp"
+#include <cassert>
 
 class ActionPathAux{
 public:
     ActionPathAux(Action action, float heuristic, std::shared_ptr<ActionPathAux> predecessor);
     ActionPathAux(const ActionPathAux &a);
     Path getPath() const;
+    Path getPath(const Action& lastAction) const;
 
     Action action;
     float heuristic;

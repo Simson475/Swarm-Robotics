@@ -13,7 +13,7 @@ std::shared_ptr<ConstraintTree> ConstraintTree::getParent(){
 void ConstraintTree::setChildren(std::vector<std::shared_ptr<ConstraintTree>> children){
     this->children = children;
 }
-Solution ConstraintTree::getSolution(){
+Solution& ConstraintTree::getSolution(){
     return solution;
 }
 void ConstraintTree::setSolution(Solution s){

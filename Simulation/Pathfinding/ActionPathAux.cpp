@@ -31,6 +31,18 @@ Path ActionPathAux::getPath() const{
     return path;
 }
 
+Path ActionPathAux::getPath(const Action& lastAction) const{
+    if (this->action == lastAction){
+        return this->getPath();
+    }
+    std::shared_ptr<ActionPathAux> predecessor = this->predecessor;
+    while (predecessor->action != lastAction){
+        predecessor = predecessor->predecessor;
+    }
+    assert(predecessor != nullptr);
+    return predecessor->getPath();
+}
+
 void ActionPathAux::operator=(const ActionPathAux &a){
     action = a.action;
     heuristic = a.heuristic;
@@ -46,7 +58,7 @@ bool operator> (const ActionPathAux &a, const ActionPathAux &b){
     // This avoids a lot of extra states being explores when it might not be necesary
     if(aPriority != bPriority) return aPriority > bPriority;
     if(a.heuristic != b.heuristic) return a.heuristic > b.heuristic;
-    return a.getPath().actions.size() > b.getPath().actions.size();
+    return a.getPath(a.action).actions.size() > b.getPath(b.action).actions.size();
 
 }
 
@@ -58,7 +70,7 @@ bool operator< (const ActionPathAux &a, const ActionPathAux &b){
     // This avoids a lot of extra states being explores when it might not be necesary
     if(aPriority != bPriority) return aPriority < bPriority;
     if(a.heuristic != b.heuristic) return  a.heuristic < b.heuristic;
-    return a.getPath().actions.size() < b.getPath().actions.size();
+    return a.getPath(a.action).actions.size() < b.getPath(b.action).actions.size();
 
 }
 
