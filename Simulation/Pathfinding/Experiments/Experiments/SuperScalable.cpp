@@ -16,14 +16,12 @@ int main(int argc, char *argv[])
     std::string experimentResultDir = "SuperScalable_experiment_result";
     mkdir(&experimentResultDir[0], 0777);
 
-    float edgeCost = 100;
-    for (int size = 1; size <= 5; size++)
+    for (int size = 1; size <= 20; size++)
     {
-        int height = 5 * size;
-        int width = 5 * size;
+        int height = 2 * size;
+        int width = 2 * size;
         int verticesMade = 0;
         std::vector<std::shared_ptr<Vertex>> vertices{(long unsigned int)(width * height)};
-
         for (int i = 0; i < height; i++)
         {
             for (int j = 0; j < width; j++)
@@ -31,11 +29,13 @@ int main(int argc, char *argv[])
                 vertices[verticesMade] = std::make_shared<Vertex>(verticesMade);
                 if (i != 0)
                 {
+                    float edgeCost = rand() % 50 + 50;;
                     vertices[verticesMade]->addEdge({std::make_shared<Edge>(vertices[verticesMade], vertices[verticesMade - width], edgeCost)});
                     vertices[verticesMade - width]->addEdge({std::make_shared<Edge>(vertices[verticesMade - width], vertices[verticesMade], edgeCost)});
                 }
                 if (j != 0)
                 {
+                    float edgeCost = rand() % 50 + 50;;
                     vertices[verticesMade]->addEdge({std::make_shared<Edge>(vertices[verticesMade], vertices[verticesMade - 1], edgeCost)});
                     vertices[verticesMade - 1]->addEdge({std::make_shared<Edge>(vertices[verticesMade - 1], vertices[verticesMade], edgeCost)});
                 }
@@ -44,8 +44,9 @@ int main(int argc, char *argv[])
         }
         auto graph = std::make_shared<Graph>(vertices);
 
-        for (int agentCount = 1; agentCount <= 5; ++agentCount)
+        for (int agentCount = 1; agentCount <= 10; ++agentCount)
         {
+            if(agentCount >= width*height - 2) continue;
             int64_t timeSpent=0;
             int maxLoops =100;
             for (int loops = 0; loops < maxLoops; loops++)
@@ -84,6 +85,8 @@ int main(int argc, char *argv[])
                 timeSpent+=experimentTime;
 
             }
+            // When plotting in pgfplots, the first element becomes the x-axis, 2. becomes the y-axis and 3. one becomes the z-axis
+            if (agentCount == 1) continue;
             (*logger.begin()) << "" << agentCount << " " << width << " " << timeSpent/maxLoops << "\n";
             logger.end();
             std::cout << "Done\n";
