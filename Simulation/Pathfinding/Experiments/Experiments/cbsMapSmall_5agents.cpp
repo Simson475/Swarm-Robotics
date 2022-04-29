@@ -76,6 +76,7 @@ int main(int argc, char *argv[]) {
                 if (goalId == spawnPointVertexIndexOffset + agentThatFinishFirst){
                     agentJobsFinished[agentThatFinishFirst]++;
                     totalJobsLeft--;
+                    Error::log(std::to_string(totalJobsLeft) + " jobs left\n");
                     // If the needed amount of completed jobs for the experiment are done, we stop.
                     if(totalJobsLeft == 0){
                         break;
