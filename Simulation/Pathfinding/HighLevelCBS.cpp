@@ -3,8 +3,8 @@
 Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel, float currentTime){
     #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
     Logger& logger = Logger::get_instance();
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     #endif
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     /**
      * Root.constraints = {}
      * Root.solution = find individual paths by the low level
@@ -33,8 +33,18 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
     logger.log("Finding initial paths\n");
     #endif
-  
-    root->setSolution(lowLevel.getAllPaths(graph, agents, root->getConstraints()));
+    
+    try{
+        root->setSolution(lowLevel.getAllPaths(graph, agents, root->getConstraints()));
+    }
+    catch (std::string exception){
+        Error::log("Could not find initial solution. ERROR: " + exception + "\n");
+        Solution solution;
+        solution.paths = lowLevel.getAllPaths(graph, agents, {});// Return greedy solution
+        return solution;
+    }
+    int minConflicts = std::numeric_limits<int>::max();
+    auto minConflictsNode = root;
     /**
      * Insert Root to OPEN
      */
@@ -45,6 +55,10 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      */
     iterations = 0;
     while (open.size() > 0) {
+        auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count();
+        if (timeDiff > 1000000){// If the solution takes more than 1 second
+            return minConflictsNode->getSolution();
+        }
         #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
         std::chrono::steady_clock::time_point iterationBegin = std::chrono::steady_clock::now();
         #endif
@@ -85,6 +99,10 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             Error::log("Found solution with no conflicts\n");
             #endif
             return p->getSolution();
+        }
+        else if ((int)conflicts.size() < minConflicts){
+            minConflictsNode = p;
+            minConflicts = conflicts.size();
         }
         /**
          * Get one of the conflicts
@@ -158,7 +176,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     }
     // We did not find any solution (No possible solution)
     Error::log("ERROR: HighLevelCBS: No possible solution\n");
-    exit(1);
+    return minConflictsNode->getSolution();
 }
 
 Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Conflict> conflicts, LowLevelCBS& lowLevel){
