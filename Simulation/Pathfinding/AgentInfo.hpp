@@ -24,7 +24,7 @@ private:
     Action currentAction;
     std::shared_ptr<Vertex> goal;
     bool _isWorking;
-    bool _shouldWorkAtGoal;
+    bool _shouldWorkAtGoal = true;
 };
 
 #endif

@@ -10,7 +10,7 @@
 
 class ActionPathAux{
 public:
-    ActionPathAux(Action action, float heuristic, std::shared_ptr<ActionPathAux> predecessor);
+    ActionPathAux(Action action, float heuristic, std::shared_ptr<ActionPathAux> predecessor, bool hasWorked = false);
     ActionPathAux(const ActionPathAux &a);
     Path getPath() const;
     Path getPath(const Action& lastAction) const;
@@ -20,6 +20,7 @@ public:
     std::shared_ptr<ActionPathAux> predecessor;
     void operator=(const ActionPathAux &a);
     std::string toString();
+    bool hasWorked;
 };
 
 bool operator< (const ActionPathAux &a, const ActionPathAux &b);//Comparison function for priority queue

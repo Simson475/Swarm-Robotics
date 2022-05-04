@@ -5,7 +5,7 @@
 
 # Project ignores
 **out/
-/Simulation/build/
+**build/
 /Simulation/experiment/scene*/fb*
 /Simulation/uppaalStratego/fb*
 /Simulation/experiment/scene*/jobs.json

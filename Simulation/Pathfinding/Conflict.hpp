@@ -23,6 +23,7 @@ public:
     float getTimeEnd();
     Location getLocation(int index);
     std::string toString();
+    std::string getType();
 private:
     std::vector<int> agentIds;
     float timeStart;

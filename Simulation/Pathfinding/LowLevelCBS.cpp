@@ -57,11 +57,13 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     priorityQueue.push(ActionPathAux(
         firstAction,
         firstAction.timestamp + firstAction.duration + graph->heuristicCost(firstAction.endVertex, goal),
-        nullptr
+        nullptr,
+        hasWorked
     ));
     this->iterations = 0;
     while( ! priorityQueue.empty()){
         this->iterations++;
+        this->totalIterations++;
         // Next action
         auto top = priorityQueue.top(); priorityQueue.pop();
         u = top.action.endVertex;
@@ -71,8 +73,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
             Error::log("Max iterations reached.\n");
             exit(1);
         }
-        if ( !hasWorked && top.action.endVertex == goal && (canWorkAtGoalWithoutViolatingConstraints(top.action, goal, constraints) || ! agent.shouldWorkAtGoal())){
-            this->totalIterations += this->iterations;
+        if ( !top.hasWorked && top.action.endVertex == goal && canWorkAtGoalWithoutViolatingConstraints(top.action, goal, constraints)){
             #ifdef LOWLEVEL_ANALYSIS_LOGS_ON
             std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
             auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
@@ -82,13 +83,13 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
                 top = ActionPathAux(
                     Action(top.action.timestamp + top.action.duration, goal, goal, TIME_AT_GOAL),
                     0,
-                    std::make_shared<ActionPathAux>(top)
+                    std::make_shared<ActionPathAux>(top),
+                    true
                 );
             }
-            hasWorked = true;
             workAction = top.action;
         }
-        if (top.action.timestamp + top.action.duration >= pathEndTime && hasWorked){
+        if (top.action.timestamp + top.action.duration >= pathEndTime && (top.hasWorked || ! agent.shouldWorkAtGoal())){
             // Return the path, we have found a path that violates no constraints.
             #ifdef DEBUG_LOGS_ON
             Error::log(top.getPath().toString() + "\n");
@@ -100,7 +101,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
         std::vector<Action> possibleActions = getPossibleActions(u, constraints, top.action.timestamp + top.action.duration, pathEndTime);
         for (Action action : possibleActions){
             // If this action can be a final action (after working) return the path immediately
-            if (action.timestamp + action.duration >= pathEndTime && hasWorked){
+            if (action.timestamp + action.duration >= pathEndTime && top.hasWorked){
                 // Return the path, we have found a path that violates no constraints.
                 #ifdef DEBUG_LOGS_ON
                 Error::log(top.getPath().toString() + "\n");
@@ -145,7 +146,8 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
             auto aux = ActionPathAux(
                 action,
                 graph->heuristicCost(action.endVertex, goal),
-                std::make_shared<ActionPathAux>(top)
+                std::make_shared<ActionPathAux>(top),
+                top.hasWorked || (top.action.isWaitAction() && top.action.endVertex == goal && (top.action.duration == TIME_AT_GOAL || top.action.duration == 0))
             );
 
             priorityQueue.push(aux);
