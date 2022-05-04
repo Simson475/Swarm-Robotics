@@ -119,12 +119,10 @@ int main(int argc, char *argv[])
         }
         auto graph = std::make_shared<Graph>(vertices);
 
-        for (int agentCount = 1; agentCount <= 15; ++agentCount)
+        for (int agentCount = 12; agentCount <= 12; ++agentCount)
         {
             counter = 0;
-            // if (agentCount > width * height / 2)
-            //     continue;
-            auto timeSpent = 0;
+            unsigned long long timeSpent = 0;
             int maxLoops = 100;
             std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
 
