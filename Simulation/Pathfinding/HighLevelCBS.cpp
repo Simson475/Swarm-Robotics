@@ -58,7 +58,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         std::chrono::steady_clock::time_point iterationBegin = std::chrono::steady_clock::now();
         #endif
 
-        if (++iterations == 50000){
+        if (++iterations == 100000){
             Error::log("Max highlevel iterations reached!\n");
             throw std::string("Max highlevel iterations reached!\n");
             //exit(0);

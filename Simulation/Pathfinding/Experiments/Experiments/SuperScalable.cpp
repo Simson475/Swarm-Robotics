@@ -54,6 +54,7 @@ int64_t tempFunc(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents)
         return INT64_MAX;
     }
 }
+
 static int failures = 0;
 
 int64_t getResult(int threads, std::shared_ptr<Graph> graph, std::vector<std::vector<AgentInfo>> agents, std::vector<std::shared_ptr<Vertex>> vertices)
@@ -87,7 +88,7 @@ int main(int argc, char *argv[])
     std::string experimentResultDir = "SuperScalable_experiment_result";
     mkdir(&experimentResultDir[0], 0777);
 
-    for (int size = 1; size <= 10; size++)
+    for (int size = 3; size <= 10; size++)
     {
         int threads = 10;
         int height = 2 * size;
@@ -118,11 +119,11 @@ int main(int argc, char *argv[])
         }
         auto graph = std::make_shared<Graph>(vertices);
 
-        for (int agentCount = 1; agentCount <= 10; ++agentCount)
+        for (int agentCount = 1; agentCount <= 15; ++agentCount)
         {
             counter = 0;
-            if (agentCount > width * height / 2)
-                continue;
+            // if (agentCount > width * height / 2)
+            //     continue;
             auto timeSpent = 0;
             int maxLoops = 100;
             std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
@@ -141,12 +142,12 @@ int main(int argc, char *argv[])
                 // Act
 
                 timeSpent += getResult(threads, graph, agents, vertices);
-                if (failures != 0 && loops+threads >= maxLoops)
+                while (failures != 0 && loops+threads >= maxLoops)
                 {
-                    auto newAgents = generateAgentInfo(failures, agents.size(), vertices, vertices.size());
-                    timeSpent += getResult(failures, graph, newAgents, vertices);
+                    int temp = failures;
                     failures = 0;
-
+                    auto newAgents = generateAgentInfo(temp, agents.size(), vertices, vertices.size());
+                    timeSpent += getResult(temp, graph, newAgents, vertices);
                 }
             }
             // When plotting in pgfplots, the first element becomes the x-axis, 2. becomes the y-axis and the 3. one becomes the z-axis
