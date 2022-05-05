@@ -24,7 +24,6 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     Action firstAction = agent.getCurrentAction();
     std::shared_ptr<Vertex> goal = agent.getGoal();
     bool hasWorked = false;
-    Action workAction = Action(-1, u, u, -1);
     float pathEndTime = 0;
     for (auto& c : constraints){
         pathEndTime = std::max(c.timeEnd, pathEndTime);
@@ -36,7 +35,6 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     // If the first action is the goal action (special case if duration == 0, since it means the agent is done and needs no path)
     if (firstAction.isWaitAction() && firstAction.endVertex == goal && (firstAction.duration == TIME_AT_GOAL || firstAction.duration == 0)
      && canWorkAtGoalWithoutViolatingConstraints(Action(firstAction.timestamp, goal, goal, 0), goal, constraints)){
-        workAction = firstAction;
         hasWorked = true;
     }
     // If the first action is not a goal action
@@ -85,7 +83,6 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
                 std::make_shared<ActionPathAux>(top),
                 true
             );
-            workAction = top.action;
         }
         if (top.action.timestamp + top.action.duration >= pathEndTime && top.hasWorked){
             // Return the path, we have found a path that violates no constraints.
