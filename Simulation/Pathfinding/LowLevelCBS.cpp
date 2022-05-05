@@ -24,12 +24,13 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
     Action firstAction = agent.getCurrentAction();
     std::shared_ptr<Vertex> goal = agent.getGoal();
     bool hasWorked = false;
-    float pathEndTime = 0;
+    float lastConstraintEndTime = 0;
     for (auto& c : constraints){
-        pathEndTime = std::max(c.timeEnd, pathEndTime);
+        lastConstraintEndTime = std::max(c.timeEnd, lastConstraintEndTime);
     }
+    float minPathEndTime = lastConstraintEndTime;
     #ifdef DEBUG_LOGS_ON
-    Error::log("PathEndTime = " + std::to_string(pathEndTime) + "\n");
+    Error::log("MinPathEndTime = " + std::to_string(minPathEndTime) + "\n");
     #endif
     
     // If the first action is the goal action (special case if duration == 0, since it means the agent is done and needs no path)
@@ -84,7 +85,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
                 true
             );
         }
-        if (top.action.timestamp + top.action.duration >= pathEndTime && top.hasWorked){
+        if (top.action.timestamp + top.action.duration >= minPathEndTime && top.hasWorked){
             // Return the path, we have found a path that violates no constraints.
             #ifdef DEBUG_LOGS_ON
             Error::log(top.getPath().toString() + "\n");
@@ -93,10 +94,10 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
         }
 
         // Expand frontier
-        std::vector<Action> possibleActions = getPossibleActions(u, constraints, top.action.timestamp + top.action.duration, pathEndTime);
+        std::vector<Action> possibleActions = getPossibleActions(u, constraints, top.action.timestamp + top.action.duration, minPathEndTime);
         for (Action action : possibleActions){
             // If this action can be a final action (after working) return the path immediately
-            if (action.timestamp + action.duration >= pathEndTime && top.hasWorked){
+            if (action.timestamp + action.duration >= minPathEndTime && top.hasWorked){
                 // Return the path, we have found a path that violates no constraints.
                 #ifdef DEBUG_LOGS_ON
                 Error::log(top.getPath().toString() + "\n");
@@ -161,7 +162,7 @@ std::vector<Path> LowLevelCBS::getAllPaths(std::shared_ptr<Graph> graph, std::ve
     return paths;
 }
 
-std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vertex, std::vector<Constraint> constraints, float currentTime, float pathEndTime){
+std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vertex, std::vector<Constraint> constraints, float currentTime, float minPathEndTime){
     std::vector<Action> actions; // The actions we will return later (gets filled in)
     std::vector<std::shared_ptr<Edge>> edges = vertex->getEdges();
     float minWaitTime = std::numeric_limits<float>::infinity();
@@ -202,13 +203,13 @@ std::vector<Action> LowLevelCBS::getPossibleActions(std::shared_ptr<Vertex> vert
     }
     actions.push_back(Action(currentTime, vertex, vertex, minWaitTime));
 
-    if (pathEndTime > currentTime){
+    if (minPathEndTime > currentTime){
         for (Constraint &constraint : constraints){
-            if (ConstraintUtils::isViolatingConstraint(constraint, vertex, currentTime, pathEndTime)){
+            if (ConstraintUtils::isViolatingConstraint(constraint, vertex, currentTime, minPathEndTime)){
                 return actions;// We cant wait here to take the edge that set min wait time, so no point in waiting here.
             }
         }
-        actions.push_back(Action(currentTime, vertex, vertex, pathEndTime - currentTime));
+        actions.push_back(Action(currentTime, vertex, vertex, minPathEndTime - currentTime));
     }
 
     return actions;
