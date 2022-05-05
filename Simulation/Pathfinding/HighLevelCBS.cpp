@@ -13,6 +13,19 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      * Root.cost = SIC(Root.solution)
      */
     std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>(agents.size());
+    #ifndef EXPERIMENT
+    // Check if we have conflicts on the initial actions (Means we desynced and wont be able to find a CBS solution)
+    Solution currentSolution;
+    currentSolution.paths.resize(agents.size());
+    for(auto& a : agents){
+        currentSolution.paths[a.getId()] = {a.getCurrentAction()};
+    }
+    root->setSolution(currentSolution);
+    auto conflictsOnCurrentActions = root->findConflicts();
+    if (conflictsOnCurrentActions.size() > 0){
+        return getSingleActionGreedySolution(graph, agents, lowLevel, currentTime);
+    }
+    #endif
 
     // Set initial constraints to avoid conflicts on initial actions
     for (auto a : agents){
@@ -42,18 +55,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     catch (std::string exception){
         Error::log("Could not find initial solution. ERROR: " + exception + "\n");
         #ifndef EXPERIMENT
-        Solution solution;
-        solution.paths = lowLevel.getAllPaths(graph, agents, {});// Return greedy solution
-        // Only return 1 action per bot (we dont want to run the full greedy, just enough to use CBS again)
-        for(auto& p : solution.paths){
-            for (auto it = p.actions.end(); it >= p.actions.begin(); it--){
-                // Erase any action that starts after this one (it implies that there is an action before that, which is not done yet that we can use)
-                if (it.base()->timestamp > currentTime){
-                    p.actions.erase(it);
-                }
-            }
-        }
-        return solution;
+        return getSingleActionGreedySolution(graph, agents, lowLevel, currentTime);
         #else
         exit(1);
         #endif
@@ -251,4 +253,19 @@ Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std
     }
     // Return a semi cardinal if one was found, otherwise return a random conflict
     return semiCardinalConflicts.empty() ? conflicts.front() : semiCardinalConflicts.front();
+}
+
+Solution HighLevelCBS::getSingleActionGreedySolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel, float currentTime){
+    Solution solution;
+    solution.paths = lowLevel.getAllPaths(graph, agents, {});// Low level with no constraints is greedy A* solution
+    // Only return 1 action per bot (we dont want to run the full greedy, just enough to eventually use CBS again)
+    for(auto& p : solution.paths){
+        for (auto it = p.actions.end(); it >= p.actions.begin(); it--){
+            // Erase any action that starts after this one (it implies that there is an action before that, which is not done yet that we can use)
+            if (it.base()->timestamp > currentTime){
+                p.actions.erase(it);
+            }
+        }
+    }
+    return solution;
 }
