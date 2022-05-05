@@ -79,17 +79,15 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
             auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
             (*logger.begin()) << this->iterations << " iterations took " << timeDiff << "[µs] for low level individual path\n"; logger.end();
             #endif
-            if (agent.shouldWorkAtGoal()){
-                top = ActionPathAux(
-                    Action(top.action.timestamp + top.action.duration, goal, goal, TIME_AT_GOAL),
-                    0,
-                    std::make_shared<ActionPathAux>(top),
-                    true
-                );
-            }
+            top = ActionPathAux(
+                Action(top.action.timestamp + top.action.duration, goal, goal, TIME_AT_GOAL),
+                0,
+                std::make_shared<ActionPathAux>(top),
+                true
+            );
             workAction = top.action;
         }
-        if (top.action.timestamp + top.action.duration >= pathEndTime && (top.hasWorked || ! agent.shouldWorkAtGoal())){
+        if (top.action.timestamp + top.action.duration >= pathEndTime && top.hasWorked){
             // Return the path, we have found a path that violates no constraints.
             #ifdef DEBUG_LOGS_ON
             Error::log(top.getPath().toString() + "\n");
