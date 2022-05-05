@@ -4,7 +4,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
     Logger& logger = Logger::get_instance();
     #endif
+    #ifndef EXPERIMENT
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    #endif
     /**
      * Root.constraints = {}
      * Root.solution = find individual paths by the low level
@@ -39,9 +41,22 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     }
     catch (std::string exception){
         Error::log("Could not find initial solution. ERROR: " + exception + "\n");
+        #ifndef EXPERIMENT
         Solution solution;
         solution.paths = lowLevel.getAllPaths(graph, agents, {});// Return greedy solution
+        // Only return 1 action per bot (we dont want to run the full greedy, just enough to use CBS again)
+        for(auto& p : solution.paths){
+            for (auto it = p.actions.end(); it >= p.actions.begin(); it--){
+                // Erase any action that starts after this one (it implies that there is an action before that, which is not done yet that we can use)
+                if (it.base()->timestamp > currentTime){
+                    p.actions.erase(it);
+                }
+            }
+        }
         return solution;
+        #else
+        exit(1);
+        #endif
     }
     int minConflicts = std::numeric_limits<int>::max();
     auto minConflictsNode = root;
@@ -55,10 +70,12 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      */
     iterations = 0;
     while (open.size() > 0) {
+        #ifndef EXPERIMENT
         auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count();
         if (timeDiff > 1000000){// If the solution takes more than 1 second
             return minConflictsNode->getSolution();
         }
+        #endif
         #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
         std::chrono::steady_clock::time_point iterationBegin = std::chrono::steady_clock::now();
         #endif
@@ -176,7 +193,11 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     }
     // We did not find any solution (No possible solution)
     Error::log("ERROR: HighLevelCBS: No possible solution\n");
+    #ifndef EXPERIMENT
     return minConflictsNode->getSolution();
+    #else
+    exit(1);
+    #endif
 }
 
 Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Conflict> conflicts, LowLevelCBS& lowLevel){
