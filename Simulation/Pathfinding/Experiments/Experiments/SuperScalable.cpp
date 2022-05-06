@@ -5,37 +5,35 @@
 static int counter = 0;
 static int failures = 0;
 
-
-
-std::shared_ptr<Graph> generateGraph(int size){
+std::shared_ptr<Graph> generateGraph(int size)
+{
     int height = 2 * size;
-        int width = 2 * size;
-        int verticesMade = 0;
-        std::vector<std::shared_ptr<Vertex>> vertices{(long unsigned int)(width * height)};
-        for (int i = 0; i < height; i++)
+    int width = 2 * size;
+    int verticesMade = 0;
+    std::vector<std::shared_ptr<Vertex>> vertices{(long unsigned int)(width * height)};
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
         {
-            for (int j = 0; j < width; j++)
+            vertices[verticesMade] = std::make_shared<Vertex>(verticesMade);
+            if (i != 0)
             {
-                vertices[verticesMade] = std::make_shared<Vertex>(verticesMade);
-                if (i != 0)
-                {
-                    float edgeCost = rand() % 50 + 50;
-                    ;
-                    vertices[verticesMade]->addEdge({std::make_shared<Edge>(vertices[verticesMade], vertices[verticesMade - width], edgeCost)});
-                    vertices[verticesMade - width]->addEdge({std::make_shared<Edge>(vertices[verticesMade - width], vertices[verticesMade], edgeCost)});
-                }
-                if (j != 0)
-                {
-                    float edgeCost = rand() % 50 + 50;
-                    ;
-                    vertices[verticesMade]->addEdge({std::make_shared<Edge>(vertices[verticesMade], vertices[verticesMade - 1], edgeCost)});
-                    vertices[verticesMade - 1]->addEdge({std::make_shared<Edge>(vertices[verticesMade - 1], vertices[verticesMade], edgeCost)});
-                }
-                verticesMade++;
+                float edgeCost = rand() % 50 + 50;
+                ;
+                vertices[verticesMade]->addEdge({std::make_shared<Edge>(vertices[verticesMade], vertices[verticesMade - width], edgeCost)});
+                vertices[verticesMade - width]->addEdge({std::make_shared<Edge>(vertices[verticesMade - width], vertices[verticesMade], edgeCost)});
             }
+            if (j != 0)
+            {
+                float edgeCost = rand() % 50 + 50;
+                ;
+                vertices[verticesMade]->addEdge({std::make_shared<Edge>(vertices[verticesMade], vertices[verticesMade - 1], edgeCost)});
+                vertices[verticesMade - 1]->addEdge({std::make_shared<Edge>(vertices[verticesMade - 1], vertices[verticesMade], edgeCost)});
+            }
+            verticesMade++;
         }
-        return std::make_shared<Graph>(vertices);
-
+    }
+    return std::make_shared<Graph>(vertices);
 }
 int getAvailableStation(std::vector<int> &stations)
 {
@@ -67,7 +65,7 @@ std::vector<std::vector<AgentInfo>> generateAgentInfo(int threads, int agentCoun
     }
     return agents;
 }
-int64_t tempFunc(int size, std::vector<AgentInfo> agents,int maxTime)
+int64_t tempFunc(int size, std::vector<AgentInfo> agents, int maxTime)
 {
     // create new object using copy constructor constructor
     std::shared_ptr<Graph> copiedGraph = generateGraph(size);
@@ -88,15 +86,14 @@ int64_t tempFunc(int size, std::vector<AgentInfo> agents,int maxTime)
         std::cout << counter << " is done (took too long)\n";
         int microInMinutes = 6e+7;
         failures++;
-        return maxTime*microInMinutes*10;
+        return maxTime * microInMinutes * 10;
     }
 }
-
 
 int64_t getResult(int threads, int size, std::vector<std::vector<AgentInfo>> agents, std::vector<std::shared_ptr<Vertex>> vertices, int maxTime, int loops)
 {
     unsigned long long fullCount = 0;
-    int startCounter= 0;
+    int startCounter = 0;
     int doneCounter = 0;
     std::vector<std::future<int64_t>> futures(threads);
     for (int i = 0; i < threads; i++)
@@ -104,12 +101,14 @@ int64_t getResult(int threads, int size, std::vector<std::vector<AgentInfo>> age
         startCounter++;
         futures[i] = std::async(std::launch::async, tempFunc, size, agents[i], maxTime);
     }
-    while (doneCounter <loops)    {
+    while (doneCounter < loops)
+    {
         int i = doneCounter % threads;
         auto result = futures[i].get();
         doneCounter++;
         fullCount += result;
-        if(startCounter<loops){
+        if (startCounter < loops)
+        {
             startCounter++;
             futures[i] = std::async(std::launch::async, tempFunc, size, agents[i], maxTime);
         }
@@ -161,39 +160,30 @@ int main(int argc, char *argv[])
         for (int agentCount = 11; agentCount <= 11; ++agentCount)
         {
             counter = 0;
-            failures=0;
+            failures = 0;
             unsigned long long timeSpent = 0;
             std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
 
-            // for (int loops = 0; loops < maxLoops; loops += threads)
-            // {
-                std::cout << "Running experiment with " << agentCount << " agents.. size: " << width << "\n";
-                std::cout.flush();
-                std::string experimentResultFile = experimentResultDir + "/SuperScalable.txt";
-                // Remove any existing results if they exist
-                // remove(&experimentResultFile[0]);
+            std::cout << "Running experiment with " << agentCount << " agents.. size: " << width << "\n";
+            std::cout.flush();
+            std::string experimentResultFile = experimentResultDir + "/SuperScalable.txt";
+            // Remove any existing results if they exist
+            // remove(&experimentResultFile[0]);
 
-                logger.setLogFile(experimentResultFile);
-                // Arrange experiment
-                auto agents = generateAgentInfo(threads, agentCount, vertices, width * height);
-                // Act
+            logger.setLogFile(experimentResultFile);
+            // Arrange experiment
+            auto agents = generateAgentInfo(threads, agentCount, vertices, width * height);
+            // Act
 
-                timeSpent += getResult(threads, size, agents, vertices, maxTime, maxLoops);
-                // while (failures != 0 && loops+threads >= maxLoops)
-                // {
-                //     int temp = failures;
-                //     failures = 0;
-                //     auto newAgents = generateAgentInfo(temp, agents.size(), vertices, vertices.size());
-                //     timeSpent += getResult(temp, graph, newAgents, vertices);
-                // }
-            // }
+            timeSpent += getResult(threads, size, agents, vertices, maxTime, maxLoops);
+
             // When plotting in pgfplots, the first element becomes the x-axis, 2. becomes the y-axis and the 3. one becomes the z-axis
             if (agentCount == 1)
                 continue;
             auto result = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - experimentBeginTime).count();
-            std::cout << "fullTime: " << result<< " \n";
+            std::cout << "fullTime: " << result << " \n";
 
-            (*logger.begin()) << "" << agentCount << " " << width << " " << timeSpent / maxLoops <<" " <<failures<<"\n";
+            (*logger.begin()) << "" << agentCount << " " << width << " " << timeSpent / maxLoops << " " << failures << "\n";
             logger.end();
             std::cout << "Done\n";
         }
