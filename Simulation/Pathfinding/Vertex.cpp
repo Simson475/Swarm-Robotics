@@ -26,7 +26,6 @@ std::string Vertex::toString(){
 void Vertex::removeEdge(std::shared_ptr<Edge> edge){
     for(auto it = this->edges.begin(); it < this->edges.end(); it++){
         if (*(it.base()) == edge){
-            Error::log("Actually erased " + edge->toString() + "\n");
             this->edges.erase(it);
         }
     }

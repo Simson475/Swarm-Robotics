@@ -305,18 +305,18 @@ void HighLevelCBS::removeInfiniteBlocksOnGoals(Solution& solution){
 
 Solution HighLevelCBS::getSingleActionGreedySolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel, float currentTime){
     Solution solution;
+    #ifdef DEBUG_LOGS_ON
     Error::log("Getting single action greedy solution\n");
+    #endif
     solution.paths = lowLevel.getAllPaths(graph, agents, std::vector<std::vector<Constraint>>(agents.size()));// Low level with no constraints is greedy A* solution
-    Error::log("Got a greedy solution\n");
     // Only return 1 action per bot (we dont want to run the full greedy, just enough to eventually use CBS again)
     for(auto& p : solution.paths){
-        for (auto it = p.actions.begin(); it < p.actions.end(); it++){
-            if (it.base()->timestamp + it.base()->duration > currentTime){
-                p.actions = {*it.base()};
+        for (auto a : p.actions){
+            if (a.timestamp + a.duration > currentTime){
+                p.actions = {a};
                 break;
             }
         }
     }
-    Error::log("Got a single action greedy solution\n");
     return solution;
 }
