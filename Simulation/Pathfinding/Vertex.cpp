@@ -26,3 +26,10 @@ std::string Vertex::toString(){
 void Vertex::addEdge(std::shared_ptr<Edge> edge){
     this->edges.push_back(edge);
 }
+void Vertex::removeEdge(std::shared_ptr<Edge> edge){
+    for(auto it = this->edges.begin(); it < this->edges.end(); it++){
+        if (*(it.base()) == edge){
+            this->edges.erase(it);
+        }
+    }
+}

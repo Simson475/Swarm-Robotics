@@ -3,12 +3,14 @@
 Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel, float currentTime, int maxTime){
     #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
     Logger& logger = Logger::get_instance();
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     #endif
     #ifdef DEBUG_LOGS_ON
     for (auto a : agents){
         Error::log("Agent" + std::to_string(a.getId()) + ": " + agents[a.getId()].getCurrentAction().getLocation().toString() + " --> " + a.getGoal()->toString() + "\n");
     }
+    #endif
+    #ifndef EXPERIMENT
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     #endif
     /**
      * Root.constraints = {}
@@ -17,6 +19,19 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      */
     std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>(agents.size());
     std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
+    #ifndef EXPERIMENT
+    // Check if we have conflicts on the initial actions (Means we desynced and wont be able to find a CBS solution)
+    Solution currentSolution;
+    currentSolution.paths.resize(agents.size());
+    for(auto& a : agents){
+        currentSolution.paths[a.getId()] = {a.getCurrentAction()};
+    }
+    root->setSolution(currentSolution);
+    auto conflictsOnCurrentActions = root->findConflicts();
+    if (conflictsOnCurrentActions.size() > 0){
+        return getSingleActionGreedySolution(graph, agents, lowLevel, currentTime);
+    }
+    #endif
 
     // Set initial constraints to avoid conflicts on initial actions
     for (auto a : agents){
@@ -43,8 +58,20 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
     logger.log("Finding initial paths\n");
     #endif
-  
-    root->setSolution(lowLevel.getAllPaths(graph, agents, root->getConstraints()));
+    
+    try{
+        root->setSolution(lowLevel.getAllPaths(graph, agents, root->getConstraints()));
+    }
+    catch (std::string exception){
+        Error::log("Could not find initial solution. ERROR: " + exception + "\n");
+        #ifndef EXPERIMENT
+        return getSingleActionGreedySolution(graph, agents, lowLevel, currentTime);
+        #else
+        exit(1);
+        #endif
+    }
+    int minConflicts = std::numeric_limits<int>::max();
+    auto minConflictsNode = root;
     /**
      * Insert Root to OPEN
      */
@@ -55,6 +82,14 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      */
     iterations = 0;
     while (open.size() > 0) {
+        #ifndef EXPERIMENT
+        auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count();
+        if (timeDiff > 1000000){// If the solution takes more than 1 second
+            auto& solution = minConflictsNode->getSolution();
+            solution.finalize(agents);
+            return solution;
+        }
+        #endif
         #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
         std::chrono::steady_clock::time_point iterationBegin = std::chrono::steady_clock::now();
         #endif
@@ -106,20 +141,12 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             #endif
             // Prune floppy paths from solution
             Solution& solution = p->getSolution();
-            int i = 0;
-            for (auto& p : solution.paths){
-                std::vector<Action> prunedActions;
-                for (auto& a : p.actions){
-                    prunedActions.push_back(a);
-                    if (a.isWaitAction() && a.endVertex == agents[i].getGoal() && a.duration == TIME_AT_GOAL){
-                        p.cost = a.timestamp + a.duration;
-                        break;
-                    }
-                }
-                p.actions = prunedActions;
-                i++;
-            }
+            solution.finalize(agents);
             return solution;
+        }
+        else if ((int)conflicts.size() < minConflicts){
+            minConflictsNode = p;
+            minConflicts = conflicts.size();
         }
         /**
          * Get one of the conflicts
@@ -193,7 +220,13 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     }
     // We did not find any solution (No possible solution)
     Error::log("ERROR: HighLevelCBS: No possible solution\n");
+    #ifndef EXPERIMENT
+    auto& solution = minConflictsNode->getSolution();
+    solution.finalize(agents);
+    return solution;
+    #else
     exit(1);
+    #endif
 }
 
 Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Conflict> conflicts, LowLevelCBS& lowLevel){
@@ -277,4 +310,22 @@ void HighLevelCBS::removeInfiniteBlocksOnGoals(Solution& solution){
     for (auto& p : solution.paths){
         p.actions.erase(p.actions.end());
     }
+}
+
+Solution HighLevelCBS::getSingleActionGreedySolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel, float currentTime){
+    Solution solution;
+    #ifdef DEBUG_LOGS_ON
+    Error::log("Getting single action greedy solution\n");
+    #endif
+    solution.paths = lowLevel.getAllPaths(graph, agents, std::vector<std::vector<Constraint>>(agents.size()));// Low level with no constraints is greedy A* solution
+    // Only return 1 action per bot (we dont want to run the full greedy, just enough to eventually use CBS again)
+    for(auto& p : solution.paths){
+        for (auto a : p.actions){
+            if (a.timestamp + a.duration > currentTime){
+                p.actions = {a};
+                break;
+            }
+        }
+    }
+    return solution;
 }

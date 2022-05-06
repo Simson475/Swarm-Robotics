@@ -32,7 +32,7 @@ std::vector<int> TestController::constructWaypointPlan(){
 /* PRE: path.actions.size() > 0 */
 std::vector<int> TestController::getNextPointAndUpdateState(){
     std::vector<int> vec;
-    Action& action = path.actions.front();
+    Action action = path.actions.front();
     path.actions.erase(path.actions.begin());
 
     /** Update current action and location to the new action
@@ -54,7 +54,7 @@ std::vector<int> TestController::getNextPointAndUpdateState(){
 
 bool TestController::resyncNeeded(){
     //Resync if Argos caused desync
-    Action& action = path.actions.front();
+    Action& action = getCurrentAction();
     float actualTime = ExperimentData::get_instance().getSimulationTime();
     float timeDiff = actualTime - action.timestamp;
     Error::log("timeDifference is" + std::to_string(timeDiff) + "\n");
@@ -152,7 +152,7 @@ void TestController::setCurrentAction(Action action){
     this->currentAction = action;
 }
 
-Action TestController::getCurrentAction(){
+Action& TestController::getCurrentAction(){
     return this->currentAction;
 }
 

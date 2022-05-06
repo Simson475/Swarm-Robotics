@@ -1,6 +1,8 @@
 #include "HighLevelCBS.hpp"
 #include <thread>
 #include <future>
+#include <sys/stat.h>
+
 int maxTime = 10;
 int maxLoops = 100;
 int threads = 7;

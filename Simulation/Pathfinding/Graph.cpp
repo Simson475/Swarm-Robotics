@@ -37,3 +37,47 @@ float Graph::heuristicCost(std::shared_ptr<Vertex> from, std::shared_ptr<Vertex>
 
     return this->heuristicCosts[from->getId()][to->getId()];
 }
+
+/**
+ * @brief Reduce this graph to the transitive reduction
+ * NOTE: Currently does not reduce this->edges
+ * 
+ */
+void Graph::reduceToTransitiveReduction(){
+    std::queue<std::shared_ptr<Edge>> transitiveEdges;
+    for (auto a : this->vertices){
+        for (auto b : this->vertices){
+            if (a == b) continue;
+            auto ab = a->getEdge(b);
+            if (ab == nullptr) continue;
+            for (auto c : this->vertices){
+                if (b == c) continue;
+                auto bc = b->getEdge(c);
+                auto ac = a->getEdge(c);
+                // If ac, ab, and bc exists, delete the longest edge
+                if (bc != nullptr && ac != nullptr){
+                    auto acCost = ac->getCost();
+                    auto abCost = ab->getCost();
+                    auto bcCost = bc->getCost();
+                    float maxCost = std::max(acCost, std::max(abCost, bcCost));
+                    if (acCost == maxCost){
+                        transitiveEdges.push(ac);
+                    }
+                    else if (abCost == maxCost){
+                        transitiveEdges.push(ab);
+                    }
+                    else if (bcCost == maxCost){
+                        transitiveEdges.push(bc);
+                    }
+                }
+            }
+        }
+    }
+    // Delete the transitive edges
+    int size = transitiveEdges.size();
+    for (int i = 0; i < size; ++i){
+        auto e = transitiveEdges.front();
+        transitiveEdges.pop();
+        e->getStartVertex()->removeEdge(e);
+    }
+}

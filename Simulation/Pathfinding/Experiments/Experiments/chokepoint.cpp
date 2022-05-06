@@ -1,4 +1,6 @@
 #include "HighLevelCBS.hpp"
+#include <sys/stat.h>
+#include <cmath>
 
 int main(int argc, char *argv[]) {
     // Arrange
@@ -18,7 +20,7 @@ int main(int argc, char *argv[]) {
         
         // Create vertices
         int vertexCount = agentCount + 1 + agentCount;
-        std::vector<std::shared_ptr<Vertex>> vertices{(long unsigned int)(vertexCount)};
+        std::vector<std::shared_ptr<Vertex>> vertices(vertexCount);
         for (int i = 0; i < vertexCount; ++i){
             vertices[i] = std::make_shared<Vertex>(i);
         }
@@ -41,7 +43,7 @@ int main(int argc, char *argv[]) {
         auto graph = std::make_shared<Graph>(vertices);
 
         //AgentInfo(id, action, dest)
-        std::vector<AgentInfo> agents{(long unsigned int)agentCount};
+        std::vector<AgentInfo> agents(agentCount);
         for (int i = 0; i < agentCount; ++i){
             // Agent going from a unique vertex to a unique vertex on the opposite site of the chokepoint
             agents[i] = AgentInfo(i, Action(0, vertices[i], vertices[i], 0), vertices[chokepointIndex + 1 + i]);

@@ -9,13 +9,13 @@ int main(int argc, char *argv[]) {
         srand(2022);
         Logger& logger = Logger::get_instance();
         // Create folder for results
-        std::string experimentResultDir = "cbsMapSmall_5agents_experiment_result";
+        std::string experimentResultDir = "cbsMapSmall_5agents_greedy_experiment_result";
         mkdir(&experimentResultDir[0], 0777);
 
         for (int agentCount = 5; agentCount <= 5; ++agentCount){
             std::cout << "Running experiment with " << agentCount << " agents..";
             std::cout.flush();
-            std::string experimentResultFile = experimentResultDir + "/" + std::to_string(agentCount) + "agents_cbsMapSmall_5agents.txt";
+            std::string experimentResultFile = experimentResultDir + "/" + std::to_string(agentCount) + "agents_cbsMapSmall_5agents_greedy.txt";
             // Remove any existing results if they exist
             remove(&experimentResultFile[0]);
             logger.setLogFile(experimentResultFile);
@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
                 stations.push_back(vertices[i]);
                 availableStations.push_back(i);
             }
+            std::vector<bool> agentHasFinished = { 0, 0, 0, 0, 0 };
             std::vector<AgentInfo> agents{(long unsigned int)agentCount};
             for (int i = 0; i < agentCount; ++i){
                 auto startVertex = vertices[spawnPointVertexIndexOffset + i];
@@ -47,22 +48,36 @@ int main(int argc, char *argv[]) {
             std::vector<int> agentJobsFinished(agentCount);
             std::vector<int> agentStationsWorked(agentCount);
             int solutionNumber = 0;
+            int vertexConflicts = 0;
+            int swapConflicts = 0;
+            int followConflicts = 0;
 
             // Act
             std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
-            Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance(), 0);
-            auto highLevelTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - experimentBeginTime).count();
-            (*logger.begin()) << solutionNumber++ << " " << ((float)highLevelTime)/1000 << "\n"; logger.end();
+            
+            std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>(agentCount);
+            root->setSolution(LowLevelCBS::get_instance().getAllPaths(graph, agents, root->getConstraints()));
+            std::vector<Conflict> conflicts = root->findConflicts();
+
+            Solution solution = root->getSolution();
+
+            auto computationTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - experimentBeginTime).count();
+            (*logger.begin()) << solutionNumber++ << " " << ((float)computationTime)/1000 << "\n"; logger.end();
             while (true){
                 // Find the path that finish first (lowest cost path)
                 int agentThatFinishFirst = -1;
                 
                 float minCost = std::numeric_limits<float>::infinity();
                 for (int i = 0; i < agentCount; ++i){
-                    if (solution.paths[i].cost < minCost){
-                        minCost = solution.paths[i].cost;
-                        agentThatFinishFirst = i;
+                    if ( ! agentHasFinished[i]){
+                        if (solution.paths[i].cost < minCost){
+                            minCost = solution.paths[i].cost;
+                            agentThatFinishFirst = i;
+                        }
                     }
+                }
+                if (agentThatFinishFirst == -1){
+                    break;// We are done
                 }
                 // If the agent was at a delivery station
                 int goalId = agents[agentThatFinishFirst].getGoal()->getId();
@@ -121,16 +136,26 @@ int main(int argc, char *argv[]) {
                     agents[i] = AgentInfo(i, currentAction, goal, isWorking);
                 }
                 // Find new solution
-                if (totalJobsLeft == 333 || totalJobsLeft == 128 || totalJobsLeft == 89){
-                    for (auto a : agents){
-                        Error::log("Agent" + std::to_string(a.getId()) + ": " + agents[a.getId()].getCurrentAction().getLocation().toString() + " --> " + a.getGoal()->toString() + "\n");
+                if ( ! agentHasFinished[agentThatFinishFirst]){
+                    std::chrono::steady_clock::time_point computationBeginTime = std::chrono::steady_clock::now();
+                    
+                    std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>(agentCount);
+                    root->setSolution(LowLevelCBS::get_instance().getAllPaths(graph, agents, root->getConstraints()));
+                    std::vector<Conflict> conflicts = root->findConflicts();
+                    for(auto c : conflicts){
+                        std::string type = c.getType();
+                        if (type[0] == 'V'){
+                            vertexConflicts++;
+                        } else if (type[0] == 'F'){
+                            followConflicts++;
+                        } else if (type[0] == 'S'){
+                            swapConflicts++;
+                        }
                     }
+                    solution = root->getSolution();
+                    computationTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - computationBeginTime).count();
+                    (*logger.begin()) << solutionNumber++ << " " << ((float)computationTime)/1000 << "\n"; logger.end();
                 }
-            
-                std::chrono::steady_clock::time_point highLevelBeginTime = std::chrono::steady_clock::now();
-                solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance(), minCost);
-                highLevelTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - highLevelBeginTime).count();
-                (*logger.begin()) << solutionNumber++ << " " << ((float)highLevelTime)/1000 << "\n"; logger.end();
                 // Repeat until all jobs are done...
             }
             auto experimentTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - experimentBeginTime).count();
@@ -146,7 +171,12 @@ int main(int argc, char *argv[]) {
                 logger.end();
                 i++;
             }
-            (*logger.begin()) << "Sum of costs = "<< sumOfCosts << "\n"; logger.end();
+            (*logger.begin()) << "Sum of costs = "<< sumOfCosts << "\n"
+             << "Total amount of Vertex conflicts = " << vertexConflicts << "\n"
+             << "Total amount of Swap conflicts = " << swapConflicts << "\n"
+             << "Total amount of Follow conflicts = " << followConflicts << "\n"
+             << "\nTotal amount of conflicts = " << vertexConflicts + swapConflicts + followConflicts << "\n";
+            logger.end();
             std::cout << "Done\n";
         }
     }
@@ -268,19 +298,16 @@ std::shared_ptr<Graph> getCbsMapSmallGraph()
     };
     v3->setEdges(v3edges);
     std::vector<std::shared_ptr<Edge>> v4edges = {
-        std::make_shared<Edge>(v4, v37, 65.573769),
         std::make_shared<Edge>(v4, v42, 44.262295),
         std::make_shared<Edge>(v4, v84, 40.983601),
     };
     v4->setEdges(v4edges);
     std::vector<std::shared_ptr<Edge>> v5edges = {
-        std::make_shared<Edge>(v5, v39, 65.573769),
         std::make_shared<Edge>(v5, v42, 40.983604),
         std::make_shared<Edge>(v5, v44, 44.262291),
     };
     v5->setEdges(v5edges);
     std::vector<std::shared_ptr<Edge>> v6edges = {
-        std::make_shared<Edge>(v6, v41, 65.573769),
         std::make_shared<Edge>(v6, v44, 40.983604),
         std::make_shared<Edge>(v6, v60, 44.262291),
     };
@@ -458,7 +485,6 @@ std::shared_ptr<Graph> getCbsMapSmallGraph()
     std::vector<std::shared_ptr<Edge>> v37edges = {
         std::make_shared<Edge>(v37, v38, 42.622948),
         std::make_shared<Edge>(v37, v39, 85.245895),
-        std::make_shared<Edge>(v37, v4, 65.573769),
     };
     v37->setEdges(v37edges);
     std::vector<std::shared_ptr<Edge>> v38edges = {
@@ -473,7 +499,6 @@ std::shared_ptr<Graph> getCbsMapSmallGraph()
         std::make_shared<Edge>(v39, v38, 42.622948),
         std::make_shared<Edge>(v39, v40, 42.622948),
         std::make_shared<Edge>(v39, v41, 85.245895),
-        std::make_shared<Edge>(v39, v5, 65.573769),
     };
     v39->setEdges(v39edges);
     std::vector<std::shared_ptr<Edge>> v40edges = {
@@ -486,7 +511,6 @@ std::shared_ptr<Graph> getCbsMapSmallGraph()
     std::vector<std::shared_ptr<Edge>> v41edges = {
         std::make_shared<Edge>(v41, v39, 85.245895),
         std::make_shared<Edge>(v41, v40, 42.622948),
-        std::make_shared<Edge>(v41, v6, 65.573769),
     };
     v41->setEdges(v41edges);
     std::vector<std::shared_ptr<Edge>> v42edges = {

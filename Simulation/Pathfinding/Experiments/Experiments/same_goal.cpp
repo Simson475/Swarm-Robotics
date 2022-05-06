@@ -1,4 +1,5 @@
 #include "HighLevelCBS.hpp"
+#include <sys/stat.h>
 
 int main(int argc, char *argv[]) {
     Logger& logger = Logger::get_instance();
@@ -22,7 +23,7 @@ int main(int argc, char *argv[]) {
         // Create vertices
         int vertexCount = agentCount + 1;
         int goalVertexIndex = vertexCount - 1;
-        std::vector<std::shared_ptr<Vertex>> vertices{(long unsigned int)(vertexCount)};
+        std::vector<std::shared_ptr<Vertex>> vertices(vertexCount);
         for (int i = 0; i < vertexCount; ++i){
             vertices[i] = std::make_shared<Vertex>(i);
         }
@@ -37,7 +38,7 @@ int main(int argc, char *argv[]) {
         // Create graph
         auto graph = std::make_shared<Graph>(vertices);
         // Create agents
-        std::vector<AgentInfo> agents{(long unsigned int)agentCount};
+        std::vector<AgentInfo> agents(agentCount);
         for (int i = 0; i < agentCount; ++i){
             auto startVertex = vertices[i];
             auto goalVertex = vertices[goalVertexIndex];
@@ -48,6 +49,10 @@ int main(int argc, char *argv[]) {
         std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
         Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
         auto experimentTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - experimentBeginTime).count();
+
+        for(auto& p : solution.paths){
+            (*logger.begin()) << p.toString() << "\n"; logger.end();
+        }
 
         // Results
         (*logger.begin()) << "HighLevel used "<< HighLevelCBS::get_instance().iterations << " iterations\n"; logger.end();
