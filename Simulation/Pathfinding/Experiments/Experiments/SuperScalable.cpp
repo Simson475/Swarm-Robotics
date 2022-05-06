@@ -3,7 +3,7 @@
 #include <future>
 int maxTime = 10;
 int maxLoops = 100;
-int threads = 4;
+int threads = 7;
 static int counter = 0;
 static int failures = 0;
 std::vector<bool> doneThreads(threads, false);
@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
         }
         auto graph = std::make_shared<Graph>(vertices);
 
-        for (int agentCount = 1; agentCount <= 12; ++agentCount)
+        for (int agentCount = 1; agentCount <= 11; ++agentCount)
         {
             counter = 0;
             failures = 0;
