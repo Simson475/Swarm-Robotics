@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
         }
         auto graph = std::make_shared<Graph>(vertices);
 
-        for (int agentCount = 11; agentCount <= 11; ++agentCount)
+        for (int agentCount = 1; agentCount <= 12; ++agentCount)
         {
             counter = 0;
             failures = 0;
@@ -178,8 +178,10 @@ int main(int argc, char *argv[])
             timeSpent += getResult(threads, size, agents, vertices, maxTime, maxLoops);
 
             // When plotting in pgfplots, the first element becomes the x-axis, 2. becomes the y-axis and the 3. one becomes the z-axis
-            if (agentCount == 1)
+            if (agentCount == 1){
+                agentCount+=10;
                 continue;
+            }   
             auto result = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - experimentBeginTime).count();
             std::cout << "fullTime: " << result << " \n";
 
