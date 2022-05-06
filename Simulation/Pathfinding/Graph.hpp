@@ -7,6 +7,8 @@
 #include <memory>
 #include "Debugging.hpp"
 #include <limits>
+#include <queue>
+#include <set>
 
 class Graph {
 public:
@@ -19,6 +21,7 @@ protected:
     std::vector<std::shared_ptr<Vertex>> vertices;
     std::vector<std::vector<std::shared_ptr<Edge>>> edges;
     std::vector<std::vector<float>> heuristicCosts;
+    void reduceToTransitiveReduction();
 };
 
 #endif
