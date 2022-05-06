@@ -1,12 +1,9 @@
 #include "HighLevelCBS.hpp"
 #include <thread>
 #include <future>
-int maxTime = 10;
-int maxLoops = 100;
-int threads = 8;
+
 static int counter = 0;
 static int failures = 0;
-std::vector<bool> doneThreads(threads, false);
 
 std::shared_ptr<Graph> generateGraph(int size)
 {
@@ -68,7 +65,7 @@ std::vector<std::vector<AgentInfo>> generateAgentInfo(int threads, int agentCoun
     }
     return agents;
 }
-int64_t tempFunc(int size, std::vector<AgentInfo> agents, int maxTime, int threadNumber)
+int64_t tempFunc(int size, std::vector<AgentInfo> agents, int maxTime)
 {
     // create new object using copy constructor constructor
     std::shared_ptr<Graph> copiedGraph = generateGraph(size);
@@ -81,7 +78,6 @@ int64_t tempFunc(int size, std::vector<AgentInfo> agents, int maxTime, int threa
         auto result = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - experimentBeginTime).count();
         counter++;
         std::cout << counter << " is done \n";
-        doneThreads[threadNumber] = true;
         return result;
     }
     catch (std::string error)
@@ -90,7 +86,6 @@ int64_t tempFunc(int size, std::vector<AgentInfo> agents, int maxTime, int threa
         std::cout << counter << " is done (took too long)\n";
         int microInMinutes = 6e+7;
         failures++;
-        doneThreads[threadNumber] = true;
         return maxTime * microInMinutes * 10;
     }
 }
@@ -104,24 +99,18 @@ int64_t getResult(int threads, int size, std::vector<std::vector<AgentInfo>> age
     for (int i = 0; i < threads; i++)
     {
         startCounter++;
-        futures[i] = std::async(std::launch::async, tempFunc, size, agents[i], maxTime,i);
+        futures[i] = std::async(std::launch::async, tempFunc, size, agents[i], maxTime);
     }
     while (doneCounter < loops)
     {
-        for (int i = 0; i < threads; i++)
+        int i = doneCounter % threads;
+        auto result = futures[i].get();
+        doneCounter++;
+        fullCount += result;
+        if (startCounter < loops)
         {
-            if (doneThreads[i])
-            {
-                auto result = futures[i].get();
-                doneCounter++;
-                fullCount += result;
-                doneThreads[i]=false;
-                if (startCounter < loops)
-                {
-                    startCounter++;
-                    futures[i] = std::async(std::launch::async, tempFunc, size, agents[i], maxTime,i);
-                }
-            }
+            startCounter++;
+            futures[i] = std::async(std::launch::async, tempFunc, size, agents[i], maxTime);
         }
     }
     return fullCount;
@@ -137,7 +126,9 @@ int main(int argc, char *argv[])
 
     for (int size = 3; size <= 10; size++)
     {
-
+        int maxTime = 10;
+        int maxLoops = 100;
+        int threads = 8;
         int height = 2 * size;
         int width = 2 * size;
         int verticesMade = 0;
