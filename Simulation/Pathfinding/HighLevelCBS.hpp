@@ -30,7 +30,7 @@ public:
         static HighLevelCBS instance;
         return instance;
     }
-    Solution findSolution(std::shared_ptr<Graph>, std::vector<AgentInfo>, LowLevelCBS&, float currentTime = 0);
+    Solution findSolution(std::shared_ptr<Graph>, std::vector<AgentInfo>, LowLevelCBS&, float currentTime = 0, int maxTime = -1);
     Conflict getBestConflict(std::shared_ptr<ConstraintTree>, std::shared_ptr<Graph>, std::vector<AgentInfo>, std::vector<Conflict>, LowLevelCBS&);
     uint iterations;
 private:

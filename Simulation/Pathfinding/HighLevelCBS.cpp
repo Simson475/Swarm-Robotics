@@ -1,6 +1,6 @@
 #include "HighLevelCBS.hpp"
 
-Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel, float currentTime){
+Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel, float currentTime, int maxTime){
     #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
     Logger& logger = Logger::get_instance();
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -16,6 +16,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      * Root.cost = SIC(Root.solution)
      */
     std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>(agents.size());
+    std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
 
     // Set initial constraints to avoid conflicts on initial actions
     for (auto a : agents){
@@ -58,10 +59,17 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         std::chrono::steady_clock::time_point iterationBegin = std::chrono::steady_clock::now();
         #endif
 
-        if (++iterations == 100000){
-            Error::log("Max highlevel iterations reached!\n");
-            throw std::string("Max highlevel iterations reached!\n");
-            //exit(0);
+        // if (++iterations == 100000){
+        //     Error::log("Max highlevel iterations reached!\n");
+        //     throw std::string("Max highlevel iterations reached!\n");
+        //     //exit(0);
+        // }
+        if(maxTime != -1){
+            auto timeSpent = std::chrono::duration_cast<std::chrono::minutes>(std::chrono::steady_clock::now() - experimentBeginTime).count();
+            if(timeSpent >= maxTime ){
+            Error::log("Max time reached!\n");
+            throw std::string("Max time reached!\n");
+            }
         }
         #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
         (*logger.begin()) << "High level iteration: " << iterations << "\n"; logger.end();
