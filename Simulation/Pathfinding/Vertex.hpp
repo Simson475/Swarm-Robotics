@@ -6,7 +6,7 @@ class Vertex;
 #include <vector>
 #include <memory>
 #include "Edge.hpp"
-
+#include "Debugging.hpp"
 #include <iostream>
 
 class Vertex {

@@ -78,7 +78,7 @@ void Graph::reduceToTransitiveReduction(){
     for (int i = 0; i < size; ++i){
         auto e = transitiveEdges.front();
         transitiveEdges.pop();
-        e->getEndVertex()->removeEdge(e);
-        Error::log("Removing " + e->toString() + "\n");
+        e->getStartVertex()->removeEdge(e);
+        //Error::log("Removing " + e->toString() + "\n");
     }
 }

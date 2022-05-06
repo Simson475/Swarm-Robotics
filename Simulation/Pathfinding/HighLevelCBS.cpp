@@ -54,11 +54,13 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         Solution solution;
         solution.paths = lowLevel.getAllPaths(graph, agents, {});// Return greedy solution
         // Only return 1 action per bot (we dont want to run the full greedy, just enough to use CBS again)
+        Error::log("Found greedy solution. Limiting to 1 action now..\n");
         for(auto& p : solution.paths){
-            for (auto it = p.actions.end(); it >= p.actions.begin(); it--){
-                // Erase any action that starts after this one (it implies that there is an action before that, which is not done yet that we can use)
-                if (it.base()->timestamp > currentTime){
-                    p.actions.erase(it);
+            for (auto it = p.actions.begin(); it < p.actions.end(); it++){
+                // We need the first action that is not over
+                if ((it.base()->timestamp + it.base()->duration) > currentTime){
+                    p.actions = {*it.base()};
+                    break;
                 }
             }
         }
