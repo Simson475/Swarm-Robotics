@@ -93,7 +93,7 @@ int64_t tempFunc(int size, std::vector<AgentInfo> agents, int maxTime, int threa
         int microInMinutes = 6e+7;
         failures++;
         doneThreads[threadNumber] = true;
-        return maxTime * microInMinutes * 10;
+        return maxTime * microInMinutes * 2;
     }
 }
 
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
         }
         auto graph = std::make_shared<Graph>(vertices);
 
-        for (int agentCount = 1; agentCount <= 11; ++agentCount)
+        for (int agentCount = 1; agentCount <= 12; ++agentCount)
         {
             counter = 0;
             failures = 0;

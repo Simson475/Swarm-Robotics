@@ -17,7 +17,5 @@ void Solution::finalize(std::vector<AgentInfo> agents)
 
         // Remove agents current action
         path.actions.erase(path.actions.begin());
-
-        Error::log(agent.getCurrentAction().toString() + " " + path.toString() + "\n");
     }
 }
