@@ -13,7 +13,7 @@ public:
     ActionPathAux(Action action, float heuristic, std::shared_ptr<ActionPathAux> predecessor, bool hasWorked = false);
     ActionPathAux(const ActionPathAux &a);
     Path getPath() const;
-    Path getPath(const Action& lastAction) const;
+    Path getPathWithoutCAT() const;
 
     Action action;
     float heuristic;

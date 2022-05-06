@@ -132,9 +132,8 @@ int main(int argc, char *argv[]) {
                     }
                     auto goalVertex = agents[i].getGoal();
                     bool isWorking = currentAction.isWaitAction() && currentAction.endVertex == goalVertex && currentAction.duration == TIME_AT_GOAL;
-                    bool shouldWorkAtGoal = true;
                     auto goal = i == agentThatFinishFirst ? vertices[newGoalId] : goalVertex;
-                    agents[i] = AgentInfo(i, currentAction, goal, isWorking, shouldWorkAtGoal);
+                    agents[i] = AgentInfo(i, currentAction, goal, isWorking);
                 }
                 // Find new solution
                 if ( ! agentHasFinished[agentThatFinishFirst]){
