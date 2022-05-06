@@ -25,3 +25,16 @@ Path Path::operator+(const Path& path){
   Path p = {actions, this->cost + path.cost};
   return p;
 }
+
+void Path::operator=(const Path &other){
+  this->actions = other.actions;
+  this->cost = other.cost;
+}
+
+void Path::operator=(std::vector<Action> actions){
+  this->actions = actions;
+  this->cost = actions.size() > 0 ? actions.front().timestamp : 0;
+  for(auto& a : actions){
+    cost += a.duration;
+  }
+}

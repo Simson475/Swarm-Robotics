@@ -16,6 +16,8 @@ class Path {
     std::vector<int> asWaypointPlan();
     std::string toString();
     Path operator+(const Path& path);
+    void operator=(const Path &other);
+    void operator=(std::vector<Action> actions);
 };
 
 #endif
