@@ -17,6 +17,7 @@ fi
 
 # Create the cpp file
 echo "#include \"HighLevelCBS.hpp\"
+#include <sys/stat.h>
 
 int main(int argc, char *argv[]) {
     Logger& logger = Logger::get_instance();
@@ -36,13 +37,13 @@ int main(int argc, char *argv[]) {
         //TODO construct the graph and agents...
         // Create vertices
         int vertexCount = 1; //TODO actual vertex count
-        std::vector<std::shared_ptr<Vertex>> vertices{(long unsigned int)(vertexCount)};
+        std::vector<std::shared_ptr<Vertex>> vertices(vertexCount);
         for (int i = 0; i < vertexCount; ++i){
             vertices[i] = std::make_shared<Vertex>(i);
         }
         //TODO create edges
         //TODO create graph
-        std::vector<AgentInfo> agents{(long unsigned int)agentCount};
+        std::vector<AgentInfo> agents(agentCount);
         for (int i = 0; i < agentCount; ++i){
             auto startVertex = vertices[i];
             auto goalVertex = vertices[i];// TODO set to actual goal
