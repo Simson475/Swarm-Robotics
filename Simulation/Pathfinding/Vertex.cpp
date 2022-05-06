@@ -22,3 +22,11 @@ int Vertex::getId(){
 std::string Vertex::toString(){
     return "v" + std::to_string(id);
 }
+
+void Vertex::removeEdge(std::shared_ptr<Edge> edge){
+    for(auto it = this->edges.begin(); it < this->edges.end(); it++){
+        if (*(it.base()) == edge){
+            this->edges.erase(it);
+        }
+    }
+}

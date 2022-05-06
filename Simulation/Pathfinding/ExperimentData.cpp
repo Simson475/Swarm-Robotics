@@ -48,15 +48,9 @@ bool ExperimentData::requestSolution(int agentId){
 
 void ExperimentData::distributeSolution(Solution solution){
     for (auto agent : getAgents()){
-        // Remove the inserted TIME_AT_GOAL duration wait action
         auto path = solution.paths[agent->getId()];
-        path.actions.erase(path.actions.end());
         // Set path
         agent->getBot()->setPath(path);
-        if (agent->getCurrentAction().isWaitAction()){
-            agent->getBot()->setCurrentAction(path.actions.front());
-            path.actions.erase(path.actions.begin());
-        }
     }
 }
 

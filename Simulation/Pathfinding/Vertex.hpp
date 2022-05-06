@@ -6,7 +6,7 @@ class Vertex;
 #include <vector>
 #include <memory>
 #include "Edge.hpp"
-
+#include "Debugging.hpp"
 #include <iostream>
 
 class Vertex {
@@ -15,6 +15,7 @@ public:
     std::vector<std::shared_ptr<Edge>> getEdges();
     std::shared_ptr<Edge> getEdge(std::shared_ptr<Vertex>);
     void setEdges(std::vector<std::shared_ptr<Edge>> edges);
+    void removeEdge(std::shared_ptr<Edge> edge);
     int getId();
     std::string toString();
 protected:
