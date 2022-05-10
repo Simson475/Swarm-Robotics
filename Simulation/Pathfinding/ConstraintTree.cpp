@@ -1,13 +1,19 @@
 #include "ConstraintTree.hpp"
 #include "Debugging.hpp"
 
+ConstraintTree::ConstraintTree(){}
+
+ConstraintTree::ConstraintTree(int agentCount){
+    constraints.resize(agentCount);
+}
+
 std::shared_ptr<ConstraintTree> ConstraintTree::getParent(){
     return this->parent;
 }
 void ConstraintTree::setChildren(std::vector<std::shared_ptr<ConstraintTree>> children){
     this->children = children;
 }
-Solution ConstraintTree::getSolution(){
+Solution& ConstraintTree::getSolution(){
     return solution;
 }
 void ConstraintTree::setSolution(Solution s){
@@ -19,7 +25,7 @@ void ConstraintTree::setSolution(Solution s){
  * @param paths 
  * @param agents 
  */
-void ConstraintTree::setSolution(std::vector<Path> paths, std::vector<AgentInfo> agents){
+void ConstraintTree::setSolution(std::vector<Path> paths){
     Solution solution;
     solution.paths = paths;
     setSolution(solution);
@@ -40,7 +46,7 @@ std::vector<Conflict> ConstraintTree::findConflicts(){
                 for (int k = p2Index; k < numActions; ++k){
                     auto a2 = p2.actions[k];
                     auto a2Start = a2.timestamp;
-                    auto a2End = a1Start + a2.duration;
+                    auto a2End = a2Start + a2.duration;
                     if (a2Start > a1End + TIME_AT_VERTEX) { break; }// Skip the remainding actions in p2 since they can't have overlaps
                     if (a1End > a2End) { p2Index++; }// Update p2Index to only start looking at the actions in p2 that can overlap with the next a1
                     auto maxStart = ((a1Start > a2Start) ? a1Start : a2Start);//max start
@@ -349,36 +355,31 @@ bool ConstraintTree::arriveWithinActionAndTimeAtVertex(Action a1, Action a2){
 }
 
 std::vector<Constraint> ConstraintTree::getConstraints(int agentId){
-    std::vector<Constraint> agentConstraints;
-    for (auto c : this->constraints){
-        if (c.agentId == agentId){
-            agentConstraints.push_back(c);
-        }
-    }
-    return agentConstraints;
+    return this->constraints[agentId];
 }
-std::vector<Constraint> ConstraintTree::getConstraints(){
+std::vector<std::vector<Constraint>> ConstraintTree::getConstraints(){
     return this->constraints;
 }
-void ConstraintTree::setConstraints(std::vector<Constraint> constraints){
+void ConstraintTree::setConstraints(std::vector<std::vector<Constraint>> constraints){
     this->constraints = constraints;
 }
 void ConstraintTree::addConstraint(Constraint constraint){
     // Merge the constraint with existing constraints
     //TODO can this be done more efficient?
+    int agentId = constraint.agentId;
+    std::vector<Constraint>& constraints = this->constraints[agentId];
     bool addedConstraint = false;
-    auto iterator = this->constraints.begin();
-    for (auto c : this->constraints){
+    auto iterator = constraints.begin();
+    for (auto c : constraints){
         if (c.location == constraint.location
-            && c.agentId == constraint.agentId
         ){
             auto maxStart = std::max(constraint.timeStart, c.timeStart);
             auto minEnd = std::min(constraint.timeEnd, c.timeEnd);
-            if (maxStart <= minEnd){
+            if (maxStart - DELTA <= minEnd){
                 auto minStart = std::min(constraint.timeStart, c.timeStart);
                 auto maxEnd = std::max(constraint.timeEnd, c.timeEnd);
-                this->constraints.erase(iterator);
-                this->constraints.push_back(Constraint(c.agentId, c.location, minStart, maxEnd));
+                constraints.erase(iterator);
+                constraints.push_back(Constraint(c.agentId, c.location, minStart, maxEnd));
                 addedConstraint = true;
                 break;
             }
@@ -386,6 +387,6 @@ void ConstraintTree::addConstraint(Constraint constraint){
         iterator++;
     }
     if ( ! addedConstraint){
-        this->constraints.push_back(constraint);
+        constraints.push_back(constraint);
     }
 }

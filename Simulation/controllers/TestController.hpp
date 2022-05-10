@@ -25,7 +25,7 @@ public:
     int getAgentId();
     void setAgentId(int id);
     Location getCurrentLocation();
-    Action getCurrentAction();
+    Action& getCurrentAction();
     void setCurrentAction(Action action);
     void setPath(Path path);
 
@@ -43,7 +43,7 @@ protected:
     Action currentAction;
     std::vector<int> getNextPointAndUpdateState();
     void updateCurrentLocation(Action currentAction);
-
+    bool resyncNeeded();
     float waitClock;
     void startWaiting();
 

@@ -23,3 +23,11 @@ std::string Vertex::toString(){
     return "auto v" + std::to_string(id) + " = std::make_shared<Vertex>(" + std::to_string(id) + ");";
     return "v" + std::to_string(id);
 }
+
+void Vertex::removeEdge(std::shared_ptr<Edge> edge){
+    for(auto it = this->edges.begin(); it < this->edges.end(); it++){
+        if (*(it.base()) == edge){
+            this->edges.erase(it);
+        }
+    }
+}

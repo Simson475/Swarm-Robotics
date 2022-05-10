@@ -20,6 +20,7 @@ class LowLevelCBS;
 #include "GLOBALS.hpp"
 #include <chrono>
 #include "DEFINITIONS.hpp"
+#include "ConstraintUtils.hpp"
 
 class LowLevelCBS {
 public:
@@ -29,14 +30,11 @@ public:
         return instance;
     }
     Path getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agent, std::vector<Constraint> constraints);
-    std::vector<Path> getAllPaths(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<Constraint> constraints);
+    std::vector<Path> getAllPaths(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, std::vector<std::vector<Constraint>> constraints);
     uint iterations = 0;
     unsigned long int totalIterations = 0;
 protected:
-    std::vector<Action> getPossibleActions(std::shared_ptr<Vertex> vertex, std::vector<Constraint> constraints, float currentTime);
-    bool isViolatingConstraint(Constraint constraint, Action action);
-    bool isViolatingConstraint(Constraint constraint, std::shared_ptr<Edge> edge, float startTime);
-    bool isViolatingConstraint(Constraint constraint, std::shared_ptr<Vertex> vertex, float startTime, float endTime);
+    std::vector<Action> getPossibleActions(std::shared_ptr<Vertex> vertex, std::vector<Constraint> constraints, float currentTime, float minPathEndTime = -1);
     bool canWorkAtGoalWithoutViolatingConstraints(Action action, std::shared_ptr<Vertex> goal, std::vector<Constraint> constraints);
 };
 

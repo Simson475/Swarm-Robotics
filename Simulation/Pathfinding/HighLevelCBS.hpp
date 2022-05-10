@@ -3,7 +3,6 @@
 
 class HighLevelCBS;
 
-#include "argos_wrapper/argos_wrapper.hpp"
 
 #include "ConstraintTree.hpp"
 #include "Constraint.hpp"
@@ -30,9 +29,13 @@ public:
         static HighLevelCBS instance;
         return instance;
     }
-    Solution findSolution(std::shared_ptr<Graph>, std::vector<AgentInfo>, LowLevelCBS&);
+    Solution findSolution(std::shared_ptr<Graph>, std::vector<AgentInfo>, LowLevelCBS&, float currentTime = 0);
     Conflict getBestConflict(std::shared_ptr<ConstraintTree>, std::shared_ptr<Graph>, std::vector<AgentInfo>, std::vector<Conflict>, LowLevelCBS&);
     uint iterations;
+private:
+    void blockGoalsForever(Solution& solution);
+    void removeInfiniteBlocksOnGoals(Solution& solution);
+    Solution getSingleActionGreedySolution(std::shared_ptr<Graph>, std::vector<AgentInfo>, LowLevelCBS&, float currentTime = 0);
 };
 
 #endif

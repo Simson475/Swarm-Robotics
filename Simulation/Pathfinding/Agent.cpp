@@ -37,5 +37,5 @@ std::shared_ptr<Vertex> Agent::getGoal(){
 }
 
 AgentInfo Agent::getAgentInfo(){
-    return AgentInfo(this->id, bot->getCurrentAction(), getGoal());
+    return AgentInfo(this->id, bot->getCurrentAction(), getGoal(), this->getBot()->isWorking());
 }

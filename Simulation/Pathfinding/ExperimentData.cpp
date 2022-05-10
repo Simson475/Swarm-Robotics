@@ -37,10 +37,6 @@ bool ExperimentData::requestSolution(int agentId){
     Error::log("Going to find a solution\n");
     auto agentInfos = getAgentsInfo();
 
-    for (auto a1 : agentInfos){
-        Error::log("Agent" + std::to_string(a1.getId()) + ": " + getGraph()->getVertices()[getAgents()[a1.getId()]->getBot()->getLastLocation()]->toString() + " --> " + a1.getGoal()->toString() + "\n");
-    }
-
     Solution solution = HighLevelCBS::get_instance()
         .findSolution(getGraph(), agentInfos, LowLevelCBS::get_instance());
     
@@ -52,9 +48,7 @@ bool ExperimentData::requestSolution(int agentId){
 
 void ExperimentData::distributeSolution(Solution solution){
     for (auto agent : getAgents()){
-        // Remove the inserted TIME_AT_GOAL duration wait action
         auto path = solution.paths[agent->getId()];
-        path.actions.erase(path.actions.end());
         // Set path
         agent->getBot()->setPath(path);
     }

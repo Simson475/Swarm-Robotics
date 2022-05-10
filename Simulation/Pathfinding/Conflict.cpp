@@ -47,3 +47,7 @@ Location Conflict::getLocation(int index){
 std::string Conflict::toString(){
     return "{{" + std::to_string(this->agentIds[0]) + "," + std::to_string(this->agentIds[1]) + "} " + this->locations[0].toString() + " [" + std::to_string(this->timeStart) + "," + std::to_string(this->timeEnd) + "] " + this->type + " }";
 }
+
+std::string Conflict::getType(){
+    return this->type;
+}
