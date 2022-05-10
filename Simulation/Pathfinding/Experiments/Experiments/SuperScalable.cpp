@@ -12,8 +12,8 @@ std::vector<bool> doneThreads(threads, false);
 
 std::shared_ptr<Graph> generateGraph(int size)
 {
-    int height = 2 * size;
-    int width = 2 * size;
+    int height = size;
+    int width = size;
     int verticesMade = 0;
     std::vector<std::shared_ptr<Vertex>> vertices{(long unsigned int)(width * height)};
     for (int i = 0; i < height; i++)
@@ -48,11 +48,10 @@ int getAvailableStation(std::vector<int> &stations)
     return station;
 }
 
-std::vector<std::vector<AgentInfo>> generateAgentInfo(int threads, int agentCount, std::vector<std::shared_ptr<Vertex>> vertices, int verticeCount)
+std::vector<AgentInfo> generateAgentInfo(int threads, int agentCount, std::vector<std::shared_ptr<Vertex>> vertices, int verticeCount)
 {
-    std::vector<std::vector<AgentInfo>> agents(threads, std::vector<AgentInfo>({(long unsigned int)agentCount}));
-    for (int j = 0; j < threads; j++)
-    {
+    std::vector<AgentInfo> agents({(long unsigned int)agentCount});
+
         std::vector<int> freeStarts(verticeCount);
         std::vector<int> freeGoals(verticeCount);
         for (int i = 0; i < verticeCount; ++i)
@@ -65,15 +64,14 @@ std::vector<std::vector<AgentInfo>> generateAgentInfo(int threads, int agentCoun
         {
             auto startVertex = vertices[getAvailableStation(freeStarts)];
             auto goalVertex = vertices[getAvailableStation(freeGoals)];
-            agents[j][i] = AgentInfo(i, Action(0, startVertex, startVertex, 0), goalVertex);
+            agents[i] = AgentInfo(i, Action(0, startVertex, startVertex, 0), goalVertex);
         }
-    }
+
     return agents;
 }
-int64_t tempFunc(int size, std::vector<AgentInfo> agents, int maxTime, int threadNumber)
+int64_t tempFunc(int size, int maxTime, int threadNumber, std::shared_ptr<Graph> copiedGraph, std::vector<AgentInfo> agents)
 {
     // create new object using copy constructor constructor
-    std::shared_ptr<Graph> copiedGraph = generateGraph(size);
     auto highLevelCBS = HighLevelCBS{};
     auto lowLevelCBS = LowLevelCBS{};
     try
@@ -97,7 +95,7 @@ int64_t tempFunc(int size, std::vector<AgentInfo> agents, int maxTime, int threa
     }
 }
 
-int64_t getResult(int threads, int size, std::vector<std::vector<AgentInfo>> agents, std::vector<std::shared_ptr<Vertex>> vertices, int maxTime, int loops)
+int64_t getResult(int threads, int size, int maxTime, int loops, int agentCount)
 {
     unsigned long long fullCount = 0;
     int startCounter = 0;
@@ -106,7 +104,9 @@ int64_t getResult(int threads, int size, std::vector<std::vector<AgentInfo>> age
     for (int i = 0; i < threads; i++)
     {
         startCounter++;
-        futures[i] = std::async(std::launch::async, tempFunc, size, agents[i], maxTime,i);
+        std::shared_ptr<Graph> copiedGraph = generateGraph(size);
+        auto agents = generateAgentInfo(threads, agentCount, copiedGraph->getVertices(), size*size);
+        futures[i] = std::async(std::launch::async, tempFunc, size, maxTime, i, copiedGraph, agents);
     }
     while (doneCounter < loops)
     {
@@ -114,14 +114,16 @@ int64_t getResult(int threads, int size, std::vector<std::vector<AgentInfo>> age
         {
             if (doneThreads[i])
             {
+                doneThreads[i]=false;
                 auto result = futures[i].get();
                 doneCounter++;
                 fullCount += result;
-                doneThreads[i]=false;
                 if (startCounter < loops)
                 {
                     startCounter++;
-                    futures[i] = std::async(std::launch::async, tempFunc, size, agents[i], maxTime,i);
+                    std::shared_ptr<Graph> copiedGraph = generateGraph(size);
+                    auto agents = generateAgentInfo(threads, agentCount, copiedGraph->getVertices(), size*size);
+                    futures[i] = std::async(std::launch::async, tempFunc, size, maxTime, i, copiedGraph, agents);
                 }
             }
         }
@@ -137,45 +139,17 @@ int main(int argc, char *argv[])
     std::string experimentResultDir = "SuperScalable_experiment_result";
     mkdir(&experimentResultDir[0], 0777);
 
-    for (int size = 3; size <= 10; size++)
+    for (int size = 12; size <= 20; size+=2)
     {
 
-        int height = 2 * size;
-        int width = 2 * size;
-        int verticesMade = 0;
-        std::vector<std::shared_ptr<Vertex>> vertices{(long unsigned int)(width * height)};
-        for (int i = 0; i < height; i++)
-        {
-            for (int j = 0; j < width; j++)
-            {
-                vertices[verticesMade] = std::make_shared<Vertex>(verticesMade);
-                if (i != 0)
-                {
-                    float edgeCost = rand() % 50 + 50;
-                    ;
-                    vertices[verticesMade]->addEdge({std::make_shared<Edge>(vertices[verticesMade], vertices[verticesMade - width], edgeCost)});
-                    vertices[verticesMade - width]->addEdge({std::make_shared<Edge>(vertices[verticesMade - width], vertices[verticesMade], edgeCost)});
-                }
-                if (j != 0)
-                {
-                    float edgeCost = rand() % 50 + 50;
-                    ;
-                    vertices[verticesMade]->addEdge({std::make_shared<Edge>(vertices[verticesMade], vertices[verticesMade - 1], edgeCost)});
-                    vertices[verticesMade - 1]->addEdge({std::make_shared<Edge>(vertices[verticesMade - 1], vertices[verticesMade], edgeCost)});
-                }
-                verticesMade++;
-            }
-        }
-        auto graph = std::make_shared<Graph>(vertices);
-
-        for (int agentCount = 1; agentCount <= 12; ++agentCount)
+        for (int agentCount = 1; agentCount <= 13; ++agentCount)
         {
             counter = 0;
             failures = 0;
             unsigned long long timeSpent = 0;
             std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
 
-            std::cout << "Running experiment with " << agentCount << " agents.. size: " << width << "\n";
+            std::cout << "Running experiment with " << agentCount << " agents.. size: " << size << "\n";
             std::cout.flush();
             std::string experimentResultFile = experimentResultDir + "/SuperScalable.txt";
             // Remove any existing results if they exist
@@ -183,10 +157,9 @@ int main(int argc, char *argv[])
 
             logger.setLogFile(experimentResultFile);
             // Arrange experiment
-            auto agents = generateAgentInfo(threads, agentCount, vertices, width * height);
             // Act
 
-            timeSpent += getResult(threads, size, agents, vertices, maxTime, maxLoops);
+            timeSpent += getResult(threads, size, maxTime, maxLoops, agentCount);
 
             // When plotting in pgfplots, the first element becomes the x-axis, 2. becomes the y-axis and the 3. one becomes the z-axis
             if (agentCount == 1){
@@ -196,7 +169,7 @@ int main(int argc, char *argv[])
             auto result = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - experimentBeginTime).count();
             std::cout << "fullTime: " << result << " \n";
 
-            (*logger.begin()) << "" << agentCount << " " << width << " " << timeSpent / maxLoops << " " << failures << "\n";
+            (*logger.begin()) << "" << agentCount << " " << size << " " << timeSpent / maxLoops << " " << failures << "\n";
             logger.end();
             std::cout << "Done\n";
         }
