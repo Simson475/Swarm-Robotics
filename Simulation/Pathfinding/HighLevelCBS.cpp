@@ -18,7 +18,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      * Root.cost = SIC(Root.solution)
      */
     std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>(agents.size());
-    std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point solutionBeginTime = std::chrono::steady_clock::now();
     #ifndef EXPERIMENT
     // Check if we have conflicts on the initial actions (Means we desynced and wont be able to find a CBS solution)
     Solution currentSolution;
@@ -100,7 +100,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         //     //exit(0);
         // }
         if(maxTime != -1){
-            auto timeSpent = std::chrono::duration_cast<std::chrono::minutes>(std::chrono::steady_clock::now() - experimentBeginTime).count();
+            auto timeSpent = std::chrono::duration_cast<std::chrono::minutes>(std::chrono::steady_clock::now() - solutionBeginTime).count();
             if(timeSpent >= maxTime ){
             Error::log("Max time reached!\n");
             throw std::string("Max time reached!\n");
