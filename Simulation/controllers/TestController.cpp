@@ -8,10 +8,15 @@ std::vector<int> TestController::constructStationPlan(){
 }
 
 std::vector<int> TestController::constructWaypointPlan(){
+    #ifdef DEBUG_LOGS_ON
+    Error::log("Agent" + std::to_string(agentId) + " constructs waypoint plan\n");
+    #endif
     // If we already have a plan
     if ( ! path.actions.empty()){
         if(resyncNeeded()){
+            #ifdef DEBUG_LOGS_ON
             Error::log("Conflict because of desync \n");
+            #endif
             ExperimentData::get_instance().requestSolution(agentId);
         }
         return getNextPointAndUpdateState();
@@ -48,7 +53,9 @@ std::vector<int> TestController::getNextPointAndUpdateState(){
     if (action.isWaitAction()){
         startWaiting();
     }
-
+    #ifdef DEBUG_LOGS_ON
+    Error::log("Agent" + std::to_string(agentId) + " going to take action: " + action.toString() + "\n");
+    #endif
     return vec;
 }
 
@@ -57,30 +64,16 @@ bool TestController::resyncNeeded(){
     Action& action = getCurrentAction();
     float actualTime = ExperimentData::get_instance().getSimulationTime();
     float timeDiff = actualTime - action.timestamp;
+    #ifdef DEBUG_LOGS_ON
     Error::log("timeDifference is" + std::to_string(timeDiff) + "\n");
-    // if(std::abs(timeDiff) >150){
-    // if (timeDiff<0){
-    //     path.actions.insert(path.actions.begin(), Action(actualTime, action.startVertex, action.startVertex,-timeDiff));
-    //     for (Action a : path.actions){
-    //         a.timestamp += -timeDiff;
-    //     }
-    // } else if (timeDiff >0){
-    //     for (std::shared_ptr<Agent> agent : ExperimentData::get_instance().getAgents()){
-    //         auto bot = agent->getBot();
-    //         auto currentAction = bot->getCurrentAction();
-    //         bot->path.actions.insert(bot->path.actions.begin(), Action(currentAction.timestamp+currentAction.duration, currentAction.endVertex, currentAction.endVertex,timeDiff));
-    //         for (Action a : bot->path.actions){
-    //         a.timestamp += timeDiff;
-    //         }
-    //     }
-    // }
-    // }
+    #endif
     action.timestamp += timeDiff;
-    for (Action a : path.actions){
+    for (Action& a : path.actions){
         a.timestamp += timeDiff;
     }
 
     //See if the resynced times cause conflicts
+    // Create a solution from the current paths so we can find conflicts on it
     std::vector<Path> allAgentPaths;
     for (std::shared_ptr<Agent> agent : ExperimentData::get_instance().getAgents()){
         allAgentPaths.push_back(agent->getBot()->path);

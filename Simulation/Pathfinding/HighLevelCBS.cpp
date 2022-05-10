@@ -28,7 +28,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     root->setSolution(currentSolution);
     auto conflictsOnCurrentActions = root->findConflicts();
     if (conflictsOnCurrentActions.size() > 0){
-        return getSingleActionGreedySolution(graph, agents, lowLevel, currentTime);
+        return getGreedySolution(graph, agents, lowLevel, currentTime);
     }
     #endif
 
@@ -64,7 +64,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     catch (std::string exception){
         Error::log("Could not find initial solution. ERROR: " + exception + "\n");
         #ifndef EXPERIMENT
-        return getSingleActionGreedySolution(graph, agents, lowLevel, currentTime);
+        return getGreedySolution(graph, agents, lowLevel, currentTime);
         #else
         exit(1);
         #endif
@@ -109,8 +109,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         #endif
         #ifdef DEBUG_LOGS_ON
         Error::log("Popped this solution:\n");
+        int aId = 0;
         for (auto pa : p->getSolution().paths){
-            Error::log(pa.toString() + "\n");
+            Error::log("agent" + std::to_string(aId++) + ": " + pa.toString() + "\n");
         }
         #endif
         /**
@@ -303,21 +304,14 @@ void HighLevelCBS::removeInfiniteBlocksOnGoals(Solution& solution){
     }
 }
 
-Solution HighLevelCBS::getSingleActionGreedySolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel, float currentTime){
+Solution HighLevelCBS::getGreedySolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel, float currentTime){
     Solution solution;
     #ifdef DEBUG_LOGS_ON
-    Error::log("Getting single action greedy solution\n");
+    Error::log("Getting greedy solution\n");
     #endif
     solution.paths = lowLevel.getAllPaths(graph, agents, std::vector<std::vector<Constraint>>(agents.size()));// Low level with no constraints is greedy A* solution
-    // Only return 1 action per bot (we dont want to run the full greedy, just enough to eventually use CBS again)
-    for(auto& p : solution.paths){
-        for (auto a : p.actions){
-            if (a.timestamp + a.duration > currentTime){
-                p.actions = {a};
-                break;
-            }
-        }
-    }
+    solution.finalize(agents);
+    
     #ifdef DEBUG_LOGS_ON
     Error::log("Current time = " + std::to_string(currentTime) + "\n");
     for(auto& p : solution.paths){

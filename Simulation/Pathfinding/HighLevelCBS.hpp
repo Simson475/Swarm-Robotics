@@ -35,7 +35,7 @@ public:
 private:
     void blockGoalsForever(Solution& solution);
     void removeInfiniteBlocksOnGoals(Solution& solution);
-    Solution getSingleActionGreedySolution(std::shared_ptr<Graph>, std::vector<AgentInfo>, LowLevelCBS&, float currentTime = 0);
+    Solution getGreedySolution(std::shared_ptr<Graph>, std::vector<AgentInfo>, LowLevelCBS&, float currentTime = 0);
 };
 
 #endif
