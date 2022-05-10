@@ -146,34 +146,19 @@ int main(int argc, char *argv[])
         {
             counter = 0;
             failures = 0;
-            unsigned long long timeSpent = 0;
-            std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
-
             std::cout << "Running experiment with " << agentCount << " agents.. size: " << size << "\n";
             std::cout.flush();
             std::string experimentResultFile = experimentResultDir + "/SuperScalable.txt";
-            // Remove any existing results if they exist
-            // remove(&experimentResultFile[0]);
-
             logger.setLogFile(experimentResultFile);
-            // Arrange experiment
-            // Act
-
-            timeSpent += getResult(threads, size, maxTime, maxLoops, agentCount);
-
-            // When plotting in pgfplots, the first element becomes the x-axis, 2. becomes the y-axis and the 3. one becomes the z-axis
+            unsigned long long timeSpent = getResult(threads, size, maxTime, maxLoops, agentCount);
+            //warmup which is apparently needed
             if (agentCount == 1){
-                agentCount+=0;
                 continue;
             }   
-            auto result = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - experimentBeginTime).count();
-            std::cout << "fullTime: " << result << " \n";
 
             (*logger.begin()) << "" << agentCount << " " << size << " " << timeSpent / maxLoops << " " << failures << "\n";
             logger.end();
-            std::cout << "Done\n";
         }
-        (*logger.begin()) << "\n";
-        logger.end();
+        (*logger.begin()) << "\n"; logger.end();
     }
 }
