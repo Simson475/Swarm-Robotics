@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
     std::string experimentResultDir = "SuperScalable_experiment_result";
     mkdir(&experimentResultDir[0], 0777);
 
-    for (int size = 12; size <= 20; size+=2)
+    for (int size = 6; size <= 20; size+=2)
     {
 
         for (int agentCount = 1; agentCount <= 13; ++agentCount)
