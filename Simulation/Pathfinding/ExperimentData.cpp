@@ -36,9 +36,14 @@ bool ExperimentData::requestSolution(int agentId){
     }
     Error::log("Going to find a solution\n");
     auto agentInfos = getAgentsInfo();
+    // HOTFIX
+    auto action = agentInfos[agentId].getCurrentAction();
+    action.timestamp = action.timestamp + action.duration;
+    action.duration = 0;
+    agentInfos[agentId] = AgentInfo(agentId, action, agentInfos[agentId].getGoal(), agentInfos[agentId].isWorking());
 
     Solution solution = HighLevelCBS::get_instance()
-        .findSolution(getGraph(), agentInfos, LowLevelCBS::get_instance());
+        .findSolution(getGraph(), agentInfos, LowLevelCBS::get_instance(), this->getSimulationTime());
     
     // Distribute paths
     distributeSolution(solution);

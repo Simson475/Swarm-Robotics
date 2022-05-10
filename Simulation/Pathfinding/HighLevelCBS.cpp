@@ -83,7 +83,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     while (open.size() > 0) {
         #ifndef EXPERIMENT
         auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count();
-        if (timeDiff > 1000000){// If the solution takes more than 1 second
+        if (timeDiff > 10000000){// If the solution takes more than 10 second
             auto& solution = minConflictsNode->getSolution();
             solution.finalize(agents);
             return solution;
@@ -318,5 +318,11 @@ Solution HighLevelCBS::getSingleActionGreedySolution(std::shared_ptr<Graph> grap
             }
         }
     }
+    #ifdef DEBUG_LOGS_ON
+    Error::log("Current time = " + std::to_string(currentTime) + "\n");
+    for(auto& p : solution.paths){
+        Error::log(p.toString() + "\n");
+    }
+    #endif
     return solution;
 }
