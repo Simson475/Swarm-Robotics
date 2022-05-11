@@ -39,8 +39,8 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
                 auto initialAction = a.getCurrentAction();
                 if (initialAction.isWaitAction()){
                     // Constraint the initial vertex
-                    float earliestActionEnd = (initialAction.duration == TIME_AT_GOAL && initialAction.endVertex == a.getGoal())
-                     ? initialAction.timestamp + initialAction.duration : currentTime;
+                    float earliestActionEnd = initialAction.timestamp + initialAction.duration;//(initialAction.duration == TIME_AT_GOAL && initialAction.endVertex == a.getGoal())
+                     //? initialAction.timestamp + initialAction.duration : currentTime;
                     root->addConstraint(Constraint(b.getId(), initialAction.getLocation(), currentTime, earliestActionEnd + TIME_AT_VERTEX));
                 }
                 else {
