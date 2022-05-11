@@ -312,6 +312,13 @@ Solution HighLevelCBS::getGreedySolution(std::shared_ptr<Graph> graph, std::vect
     solution.paths = lowLevel.getAllPaths(graph, agents, std::vector<std::vector<Constraint>>(agents.size()));// Low level with no constraints is greedy A* solution
     solution.finalize(agents);
     
+    // Limit the paths to 1 action
+    for (auto& p : solution.paths){
+        if (p.actions.size() > 1){
+            p.actions = {p.actions.front()};
+        }
+    }
+    
     #ifdef DEBUG_LOGS_ON
     Error::log("Current time = " + std::to_string(currentTime) + "\n");
     for(auto& p : solution.paths){
