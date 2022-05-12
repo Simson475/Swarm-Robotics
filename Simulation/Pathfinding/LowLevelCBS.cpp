@@ -39,7 +39,7 @@ Path LowLevelCBS::getIndividualPath(std::shared_ptr<Graph> graph, AgentInfo agen
         hasWorked = true;
     }
     if (ConstraintUtils::isViolatingConstraint(constraints, firstAction)){
-        throw std::string("No path could be found\n");
+        throw std::string("No path could be found. Constrained on first action.\n");
     }
 
     // Compute path from after the current action

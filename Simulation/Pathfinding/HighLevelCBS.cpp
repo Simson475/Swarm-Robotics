@@ -44,14 +44,12 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
                     root->addConstraint(Constraint(b.getId(), initialAction.getLocation(), currentTime, earliestActionEnd + TIME_AT_VERTEX));
                 }
                 else {
-                    // Constraint the edge
-                    root->addConstraint(Constraint(b.getId(), initialAction.getLocation(), initialAction.timestamp, initialAction.timestamp + initialAction.duration));
                     // Constraint the opposite edge
                     root->addConstraint(Constraint(b.getId(), initialAction.endVertex->getEdge(initialAction.startVertex), initialAction.timestamp, initialAction.timestamp + initialAction.duration));
                     // Constraint the end vertex
                     root->addConstraint(Constraint(b.getId(), Location(initialAction.endVertex), initialAction.timestamp + initialAction.duration, initialAction.timestamp + initialAction.duration + TIME_AT_VERTEX));
                     // Constraint the start vertex
-                    root->addConstraint(Constraint(b.getId(), Location(initialAction.startVertex), initialAction.timestamp, initialAction.timestamp + TIME_AT_VERTEX));
+                    root->addConstraint(Constraint(b.getId(), Location(initialAction.startVertex), initialAction.timestamp + TIME_AT_VERTEX, initialAction.timestamp + TIME_AT_VERTEX));// Yes it should be 0 length
                 }
             }
         }
