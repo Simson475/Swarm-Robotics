@@ -22,6 +22,7 @@ class Action {
     bool isWaitAction();
     Location getLocation();
     std::string toString();
+    void sync(float desyncOffset);
 };
 
 #endif

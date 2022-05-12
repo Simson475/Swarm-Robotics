@@ -57,3 +57,10 @@ Location Action::getLocation(){
 std::string Action::toString(){
     return "{v" + std::to_string(this->startVertex->getId()) + "->" + "v" + std::to_string(this->endVertex->getId()) + " t[" + std::to_string(this->timestamp) + "," + std::to_string(this->timestamp + this->duration) + "]}";
 }
+
+void Action::sync(float desyncOffset){
+    this->timestamp += desyncOffset;
+    if (this->isWaitAction()){
+        this->duration = std::max(0.0f, this->duration - desyncOffset);
+    }
+}

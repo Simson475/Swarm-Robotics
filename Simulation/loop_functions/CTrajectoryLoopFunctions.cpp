@@ -102,6 +102,9 @@ void CTrajectoryLoopFunctions::initJobGenerator(){
         endStationIDs.insert(id);
 
     int jobs_per_robot = 200;
+    argos::CSpace::TMapPerType &tBotMap =
+            argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
+    int robotCount = tBotMap.size();
     try {
         argos::TConfigurationNode &t_node = argos::CSimulator::GetInstance().GetConfigurationRoot();
         argos::TConfigurationNode &params = argos::GetNode(t_node, "custom");

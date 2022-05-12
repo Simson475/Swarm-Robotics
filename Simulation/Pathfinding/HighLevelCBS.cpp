@@ -18,19 +18,6 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
      * Root.cost = SIC(Root.solution)
      */
     std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>(agents.size());
-    #ifndef EXPERIMENT
-    // Check if we have conflicts on the initial actions (Means we desynced and wont be able to find a CBS solution)
-    Solution currentSolution;
-    currentSolution.paths.resize(agents.size());
-    for(auto& a : agents){
-        currentSolution.paths[a.getId()] = {a.getCurrentAction()};
-    }
-    root->setSolution(currentSolution);
-    auto conflictsOnCurrentActions = root->findConflicts();
-    if (conflictsOnCurrentActions.size() > 0){
-        return getGreedySolution(graph, agents, lowLevel, currentTime);
-    }
-    #endif
 
     // Set initial constraints to avoid conflicts on initial actions
     for (auto a : agents){
@@ -65,6 +52,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     catch (std::string exception){
         Error::log("Could not find initial solution. ERROR: " + exception + "\n");
         #ifndef EXPERIMENT
+        std::cerr << "Running with greedy (conflicts on current actions)\n";
         return getGreedySolution(graph, agents, lowLevel, currentTime);
         #else
         exit(1);
@@ -87,6 +75,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         if (timeDiff > 10000000){// If the solution takes more than 10 second
             auto& solution = minConflictsNode->getSolution();
             solution.finalize(agents);
+            std::cerr << "Running with best CBS solution within time limit\n";
             return solution;
         }
         #endif
@@ -135,6 +124,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             // Prune floppy paths from solution
             Solution& solution = p->getSolution();
             solution.finalize(agents);
+            std::cerr << "Running with no conflict CBS\n";
             return solution;
         }
         else if ((int)conflicts.size() < minConflicts){
@@ -211,6 +201,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     #ifndef EXPERIMENT
     auto& solution = minConflictsNode->getSolution();
     solution.finalize(agents);
+    std::cerr << "Running with best CBS solution (no possible 0 conflict CBS solution)\n";
     return solution;
     #else
     exit(1);

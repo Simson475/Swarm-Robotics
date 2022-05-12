@@ -67,9 +67,9 @@ bool TestController::resyncNeeded(){
     #ifdef DEBUG_LOGS_ON
     Error::log("timeDifference is" + std::to_string(timeDiff) + "\n");
     #endif
-    action.timestamp += timeDiff;
+    action.sync(timeDiff);
     for (Action& a : path.actions){
-        a.timestamp += timeDiff;
+        a.sync(timeDiff);
     }
 
     //See if the resynced times cause conflicts
