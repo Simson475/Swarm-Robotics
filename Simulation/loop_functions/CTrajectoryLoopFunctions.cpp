@@ -97,23 +97,21 @@ void CTrajectoryLoopFunctions::PostExperiment() {
 void CTrajectoryLoopFunctions::initJobGenerator(){
     Map_Structure &sMap = Map_Structure::get_instance();
 
+    int robotCount = argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot").size();
+
+    // Use spawn locations as delivery stations
+    int spawnPointOffset = sMap.endStationIDs.size() + sMap.stationIDs.size();
     std::set<int> endStationIDs{};
-    for(auto id : sMap.endStationIDs)
-        endStationIDs.insert(id);
+    for(int i = 0; i < robotCount; ++i)
+        endStationIDs.insert(spawnPointOffset + i);
 
     int jobs_per_robot = 200;
-    argos::CSpace::TMapPerType &tBotMap =
-            argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
-    int robotCount = tBotMap.size();
     try {
         argos::TConfigurationNode &t_node = argos::CSimulator::GetInstance().GetConfigurationRoot();
         argos::TConfigurationNode &params = argos::GetNode(t_node, "custom");
         argos::GetNodeAttribute(params, "jobs_per_robot", jobs_per_robot);
 
-        argos::CSpace::TMapPerType &tBotMap =
-            argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
-
-        jobs_per_robot *= tBotMap.size();
+        jobs_per_robot *= robotCount;
         std::cout << "Number of jobs are: " << jobs_per_robot << std::endl;
     }
     catch (argos::CARGoSException &e){

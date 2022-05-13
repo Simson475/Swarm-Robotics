@@ -16,7 +16,6 @@
 
 
 std::vector<int> SingleThreadBotGreedy::constructStationPlan() {
-
     // First the current remaining stations in the order are sorted
     std::vector<int> tempPlan{};
     if (!currentJob->getRemainingStations().empty()) {
@@ -48,12 +47,14 @@ std::vector<int> SingleThreadBotGreedy::constructStationPlan() {
     //Now we remove all elements that are not a station ID.
 
     std::vector<int> stationIDs = sMap.stationIDs;
-    stationIDs.insert(stationIDs.end(), sMap.endStationIDs.begin(), sMap.endStationIDs.end());
+    for (auto e : currentJob->getEndStations()){
+        stationIDs.push_back(e);
+    }
+    // stationIDs.insert(stationIDs.end(), sMap.endStationIDs.begin(), sMap.endStationIDs.end());
     finegrainedPlan.erase(std::remove_if(finegrainedPlan.begin(),
         finegrainedPlan.end(),
         [stationIDs](int stationID){return std::find(stationIDs.begin(), stationIDs.end(), stationID) == stationIDs.end();}),
                           finegrainedPlan.end());
-
     return finegrainedPlan;
 }
 

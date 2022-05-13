@@ -1,10 +1,20 @@
 #include "TestController.hpp"
 #include <iostream>
 
-std::vector<int> TestController::constructStationPlan(){    
-    // std::cout << "Testing station plan";
-    // TestControllers dont have an ID before first call of waypoint plan??
-    return { ExperimentData::get_instance().getNextStation(this->agentId) };
+std::vector<int> TestController::constructStationPlan(){
+    for (auto& station : currentJob->getRemainingStations()){
+        return { station };
+    }
+    // There should be a end station for each agent, so find this agents end station
+    int i = 0;
+    for (auto& station : currentJob->getEndStations()){
+        if ( i == this->agentId ){
+            return { station };
+        }
+        i++;
+    } 
+    throw "Something is wrong with current job\n";
+    // return { ExperimentData::get_instance().getNextStation(this->agentId) };
 }
 
 std::vector<int> TestController::constructWaypointPlan(){

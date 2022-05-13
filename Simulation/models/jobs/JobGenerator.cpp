@@ -57,7 +57,15 @@ std::unique_ptr<Job> JobGenerator::getNextJob() {
 
 void JobGenerator::completedJob() {
     jobsCompleted++;
+    int simTime = argos::CSimulator::GetInstance().GetSpace().GetSimulationClock();
+    std::ofstream out;
+    out.open(std::string{std::filesystem::current_path()} + "/jobProgress.txt", std::ofstream::app);
+    out << "Completed " << jobsCompleted << " in " << simTime << " simulation steps.\n";
+    out.close();
 
+    if (jobsCompleted == 100){
+        exit(1);
+    }
     if(jobsCompleted > numOfJobs)
         throw std::logic_error("More completed jobs than jobs generated");
 }

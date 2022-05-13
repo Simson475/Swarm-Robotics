@@ -6,7 +6,12 @@
 #include <set>
 #include <vector>
 #include <memory>
-
+#include "argos3/core/control_interface/ci_controller.h"
+#include "argos3/core/simulator/loop_functions.h"
+#include <fstream>
+#include <iostream>
+#include <cstdio>
+#include <filesystem>
 
 class JobGenerator {
 protected:

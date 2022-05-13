@@ -153,6 +153,11 @@ void RobotInterface::ControlStep() {
                 log_helper("", true, false);
             } else {
                 log_helper("Job completed");
+                int simTime = argos::CSimulator::GetInstance().GetSpace().GetSimulationClock();
+                std::ofstream out;
+                out.open(std::string{std::filesystem::current_path()} + "/jobProgress_" + m_strId + ".txt", std::ofstream::app);
+                out << simTime << "\n";
+                out.close();
             }
             sMap.setPointAsAvailable(lastLocation);
         } else {
@@ -657,6 +662,7 @@ int RobotInterface::getClockCount() const {
 
 // If the robot is active and there has been no activity for 10 logical minutes, the robot is in a deadlock.
 bool RobotInterface::isInLivelock() {
+    return false;
     if(currentState == state::done)
         return false;
 
