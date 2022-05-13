@@ -60,7 +60,7 @@ void JobGenerator::completedJob() {
     int simTime = argos::CSimulator::GetInstance().GetSpace().GetSimulationClock();
     std::ofstream out;
     out.open(std::string{std::filesystem::current_path()} + "/jobProgress.txt", std::ofstream::app);
-    out << "Completed " << jobsCompleted << " in " << simTime << " simulation steps.\n";
+    out << jobsCompleted << " " << simTime << "\n";
     out.close();
 
     if (jobsCompleted == 100){

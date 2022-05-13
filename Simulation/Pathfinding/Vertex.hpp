@@ -15,6 +15,7 @@ public:
     std::vector<std::shared_ptr<Edge>> getEdges();
     std::shared_ptr<Edge> getEdge(std::shared_ptr<Vertex>);
     void setEdges(std::vector<std::shared_ptr<Edge>> edges);
+    void addEdge(std::shared_ptr<Edge> edge);
     void removeEdge(std::shared_ptr<Edge> edge);
     int getId();
     std::string toString();
