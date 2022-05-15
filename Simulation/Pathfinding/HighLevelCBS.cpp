@@ -72,7 +72,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     while (open.size() > 0) {
         #ifndef EXPERIMENT
         auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count();
-        if (timeDiff > 1000000){// If the solution takes more than 1 second
+        if (timeDiff > 5000000){// If the solution takes more than 1 second
             auto& solution = minConflictsNode->getSolution();
             solution.finalize(agents);
             std::cerr << "Running with best CBS solution within time limit\n";
