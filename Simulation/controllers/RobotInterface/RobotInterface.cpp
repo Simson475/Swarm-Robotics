@@ -153,10 +153,11 @@ void RobotInterface::ControlStep() {
                 log_helper("", true, false);
             } else {
                 log_helper("Job completed");
+                completedJobs++;
                 int simTime = argos::CSimulator::GetInstance().GetSpace().GetSimulationClock();
                 std::ofstream out;
                 out.open(std::string{std::filesystem::current_path()} + "/jobProgress_" + m_strId + ".txt", std::ofstream::app);
-                out << simTime << "\n";
+                out << completedJobs << " " << simTime << "\n";
                 out.close();
             }
             sMap.setPointAsAvailable(lastLocation);
