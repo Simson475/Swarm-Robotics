@@ -66,6 +66,10 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     /**
      * While OPEN not empty do
      */
+    #ifdef CONFLICTCOUNT
+        Logger& logger = Logger::get_instance();
+        auto countiterator = 0;
+    #endif
     iterations = 0;
     while (open.size() > 0) {
         #ifndef EXPERIMENT
@@ -137,6 +141,10 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             minConflictsNode = p;
             minConflicts = conflicts.size();
         }
+        #ifdef CONFLICTCOUNT
+            countiterator++;
+            (*logger.begin()) <<countiterator << " "<<minConflicts<<"\n" ; logger.end();
+        #endif
         /**
          * Get one of the conflicts
          */

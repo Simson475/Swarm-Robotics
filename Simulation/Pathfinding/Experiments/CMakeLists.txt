@@ -54,6 +54,7 @@ add_executable(cbsMapSmall_5agents_experiment ./Experiments/cbsMapSmall_5agents.
 add_executable(SuperScalable_experiment ./Experiments/SuperScalable.cpp ${PathfindingFiles})
 add_executable(cbsMapSmall_5agents_greedy_experiment ./Experiments/cbsMapSmall_5agents_greedy.cpp ${PathfindingFiles})
 add_executable(blocked_goal_experiment ./Experiments/blocked_goal.cpp ${PathfindingFiles})
+add_executable(ConflictCountGrid_experiment ./Experiments/ConflictCountGrid.cpp ${PathfindingFiles})
 #NEXT_EXPERIMENT_EXECUTABLE
 # The above line should not be edited or deleted
 target_link_libraries (SuperScalable_experiment ${CMAKE_THREAD_LIBS_INIT})
@@ -65,5 +66,6 @@ add_custom_command(TARGET cbsMapSmall_5agents_experiment POST_BUILD COMMAND ${CM
 add_custom_command(TARGET SuperScalable_experiment POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ./SuperScalable_experiment ${CMAKE_BINARY_DIR}/external/bin/SuperScalable_experiment COMMENT "Copying SuperScalable_experiment to external/bin/" )
 add_custom_command(TARGET cbsMapSmall_5agents_greedy_experiment POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ./cbsMapSmall_5agents_greedy_experiment ${CMAKE_BINARY_DIR}/external/bin/cbsMapSmall_5agents_greedy_experiment COMMENT "Copying cbsMapSmall_5agents_greedy_experiment to external/bin/" )
 add_custom_command(TARGET blocked_goal_experiment POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ./blocked_goal_experiment ${CMAKE_BINARY_DIR}/external/bin/blocked_goal_experiment COMMENT "Copying blocked_goal_experiment to external/bin/" )
+add_custom_command(TARGET ConflictCountGrid_experiment POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ./ConflictCountGrid_experiment ${CMAKE_BINARY_DIR}/external/bin/ConflictCountGrid_experiment COMMENT "Copying ConflictCountGrid_experiment to external/bin/" )
 #NEXT_EXPERIMENT_MOVE_COMMAND
 # The above line should not be edited or deleted
