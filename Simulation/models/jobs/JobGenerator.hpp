@@ -31,7 +31,6 @@ protected:
     virtual std::unique_ptr<Job> generateJob();
 
 
-
 public:
     JobGenerator(int numOfStations, std::set<int> endStations, int numOfJobs);
 
@@ -42,6 +41,8 @@ public:
     virtual std::unique_ptr<Job> getNextJob();
     std::unique_ptr<Job> generateGetHomeJob(int location);
     void completedJob();
+    virtual void workedAtStation(int stationId);
+    int lastCompletedJobSimTime = 0;
 };
 
 

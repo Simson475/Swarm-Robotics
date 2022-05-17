@@ -49,10 +49,15 @@ add_library(CTrajectoryLoopFunctions MODULE
         ../models/jobs/PredefinedDescreteJobGenerator.hpp
         ../models/jobs/PredefinedDescreteJobGenerator.cpp
 
+        ../models/jobs/UniqueStationsJobGenerator.hpp
+        ../models/jobs/UniqueStationsJobGenerator.cpp
+
         ../models/jobs/Job.hpp
         ../models/jobs/Job.cpp
 
         ../models/jobs/JobBlueprint.hpp
+
+        ../Pathfinding/Debugging.hpp
 )
 
 

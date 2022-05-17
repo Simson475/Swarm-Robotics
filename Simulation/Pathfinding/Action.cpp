@@ -51,6 +51,7 @@ Location Action::getLocation(){
         if (e->getEndVertex()->getId() == endVertex->getId())
         return Location(e);
     }
+    Error::log("Could not get location in action\n");
     exit(1);
 }
 

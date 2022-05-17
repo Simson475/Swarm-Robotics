@@ -105,7 +105,7 @@ void CTrajectoryLoopFunctions::initJobGenerator(){
     for(int i = 0; i < robotCount; ++i)
         endStationIDs.insert(spawnPointOffset + i);
 
-    int jobs_per_robot = 200;
+    int jobs_per_robot = 2000;
     try {
         argos::TConfigurationNode &t_node = argos::CSimulator::GetInstance().GetConfigurationRoot();
         argos::TConfigurationNode &params = argos::GetNode(t_node, "custom");
@@ -118,14 +118,16 @@ void CTrajectoryLoopFunctions::initJobGenerator(){
         std::cout << "Number of jobs defaulted to: " << jobs_per_robot << std::endl;
     }
 
-    jobGenerator = std::make_shared<PredefinedDescreteJobGenerator>(PredefinedDescreteJobGenerator(sMap.getAmountOfStations(), endStationIDs, jobs_per_robot));
+    jobGenerator = std::make_shared<UniqueStationsJobGenerator>(UniqueStationsJobGenerator(sMap.getAmountOfStations(), endStationIDs, jobs_per_robot, sMap.endStationIDs.size()));
+    // jobGenerator = std::make_shared<PredefinedJobGenerator>(PredefinedJobGenerator(sMap.getAmountOfStations(), endStationIDs, jobs_per_robot));
 };
 
 
 void CTrajectoryLoopFunctions::removeFoldersAndPlan(){
     std::string path = std::filesystem::current_path();
     for (const auto & entry : std::filesystem::directory_iterator(path)) {
-        if (entry.path().filename().string().find("fb") != std::string::npos)
+        if (entry.path().filename().string().find("fb") != std::string::npos
+         || entry.path().filename().string().find("jobProgress") != std::string::npos)
             std::filesystem::remove_all(entry.path());
     }
 }

@@ -26,6 +26,8 @@
 
 #include <functional>
 
+#include "../Pathfinding/Debugging.hpp"
+
 class SingleThreadBotGreedy : public virtual RobotInterface {
 
 public:

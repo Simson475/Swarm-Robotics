@@ -5,6 +5,7 @@
 #include "../models/jobs/JobGenerator.hpp"
 #include "../models/jobs/PredefinedJobGenerator.hpp"
 #include "../models/jobs/PredefinedDescreteJobGenerator.hpp"
+#include "../models/jobs/UniqueStationsJobGenerator.hpp"
 
 #include "argos3/core/simulator/loop_functions.h"
 #include "argos3/plugins/robots/foot-bot/simulator/footbot_entity.h"

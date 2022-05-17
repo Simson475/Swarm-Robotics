@@ -1,20 +1,21 @@
 #include "HighLevelCBS.hpp"
 #include <sys/stat.h>
+#include <random>
 
 std::shared_ptr<Graph> getCbsMapSmallGraph();
-int getAvailableStation(std::vector<int> &);
+int getAvailableStation(std::vector<int> &, std::mt19937);
 
 int main(int argc, char *argv[])
 {
     try
     {
-        srand(2022);
+        auto eng = std::mt19937(0);
         Logger &logger = Logger::get_instance();
         // Create folder for results
         std::string experimentResultDir = "cbsMapSmall_5agents_greedy_experiment_result";
         mkdir(&experimentResultDir[0], 0777);
 
-        int agentCount = 5;
+        int agentCount = 10;
         std::cout << "Running experiment with " << agentCount << " agents..\n";
         std::cout.flush();
         std::string experimentResultFile = experimentResultDir + "/" + std::to_string(agentCount) + "agents_cbsMapSmall_5agents_greedy.txt";
@@ -40,7 +41,7 @@ int main(int argc, char *argv[])
         std::vector<AgentInfo> agents(agentCount);
         for (int i = 0; i < agentCount; ++i){
             auto startVertex = vertices[spawnPointVertexIndexOffset + i];
-            auto goalVertex = vertices[getAvailableStation(availableStations)];
+            auto goalVertex = vertices[getAvailableStation(availableStations, eng)];
             agents[i] = AgentInfo(i, Action(0, startVertex, startVertex, 0), goalVertex);
         }
         int totalJobs = agentCount * 100;
@@ -95,6 +96,19 @@ int main(int argc, char *argv[])
             if (goalId == spawnPointVertexIndexOffset + agentThatFinishFirst){
                 agentJobsFinished[agentThatFinishFirst]++;
                 totalJobsLeft--;
+
+                // Log completion times
+                int simTime = minCost;
+                std::ofstream out;
+                // Overall job completion status
+                out.open(std::string{std::filesystem::current_path()} + "/jobProgress.txt", std::ofstream::app);
+                out << (totalJobs - totalJobsLeft) << " " << simTime << "\n";
+                out.close();
+                // Single agent job completion status
+                out.open(std::string{std::filesystem::current_path()} + "/jobProgress_agent"+std::to_string(agentThatFinishFirst)+".txt", std::ofstream::app);
+                out << agentJobsFinished[agentThatFinishFirst] << " " << simTime << "\n";
+                out.close();
+
                 std::cout << std::to_string(totalJobsLeft) + " jobs left\n";
                 // If the needed amount of completed jobs for the experiment are done, we stop.
                 if(totalJobsLeft == 0){
@@ -102,7 +116,7 @@ int main(int argc, char *argv[])
                 }
                 // If the agent needs to complete more jobs (visit more stations)
                 else{
-                    newGoalId = getAvailableStation(availableStations);
+                    newGoalId = getAvailableStation(availableStations, eng);
                 }
             }
             // If the agent was working at a station
@@ -112,7 +126,7 @@ int main(int argc, char *argv[])
                     agentStationsWorked[agentThatFinishFirst]++;
                     int goalStation = agents[agentThatFinishFirst].getGoal()->getId();
                     
-                    newGoalId = getAvailableStation(availableStations);
+                    newGoalId = getAvailableStation(availableStations, eng);
 
                     // Add the currently finished station back to available stations
                     availableStations.push_back(goalStation);
@@ -214,9 +228,10 @@ int main(int argc, char *argv[])
     }
 }
 
-int getAvailableStation(std::vector<int> &stations)
+int getAvailableStation(std::vector<int> &stations, std::mt19937 eng)
 {
-    int stationIndex = rand() % stations.size();
+    auto distr = std::uniform_int_distribution<>(0, stations.size()-1);
+    int stationIndex = distr(eng);
     int station = stations[stationIndex];
     stations.erase(stations.begin() + stationIndex);
     return station;
