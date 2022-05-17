@@ -54,6 +54,9 @@ int main(int argc, char *argv[])
         int vertexConflicts = 0;
         int swapConflicts = 0;
         int followConflicts = 0;
+        int vertexConflictsInCurrentSolution = 0;
+        int swapConflictsInCurrentSolution = 0;
+        int followConflictsInCurrentSolution = 0;
 
         // Act
         std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
@@ -61,7 +64,6 @@ int main(int argc, char *argv[])
             std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>(agentCount);
             root->setSolution(LowLevelCBS::get_instance().getAllPaths(graph, agents, root->getConstraints()));
             std::vector<Conflict> conflicts = root->findConflicts();
-
             Solution solution = root->getSolution();
             solution.finalize(agents);
 
@@ -79,6 +81,29 @@ int main(int argc, char *argv[])
                 actions.insert(actions.begin(), a.getCurrentAction());
             }
         }
+        // Get conflicts
+        root->setSolution(solution);
+        root->findConflicts();
+        for (auto c : conflicts)
+        {
+            std::string type = c.getType();
+            if (type[0] == 'V')
+            {
+                vertexConflicts++;
+                vertexConflictsInCurrentSolution++;
+            }
+            else if (type[0] == 'F')
+            {
+                followConflicts++;
+                followConflictsInCurrentSolution++;
+            }
+            else if (type[0] == 'S')
+            {
+                swapConflicts++;
+                swapConflictsInCurrentSolution++;
+            }
+        }
+
         while (true){
             // Find the path that finish first (lowest cost path)
             int agentThatFinishFirst = -1;
@@ -99,10 +124,14 @@ int main(int argc, char *argv[])
 
                 // Log completion times
                 int simTime = minCost;
+                int penalty = (vertexConflictsInCurrentSolution*VERTEX_CONFLICT_PENALTY + swapConflictsInCurrentSolution*SWAP_CONFLICT_PENALTY + followConflictsInCurrentSolution*FOLLOW_CONFLICT_PENALTY);
+                vertexConflictsInCurrentSolution = 0;
+                swapConflictsInCurrentSolution = 0;
+                followConflictsInCurrentSolution = 0;
                 std::ofstream out;
                 // Overall job completion status
                 out.open(std::string{std::filesystem::current_path()} + "/jobProgress.txt", std::ofstream::app);
-                out << (totalJobs - totalJobsLeft) << " " << simTime << "\n";
+                out << (totalJobs - totalJobsLeft) << " " << simTime + penalty << "\n";
                 out.close();
                 // Single agent job completion status
                 out.open(std::string{std::filesystem::current_path()} + "/jobProgress_agent"+std::to_string(agentThatFinishFirst)+".txt", std::ofstream::app);
@@ -162,27 +191,11 @@ int main(int argc, char *argv[])
             // Find new solution
             std::chrono::steady_clock::time_point solutionBeginTime = std::chrono::steady_clock::now();
                     
-                    std::shared_ptr<ConstraintTree> root = std::make_shared<ConstraintTree>(agentCount);
-                    root->setSolution(LowLevelCBS::get_instance().getAllPaths(graph, agents, root->getConstraints()));
-                    std::vector<Conflict> conflicts = root->findConflicts();
-                    for (auto c : conflicts)
-                    {
-                        std::string type = c.getType();
-                        if (type[0] == 'V')
-                        {
-                            vertexConflicts++;
-                        }
-                        else if (type[0] == 'F')
-                        {
-                            followConflicts++;
-                        }
-                        else if (type[0] == 'S')
-                        {
-                            swapConflicts++;
-                        }
-                    }
-                    solution = root->getSolution();
-                    solution.finalize(agents);
+                root = std::make_shared<ConstraintTree>(agentCount);
+                root->setSolution(LowLevelCBS::get_instance().getAllPaths(graph, agents, root->getConstraints()));
+                std::vector<Conflict> conflicts = root->findConflicts();
+                Solution solution = root->getSolution();
+                solution.finalize(agents);
 
             solutionComputationTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - solutionBeginTime).count();
             (*logger.begin()) << solutionNumber++ << " " << solutionComputationTime << "\n"; logger.end();
@@ -196,6 +209,28 @@ int main(int argc, char *argv[])
                 // Current action
                 if (actions.size() > 1){// If actions.size == 1 the current action is the goal action (so dont add it since it would be a duplicate)
                     actions.insert(actions.begin(), a.getCurrentAction());
+                }
+            }
+            // Get conflicts
+            root->setSolution(solution);
+            root->findConflicts();
+            for (auto c : conflicts)
+            {
+                std::string type = c.getType();
+                if (type[0] == 'V')
+                {
+                    vertexConflicts++;
+                    vertexConflictsInCurrentSolution++;
+                }
+                else if (type[0] == 'F')
+                {
+                    followConflicts++;
+                    followConflictsInCurrentSolution++;
+                }
+                else if (type[0] == 'S')
+                {
+                    swapConflicts++;
+                    swapConflictsInCurrentSolution++;
                 }
             }
             // Repeat until all jobs are done...
