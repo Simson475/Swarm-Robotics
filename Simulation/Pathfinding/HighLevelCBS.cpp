@@ -26,7 +26,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
                     // Constraint the initial vertex
                     float earliestActionEnd = initialAction.timestamp + initialAction.duration;//(initialAction.duration == TIME_AT_GOAL && initialAction.endVertex == a.getGoal())
                      //? initialAction.timestamp + initialAction.duration : currentTime;
-                    root->addConstraint(Constraint(b.getId(), initialAction.getLocation(), currentTime, earliestActionEnd + TIME_AT_VERTEX));
+                    root->addConstraint(Constraint(b.getId(), initialAction.getLocation(), initialAction.timestamp, earliestActionEnd + TIME_AT_VERTEX));
                 }
                 else {
                     // Constraint the opposite edge
@@ -49,6 +49,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     }
     catch (std::string exception){
         Error::log("Could not find initial solution. ERROR: " + exception + "\n");
+        for (auto a : agents){
+            Error::log("Agent" + std::to_string(a.getId()) + ": " + agents[a.getId()].getCurrentAction().toString() + " --> " + a.getGoal()->toString() + "\n");
+        }
         #ifndef EXPERIMENT
         std::cerr << "Running with greedy (conflicts on current actions)\n";
         return getGreedySolution(graph, agents, lowLevel, currentTime);
@@ -247,8 +250,8 @@ Conflict HighLevelCBS::getBestConflict(std::shared_ptr<ConstraintTree> node, std
             Constraint constraint = Constraint(
                 agentId,
                 c.getLocation(i),
-                c.getTimeStart() - 1,
-                c.getTimeEnd() + 1
+                c.getTimeStart() - DELTA,
+                c.getTimeEnd() + DELTA
             );
             // Get a container of the current constraints union the new constraint
             auto constraints = node->getConstraints(agentId);
