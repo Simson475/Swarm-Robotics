@@ -77,12 +77,13 @@ bool TestController::resyncNeeded(){
     #ifdef DEBUG_LOGS_ON
     Error::log("timeDifference is" + std::to_string(timeDiff) + "\n");
     #endif
-    // action.sync(timeDiff);
-    // for (Action& a : path.actions){
-    //     a.sync(timeDiff);
-    // }
+     timeDiff = action.sync(timeDiff);
+    for (Action& a : path.actions){
+        timeDiff = a.sync(timeDiff);
+        if(timeDiff == 0) break;
+    }
     // Sync actions by inserting a wait action to fill out the desync buffer
-    path.actions.insert(path.actions.begin(), Action(actualTime, action.endVertex, action.endVertex, path.actions[0].timestamp));
+    // path.actions.insert(path.actions.begin(), Action(actualTime, action.endVertex, action.endVertex, path.actions[0].timestamp));
 
     //See if the resynced times cause conflicts
     // Create a solution from the current paths so we can find conflicts on it

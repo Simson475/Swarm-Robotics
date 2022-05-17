@@ -26,7 +26,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
                     // Constraint the initial vertex
                     float earliestActionEnd = initialAction.timestamp + initialAction.duration;//(initialAction.duration == TIME_AT_GOAL && initialAction.endVertex == a.getGoal())
                      //? initialAction.timestamp + initialAction.duration : currentTime;
-                    root->addConstraint(Constraint(b.getId(), initialAction.getLocation(), std::max(initialAction.timestamp, currentTime), earliestActionEnd + TIME_AT_VERTEX));
+                    root->addConstraint(Constraint(b.getId(), initialAction.getLocation(), currentTime, earliestActionEnd + TIME_AT_VERTEX));
                 }
                 else {
                     // Constraint the opposite edge
@@ -48,9 +48,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         root->setSolution(lowLevel.getAllPaths(graph, agents, root->getConstraints()));
     }
     catch (std::string exception){
-        #ifdef EXPERIMENT
         Error::log("Could not find initial solution. ERROR: " + exception + "\n");
-        #endif
         #ifndef EXPERIMENT
         std::cerr << "Running with greedy (conflicts on current actions)\n";
         return getGreedySolution(graph, agents, lowLevel, currentTime);
@@ -58,8 +56,8 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         exit(1);
         #endif
     }
-    int bestNodeScore = std::numeric_limits<int>::max();
-    auto bestNodeSoFar = root;
+    int minConflicts = std::numeric_limits<int>::max();
+    auto minConflictsNode = root;
     /**
      * Insert Root to OPEN
      */
@@ -68,17 +66,18 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
     /**
      * While OPEN not empty do
      */
+    #ifdef CONFLICTCOUNT
+        Logger& logger = Logger::get_instance();
+        auto countiterator = 0;
+    #endif
     iterations = 0;
     while (open.size() > 0) {
         #ifndef EXPERIMENT
         auto timeDiff = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count();
-        if (timeDiff > 250000){// If the solution takes more than .25 second
-            auto& solution = bestNodeSoFar->getSolution();
+        if (timeDiff > 1000000){// If the solution takes more than 1 second
+            auto& solution = minConflictsNode->getSolution();
             solution.finalize(agents);
             std::cerr << "Running with best CBS solution within time limit\n";
-            // for(auto& p : solution.paths){
-            //     std::cerr << p.toString() << "\n";
-            // }
             return solution;
         }
         #endif
@@ -138,26 +137,14 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
             std::cerr << "Running with no conflict CBS\n";
             return solution;
         }
-        // Update best node so far
-        int score = 0;
-        for (auto& conflict : conflicts){
-            // Penalize based on conflict type
-            switch(conflict.getType()[0]){
-                case 'S'://Swap
-                    score += SWAP_CONFLICT_PENALTY;
-                    break;
-                case 'V'://Vertex
-                    score += VERTEX_CONFLICT_PENALTY;
-                    break;
-                case 'F'://Follow
-                    score += FOLLOW_CONFLICT_PENALTY;
-                    break;
-            }
+        else if ((int)conflicts.size() < minConflicts){
+            minConflictsNode = p;
+            minConflicts = conflicts.size();
         }
-        if (score < bestNodeScore){
-            bestNodeScore = score;
-            bestNodeSoFar = p;
-        }
+        #ifdef CONFLICTCOUNT
+            countiterator++;
+            (*logger.begin()) <<countiterator << " "<<minConflicts<<"\n" ; logger.end();
+        #endif
         /**
          * Get one of the conflicts
          */
@@ -224,11 +211,9 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         #endif
     }
     // We did not find any solution (No possible solution)
-    #ifdef EXPERIMENT
     Error::log("ERROR: HighLevelCBS: No possible solution\n");
-    #endif
     #ifndef EXPERIMENT
-    auto& solution = bestNodeSoFar->getSolution();
+    auto& solution = minConflictsNode->getSolution();
     solution.finalize(agents);
     std::cerr << "Running with best CBS solution (no possible 0 conflict CBS solution)\n";
     return solution;
