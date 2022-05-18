@@ -101,7 +101,6 @@ void CTrajectoryLoopFunctions::initJobGenerator(){
 
     // Use spawn locations as delivery stations
     int spawnPointOffset = sMap.endStationIDs.size() + sMap.stationIDs.size();
-    Error::log("\n\n\n"+std::to_string(spawnPointOffset)+ "\n\n\n");
     std::set<int> endStationIDs{};
     for(int i = 0; i < robotCount; ++i)
         endStationIDs.insert(spawnPointOffset + i);
