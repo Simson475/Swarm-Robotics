@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 
         // Act
         std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
-        Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance(), 0);
+        Solution solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
         auto solutionComputationTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - experimentBeginTime).count();
         (*logger.begin()) << solutionNumber++ << " " << solutionComputationTime << "\n"; logger.end();
         // Readd the work action (The bots will work, but in this experiment we act as bots, so we must add it)
@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
             }
             // Find new solution
             std::chrono::steady_clock::time_point solutionBeginTime = std::chrono::steady_clock::now();
-            solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance(), minCost);
+            solution = HighLevelCBS::get_instance().findSolution(graph, agents, LowLevelCBS::get_instance());
             solutionComputationTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - solutionBeginTime).count();
             (*logger.begin()) << solutionNumber++ << " " << solutionComputationTime << "\n"; logger.end();
             // Readd the work action (The bots will work, but in this experiment we act as bots, so we must add it)

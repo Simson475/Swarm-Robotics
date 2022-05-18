@@ -41,7 +41,7 @@ bool ExperimentData::requestSolution(int agentId){
     auto agentInfos = getAgentsInfo();
 
     Solution solution = HighLevelCBS::get_instance()
-        .findSolution(getGraph(), agentInfos, LowLevelCBS::get_instance(), this->getSimulationTime());
+        .findSolution(getGraph(), agentInfos, LowLevelCBS::get_instance());
     
     // Distribute paths
     distributeSolution(solution);

@@ -1,6 +1,6 @@
 #include "HighLevelCBS.hpp"
 
-Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel, float currentTime, int maxTime){
+Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel, int maxTime){
     #ifdef HIGHLEVEL_ANALYSIS_LOGS_ON
     Logger& logger = Logger::get_instance();
     #endif
@@ -24,8 +24,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
                 auto initialAction = a.getCurrentAction();
                 if (initialAction.isWaitAction()){
                     // Constraint the initial vertex
-                    float earliestActionEnd = initialAction.timestamp + initialAction.duration;//(initialAction.duration == TIME_AT_GOAL && initialAction.endVertex == a.getGoal())
-                     //? initialAction.timestamp + initialAction.duration : currentTime;
+                    float earliestActionEnd = initialAction.timestamp + initialAction.duration;
                     root->addConstraint(Constraint(b.getId(), initialAction.getLocation(), initialAction.timestamp, earliestActionEnd + TIME_AT_VERTEX));
                 }
                 else {
@@ -54,7 +53,7 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         }
         #ifndef EXPERIMENT
         std::cerr << "Running with greedy (conflicts on current actions)\n";
-        return getGreedySolution(graph, agents, lowLevel, currentTime);
+        return getGreedySolution(graph, agents, lowLevel);
         #else
         exit(1);
         #endif
@@ -308,7 +307,7 @@ void HighLevelCBS::removeInfiniteBlocksOnGoals(Solution& solution){
     }
 }
 
-Solution HighLevelCBS::getGreedySolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel, float currentTime){
+Solution HighLevelCBS::getGreedySolution(std::shared_ptr<Graph> graph, std::vector<AgentInfo> agents, LowLevelCBS& lowLevel){
     Solution solution;
     #ifdef DEBUG_LOGS_ON
     Error::log("Getting greedy solution\n");
@@ -324,7 +323,6 @@ Solution HighLevelCBS::getGreedySolution(std::shared_ptr<Graph> graph, std::vect
     }
     
     #ifdef DEBUG_LOGS_ON
-    Error::log("Current time = " + std::to_string(currentTime) + "\n");
     for(auto& p : solution.paths){
         Error::log(p.toString() + "\n");
     }
