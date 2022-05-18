@@ -14,7 +14,10 @@ bool ConstraintUtils::isViolatingConstraint(Constraint constraint, Action action
         auto edge = action.startVertex->getEdge(action.endVertex);
         return isViolatingConstraint(constraint, edge, action.timestamp);
     }
-    return isViolatingConstraint(constraint, action.endVertex, action.timestamp, action.timestamp + action.duration + TIME_AT_VERTEX);
+    if (action.isWaitAction()){
+        return isViolatingConstraint(constraint, action.endVertex, action.timestamp, action.timestamp + action.duration + TIME_AT_VERTEX);
+    }
+    return isViolatingConstraint(constraint, action.endVertex, action.timestamp + action.duration, action.timestamp + action.duration + TIME_AT_VERTEX);
 }
 
 /**

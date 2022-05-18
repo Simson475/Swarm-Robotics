@@ -34,7 +34,10 @@ bool ExperimentData::requestSolution(int agentId){
             return false;
         }
     }
-    Error::log("Going to find a solution\n");
+    #ifdef DEBUG_LOGS_ON
+    Error::log("Going to find a solution (Requested by agent" + std::to_string(agentId) + ")\n");
+    Error::log("Current time = " + std::to_string(this->getSimulationTime()) + "\n");
+    #endif
     auto agentInfos = getAgentsInfo();
 
     Solution solution = HighLevelCBS::get_instance()
@@ -42,7 +45,9 @@ bool ExperimentData::requestSolution(int agentId){
     
     // Distribute paths
     distributeSolution(solution);
-
+    #ifdef DEBUG_LOGS_ON
+    Error::log("Distrubuted solution\n");
+    #endif
     return true;
 }
 

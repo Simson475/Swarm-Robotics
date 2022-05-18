@@ -97,34 +97,37 @@ void CTrajectoryLoopFunctions::PostExperiment() {
 void CTrajectoryLoopFunctions::initJobGenerator(){
     Map_Structure &sMap = Map_Structure::get_instance();
 
-    std::set<int> endStationIDs{};
-    for(auto id : sMap.endStationIDs)
-        endStationIDs.insert(id);
+    int robotCount = argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot").size();
 
-    int jobs_per_robot = 200;
+    // Use spawn locations as delivery stations
+    int spawnPointOffset = sMap.endStationIDs.size() + sMap.stationIDs.size();
+    std::set<int> endStationIDs{};
+    for(int i = 0; i < robotCount; ++i)
+        endStationIDs.insert(spawnPointOffset + i);
+
+    int jobs_per_robot = 2000;
     try {
         argos::TConfigurationNode &t_node = argos::CSimulator::GetInstance().GetConfigurationRoot();
         argos::TConfigurationNode &params = argos::GetNode(t_node, "custom");
         argos::GetNodeAttribute(params, "jobs_per_robot", jobs_per_robot);
 
-        argos::CSpace::TMapPerType &tBotMap =
-            argos::CLoopFunctions().GetSpace().GetEntitiesByType("foot-bot");
-
-        jobs_per_robot *= tBotMap.size();
+        jobs_per_robot *= robotCount;
         std::cout << "Number of jobs are: " << jobs_per_robot << std::endl;
     }
     catch (argos::CARGoSException &e){
         std::cout << "Number of jobs defaulted to: " << jobs_per_robot << std::endl;
     }
 
-    jobGenerator = std::make_shared<PredefinedDescreteJobGenerator>(PredefinedDescreteJobGenerator(sMap.getAmountOfStations(), endStationIDs, jobs_per_robot));
+    jobGenerator = std::make_shared<UniqueStationsJobGenerator>(UniqueStationsJobGenerator(sMap.getAmountOfStations(), endStationIDs, jobs_per_robot, sMap.endStationIDs.size()));
+    // jobGenerator = std::make_shared<PredefinedJobGenerator>(PredefinedJobGenerator(sMap.getAmountOfStations(), endStationIDs, jobs_per_robot));
 };
 
 
 void CTrajectoryLoopFunctions::removeFoldersAndPlan(){
     std::string path = std::filesystem::current_path();
     for (const auto & entry : std::filesystem::directory_iterator(path)) {
-        if (entry.path().filename().string().find("fb") != std::string::npos)
+        if (entry.path().filename().string().find("fb") != std::string::npos
+         || entry.path().filename().string().find("jobProgress") != std::string::npos)
             std::filesystem::remove_all(entry.path());
     }
 }

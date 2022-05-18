@@ -8,16 +8,16 @@ void Solution::finalize(std::vector<AgentInfo> agents)
         std::vector<Action> pathActions;
         for (auto& a : path.actions){
             if (a.isWaitAction() && a.endVertex == agent.getGoal() && a.duration == TIME_AT_GOAL){
-                path.cost = a.timestamp + a.duration;
+                path.cost = a.timestamp;
                 break;
             }
             pathActions.push_back(a);
         }
         path.actions = pathActions;
 
-        // Remove agents current action
-        path.actions.erase(path.actions.begin());
-
-        Error::log(agent.getCurrentAction().toString() + " " + path.toString() + "\n");
+        if (path.actions.size() > 0){ // If == 0, it means the work action is the current action
+            // Remove agents current action
+            path.actions.erase(path.actions.begin());
+        }
     }
 }

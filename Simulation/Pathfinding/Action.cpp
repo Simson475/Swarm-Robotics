@@ -51,9 +51,21 @@ Location Action::getLocation(){
         if (e->getEndVertex()->getId() == endVertex->getId())
         return Location(e);
     }
+    Error::log("Could not get location in action\n");
     exit(1);
 }
 
 std::string Action::toString(){
     return "{v" + std::to_string(this->startVertex->getId()) + "->" + "v" + std::to_string(this->endVertex->getId()) + " t[" + std::to_string(this->timestamp) + "," + std::to_string(this->timestamp + this->duration) + "]}";
+}
+
+float Action::sync(float desyncOffset){
+    this->timestamp += desyncOffset;
+    if (this->isWaitAction()){
+        auto value = desyncOffset - this->duration;
+        this->duration = std::max(0.0f, this->duration - desyncOffset);
+        return desyncOffset > 0 ? std::max(0.0f, value ) : 0;
+    }else{
+        return desyncOffset;
+    }
 }
