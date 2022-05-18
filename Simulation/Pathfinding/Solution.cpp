@@ -15,7 +15,7 @@ void Solution::finalize(std::vector<AgentInfo> agents)
         }
         path.actions = pathActions;
 
-        if (path.actions.size() > 0){ // If == 0, it means the work action is the current action
+        if ( ! path.actions.empty()){ // If empty, it means the work action is the current action (so already removed)
             // Remove agents current action
             path.actions.erase(path.actions.begin());
         }
