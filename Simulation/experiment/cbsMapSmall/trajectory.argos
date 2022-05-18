@@ -17,7 +17,7 @@
   <!-- *************** -->
 
   <controllers>
-    <SingleThreadBotGreedy id="fdc"
+    <TestController id="fdc"
                                       library="./libBotImplementations">
       <actuators>
         <differential_steering implementation="default" />
@@ -38,7 +38,7 @@
         </params>
 
       <params alpha="7.5" delta="0.1" />
-    </SingleThreadBotGreedy>
+    </TestController>
 
   </controllers>
 
@@ -66,34 +66,7 @@
       <body position="-12,0,0" orientation="0,0,0" />
     </box>
 
-    <box id="n" size="0.1,3,1" movable="false">
-      <body position="7.5,10.5,0" orientation="0,0,0" />
-    </box>
-    <box id="no" size="3,0.1,1" movable="false">
-      <body position="10.5,7.5,0" orientation="0,0,0" />
-    </box>
-
-    <box id="non" size="0.1,3,1" movable="false">
-      <body position="-7.5,10.5,0" orientation="0,0,0" />
-    </box>
-    <box id="nonW" size="3,0.1,1" movable="false">
-      <body position="-10.5,7.5,0" orientation="0,0,0" />
-    </box>
-
-    <box id="nonWa" size="0.1,3,1" movable="false">
-      <body position="7.5,-10.5,0" orientation="0,0,0" />
-    </box>
-    <box id="nonWay" size="3,0.1,1" movable="false">
-      <body position="10.5,-7.5,0" orientation="0,0,0" />
-    </box>
-
-    <box id="nonWayp" size="0.1,3,1" movable="false">
-      <body position="-7.5,-10.5,0" orientation="0,0,0" />
-    </box>
-    <box id="nonWaypo" size="3,0.1,1" movable="false">
-      <body position="-10.5,-7.5,0" orientation="0,0,0" />
-    </box>
-
+   
     <!-- ********************************* -->
     <!-- * Distribution of the foot bots * -->
     <!-- ********************************* -->
@@ -186,7 +159,7 @@
   <!-- ****************** -->
   <!-- * Visualization * -->
   <!-- ****************** -->
-  <!-- <visualization>
+  <visualization>
 
     <qt-opengl autoplay="false">
       <user_functions library="./libCTrajectoryLoopFunctions"
@@ -197,6 +170,6 @@
       </camera>
     </qt-opengl>
 
-  </visualization> -->
+  </visualization>
 
 </argos-configuration>

@@ -13,11 +13,10 @@ UniqueStationsJobGenerator::UniqueStationsJobGenerator(int numOfStations, std::s
         availableStations.push_back(i);
     }
 
-    distrEnd = std::uniform_int_distribution<>(2, 3);  // define the range of how many stations to visit
 }
 
 std::unique_ptr<Job> UniqueStationsJobGenerator::generateJob() {
-    long unsigned int amountPickups = distrEnd(eng);
+    long unsigned int amountPickups = 3;
     std::set<int> stationsToVisit{};
 
     while (stationsToVisit.size() < amountPickups){

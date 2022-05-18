@@ -66,7 +66,7 @@ void JobGenerator::completedJob() {
     out.close();
 
 
-    if (jobsCompleted == 700){
+    if (jobsCompleted == 1000){
         exit(1);
     }
     if(jobsCompleted > numOfJobs)
