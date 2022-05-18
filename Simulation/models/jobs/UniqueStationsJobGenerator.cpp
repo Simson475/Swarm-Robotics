@@ -6,7 +6,7 @@
 
 UniqueStationsJobGenerator::UniqueStationsJobGenerator(int numOfStations, std::set<int> endStations, int numOfJobs, int numOfEndStations) :
     JobGenerator(numOfStations, endStations, numOfJobs) {
-    eng = std::mt19937(0); // seed the generator
+    eng = std::mt19937(67891234); // seed the generator
 
     availableStations = {};
     for (int i = numOfEndStations; i < numOfStations; i++){
