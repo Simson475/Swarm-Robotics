@@ -25,14 +25,10 @@ int main(int argc, char *argv[]) {
         auto graph = getCbsMapSmallGraph();
         auto vertices = graph->getVertices();
         int spawnPointVertexIndexOffset = 37;
-        int deliveryStationCount = 4;
-        std::vector<std::shared_ptr<Vertex>> deliveryStations;
-        for (int i = 0; i < deliveryStationCount; ++i){
-            deliveryStations.push_back(vertices[i]);
-        }
+        int firstStationIndex = 4;
         std::vector<std::shared_ptr<Vertex>> stations;
         std::vector<int> availableStations;
-        for (int i = deliveryStationCount; i < spawnPointVertexIndexOffset; ++i){
+        for (int i = firstStationIndex; i < spawnPointVertexIndexOffset; ++i){
             stations.push_back(vertices[i]);
             availableStations.push_back(i);
         }
