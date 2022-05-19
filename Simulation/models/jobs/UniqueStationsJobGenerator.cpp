@@ -6,7 +6,18 @@
 
 UniqueStationsJobGenerator::UniqueStationsJobGenerator(int numOfStations, std::set<int> endStations, int numOfJobs, int numOfEndStations) :
     JobGenerator(numOfStations, endStations, numOfJobs) {
-    eng = std::mt19937(67891234); // seed the generator
+    
+    int seed = 67891234;
+    try {
+        argos::TConfigurationNode &t_node = argos::CSimulator::GetInstance().GetConfigurationRoot();
+        argos::TConfigurationNode &params = argos::GetNode(t_node, "experiment_settings");
+        argos::GetNodeAttribute(params, "seed", seed);
+    }
+    catch (argos::CARGoSException &e){
+        std::cerr << "Job generator seed defaulted to: " << seed << std::endl;
+    }
+
+    eng = std::mt19937(seed); // seed the generator
 
     availableStations = {};
     for (int i = numOfEndStations; i < numOfStations; i++){

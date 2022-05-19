@@ -25,6 +25,7 @@ protected:
 
     int jobsGenerated = 0;
     int jobsCompleted = 0;
+    int jobGoal = numOfJobs;
 
     std::vector<Job> jobs{};
 

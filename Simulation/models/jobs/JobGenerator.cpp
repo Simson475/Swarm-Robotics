@@ -10,7 +10,17 @@ JobGenerator::JobGenerator(int numOfStations, std::set<int> endStations, int num
     numOfStations(numOfStations),
     endStations(endStations),
     numOfEndStations((int)endStations.size()),
-    numOfJobs(numOfJobs){}
+    numOfJobs(numOfJobs)
+{
+    try {
+        argos::TConfigurationNode &t_node = argos::CSimulator::GetInstance().GetConfigurationRoot();
+        argos::TConfigurationNode &params = argos::GetNode(t_node, "experiment_settings");
+        argos::GetNodeAttribute(params, "jobs", jobGoal);
+    }
+    catch (argos::CARGoSException &e){
+        std::cerr << "Job generator job goal defaulted to: " << numOfJobs << std::endl;
+    }
+}
 
 // This function is hardcored in the way that end stations have the first IDs in the map and the stations have the
 // next IDs. After the stations, the waypoints gets IDs.
@@ -66,8 +76,9 @@ void JobGenerator::completedJob() {
     out.close();
 
 
-    if (jobsCompleted == 1000){
-        exit(1);
+    if (jobsCompleted == jobGoal){
+        std::cout << "Completed job goal\n";
+        exit(0);
     }
     if(jobsCompleted > numOfJobs)
         throw std::logic_error("More completed jobs than jobs generated");
