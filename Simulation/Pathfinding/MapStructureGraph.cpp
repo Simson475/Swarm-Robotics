@@ -11,9 +11,9 @@ MapStructureGraph::MapStructureGraph(Map_Structure& map){
         if (point.getType() == 2){
             stations.push_back(id);
         }
-        #ifdef DEBUG_LOGS_ON
+        
         Error::log(vertices[id]->toString() /*+ "(" + std::to_string(point.GetX()) + "," + std::to_string(point.GetY()) + ")*/+"\n");
-        #endif
+        
     }
     this->vertices = vertices;
 
@@ -21,7 +21,7 @@ MapStructureGraph::MapStructureGraph(Map_Structure& map){
     size_t lineCount = map.lines.size();
     std::vector<std::vector<std::shared_ptr<Edge>>> edges{lineCount};
     float robotSpeed = 0.061; //An approximation of the actual robot speed
-    int prevStartVertex = -1;
+
     for (Line line : map.lines){
         //this only works if robots are spawned at the top or bottom of the map
         if (line.GetDistance() <= 0) { continue; }
@@ -44,21 +44,22 @@ MapStructureGraph::MapStructureGraph(Map_Structure& map){
 
     this->reduceToTransitiveReduction();
 
+        // Vertices
         Error::log("std::vector<std::shared_ptr<Vertex>> vertices = {\n");
         for(auto vertex : this->vertices){
-            Error::log( "v"+std::to_string(vertex->getId())+",\n");
+            Error::log( "v"+std::to_string(vertex->getId())+",");
         }
         Error::log("};\n");
 
-        if (prevStartVertex != edge->getStartVertex()->getId()){
-            if(prevStartVertex!= -1){  
-                Error::log("};\n");
-                Error::log("v"+std::to_string(prevStartVertex)+"->setEdges(v"+std::to_string(prevStartVertex)+"edges);\n");
+        // Edges
+        for(auto vertex : this->vertices){
+            Error::log("std::vector<std::shared_ptr<Edge>> v"+std::to_string(vertex->getId())+"edges = {");
+            for (auto edge : vertex->getEdges()){
+                Error::log(edge->toString() + ",");
             }
-            Error::log("std::vector<std::shared_ptr<Edge>> v"+std::to_string(edge->getStartVertex()->getId())+"edges = {\n");
-            prevStartVertex=edge->getStartVertex()->getId();
+            Error::log("};\n");
+            Error::log("v"+std::to_string(vertex->getId())+"->setEdges(v"+std::to_string(vertex->getId())+"edges);\n");
         }
-        Error::log(edge->toString() + /*" " + std::to_string(edge->getCost()) + */",\n");
 }
 
 std::vector<int> MapStructureGraph::getStations(){
