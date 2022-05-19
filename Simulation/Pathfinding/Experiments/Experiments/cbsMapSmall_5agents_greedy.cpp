@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
         // Arrange experiment
         auto graph = getCbsMapSmallGraph();
         auto vertices = graph->getVertices();
-        int spawnPointVertexIndexOffset = 37;
+        int spawnPointVertexIndexOffset = 33;
         int deliveryStationCount = 4;
         std::vector<std::shared_ptr<Vertex>> deliveryStations;
         for (int i = 0; i < deliveryStationCount; ++i){
@@ -124,14 +124,14 @@ int main(int argc, char *argv[])
 
                 // Log completion times
                 int simTime = minCost;
-                int penalty = (vertexConflictsInCurrentSolution*VERTEX_CONFLICT_PENALTY + swapConflictsInCurrentSolution*SWAP_CONFLICT_PENALTY + followConflictsInCurrentSolution*FOLLOW_CONFLICT_PENALTY);
+                // int penalty = (vertexConflictsInCurrentSolution*VERTEX_CONFLICT_PENALTY + swapConflictsInCurrentSolution*SWAP_CONFLICT_PENALTY + followConflictsInCurrentSolution*FOLLOW_CONFLICT_PENALTY);
                 vertexConflictsInCurrentSolution = 0;
                 swapConflictsInCurrentSolution = 0;
                 followConflictsInCurrentSolution = 0;
                 std::ofstream out;
                 // Overall job completion status
                 out.open(std::string{std::filesystem::current_path()} + "/jobProgress.txt", std::ofstream::app);
-                out << (totalJobs - totalJobsLeft) << " " << simTime + penalty << "\n";
+                out << (totalJobs - totalJobsLeft) << " " << simTime << "\n";
                 out.close();
                 // Single agent job completion status
                 out.open(std::string{std::filesystem::current_path()} + "/jobProgress_agent"+std::to_string(agentThatFinishFirst)+".txt", std::ofstream::app);
@@ -361,871 +361,181 @@ std::shared_ptr<Graph> getCbsMapSmallGraph()
     auto v84 = std::make_shared<Vertex>(84);
     auto v85 = std::make_shared<Vertex>(85);
     auto v86 = std::make_shared<Vertex>(86);
-    auto v87 = std::make_shared<Vertex>(87);
-    auto v88 = std::make_shared<Vertex>(88);
-    auto v89 = std::make_shared<Vertex>(89);
-    auto v90 = std::make_shared<Vertex>(90);
-    std::vector<std::shared_ptr<Edge>> v0edges = {
-        std::make_shared<Edge>(v0, v65, 97.316864),
-    };
-    v0->setEdges(v0edges);
-    std::vector<std::shared_ptr<Edge>> v1edges = {
-        std::make_shared<Edge>(v1, v89, 97.316864),
-    };
-    v1->setEdges(v1edges);
-    std::vector<std::shared_ptr<Edge>> v2edges = {
-        std::make_shared<Edge>(v2, v77, 97.316864),
-    };
-    v2->setEdges(v2edges);
-    std::vector<std::shared_ptr<Edge>> v3edges = {
-        std::make_shared<Edge>(v3, v90, 97.316864),
-    };
-    v3->setEdges(v3edges);
-    std::vector<std::shared_ptr<Edge>> v4edges = {
-        std::make_shared<Edge>(v4, v47, 44.262295),
-        std::make_shared<Edge>(v4, v89, 40.983601),
-    };
-    v4->setEdges(v4edges);
-    std::vector<std::shared_ptr<Edge>> v5edges = {
-        std::make_shared<Edge>(v5, v47, 40.983604),
-        std::make_shared<Edge>(v5, v49, 44.262291),
-    };
-    v5->setEdges(v5edges);
-    std::vector<std::shared_ptr<Edge>> v6edges = {
-        std::make_shared<Edge>(v6, v49, 40.983604),
-        std::make_shared<Edge>(v6, v65, 44.262291),
-    };
-    v6->setEdges(v6edges);
-    std::vector<std::shared_ptr<Edge>> v7edges = {
-        std::make_shared<Edge>(v7, v8, 85.245895),
-        std::make_shared<Edge>(v7, v9, 170.491791),
-        std::make_shared<Edge>(v7, v48, 40.983601),
-        std::make_shared<Edge>(v7, v50, 44.262295),
-        std::make_shared<Edge>(v7, v66, 129.508194),
-        std::make_shared<Edge>(v7, v83, 214.754089),
-    };
-    v7->setEdges(v7edges);
-    std::vector<std::shared_ptr<Edge>> v8edges = {
-        std::make_shared<Edge>(v8, v7, 85.245895),
-        std::make_shared<Edge>(v8, v9, 85.245895),
-        std::make_shared<Edge>(v8, v48, 126.229507),
-        std::make_shared<Edge>(v8, v50, 40.983604),
-        std::make_shared<Edge>(v8, v66, 44.262291),
-        std::make_shared<Edge>(v8, v83, 129.508194),
-    };
-    v8->setEdges(v8edges);
-    std::vector<std::shared_ptr<Edge>> v9edges = {
-        std::make_shared<Edge>(v9, v7, 170.491791),
-        std::make_shared<Edge>(v9, v8, 85.245895),
-        std::make_shared<Edge>(v9, v48, 211.475403),
-        std::make_shared<Edge>(v9, v50, 126.229507),
-        std::make_shared<Edge>(v9, v66, 40.983604),
-        std::make_shared<Edge>(v9, v83, 44.262291),
-    };
-    v9->setEdges(v9edges);
-    std::vector<std::shared_ptr<Edge>> v10edges = {
-        std::make_shared<Edge>(v10, v81, 40.983601),
-        std::make_shared<Edge>(v10, v82, 44.262295),
-    };
-    v10->setEdges(v10edges);
-    std::vector<std::shared_ptr<Edge>> v11edges = {
-        std::make_shared<Edge>(v11, v82, 40.983604),
-        std::make_shared<Edge>(v11, v84, 44.262291),
-    };
-    v11->setEdges(v11edges);
-    std::vector<std::shared_ptr<Edge>> v12edges = {
-        std::make_shared<Edge>(v12, v84, 40.983604),
-        std::make_shared<Edge>(v12, v87, 44.262291),
-    };
-    v12->setEdges(v12edges);
-    std::vector<std::shared_ptr<Edge>> v13edges = {
-        std::make_shared<Edge>(v13, v14, 85.245895),
-        std::make_shared<Edge>(v13, v15, 170.491791),
-        std::make_shared<Edge>(v13, v51, 129.508194),
-        std::make_shared<Edge>(v13, v53, 214.754089),
-        std::make_shared<Edge>(v13, v85, 40.983601),
-        std::make_shared<Edge>(v13, v86, 44.262295),
-    };
-    v13->setEdges(v13edges);
-    std::vector<std::shared_ptr<Edge>> v14edges = {
-        std::make_shared<Edge>(v14, v13, 85.245895),
-        std::make_shared<Edge>(v14, v15, 85.245895),
-        std::make_shared<Edge>(v14, v51, 44.262291),
-        std::make_shared<Edge>(v14, v53, 129.508194),
-        std::make_shared<Edge>(v14, v85, 126.229507),
-        std::make_shared<Edge>(v14, v86, 40.983604),
-    };
-    v14->setEdges(v14edges);
-    std::vector<std::shared_ptr<Edge>> v15edges = {
-        std::make_shared<Edge>(v15, v13, 170.491791),
-        std::make_shared<Edge>(v15, v14, 85.245895),
-        std::make_shared<Edge>(v15, v51, 40.983604),
-        std::make_shared<Edge>(v15, v53, 44.262291),
-        std::make_shared<Edge>(v15, v85, 211.475403),
-        std::make_shared<Edge>(v15, v86, 126.229507),
-    };
-    v15->setEdges(v15edges);
-    std::vector<std::shared_ptr<Edge>> v16edges = {
-        std::make_shared<Edge>(v16, v52, 44.262295),
-        std::make_shared<Edge>(v16, v88, 40.983601),
-    };
-    v16->setEdges(v16edges);
-    std::vector<std::shared_ptr<Edge>> v17edges = {
-        std::make_shared<Edge>(v17, v52, 40.983604),
-        std::make_shared<Edge>(v17, v54, 44.262291),
-    };
-    v17->setEdges(v17edges);
-    std::vector<std::shared_ptr<Edge>> v18edges = {
-        std::make_shared<Edge>(v18, v54, 40.983604),
-        std::make_shared<Edge>(v18, v57, 44.262291),
-    };
-    v18->setEdges(v18edges);
-    std::vector<std::shared_ptr<Edge>> v19edges = {
-        std::make_shared<Edge>(v19, v20, 85.245895),
-        std::make_shared<Edge>(v19, v21, 170.491791),
-        std::make_shared<Edge>(v19, v55, 40.983601),
-        std::make_shared<Edge>(v19, v56, 44.262295),
-        std::make_shared<Edge>(v19, v58, 129.508194),
-        std::make_shared<Edge>(v19, v61, 214.754089),
-    };
-    v19->setEdges(v19edges);
-    std::vector<std::shared_ptr<Edge>> v20edges = {
-        std::make_shared<Edge>(v20, v19, 85.245895),
-        std::make_shared<Edge>(v20, v21, 85.245895),
-        std::make_shared<Edge>(v20, v55, 126.229507),
-        std::make_shared<Edge>(v20, v56, 40.983604),
-        std::make_shared<Edge>(v20, v58, 44.262291),
-        std::make_shared<Edge>(v20, v61, 129.508194),
-    };
-    v20->setEdges(v20edges);
-    std::vector<std::shared_ptr<Edge>> v21edges = {
-        std::make_shared<Edge>(v21, v19, 170.491791),
-        std::make_shared<Edge>(v21, v20, 85.245895),
-        std::make_shared<Edge>(v21, v55, 211.475403),
-        std::make_shared<Edge>(v21, v56, 126.229507),
-        std::make_shared<Edge>(v21, v58, 40.983604),
-        std::make_shared<Edge>(v21, v61, 44.262291),
-    };
-    v21->setEdges(v21edges);
-    std::vector<std::shared_ptr<Edge>> v22edges = {
-        std::make_shared<Edge>(v22, v59, 40.983601),
-        std::make_shared<Edge>(v22, v60, 44.262295),
-    };
-    v22->setEdges(v22edges);
-    std::vector<std::shared_ptr<Edge>> v23edges = {
-        std::make_shared<Edge>(v23, v60, 40.983604),
-        std::make_shared<Edge>(v23, v62, 44.262291),
-    };
-    v23->setEdges(v23edges);
-    std::vector<std::shared_ptr<Edge>> v24edges = {
-        std::make_shared<Edge>(v24, v62, 40.983604),
-        std::make_shared<Edge>(v24, v67, 44.262291),
-    };
-    v24->setEdges(v24edges);
-    std::vector<std::shared_ptr<Edge>> v25edges = {
-        std::make_shared<Edge>(v25, v26, 85.245895),
-        std::make_shared<Edge>(v25, v27, 170.491791),
-        std::make_shared<Edge>(v25, v63, 40.983601),
-        std::make_shared<Edge>(v25, v64, 44.262295),
-        std::make_shared<Edge>(v25, v68, 129.508194),
-        std::make_shared<Edge>(v25, v71, 214.754089),
-    };
-    v25->setEdges(v25edges);
-    std::vector<std::shared_ptr<Edge>> v26edges = {
-        std::make_shared<Edge>(v26, v25, 85.245895),
-        std::make_shared<Edge>(v26, v27, 85.245895),
-        std::make_shared<Edge>(v26, v63, 126.229507),
-        std::make_shared<Edge>(v26, v64, 40.983604),
-        std::make_shared<Edge>(v26, v68, 44.262291),
-        std::make_shared<Edge>(v26, v71, 129.508194),
-    };
-    v26->setEdges(v26edges);
-    std::vector<std::shared_ptr<Edge>> v27edges = {
-        std::make_shared<Edge>(v27, v25, 170.491791),
-        std::make_shared<Edge>(v27, v26, 85.245895),
-        std::make_shared<Edge>(v27, v63, 211.475403),
-        std::make_shared<Edge>(v27, v64, 126.229507),
-        std::make_shared<Edge>(v27, v68, 40.983604),
-        std::make_shared<Edge>(v27, v71, 44.262291),
-    };
-    v27->setEdges(v27edges);
-    std::vector<std::shared_ptr<Edge>> v28edges = {
-        std::make_shared<Edge>(v28, v69, 40.983601),
-        std::make_shared<Edge>(v28, v70, 44.262295),
-    };
-    v28->setEdges(v28edges);
-    std::vector<std::shared_ptr<Edge>> v29edges = {
-        std::make_shared<Edge>(v29, v70, 40.983604),
-        std::make_shared<Edge>(v29, v72, 44.262291),
-    };
-    v29->setEdges(v29edges);
-    std::vector<std::shared_ptr<Edge>> v30edges = {
-        std::make_shared<Edge>(v30, v72, 40.983604),
-        std::make_shared<Edge>(v30, v75, 44.262291),
-    };
-    v30->setEdges(v30edges);
-    std::vector<std::shared_ptr<Edge>> v31edges = {
-        std::make_shared<Edge>(v31, v32, 85.245895),
-        std::make_shared<Edge>(v31, v33, 170.491791),
-        std::make_shared<Edge>(v31, v73, 40.983601),
-        std::make_shared<Edge>(v31, v74, 44.262295),
-        std::make_shared<Edge>(v31, v76, 129.508194),
-        std::make_shared<Edge>(v31, v79, 214.754089),
-    };
-    v31->setEdges(v31edges);
-    std::vector<std::shared_ptr<Edge>> v32edges = {
-        std::make_shared<Edge>(v32, v31, 85.245895),
-        std::make_shared<Edge>(v32, v33, 85.245895),
-        std::make_shared<Edge>(v32, v73, 126.229507),
-        std::make_shared<Edge>(v32, v74, 40.983604),
-        std::make_shared<Edge>(v32, v76, 44.262291),
-        std::make_shared<Edge>(v32, v79, 129.508194),
-    };
-    v32->setEdges(v32edges);
-    std::vector<std::shared_ptr<Edge>> v33edges = {
-        std::make_shared<Edge>(v33, v31, 170.491791),
-        std::make_shared<Edge>(v33, v32, 85.245895),
-        std::make_shared<Edge>(v33, v73, 211.475403),
-        std::make_shared<Edge>(v33, v74, 126.229507),
-        std::make_shared<Edge>(v33, v76, 40.983604),
-        std::make_shared<Edge>(v33, v79, 44.262291),
-    };
-    v33->setEdges(v33edges);
-    std::vector<std::shared_ptr<Edge>> v34edges = {
-        std::make_shared<Edge>(v34, v77, 40.983601),
-        std::make_shared<Edge>(v34, v78, 44.262295),
-    };
-    v34->setEdges(v34edges);
-    std::vector<std::shared_ptr<Edge>> v35edges = {
-        std::make_shared<Edge>(v35, v78, 40.983604),
-        std::make_shared<Edge>(v35, v80, 44.262291),
-    };
-    v35->setEdges(v35edges);
-    std::vector<std::shared_ptr<Edge>> v36edges = {
-        std::make_shared<Edge>(v36, v80, 40.983604),
-        std::make_shared<Edge>(v36, v90, 44.262291),
-    };
-    v36->setEdges(v36edges);
-    std::vector<std::shared_ptr<Edge>> v37edges = {
-        std::make_shared<Edge>(v37, v38, 42.622948),
-        std::make_shared<Edge>(v37, v39, 85.245895),
-        std::make_shared<Edge>(v37, v40, 127.868851),
-        std::make_shared<Edge>(v37, v41, 170.491791),
-        std::make_shared<Edge>(v37, v47, 78.208923),
-        std::make_shared<Edge>(v37, v49, 143.702332),
-        std::make_shared<Edge>(v37, v65, 222.974915),
-        std::make_shared<Edge>(v37, v89, 78.208916),
-    };
-    v37->setEdges(v37edges);
-    std::vector<std::shared_ptr<Edge>> v38edges = {
-        std::make_shared<Edge>(v38, v37, 42.622948),
-        std::make_shared<Edge>(v38, v39, 42.622948),
-        std::make_shared<Edge>(v38, v40, 85.245895),
-        std::make_shared<Edge>(v38, v41, 127.868851),
-        std::make_shared<Edge>(v38, v47, 65.573769),
-        std::make_shared<Edge>(v38, v49, 107.548981),
-        std::make_shared<Edge>(v38, v65, 182.667389),
-        std::make_shared<Edge>(v38, v89, 107.548981),
-    };
-    v38->setEdges(v38edges);
-    std::vector<std::shared_ptr<Edge>> v39edges = {
-        std::make_shared<Edge>(v39, v37, 85.245895),
-        std::make_shared<Edge>(v39, v38, 42.622948),
-        std::make_shared<Edge>(v39, v40, 42.622948),
-        std::make_shared<Edge>(v39, v41, 85.245895),
-        std::make_shared<Edge>(v39, v47, 78.208923),
-        std::make_shared<Edge>(v39, v49, 78.208923),
-        std::make_shared<Edge>(v39, v65, 143.702332),
-        std::make_shared<Edge>(v39, v89, 143.702332),
-    };
-    v39->setEdges(v39edges);
-    std::vector<std::shared_ptr<Edge>> v40edges = {
-        std::make_shared<Edge>(v40, v37, 127.868851),
-        std::make_shared<Edge>(v40, v38, 85.245895),
-        std::make_shared<Edge>(v40, v39, 42.622948),
-        std::make_shared<Edge>(v40, v41, 42.622948),
-        std::make_shared<Edge>(v40, v47, 107.548981),
-        std::make_shared<Edge>(v40, v49, 65.573769),
-        std::make_shared<Edge>(v40, v65, 107.548981),
-        std::make_shared<Edge>(v40, v89, 182.667389),
-    };
-    v40->setEdges(v40edges);
-    std::vector<std::shared_ptr<Edge>> v41edges = {
-        std::make_shared<Edge>(v41, v37, 170.491791),
-        std::make_shared<Edge>(v41, v38, 127.868851),
-        std::make_shared<Edge>(v41, v39, 85.245895),
-        std::make_shared<Edge>(v41, v40, 42.622948),
-        std::make_shared<Edge>(v41, v47, 143.702332),
-        std::make_shared<Edge>(v41, v49, 78.208923),
-        std::make_shared<Edge>(v41, v65, 78.208916),
-        std::make_shared<Edge>(v41, v89, 222.974915),
-    };
-    v41->setEdges(v41edges);
-    std::vector<std::shared_ptr<Edge>> v42edges = {
-        std::make_shared<Edge>(v42, v43, 42.622948),
-        std::make_shared<Edge>(v42, v44, 85.245895),
-        std::make_shared<Edge>(v42, v45, 127.868851),
-        std::make_shared<Edge>(v42, v46, 170.491791),
-        std::make_shared<Edge>(v42, v77, 78.208916),
-        std::make_shared<Edge>(v42, v78, 78.208923),
-        std::make_shared<Edge>(v42, v80, 143.702332),
-        std::make_shared<Edge>(v42, v90, 222.974915),
-    };
-    v42->setEdges(v42edges);
-    std::vector<std::shared_ptr<Edge>> v43edges = {
-        std::make_shared<Edge>(v43, v42, 42.622948),
-        std::make_shared<Edge>(v43, v44, 42.622948),
-        std::make_shared<Edge>(v43, v45, 85.245895),
-        std::make_shared<Edge>(v43, v46, 127.868851),
-        std::make_shared<Edge>(v43, v77, 107.548981),
-        std::make_shared<Edge>(v43, v78, 65.573769),
-        std::make_shared<Edge>(v43, v80, 107.548981),
-        std::make_shared<Edge>(v43, v90, 182.667389),
-    };
-    v43->setEdges(v43edges);
-    std::vector<std::shared_ptr<Edge>> v44edges = {
-        std::make_shared<Edge>(v44, v42, 85.245895),
-        std::make_shared<Edge>(v44, v43, 42.622948),
-        std::make_shared<Edge>(v44, v45, 42.622948),
-        std::make_shared<Edge>(v44, v46, 85.245895),
-        std::make_shared<Edge>(v44, v77, 143.702332),
-        std::make_shared<Edge>(v44, v78, 78.208923),
-        std::make_shared<Edge>(v44, v80, 78.208923),
-        std::make_shared<Edge>(v44, v90, 143.702332),
-    };
-    v44->setEdges(v44edges);
-    std::vector<std::shared_ptr<Edge>> v45edges = {
-        std::make_shared<Edge>(v45, v42, 127.868851),
-        std::make_shared<Edge>(v45, v43, 85.245895),
-        std::make_shared<Edge>(v45, v44, 42.622948),
-        std::make_shared<Edge>(v45, v46, 42.622948),
-        std::make_shared<Edge>(v45, v77, 182.667389),
-        std::make_shared<Edge>(v45, v78, 107.548981),
-        std::make_shared<Edge>(v45, v80, 65.573769),
-        std::make_shared<Edge>(v45, v90, 107.548981),
-    };
-    v45->setEdges(v45edges);
-    std::vector<std::shared_ptr<Edge>> v46edges = {
-        std::make_shared<Edge>(v46, v42, 170.491791),
-        std::make_shared<Edge>(v46, v43, 127.868851),
-        std::make_shared<Edge>(v46, v44, 85.245895),
-        std::make_shared<Edge>(v46, v45, 42.622948),
-        std::make_shared<Edge>(v46, v77, 222.974915),
-        std::make_shared<Edge>(v46, v78, 143.702332),
-        std::make_shared<Edge>(v46, v80, 78.208923),
-        std::make_shared<Edge>(v46, v90, 78.208916),
-    };
-    v46->setEdges(v46edges);
-    std::vector<std::shared_ptr<Edge>> v47edges = {
-        std::make_shared<Edge>(v47, v4, 44.262295),
-        std::make_shared<Edge>(v47, v5, 40.983604),
-        std::make_shared<Edge>(v47, v37, 78.208923),
-        std::make_shared<Edge>(v47, v38, 65.573769),
-        std::make_shared<Edge>(v47, v39, 78.208923),
-        std::make_shared<Edge>(v47, v40, 107.548981),
-        std::make_shared<Edge>(v47, v41, 143.702332),
-        std::make_shared<Edge>(v47, v49, 85.245895),
-        std::make_shared<Edge>(v47, v50, 19.672132),
-        std::make_shared<Edge>(v47, v89, 85.245895),
-    };
-    v47->setEdges(v47edges);
-    std::vector<std::shared_ptr<Edge>> v48edges = {
-        std::make_shared<Edge>(v48, v7, 40.983601),
-        std::make_shared<Edge>(v48, v8, 126.229507),
-        std::make_shared<Edge>(v48, v9, 211.475403),
-        std::make_shared<Edge>(v48, v50, 85.245895),
-        std::make_shared<Edge>(v48, v81, 19.672136),
-        std::make_shared<Edge>(v48, v89, 19.672129),
-    };
-    v48->setEdges(v48edges);
-    std::vector<std::shared_ptr<Edge>> v49edges = {
-        std::make_shared<Edge>(v49, v5, 44.262291),
-        std::make_shared<Edge>(v49, v6, 40.983604),
-        std::make_shared<Edge>(v49, v37, 143.702332),
-        std::make_shared<Edge>(v49, v38, 107.548981),
-        std::make_shared<Edge>(v49, v39, 78.208923),
-        std::make_shared<Edge>(v49, v40, 65.573769),
-        std::make_shared<Edge>(v49, v41, 78.208923),
-        std::make_shared<Edge>(v49, v47, 85.245895),
-        std::make_shared<Edge>(v49, v65, 85.245895),
-        std::make_shared<Edge>(v49, v66, 19.672132),
-    };
-    v49->setEdges(v49edges);
-    std::vector<std::shared_ptr<Edge>> v50edges = {
-        std::make_shared<Edge>(v50, v7, 44.262295),
-        std::make_shared<Edge>(v50, v8, 40.983604),
-        std::make_shared<Edge>(v50, v9, 126.229507),
-        std::make_shared<Edge>(v50, v47, 19.672132),
-        std::make_shared<Edge>(v50, v48, 85.245895),
-        std::make_shared<Edge>(v50, v66, 85.245895),
-        std::make_shared<Edge>(v50, v82, 19.672132),
-    };
-    v50->setEdges(v50edges);
-    std::vector<std::shared_ptr<Edge>> v51edges = {
-        std::make_shared<Edge>(v51, v13, 129.508194),
-        std::make_shared<Edge>(v51, v14, 44.262291),
-        std::make_shared<Edge>(v51, v15, 40.983604),
-        std::make_shared<Edge>(v51, v53, 85.245895),
-        std::make_shared<Edge>(v51, v54, 19.672132),
-        std::make_shared<Edge>(v51, v84, 19.672131),
-        std::make_shared<Edge>(v51, v86, 85.245895),
-    };
-    v51->setEdges(v51edges);
-    std::vector<std::shared_ptr<Edge>> v52edges = {
-        std::make_shared<Edge>(v52, v16, 44.262295),
-        std::make_shared<Edge>(v52, v17, 40.983604),
-        std::make_shared<Edge>(v52, v54, 85.245895),
-        std::make_shared<Edge>(v52, v56, 19.672132),
-        std::make_shared<Edge>(v52, v86, 19.672132),
-        std::make_shared<Edge>(v52, v88, 85.245895),
-    };
-    v52->setEdges(v52edges);
-    std::vector<std::shared_ptr<Edge>> v53edges = {
-        std::make_shared<Edge>(v53, v13, 214.754089),
-        std::make_shared<Edge>(v53, v14, 129.508194),
-        std::make_shared<Edge>(v53, v15, 44.262291),
-        std::make_shared<Edge>(v53, v51, 85.245895),
-        std::make_shared<Edge>(v53, v57, 19.672129),
-        std::make_shared<Edge>(v53, v87, 19.672132),
-    };
-    v53->setEdges(v53edges);
-    std::vector<std::shared_ptr<Edge>> v54edges = {
-        std::make_shared<Edge>(v54, v17, 44.262291),
-        std::make_shared<Edge>(v54, v18, 40.983604),
-        std::make_shared<Edge>(v54, v51, 19.672132),
-        std::make_shared<Edge>(v54, v52, 85.245895),
-        std::make_shared<Edge>(v54, v57, 85.245895),
-        std::make_shared<Edge>(v54, v58, 19.672132),
-    };
-    v54->setEdges(v54edges);
-    std::vector<std::shared_ptr<Edge>> v55edges = {
-        std::make_shared<Edge>(v55, v19, 40.983601),
-        std::make_shared<Edge>(v55, v20, 126.229507),
-        std::make_shared<Edge>(v55, v21, 211.475403),
-        std::make_shared<Edge>(v55, v56, 85.245895),
-        std::make_shared<Edge>(v55, v59, 19.672132),
-        std::make_shared<Edge>(v55, v88, 19.672131),
-    };
-    v55->setEdges(v55edges);
-    std::vector<std::shared_ptr<Edge>> v56edges = {
-        std::make_shared<Edge>(v56, v19, 44.262295),
-        std::make_shared<Edge>(v56, v20, 40.983604),
-        std::make_shared<Edge>(v56, v21, 126.229507),
-        std::make_shared<Edge>(v56, v52, 19.672132),
-        std::make_shared<Edge>(v56, v55, 85.245895),
-        std::make_shared<Edge>(v56, v58, 85.245895),
-        std::make_shared<Edge>(v56, v60, 19.672132),
-    };
-    v56->setEdges(v56edges);
-    std::vector<std::shared_ptr<Edge>> v57edges = {
-        std::make_shared<Edge>(v57, v18, 44.262291),
-        std::make_shared<Edge>(v57, v53, 19.672129),
-        std::make_shared<Edge>(v57, v54, 85.245895),
-        std::make_shared<Edge>(v57, v61, 19.672132),
-    };
-    v57->setEdges(v57edges);
-    std::vector<std::shared_ptr<Edge>> v58edges = {
-        std::make_shared<Edge>(v58, v19, 129.508194),
-        std::make_shared<Edge>(v58, v20, 44.262291),
-        std::make_shared<Edge>(v58, v21, 40.983604),
-        std::make_shared<Edge>(v58, v54, 19.672132),
-        std::make_shared<Edge>(v58, v56, 85.245895),
-        std::make_shared<Edge>(v58, v61, 85.245895),
-        std::make_shared<Edge>(v58, v62, 19.672132),
-    };
-    v58->setEdges(v58edges);
-    std::vector<std::shared_ptr<Edge>> v59edges = {
-        std::make_shared<Edge>(v59, v22, 40.983601),
-        std::make_shared<Edge>(v59, v55, 19.672132),
-        std::make_shared<Edge>(v59, v60, 85.245895),
-        std::make_shared<Edge>(v59, v63, 19.672129),
-    };
-    v59->setEdges(v59edges);
-    std::vector<std::shared_ptr<Edge>> v60edges = {
-        std::make_shared<Edge>(v60, v22, 44.262295),
-        std::make_shared<Edge>(v60, v23, 40.983604),
-        std::make_shared<Edge>(v60, v56, 19.672132),
-        std::make_shared<Edge>(v60, v59, 85.245895),
-        std::make_shared<Edge>(v60, v62, 85.245895),
-        std::make_shared<Edge>(v60, v64, 19.672132),
-    };
-    v60->setEdges(v60edges);
-    std::vector<std::shared_ptr<Edge>> v61edges = {
-        std::make_shared<Edge>(v61, v19, 214.754089),
-        std::make_shared<Edge>(v61, v20, 129.508194),
-        std::make_shared<Edge>(v61, v21, 44.262291),
-        std::make_shared<Edge>(v61, v57, 19.672132),
-        std::make_shared<Edge>(v61, v58, 85.245895),
-        std::make_shared<Edge>(v61, v67, 19.672131),
-    };
-    v61->setEdges(v61edges);
-    std::vector<std::shared_ptr<Edge>> v62edges = {
-        std::make_shared<Edge>(v62, v23, 44.262291),
-        std::make_shared<Edge>(v62, v24, 40.983604),
-        std::make_shared<Edge>(v62, v58, 19.672132),
-        std::make_shared<Edge>(v62, v60, 85.245895),
-        std::make_shared<Edge>(v62, v67, 85.245895),
-        std::make_shared<Edge>(v62, v68, 19.672132),
-    };
-    v62->setEdges(v62edges);
-    std::vector<std::shared_ptr<Edge>> v63edges = {
-        std::make_shared<Edge>(v63, v25, 40.983601),
-        std::make_shared<Edge>(v63, v26, 126.229507),
-        std::make_shared<Edge>(v63, v27, 211.475403),
-        std::make_shared<Edge>(v63, v59, 19.672129),
-        std::make_shared<Edge>(v63, v64, 85.245895),
-        std::make_shared<Edge>(v63, v69, 19.672132),
-    };
-    v63->setEdges(v63edges);
-    std::vector<std::shared_ptr<Edge>> v64edges = {
-        std::make_shared<Edge>(v64, v25, 44.262295),
-        std::make_shared<Edge>(v64, v26, 40.983604),
-        std::make_shared<Edge>(v64, v27, 126.229507),
-        std::make_shared<Edge>(v64, v60, 19.672132),
-        std::make_shared<Edge>(v64, v63, 85.245895),
-        std::make_shared<Edge>(v64, v68, 85.245895),
-        std::make_shared<Edge>(v64, v70, 19.672131),
-    };
-    v64->setEdges(v64edges);
-    std::vector<std::shared_ptr<Edge>> v65edges = {
-        std::make_shared<Edge>(v65, v0, 97.316864),
-        std::make_shared<Edge>(v65, v6, 44.262291),
-        std::make_shared<Edge>(v65, v37, 222.974915),
-        std::make_shared<Edge>(v65, v38, 182.667389),
-        std::make_shared<Edge>(v65, v39, 143.702332),
-        std::make_shared<Edge>(v65, v40, 107.548981),
-        std::make_shared<Edge>(v65, v41, 78.208916),
-        std::make_shared<Edge>(v65, v49, 85.245895),
-        std::make_shared<Edge>(v65, v83, 19.672136),
-    };
-    v65->setEdges(v65edges);
-    std::vector<std::shared_ptr<Edge>> v66edges = {
-        std::make_shared<Edge>(v66, v7, 129.508194),
-        std::make_shared<Edge>(v66, v8, 44.262291),
-        std::make_shared<Edge>(v66, v9, 40.983604),
-        std::make_shared<Edge>(v66, v49, 19.672132),
-        std::make_shared<Edge>(v66, v50, 85.245895),
-        std::make_shared<Edge>(v66, v83, 85.245895),
-        std::make_shared<Edge>(v66, v84, 19.672132),
-    };
-    v66->setEdges(v66edges);
-    std::vector<std::shared_ptr<Edge>> v67edges = {
-        std::make_shared<Edge>(v67, v24, 44.262291),
-        std::make_shared<Edge>(v67, v61, 19.672131),
-        std::make_shared<Edge>(v67, v62, 85.245895),
-        std::make_shared<Edge>(v67, v71, 19.672134),
-    };
-    v67->setEdges(v67edges);
-    std::vector<std::shared_ptr<Edge>> v68edges = {
-        std::make_shared<Edge>(v68, v25, 129.508194),
-        std::make_shared<Edge>(v68, v26, 44.262291),
-        std::make_shared<Edge>(v68, v27, 40.983604),
-        std::make_shared<Edge>(v68, v62, 19.672132),
-        std::make_shared<Edge>(v68, v64, 85.245895),
-        std::make_shared<Edge>(v68, v71, 85.245895),
-        std::make_shared<Edge>(v68, v72, 19.672131),
-    };
-    v68->setEdges(v68edges);
-    std::vector<std::shared_ptr<Edge>> v69edges = {
-        std::make_shared<Edge>(v69, v28, 40.983601),
-        std::make_shared<Edge>(v69, v63, 19.672132),
-        std::make_shared<Edge>(v69, v70, 85.245895),
-        std::make_shared<Edge>(v69, v73, 19.672129),
-    };
-    v69->setEdges(v69edges);
-    std::vector<std::shared_ptr<Edge>> v70edges = {
-        std::make_shared<Edge>(v70, v28, 44.262295),
-        std::make_shared<Edge>(v70, v29, 40.983604),
-        std::make_shared<Edge>(v70, v64, 19.672131),
-        std::make_shared<Edge>(v70, v69, 85.245895),
-        std::make_shared<Edge>(v70, v72, 85.245895),
-        std::make_shared<Edge>(v70, v74, 19.672132),
-    };
-    v70->setEdges(v70edges);
-    std::vector<std::shared_ptr<Edge>> v71edges = {
-        std::make_shared<Edge>(v71, v25, 214.754089),
-        std::make_shared<Edge>(v71, v26, 129.508194),
-        std::make_shared<Edge>(v71, v27, 44.262291),
-        std::make_shared<Edge>(v71, v67, 19.672134),
-        std::make_shared<Edge>(v71, v68, 85.245895),
-        std::make_shared<Edge>(v71, v75, 19.672129),
-    };
-    v71->setEdges(v71edges);
-    std::vector<std::shared_ptr<Edge>> v72edges = {
-        std::make_shared<Edge>(v72, v29, 44.262291),
-        std::make_shared<Edge>(v72, v30, 40.983604),
-        std::make_shared<Edge>(v72, v68, 19.672131),
-        std::make_shared<Edge>(v72, v70, 85.245895),
-        std::make_shared<Edge>(v72, v75, 85.245895),
-        std::make_shared<Edge>(v72, v76, 19.672132),
-    };
-    v72->setEdges(v72edges);
-    std::vector<std::shared_ptr<Edge>> v73edges = {
-        std::make_shared<Edge>(v73, v31, 40.983601),
-        std::make_shared<Edge>(v73, v32, 126.229507),
-        std::make_shared<Edge>(v73, v33, 211.475403),
-        std::make_shared<Edge>(v73, v69, 19.672129),
-        std::make_shared<Edge>(v73, v74, 85.245895),
-        std::make_shared<Edge>(v73, v77, 19.672136),
-    };
-    v73->setEdges(v73edges);
-    std::vector<std::shared_ptr<Edge>> v74edges = {
-        std::make_shared<Edge>(v74, v31, 44.262295),
-        std::make_shared<Edge>(v74, v32, 40.983604),
-        std::make_shared<Edge>(v74, v33, 126.229507),
-        std::make_shared<Edge>(v74, v70, 19.672132),
-        std::make_shared<Edge>(v74, v73, 85.245895),
-        std::make_shared<Edge>(v74, v76, 85.245895),
-        std::make_shared<Edge>(v74, v78, 19.672132),
-    };
-    v74->setEdges(v74edges);
-    std::vector<std::shared_ptr<Edge>> v75edges = {
-        std::make_shared<Edge>(v75, v30, 44.262291),
-        std::make_shared<Edge>(v75, v71, 19.672129),
-        std::make_shared<Edge>(v75, v72, 85.245895),
-        std::make_shared<Edge>(v75, v79, 19.672136),
-    };
-    v75->setEdges(v75edges);
-    std::vector<std::shared_ptr<Edge>> v76edges = {
-        std::make_shared<Edge>(v76, v31, 129.508194),
-        std::make_shared<Edge>(v76, v32, 44.262291),
-        std::make_shared<Edge>(v76, v33, 40.983604),
-        std::make_shared<Edge>(v76, v72, 19.672132),
-        std::make_shared<Edge>(v76, v74, 85.245895),
-        std::make_shared<Edge>(v76, v79, 85.245895),
-        std::make_shared<Edge>(v76, v80, 19.672132),
-    };
-    v76->setEdges(v76edges);
-    std::vector<std::shared_ptr<Edge>> v77edges = {
-        std::make_shared<Edge>(v77, v2, 97.316864),
-        std::make_shared<Edge>(v77, v34, 40.983601),
-        std::make_shared<Edge>(v77, v42, 78.208916),
-        std::make_shared<Edge>(v77, v43, 107.548981),
-        std::make_shared<Edge>(v77, v44, 143.702332),
-        std::make_shared<Edge>(v77, v45, 182.667389),
-        std::make_shared<Edge>(v77, v46, 222.974915),
-        std::make_shared<Edge>(v77, v73, 19.672136),
-        std::make_shared<Edge>(v77, v78, 85.245895),
-    };
-    v77->setEdges(v77edges);
-    std::vector<std::shared_ptr<Edge>> v78edges = {
-        std::make_shared<Edge>(v78, v34, 44.262295),
-        std::make_shared<Edge>(v78, v35, 40.983604),
-        std::make_shared<Edge>(v78, v42, 78.208923),
-        std::make_shared<Edge>(v78, v43, 65.573769),
-        std::make_shared<Edge>(v78, v44, 78.208923),
-        std::make_shared<Edge>(v78, v45, 107.548981),
-        std::make_shared<Edge>(v78, v46, 143.702332),
-        std::make_shared<Edge>(v78, v74, 19.672132),
-        std::make_shared<Edge>(v78, v77, 85.245895),
-        std::make_shared<Edge>(v78, v80, 85.245895),
-    };
-    v78->setEdges(v78edges);
-    std::vector<std::shared_ptr<Edge>> v79edges = {
-        std::make_shared<Edge>(v79, v31, 214.754089),
-        std::make_shared<Edge>(v79, v32, 129.508194),
-        std::make_shared<Edge>(v79, v33, 44.262291),
-        std::make_shared<Edge>(v79, v75, 19.672136),
-        std::make_shared<Edge>(v79, v76, 85.245895),
-        std::make_shared<Edge>(v79, v90, 19.672129),
-    };
-    v79->setEdges(v79edges);
-    std::vector<std::shared_ptr<Edge>> v80edges = {
-        std::make_shared<Edge>(v80, v35, 44.262291),
-        std::make_shared<Edge>(v80, v36, 40.983604),
-        std::make_shared<Edge>(v80, v42, 143.702332),
-        std::make_shared<Edge>(v80, v43, 107.548981),
-        std::make_shared<Edge>(v80, v44, 78.208923),
-        std::make_shared<Edge>(v80, v45, 65.573769),
-        std::make_shared<Edge>(v80, v46, 78.208923),
-        std::make_shared<Edge>(v80, v76, 19.672132),
-        std::make_shared<Edge>(v80, v78, 85.245895),
-        std::make_shared<Edge>(v80, v90, 85.245895),
-    };
-    v80->setEdges(v80edges);
-    std::vector<std::shared_ptr<Edge>> v81edges = {
-        std::make_shared<Edge>(v81, v10, 40.983601),
-        std::make_shared<Edge>(v81, v48, 19.672136),
-        std::make_shared<Edge>(v81, v82, 85.245895),
-        std::make_shared<Edge>(v81, v85, 19.672129),
-    };
-    v81->setEdges(v81edges);
-    std::vector<std::shared_ptr<Edge>> v82edges = {
-        std::make_shared<Edge>(v82, v10, 44.262295),
-        std::make_shared<Edge>(v82, v11, 40.983604),
-        std::make_shared<Edge>(v82, v50, 19.672132),
-        std::make_shared<Edge>(v82, v81, 85.245895),
-        std::make_shared<Edge>(v82, v84, 85.245895),
-        std::make_shared<Edge>(v82, v86, 19.672131),
-    };
-    v82->setEdges(v82edges);
-    std::vector<std::shared_ptr<Edge>> v83edges = {
-        std::make_shared<Edge>(v83, v7, 214.754089),
-        std::make_shared<Edge>(v83, v8, 129.508194),
-        std::make_shared<Edge>(v83, v9, 44.262291),
-        std::make_shared<Edge>(v83, v65, 19.672136),
-        std::make_shared<Edge>(v83, v66, 85.245895),
-        std::make_shared<Edge>(v83, v87, 19.672129),
-    };
-    v83->setEdges(v83edges);
-    std::vector<std::shared_ptr<Edge>> v84edges = {
-        std::make_shared<Edge>(v84, v11, 44.262291),
-        std::make_shared<Edge>(v84, v12, 40.983604),
-        std::make_shared<Edge>(v84, v51, 19.672131),
-        std::make_shared<Edge>(v84, v66, 19.672132),
-        std::make_shared<Edge>(v84, v82, 85.245895),
-        std::make_shared<Edge>(v84, v87, 85.245895),
-    };
-    v84->setEdges(v84edges);
-    std::vector<std::shared_ptr<Edge>> v85edges = {
-        std::make_shared<Edge>(v85, v13, 40.983601),
-        std::make_shared<Edge>(v85, v14, 126.229507),
-        std::make_shared<Edge>(v85, v15, 211.475403),
-        std::make_shared<Edge>(v85, v81, 19.672129),
-        std::make_shared<Edge>(v85, v86, 85.245895),
-        std::make_shared<Edge>(v85, v88, 19.672134),
-    };
-    v85->setEdges(v85edges);
-    std::vector<std::shared_ptr<Edge>> v86edges = {
-        std::make_shared<Edge>(v86, v13, 44.262295),
-        std::make_shared<Edge>(v86, v14, 40.983604),
-        std::make_shared<Edge>(v86, v15, 126.229507),
-        std::make_shared<Edge>(v86, v51, 85.245895),
-        std::make_shared<Edge>(v86, v52, 19.672132),
-        std::make_shared<Edge>(v86, v82, 19.672131),
-        std::make_shared<Edge>(v86, v85, 85.245895),
-    };
-    v86->setEdges(v86edges);
-    std::vector<std::shared_ptr<Edge>> v87edges = {
-        std::make_shared<Edge>(v87, v12, 44.262291),
-        std::make_shared<Edge>(v87, v53, 19.672132),
-        std::make_shared<Edge>(v87, v83, 19.672129),
-        std::make_shared<Edge>(v87, v84, 85.245895),
-    };
-    v87->setEdges(v87edges);
-    std::vector<std::shared_ptr<Edge>> v88edges = {
-        std::make_shared<Edge>(v88, v16, 40.983601),
-        std::make_shared<Edge>(v88, v52, 85.245895),
-        std::make_shared<Edge>(v88, v55, 19.672131),
-        std::make_shared<Edge>(v88, v85, 19.672134),
-    };
-    v88->setEdges(v88edges);
-    std::vector<std::shared_ptr<Edge>> v89edges = {
-        std::make_shared<Edge>(v89, v1, 97.316864),
-        std::make_shared<Edge>(v89, v4, 40.983601),
-        std::make_shared<Edge>(v89, v37, 78.208916),
-        std::make_shared<Edge>(v89, v38, 107.548981),
-        std::make_shared<Edge>(v89, v39, 143.702332),
-        std::make_shared<Edge>(v89, v40, 182.667389),
-        std::make_shared<Edge>(v89, v41, 222.974915),
-        std::make_shared<Edge>(v89, v47, 85.245895),
-        std::make_shared<Edge>(v89, v48, 19.672129),
-    };
-    v89->setEdges(v89edges);
-    std::vector<std::shared_ptr<Edge>> v90edges = {
-        std::make_shared<Edge>(v90, v3, 97.316864),
-        std::make_shared<Edge>(v90, v36, 44.262291),
-        std::make_shared<Edge>(v90, v42, 222.974915),
-        std::make_shared<Edge>(v90, v43, 182.667389),
-        std::make_shared<Edge>(v90, v44, 143.702332),
-        std::make_shared<Edge>(v90, v45, 107.548981),
-        std::make_shared<Edge>(v90, v46, 78.208916),
-        std::make_shared<Edge>(v90, v79, 19.672129),
-        std::make_shared<Edge>(v90, v80, 85.245895),
-    };
-    v90->setEdges(v90edges);
     std::vector<std::shared_ptr<Vertex>> vertices = {
-        v0,
-        v1,
-        v2,
-        v3,
-        v4,
-        v5,
-        v6,
-        v7,
-        v8,
-        v9,
-        v10,
-        v11,
-        v12,
-        v13,
-        v14,
-        v15,
-        v16,
-        v17,
-        v18,
-        v19,
-        v20,
-        v21,
-        v22,
-        v23,
-        v24,
-        v25,
-        v26,
-        v27,
-        v28,
-        v29,
-        v30,
-        v31,
-        v32,
-        v33,
-        v34,
-        v35,
-        v36,
-        v37,
-        v38,
-        v39,
-        v40,
-        v41,
-        v42,
-        v43,
-        v44,
-        v45,
-        v46,
-        v47,
-        v48,
-        v49,
-        v50,
-        v51,
-        v52,
-        v53,
-        v54,
-        v55,
-        v56,
-        v57,
-        v58,
-        v59,
-        v60,
-        v61,
-        v62,
-        v63,
-        v64,
-        v65,
-        v66,
-        v67,
-        v68,
-        v69,
-        v70,
-        v71,
-        v72,
-        v73,
-        v74,
-        v75,
-        v76,
-        v77,
-        v78,
-        v79,
-        v80,
-        v81,
-        v82,
-        v83,
-        v84,
-        v85,
-        v86,
-        v87,
-        v88,
-        v89,
-        v90,
-    };
+    v0,v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15,v16,v17,v18,v19,v20,v21,v22,v23,v24,v25,v26,v27,v28,v29,v30,v31,v32,v33,v34,v35,v36,v37,v38,v39,v40,v41,v42,v43,v44,v45,v46,v47,v48,v49,v50,v51,v52,v53,v54,v55,v56,v57,v58,v59,v60,v61,v62,v63,v64,v65,v66,v67,v68,v69,v70,v71,v72,v73,v74,v75,v76,v77,v78,v79,v80,v81,v82,v83,v84,v85,v86,};
+    std::vector<std::shared_ptr<Edge>> v0edges = {std::make_shared<Edge>(v0, v43, 44.262295),std::make_shared<Edge>(v0, v85, 40.983601),};
+    v0->setEdges(v0edges);
+    std::vector<std::shared_ptr<Edge>> v1edges = {std::make_shared<Edge>(v1, v43, 40.983604),std::make_shared<Edge>(v1, v45, 44.262291),};
+    v1->setEdges(v1edges);
+    std::vector<std::shared_ptr<Edge>> v2edges = {std::make_shared<Edge>(v2, v45, 40.983604),std::make_shared<Edge>(v2, v61, 44.262291),};
+    v2->setEdges(v2edges);
+    std::vector<std::shared_ptr<Edge>> v3edges = {std::make_shared<Edge>(v3, v44, 40.983601),std::make_shared<Edge>(v3, v46, 44.262295),};
+    v3->setEdges(v3edges);
+    std::vector<std::shared_ptr<Edge>> v4edges = {std::make_shared<Edge>(v4, v46, 40.983604),std::make_shared<Edge>(v4, v62, 44.262291),};
+    v4->setEdges(v4edges);
+    std::vector<std::shared_ptr<Edge>> v5edges = {std::make_shared<Edge>(v5, v62, 40.983604),std::make_shared<Edge>(v5, v79, 44.262291),};
+    v5->setEdges(v5edges);
+    std::vector<std::shared_ptr<Edge>> v6edges = {std::make_shared<Edge>(v6, v77, 40.983601),std::make_shared<Edge>(v6, v78, 44.262295),};
+    v6->setEdges(v6edges);
+    std::vector<std::shared_ptr<Edge>> v7edges = {std::make_shared<Edge>(v7, v78, 40.983604),std::make_shared<Edge>(v7, v80, 44.262291),};
+    v7->setEdges(v7edges);
+    std::vector<std::shared_ptr<Edge>> v8edges = {std::make_shared<Edge>(v8, v80, 40.983604),std::make_shared<Edge>(v8, v83, 44.262291),};
+    v8->setEdges(v8edges);
+    std::vector<std::shared_ptr<Edge>> v9edges = {std::make_shared<Edge>(v9, v81, 40.983601),std::make_shared<Edge>(v9, v82, 44.262295),};
+    v9->setEdges(v9edges);
+    std::vector<std::shared_ptr<Edge>> v10edges = {std::make_shared<Edge>(v10, v47, 44.262291),std::make_shared<Edge>(v10, v82, 40.983604),};
+    v10->setEdges(v10edges);
+    std::vector<std::shared_ptr<Edge>> v11edges = {std::make_shared<Edge>(v11, v47, 40.983604),std::make_shared<Edge>(v11, v49, 44.262291),};
+    v11->setEdges(v11edges);
+    std::vector<std::shared_ptr<Edge>> v12edges = {std::make_shared<Edge>(v12, v48, 44.262295),std::make_shared<Edge>(v12, v84, 40.983601),};
+    v12->setEdges(v12edges);
+    std::vector<std::shared_ptr<Edge>> v13edges = {std::make_shared<Edge>(v13, v48, 40.983604),std::make_shared<Edge>(v13, v50, 44.262291),};
+    v13->setEdges(v13edges);
+    std::vector<std::shared_ptr<Edge>> v14edges = {std::make_shared<Edge>(v14, v50, 40.983604),std::make_shared<Edge>(v14, v53, 44.262291),};
+    v14->setEdges(v14edges);
+    std::vector<std::shared_ptr<Edge>> v15edges = {std::make_shared<Edge>(v15, v51, 40.983601),std::make_shared<Edge>(v15, v52, 44.262295),};
+    v15->setEdges(v15edges);
+    std::vector<std::shared_ptr<Edge>> v16edges = {std::make_shared<Edge>(v16, v52, 40.983604),std::make_shared<Edge>(v16, v54, 44.262291),};
+    v16->setEdges(v16edges);
+    std::vector<std::shared_ptr<Edge>> v17edges = {std::make_shared<Edge>(v17, v54, 40.983604),std::make_shared<Edge>(v17, v57, 44.262291),};
+    v17->setEdges(v17edges);
+    std::vector<std::shared_ptr<Edge>> v18edges = {std::make_shared<Edge>(v18, v55, 40.983601),std::make_shared<Edge>(v18, v56, 44.262295),};
+    v18->setEdges(v18edges);
+    std::vector<std::shared_ptr<Edge>> v19edges = {std::make_shared<Edge>(v19, v56, 40.983604),std::make_shared<Edge>(v19, v58, 44.262291),};
+    v19->setEdges(v19edges);
+    std::vector<std::shared_ptr<Edge>> v20edges = {std::make_shared<Edge>(v20, v58, 40.983604),std::make_shared<Edge>(v20, v63, 44.262291),};
+    v20->setEdges(v20edges);
+    std::vector<std::shared_ptr<Edge>> v21edges = {std::make_shared<Edge>(v21, v59, 40.983601),std::make_shared<Edge>(v21, v60, 44.262295),};
+    v21->setEdges(v21edges);
+    std::vector<std::shared_ptr<Edge>> v22edges = {std::make_shared<Edge>(v22, v60, 40.983604),std::make_shared<Edge>(v22, v64, 44.262291),};
+    v22->setEdges(v22edges);
+    std::vector<std::shared_ptr<Edge>> v23edges = {std::make_shared<Edge>(v23, v64, 40.983604),std::make_shared<Edge>(v23, v67, 44.262291),};
+    v23->setEdges(v23edges);
+    std::vector<std::shared_ptr<Edge>> v24edges = {std::make_shared<Edge>(v24, v65, 40.983601),std::make_shared<Edge>(v24, v66, 44.262295),};
+    v24->setEdges(v24edges);
+    std::vector<std::shared_ptr<Edge>> v25edges = {std::make_shared<Edge>(v25, v66, 40.983604),std::make_shared<Edge>(v25, v68, 44.262291),};
+    v25->setEdges(v25edges);
+    std::vector<std::shared_ptr<Edge>> v26edges = {std::make_shared<Edge>(v26, v68, 40.983604),std::make_shared<Edge>(v26, v71, 44.262291),};
+    v26->setEdges(v26edges);
+    std::vector<std::shared_ptr<Edge>> v27edges = {std::make_shared<Edge>(v27, v69, 40.983601),std::make_shared<Edge>(v27, v70, 44.262295),};
+    v27->setEdges(v27edges);
+    std::vector<std::shared_ptr<Edge>> v28edges = {std::make_shared<Edge>(v28, v70, 40.983604),std::make_shared<Edge>(v28, v72, 44.262291),};
+    v28->setEdges(v28edges);
+    std::vector<std::shared_ptr<Edge>> v29edges = {std::make_shared<Edge>(v29, v72, 40.983604),std::make_shared<Edge>(v29, v75, 44.262291),};
+    v29->setEdges(v29edges);
+    std::vector<std::shared_ptr<Edge>> v30edges = {std::make_shared<Edge>(v30, v73, 40.983601),std::make_shared<Edge>(v30, v74, 44.262295),};
+    v30->setEdges(v30edges);
+    std::vector<std::shared_ptr<Edge>> v31edges = {std::make_shared<Edge>(v31, v74, 40.983604),std::make_shared<Edge>(v31, v76, 44.262291),};
+    v31->setEdges(v31edges);
+    std::vector<std::shared_ptr<Edge>> v32edges = {std::make_shared<Edge>(v32, v76, 40.983604),std::make_shared<Edge>(v32, v86, 44.262291),};
+    v32->setEdges(v32edges);
+    std::vector<std::shared_ptr<Edge>> v33edges = {std::make_shared<Edge>(v33, v34, 42.622948),std::make_shared<Edge>(v33, v85, 78.208916),};
+    v33->setEdges(v33edges);
+    std::vector<std::shared_ptr<Edge>> v34edges = {std::make_shared<Edge>(v34, v33, 42.622948),std::make_shared<Edge>(v34, v35, 42.622948),std::make_shared<Edge>(v34, v43, 65.573769),};
+    v34->setEdges(v34edges);
+    std::vector<std::shared_ptr<Edge>> v35edges = {std::make_shared<Edge>(v35, v34, 42.622948),std::make_shared<Edge>(v35, v36, 42.622948),};
+    v35->setEdges(v35edges);
+    std::vector<std::shared_ptr<Edge>> v36edges = {std::make_shared<Edge>(v36, v35, 42.622948),std::make_shared<Edge>(v36, v37, 42.622948),std::make_shared<Edge>(v36, v45, 65.573769),};
+    v36->setEdges(v36edges);
+    std::vector<std::shared_ptr<Edge>> v37edges = {std::make_shared<Edge>(v37, v36, 42.622948),std::make_shared<Edge>(v37, v61, 78.208916),};
+    v37->setEdges(v37edges);
+    std::vector<std::shared_ptr<Edge>> v38edges = {std::make_shared<Edge>(v38, v39, 42.622948),std::make_shared<Edge>(v38, v73, 78.208916),};
+    v38->setEdges(v38edges);
+    std::vector<std::shared_ptr<Edge>> v39edges = {std::make_shared<Edge>(v39, v38, 42.622948),std::make_shared<Edge>(v39, v40, 42.622948),std::make_shared<Edge>(v39, v74, 65.573769),};
+    v39->setEdges(v39edges);
+    std::vector<std::shared_ptr<Edge>> v40edges = {std::make_shared<Edge>(v40, v39, 42.622948),std::make_shared<Edge>(v40, v41, 42.622948),};
+    v40->setEdges(v40edges);
+    std::vector<std::shared_ptr<Edge>> v41edges = {std::make_shared<Edge>(v41, v40, 42.622948),std::make_shared<Edge>(v41, v42, 42.622948),std::make_shared<Edge>(v41, v76, 65.573769),};
+    v41->setEdges(v41edges);
+    std::vector<std::shared_ptr<Edge>> v42edges = {std::make_shared<Edge>(v42, v41, 42.622948),std::make_shared<Edge>(v42, v86, 78.208916),};
+    v42->setEdges(v42edges);
+    std::vector<std::shared_ptr<Edge>> v43edges = {std::make_shared<Edge>(v43, v0, 44.262295),std::make_shared<Edge>(v43, v1, 40.983604),std::make_shared<Edge>(v43, v34, 65.573769),std::make_shared<Edge>(v43, v46, 19.672132),};
+    v43->setEdges(v43edges);
+    std::vector<std::shared_ptr<Edge>> v44edges = {std::make_shared<Edge>(v44, v3, 40.983601),std::make_shared<Edge>(v44, v77, 19.672136),std::make_shared<Edge>(v44, v85, 19.672129),};
+    v44->setEdges(v44edges);
+    std::vector<std::shared_ptr<Edge>> v45edges = {std::make_shared<Edge>(v45, v1, 44.262291),std::make_shared<Edge>(v45, v2, 40.983604),std::make_shared<Edge>(v45, v36, 65.573769),std::make_shared<Edge>(v45, v62, 19.672132),};
+    v45->setEdges(v45edges);
+    std::vector<std::shared_ptr<Edge>> v46edges = {std::make_shared<Edge>(v46, v3, 44.262295),std::make_shared<Edge>(v46, v4, 40.983604),std::make_shared<Edge>(v46, v43, 19.672132),std::make_shared<Edge>(v46, v78, 19.672132),};
+    v46->setEdges(v46edges);
+    std::vector<std::shared_ptr<Edge>> v47edges = {std::make_shared<Edge>(v47, v10, 44.262291),std::make_shared<Edge>(v47, v11, 40.983604),std::make_shared<Edge>(v47, v50, 19.672132),std::make_shared<Edge>(v47, v80, 19.672131),};
+    v47->setEdges(v47edges);
+    std::vector<std::shared_ptr<Edge>> v48edges = {std::make_shared<Edge>(v48, v12, 44.262295),std::make_shared<Edge>(v48, v13, 40.983604),std::make_shared<Edge>(v48, v52, 19.672132),std::make_shared<Edge>(v48, v82, 19.672132),};
+    v48->setEdges(v48edges);
+    std::vector<std::shared_ptr<Edge>> v49edges = {std::make_shared<Edge>(v49, v11, 44.262291),std::make_shared<Edge>(v49, v53, 19.672129),std::make_shared<Edge>(v49, v83, 19.672132),};
+    v49->setEdges(v49edges);
+    std::vector<std::shared_ptr<Edge>> v50edges = {std::make_shared<Edge>(v50, v13, 44.262291),std::make_shared<Edge>(v50, v14, 40.983604),std::make_shared<Edge>(v50, v47, 19.672132),std::make_shared<Edge>(v50, v54, 19.672132),};
+    v50->setEdges(v50edges);
+    std::vector<std::shared_ptr<Edge>> v51edges = {std::make_shared<Edge>(v51, v15, 40.983601),std::make_shared<Edge>(v51, v55, 19.672132),std::make_shared<Edge>(v51, v84, 19.672131),};
+    v51->setEdges(v51edges);
+    std::vector<std::shared_ptr<Edge>> v52edges = {std::make_shared<Edge>(v52, v15, 44.262295),std::make_shared<Edge>(v52, v16, 40.983604),std::make_shared<Edge>(v52, v48, 19.672132),std::make_shared<Edge>(v52, v56, 19.672132),};
+    v52->setEdges(v52edges);
+    std::vector<std::shared_ptr<Edge>> v53edges = {std::make_shared<Edge>(v53, v14, 44.262291),std::make_shared<Edge>(v53, v49, 19.672129),std::make_shared<Edge>(v53, v57, 19.672132),};
+    v53->setEdges(v53edges);
+    std::vector<std::shared_ptr<Edge>> v54edges = {std::make_shared<Edge>(v54, v16, 44.262291),std::make_shared<Edge>(v54, v17, 40.983604),std::make_shared<Edge>(v54, v50, 19.672132),std::make_shared<Edge>(v54, v58, 19.672132),};
+    v54->setEdges(v54edges);
+    std::vector<std::shared_ptr<Edge>> v55edges = {std::make_shared<Edge>(v55, v18, 40.983601),std::make_shared<Edge>(v55, v51, 19.672132),std::make_shared<Edge>(v55, v59, 19.672129),};
+    v55->setEdges(v55edges);
+    std::vector<std::shared_ptr<Edge>> v56edges = {std::make_shared<Edge>(v56, v18, 44.262295),std::make_shared<Edge>(v56, v19, 40.983604),std::make_shared<Edge>(v56, v52, 19.672132),std::make_shared<Edge>(v56, v60, 19.672132),};
+    v56->setEdges(v56edges);
+    std::vector<std::shared_ptr<Edge>> v57edges = {std::make_shared<Edge>(v57, v17, 44.262291),std::make_shared<Edge>(v57, v53, 19.672132),std::make_shared<Edge>(v57, v63, 19.672131),};
+    v57->setEdges(v57edges);
+    std::vector<std::shared_ptr<Edge>> v58edges = {std::make_shared<Edge>(v58, v19, 44.262291),std::make_shared<Edge>(v58, v20, 40.983604),std::make_shared<Edge>(v58, v54, 19.672132),std::make_shared<Edge>(v58, v64, 19.672132),};
+    v58->setEdges(v58edges);
+    std::vector<std::shared_ptr<Edge>> v59edges = {std::make_shared<Edge>(v59, v21, 40.983601),std::make_shared<Edge>(v59, v55, 19.672129),std::make_shared<Edge>(v59, v65, 19.672132),};
+    v59->setEdges(v59edges);
+    std::vector<std::shared_ptr<Edge>> v60edges = {std::make_shared<Edge>(v60, v21, 44.262295),std::make_shared<Edge>(v60, v22, 40.983604),std::make_shared<Edge>(v60, v56, 19.672132),std::make_shared<Edge>(v60, v66, 19.672131),};
+    v60->setEdges(v60edges);
+    std::vector<std::shared_ptr<Edge>> v61edges = {std::make_shared<Edge>(v61, v2, 44.262291),std::make_shared<Edge>(v61, v37, 78.208916),std::make_shared<Edge>(v61, v79, 19.672136),};
+    v61->setEdges(v61edges);
+    std::vector<std::shared_ptr<Edge>> v62edges = {std::make_shared<Edge>(v62, v4, 44.262291),std::make_shared<Edge>(v62, v5, 40.983604),std::make_shared<Edge>(v62, v45, 19.672132),std::make_shared<Edge>(v62, v80, 19.672132),};
+    v62->setEdges(v62edges);
+    std::vector<std::shared_ptr<Edge>> v63edges = {std::make_shared<Edge>(v63, v20, 44.262291),std::make_shared<Edge>(v63, v57, 19.672131),std::make_shared<Edge>(v63, v67, 19.672134),};
+    v63->setEdges(v63edges);
+    std::vector<std::shared_ptr<Edge>> v64edges = {std::make_shared<Edge>(v64, v22, 44.262291),std::make_shared<Edge>(v64, v23, 40.983604),std::make_shared<Edge>(v64, v58, 19.672132),std::make_shared<Edge>(v64, v68, 19.672131),};
+    v64->setEdges(v64edges);
+    std::vector<std::shared_ptr<Edge>> v65edges = {std::make_shared<Edge>(v65, v24, 40.983601),std::make_shared<Edge>(v65, v59, 19.672132),std::make_shared<Edge>(v65, v69, 19.672129),};
+    v65->setEdges(v65edges);
+    std::vector<std::shared_ptr<Edge>> v66edges = {std::make_shared<Edge>(v66, v24, 44.262295),std::make_shared<Edge>(v66, v25, 40.983604),std::make_shared<Edge>(v66, v60, 19.672131),std::make_shared<Edge>(v66, v70, 19.672132),};
+    v66->setEdges(v66edges);
+    std::vector<std::shared_ptr<Edge>> v67edges = {std::make_shared<Edge>(v67, v23, 44.262291),std::make_shared<Edge>(v67, v63, 19.672134),std::make_shared<Edge>(v67, v71, 19.672129),};
+    v67->setEdges(v67edges);
+    std::vector<std::shared_ptr<Edge>> v68edges = {std::make_shared<Edge>(v68, v25, 44.262291),std::make_shared<Edge>(v68, v26, 40.983604),std::make_shared<Edge>(v68, v64, 19.672131),std::make_shared<Edge>(v68, v72, 19.672132),};
+    v68->setEdges(v68edges);
+    std::vector<std::shared_ptr<Edge>> v69edges = {std::make_shared<Edge>(v69, v27, 40.983601),std::make_shared<Edge>(v69, v65, 19.672129),std::make_shared<Edge>(v69, v73, 19.672136),};
+    v69->setEdges(v69edges);
+    std::vector<std::shared_ptr<Edge>> v70edges = {std::make_shared<Edge>(v70, v27, 44.262295),std::make_shared<Edge>(v70, v28, 40.983604),std::make_shared<Edge>(v70, v66, 19.672132),std::make_shared<Edge>(v70, v74, 19.672132),};
+    v70->setEdges(v70edges);
+    std::vector<std::shared_ptr<Edge>> v71edges = {std::make_shared<Edge>(v71, v26, 44.262291),std::make_shared<Edge>(v71, v67, 19.672129),std::make_shared<Edge>(v71, v75, 19.672136),};
+    v71->setEdges(v71edges);
+    std::vector<std::shared_ptr<Edge>> v72edges = {std::make_shared<Edge>(v72, v28, 44.262291),std::make_shared<Edge>(v72, v29, 40.983604),std::make_shared<Edge>(v72, v68, 19.672132),std::make_shared<Edge>(v72, v76, 19.672132),};
+    v72->setEdges(v72edges);
+    std::vector<std::shared_ptr<Edge>> v73edges = {std::make_shared<Edge>(v73, v30, 40.983601),std::make_shared<Edge>(v73, v38, 78.208916),std::make_shared<Edge>(v73, v69, 19.672136),};
+    v73->setEdges(v73edges);
+    std::vector<std::shared_ptr<Edge>> v74edges = {std::make_shared<Edge>(v74, v30, 44.262295),std::make_shared<Edge>(v74, v31, 40.983604),std::make_shared<Edge>(v74, v39, 65.573769),std::make_shared<Edge>(v74, v70, 19.672132),};
+    v74->setEdges(v74edges);
+    std::vector<std::shared_ptr<Edge>> v75edges = {std::make_shared<Edge>(v75, v29, 44.262291),std::make_shared<Edge>(v75, v71, 19.672136),std::make_shared<Edge>(v75, v86, 19.672129),};
+    v75->setEdges(v75edges);
+    std::vector<std::shared_ptr<Edge>> v76edges = {std::make_shared<Edge>(v76, v31, 44.262291),std::make_shared<Edge>(v76, v32, 40.983604),std::make_shared<Edge>(v76, v41, 65.573769),std::make_shared<Edge>(v76, v72, 19.672132),};
+    v76->setEdges(v76edges);
+    std::vector<std::shared_ptr<Edge>> v77edges = {std::make_shared<Edge>(v77, v6, 40.983601),std::make_shared<Edge>(v77, v44, 19.672136),std::make_shared<Edge>(v77, v81, 19.672129),};
+    v77->setEdges(v77edges);
+    std::vector<std::shared_ptr<Edge>> v78edges = {std::make_shared<Edge>(v78, v6, 44.262295),std::make_shared<Edge>(v78, v7, 40.983604),std::make_shared<Edge>(v78, v46, 19.672132),std::make_shared<Edge>(v78, v82, 19.672131),};
+    v78->setEdges(v78edges);
+    std::vector<std::shared_ptr<Edge>> v79edges = {std::make_shared<Edge>(v79, v5, 44.262291),std::make_shared<Edge>(v79, v61, 19.672136),std::make_shared<Edge>(v79, v83, 19.672129),};
+    v79->setEdges(v79edges);
+    std::vector<std::shared_ptr<Edge>> v80edges = {std::make_shared<Edge>(v80, v7, 44.262291),std::make_shared<Edge>(v80, v8, 40.983604),std::make_shared<Edge>(v80, v47, 19.672131),std::make_shared<Edge>(v80, v62, 19.672132),};
+    v80->setEdges(v80edges);
+    std::vector<std::shared_ptr<Edge>> v81edges = {std::make_shared<Edge>(v81, v9, 40.983601),std::make_shared<Edge>(v81, v77, 19.672129),std::make_shared<Edge>(v81, v84, 19.672134),};
+    v81->setEdges(v81edges);
+    std::vector<std::shared_ptr<Edge>> v82edges = {std::make_shared<Edge>(v82, v9, 44.262295),std::make_shared<Edge>(v82, v10, 40.983604),std::make_shared<Edge>(v82, v48, 19.672132),std::make_shared<Edge>(v82, v78, 19.672131),};
+    v82->setEdges(v82edges);
+    std::vector<std::shared_ptr<Edge>> v83edges = {std::make_shared<Edge>(v83, v8, 44.262291),std::make_shared<Edge>(v83, v49, 19.672132),std::make_shared<Edge>(v83, v79, 19.672129),};
+    v83->setEdges(v83edges);
+    std::vector<std::shared_ptr<Edge>> v84edges = {std::make_shared<Edge>(v84, v12, 40.983601),std::make_shared<Edge>(v84, v51, 19.672131),std::make_shared<Edge>(v84, v81, 19.672134),};
+    v84->setEdges(v84edges);
+    std::vector<std::shared_ptr<Edge>> v85edges = {std::make_shared<Edge>(v85, v0, 40.983601),std::make_shared<Edge>(v85, v33, 78.208916),std::make_shared<Edge>(v85, v44, 19.672129),};
+    v85->setEdges(v85edges);
+    std::vector<std::shared_ptr<Edge>> v86edges = {std::make_shared<Edge>(v86, v32, 44.262291),std::make_shared<Edge>(v86, v42, 78.208916),std::make_shared<Edge>(v86, v75, 19.672129),};
+    v86->setEdges(v86edges);
     return std::make_shared<Graph>(vertices);
 }
