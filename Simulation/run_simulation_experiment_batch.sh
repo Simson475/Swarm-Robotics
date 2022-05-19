@@ -4,10 +4,10 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-if [ $# != 4 ]
+if [ $# -ne 5 ]
 then
     echo -e "${RED}Missing arguments${NC}"
-    echo "Expected format is: ./run_simulation_experiment_batch <SCENE> <BATCH_SIZE> <SEED_OFFSET> <JOB_COUNT>"
+    echo "Expected format is: ./run_simulation_experiment_batch <SCENE> <BATCH_SIZE> <SEED_OFFSET> <JOB_COUNT> <TIMEOUT>"
     exit 1
 fi
 
@@ -15,6 +15,7 @@ scene=$1
 batch_size=$2
 seed_offset=$3
 job_count=$4
+timeout=$5
 
 SCENE_DIR='experiment'
 
@@ -64,6 +65,9 @@ RESULT_DIR="SimulationExperimentResults"
 if [ ! -d $RESULT_DIR ]
 then
 mkdir $RESULT_DIR
+# Add a readme
+echo "zip file names are named as <SCENE>_<JOB_COUNT>_<TIMEOUT>
+Result file names should be read as <SCENE>_<JOB_COUNT>_<SEED>_<TIMEOUT>" > "$RESULT_DIR/README.md"
 fi
 
 BIN_DIR="./build/external/bin"
@@ -72,13 +76,14 @@ BIN_TO_SCENE_DIR="$BIN_TO_CWD/$SCENE_DIR"
 cd $BIN_DIR
 
 # Run the batch
+echo "Running $batch_size runs in $scene with timeout of $timeout"
 lineToReplace=".*<\/argos-configuration>.*"
 i=0
 while [ $i -ne $batch_size ]
 do
 echo "$i/$batch_size"
 seed=$(($seed_offset + $i))
-lineToReplaceWith="<experiment_settings seed=$seed jobs=$job_count\/><\/argos-configuration>"
+lineToReplaceWith="<experiment_settings seed=$seed jobs=$job_count timeout=$timeout\/><\/argos-configuration>"
 inputFile="$BIN_TO_SCENE_DIR/$scene/$argosFile"
 tempFile="Temp$argosFile"
 sed "s/$lineToReplace/$lineToReplaceWith/" < $inputFile > $tempFile
@@ -91,9 +96,12 @@ lineToReplaceWith="<\/argos-configuration>"
 sed "s/$lineToReplace/$lineToReplaceWith/" < $inputFile > $tempFile
 mv $tempFile $inputFile
 # Save the results
-resultFile="${scene}_${job_count}_${seed}"
+resultFile="${scene}_${job_count}_${seed}_${timeout}"
 mv "jobProgress.txt" $resultFile
-zip -r "$BIN_TO_CWD/$RESULT_DIR/${scene}_${job_count}" $resultFile
+zipFile="$BIN_TO_CWD/$RESULT_DIR/${scene}_${job_count}_${timeout}"
+zip -r $zipFile $resultFile
 rm $resultFile
 done
 echo "$batch_size/$batch_size"
+
+cd $BIN_TO_CWD
