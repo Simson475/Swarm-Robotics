@@ -51,6 +51,37 @@ bool ExperimentData::requestSolution(int agentId){
     return true;
 }
 
+bool ExperimentData::requestSyncSolution(int agentId){
+    auto agentInfos = getAgentsInfo();
+
+    Solution solution = HighLevelCBS::get_instance()
+        .findSolution(getGraph(), agentInfos, LowLevelCBS::get_instance());
+
+    bool solutionIsGreedySolution = true;
+    int id = 0;
+    for (auto& path : solution.paths){
+        if (path.actions.size() != 1){
+            solutionIsGreedySolution = false;
+            break;
+        }
+        // If the actions does not end at the goal (and it is only one action) --> it must be a greedy solution
+        if (path.actions[0].endVertex != agentInfos[id].getGoal()){
+            break;
+        }
+        id++;
+    }
+
+    if (solutionIsGreedySolution){
+        return false;
+    }
+    // Distribute paths
+    distributeSolution(solution);
+    #ifdef DEBUG_LOGS_ON
+    Error::log("Distrubuted solution\n");
+    #endif
+    return true;
+}
+
 void ExperimentData::distributeSolution(Solution solution){
     for (auto agent : getAgents()){
         auto path = solution.paths[agent->getId()];

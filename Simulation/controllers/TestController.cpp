@@ -27,7 +27,7 @@ std::vector<int> TestController::constructWaypointPlan(){
             #ifdef DEBUG_LOGS_ON
             Error::log("Conflict because of desync \n");
             #endif
-            ExperimentData::get_instance().requestSolution(agentId);
+            ExperimentData::get_instance().requestSyncSolution(agentId);
         }
         return getNextPointAndUpdateState();
     }
