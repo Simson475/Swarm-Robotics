@@ -199,4 +199,4 @@
 
   </visualization> -->
 
-<experiment_settings seed=123456789 jobs=1000 timeout=1/></argos-configuration>
+</argos-configuration>
