@@ -25,6 +25,7 @@ private:
     std::vector<int> availableStations;
     std::uniform_int_distribution<> distr;
     std::uniform_int_distribution<> distrEnd;
+    std::mt19937 eng;
 };
 
 

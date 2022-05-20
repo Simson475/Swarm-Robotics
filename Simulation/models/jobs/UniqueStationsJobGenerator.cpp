@@ -17,7 +17,7 @@ UniqueStationsJobGenerator::UniqueStationsJobGenerator(int numOfStations, std::s
         std::cerr << "Job generator seed defaulted to: " << seed << std::endl;
     }
 
-    srand(seed);
+    eng = std::mt19937(seed);
     availableStations = {};
     for (int i = numOfEndStations; i < numOfStations; i++){
         availableStations.push_back(i);
@@ -44,7 +44,8 @@ std::unique_ptr<Job> UniqueStationsJobGenerator::getNextJob() {
 
 int UniqueStationsJobGenerator::getAvailableStation(std::vector<int> &stations)
 {
-    int stationIndex = rand() % stations.size();
+    distr = std::uniform_int_distribution<>(0, stations.size() - 1);
+    int stationIndex = distr(eng);
     int station = stations[stationIndex];
     stations.erase(stations.begin() + stationIndex);
     return station;
