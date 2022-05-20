@@ -7,7 +7,7 @@
 UniqueStationsJobGenerator::UniqueStationsJobGenerator(int numOfStations, std::set<int> endStations, int numOfJobs, int numOfEndStations) :
     JobGenerator(numOfStations, endStations, numOfJobs) {
     
-    int seed = 67891234;
+    int seed = 123456789;
     try {
         argos::TConfigurationNode &t_node = argos::CSimulator::GetInstance().GetConfigurationRoot();
         argos::TConfigurationNode &params = argos::GetNode(t_node, "experiment_settings");
@@ -17,8 +17,7 @@ UniqueStationsJobGenerator::UniqueStationsJobGenerator(int numOfStations, std::s
         std::cerr << "Job generator seed defaulted to: " << seed << std::endl;
     }
 
-    eng = std::mt19937(seed); // seed the generator
-
+    srand(seed);
     availableStations = {};
     for (int i = numOfEndStations; i < numOfStations; i++){
         availableStations.push_back(i);
@@ -32,7 +31,7 @@ std::unique_ptr<Job> UniqueStationsJobGenerator::generateJob() {
 
     while (stationsToVisit.size() < amountPickups){
         Error::log(std::to_string(availableStations.size()) + " aStations\n");
-        stationsToVisit.emplace(getAvailableStation(availableStations, eng));
+        stationsToVisit.emplace(getAvailableStation(availableStations));
     }
 
     jobsGenerated++;
@@ -43,10 +42,9 @@ std::unique_ptr<Job> UniqueStationsJobGenerator::getNextJob() {
     return this->generateJob();
 }
 
-int UniqueStationsJobGenerator::getAvailableStation(std::vector<int> &stations, std::mt19937 eng)
+int UniqueStationsJobGenerator::getAvailableStation(std::vector<int> &stations)
 {
-    distr = std::uniform_int_distribution<>(0, stations.size()-1);
-    int stationIndex = distr(eng);
+    int stationIndex = rand() % stations.size();
     int station = stations[stationIndex];
     stations.erase(stations.begin() + stationIndex);
     return station;
