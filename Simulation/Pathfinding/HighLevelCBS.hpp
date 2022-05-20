@@ -51,7 +51,7 @@ private:
     void blockGoalsForever(Solution& solution);
     void removeInfiniteBlocksOnGoals(Solution& solution);
     Solution getGreedySolution(std::shared_ptr<Graph>, std::vector<AgentInfo>, LowLevelCBS&);
-    int timeout;
+    int timeout = 100000; //0.1 seconds
 };
 
 #endif
