@@ -143,21 +143,24 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
         int score = 0;
         for (auto& conflict : conflicts){
             // Penalize based on conflict type
+            bool involvesGoalAction = false;
             switch(conflict.getType()[0]){
                 case 'S'://Swap
                     score += SWAP_CONFLICT_PENALTY;
                     break;
                 case 'V'://Vertex
-                    {
+                {
+                    int index = 0;
                     // If this vertex conflict involves 1 agent working it must have a higher cost
-                    bool involvesGoalAction = false;
                     for (auto id : conflict.getAgentIds()){
+                        
                         Constraint constraint = Constraint(
                             id,
-                            conflict.getLocation(id),
+                            conflict.getLocation(index),
                             conflict.getTimeStart(),
                             conflict.getTimeEnd()
                         );
+                        index++;
                         for (auto& a : p->getSolution().paths[id].actions){
                             if (a.isWaitAction() && a.duration == TIME_AT_GOAL && a.endVertex == agents[id].getGoal() && ConstraintUtils::isViolatingConstraint(constraint, a)){
                                 involvesGoalAction = true;
@@ -167,8 +170,8 @@ Solution HighLevelCBS::findSolution(std::shared_ptr<Graph> graph, std::vector<Ag
                         if (involvesGoalAction) break;
                     }
                     score += involvesGoalAction ? SWAP_CONFLICT_PENALTY : VERTEX_CONFLICT_PENALTY;
-                    }
                     break;
+                }
                 case 'F'://Follow
                     score += FOLLOW_CONFLICT_PENALTY;
                     break;
