@@ -1,13 +1,15 @@
 #include "HighLevelCBS.hpp"
 #include <sys/stat.h>
-#include <random>
 
 std::shared_ptr<Graph> getCbsMapSmallGraph();
-int getAvailableStation(std::vector<int>&, std::mt19937);
+int getAvailableStation(std::vector<int> &);
 
-int main(int argc, char *argv[]) {
-    try {
-        auto eng = std::mt19937(67891234);
+int main(int argc, char *argv[])
+{
+    try
+    {
+        int seed = 123456789;
+        srand(seed);
         Logger& logger = Logger::get_instance();
         // Create folder for results
         std::string experimentResultDir = "cbsMapSmall_5agents_experiment_result";
@@ -35,7 +37,7 @@ int main(int argc, char *argv[]) {
         std::vector<AgentInfo> agents(agentCount);
         for (int i = 0; i < agentCount; ++i){
             auto startVertex = vertices[spawnPointVertexIndexOffset + i];
-            auto goalVertex = vertices[getAvailableStation(availableStations, eng)];
+            auto goalVertex = vertices[getAvailableStation(availableStations)];
             agents[i] = AgentInfo(i, Action(0, startVertex, startVertex, 0), goalVertex);
         }
         int totalJobs = agentCount * 100;
@@ -100,7 +102,7 @@ int main(int argc, char *argv[]) {
                 }
                 // If the agent needs to complete more jobs (visit more stations)
                 else{
-                    newGoalId = getAvailableStation(availableStations, eng);
+                    newGoalId = getAvailableStation(availableStations);
                 }
             }
             // If the agent was working at a station
@@ -110,7 +112,7 @@ int main(int argc, char *argv[]) {
                     agentStationsWorked[agentThatFinishFirst]++;
                     int goalStation = agents[agentThatFinishFirst].getGoal()->getId();
                     
-                    newGoalId = getAvailableStation(availableStations, eng);
+                    newGoalId = getAvailableStation(availableStations);
 
                     // Add the currently finished station back to available stations
                     availableStations.push_back(goalStation);
@@ -184,9 +186,9 @@ int main(int argc, char *argv[]) {
     }
 }
 
-int getAvailableStation(std::vector<int>& stations, std::mt19937 eng){
-    auto distr = std::uniform_int_distribution<>(0, stations.size()-1);
-    int stationIndex = distr(eng);
+int getAvailableStation(std::vector<int> &stations)
+{
+    int stationIndex = rand() % stations.size();
     int station = stations[stationIndex];
     stations.erase(stations.begin() + stationIndex);
     return station;
