@@ -23,7 +23,6 @@ protected:
 
 private:
     std::vector<int> availableStations;
-    std::mt19937 eng; //Using the same seed all the time.
     std::uniform_int_distribution<> distr;
     std::uniform_int_distribution<> distrEnd;
     std::mt19937 eng;
