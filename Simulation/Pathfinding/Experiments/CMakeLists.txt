@@ -2,8 +2,6 @@ include_directories(./Experiments/)
 include_directories(.)
 include_directories(..)
 
-SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -pthread")
-
 find_package (Threads)
 
 set(PathfindingDir ..)
@@ -46,7 +44,7 @@ set(PathfindingFiles
 )
 
 # Emit all warning messages
-add_definitions(-Wall -O3 -g -lpthread)# -Werror
+add_definitions(-Wall -O3 -g -pthread -lpthread)# -Werror
 
 # Add the experiment executables
 add_executable(chokepoint_experiment ./Experiments/chokepoint.cpp ${PathfindingFiles})

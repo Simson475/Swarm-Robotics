@@ -20,3 +20,5 @@
 /Robot-code/cmake-build-debug/
 /Simulation/cmake-build-debug/
 **/config/libconfig.log
+
+/Simulation/SimulationExperimentResults

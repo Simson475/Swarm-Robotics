@@ -143,6 +143,8 @@ void RobotInterface::ControlStep() {
             setWorkingClockAsComplete();
 
             currentJob->visitedStation(lastLocation);
+            jobGenerator->workedAtStation(lastLocation);
+
             resetStationPlan();
 
             if (!currentJob->getRemainingStations().empty()) {
@@ -153,6 +155,12 @@ void RobotInterface::ControlStep() {
                 log_helper("", true, false);
             } else {
                 log_helper("Job completed");
+                completedJobs++;
+                int simTime = argos::CSimulator::GetInstance().GetSpace().GetSimulationClock();
+                std::ofstream out;
+                out.open(std::string{std::filesystem::current_path()} + "/jobProgress_" + m_strId + ".txt", std::ofstream::app);
+                out << completedJobs << " " << simTime << "\n";
+                out.close();
             }
             sMap.setPointAsAvailable(lastLocation);
         } else {
@@ -657,6 +665,15 @@ int RobotInterface::getClockCount() const {
 
 // If the robot is active and there has been no activity for 10 logical minutes, the robot is in a deadlock.
 bool RobotInterface::isInLivelock() {
+    int simTime = argos::CSimulator::GetInstance().GetSpace().GetSimulationClock();
+    if (this->jobGenerator->lastCompletedJobSimTime + 10000 < simTime){
+        std::ofstream out;
+        out.open(std::string{std::filesystem::current_path()} + "/jobProgress_" + m_strId + ".txt", std::ofstream::app);
+        out << "Terminated due to live-lock at " << simTime << "\n";
+        out.close();
+        return true;
+    }
+    return false;
     if(currentState == state::done)
         return false;
 

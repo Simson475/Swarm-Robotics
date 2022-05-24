@@ -77,7 +77,7 @@ int64_t tempFunc(int size, int maxTime, int threadNumber, std::shared_ptr<Graph>
     try
     {
         std::chrono::steady_clock::time_point experimentBeginTime = std::chrono::steady_clock::now();
-        Solution solution = highLevelCBS.findSolution(copiedGraph, agents, lowLevelCBS, 0, maxTime);
+        Solution solution = highLevelCBS.findSolution(copiedGraph, agents, lowLevelCBS, maxTime);
         auto result = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - experimentBeginTime).count();
         counter++;
         std::cout << counter << " is done \n";

@@ -28,6 +28,7 @@ public:
     std::vector<std::shared_ptr<Agent>> getAgents();
     std::vector<AgentInfo> getAgentsInfo();
     bool requestSolution(int agentId);
+    bool requestSyncSolution(int agentId);
     int getNextStation(int agentId);
     float getSimulationTime();
 private:

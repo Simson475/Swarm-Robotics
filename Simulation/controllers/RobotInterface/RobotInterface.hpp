@@ -75,6 +75,8 @@ public:
 
 protected:
 
+    int completedJobs = 0;
+
     virtual void reachedPointEvent(int id);
     virtual void wait();
 

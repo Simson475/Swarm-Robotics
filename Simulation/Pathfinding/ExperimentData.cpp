@@ -34,7 +34,10 @@ bool ExperimentData::requestSolution(int agentId){
             return false;
         }
     }
-    Error::log("Going to find a solution\n");
+    #ifdef DEBUG_LOGS_ON
+    Error::log("Going to find a solution (Requested by agent" + std::to_string(agentId) + ")\n");
+    Error::log("Current time = " + std::to_string(this->getSimulationTime()) + "\n");
+    #endif
     auto agentInfos = getAgentsInfo();
 
     Solution solution = HighLevelCBS::get_instance()
@@ -42,7 +45,40 @@ bool ExperimentData::requestSolution(int agentId){
     
     // Distribute paths
     distributeSolution(solution);
+    #ifdef DEBUG_LOGS_ON
+    Error::log("Distrubuted solution\n");
+    #endif
+    return true;
+}
 
+bool ExperimentData::requestSyncSolution(int agentId){
+    auto agentInfos = getAgentsInfo();
+
+    Solution solution = HighLevelCBS::get_instance()
+        .findSolution(getGraph(), agentInfos, LowLevelCBS::get_instance());
+
+    bool solutionIsGreedySolution = true;
+    int id = 0;
+    for (auto& path : solution.paths){
+        if (path.actions.size() != 1){
+            solutionIsGreedySolution = false;
+            break;
+        }
+        // If the actions does not end at the goal (and it is only one action) --> it must be a greedy solution
+        if (path.actions[0].endVertex != agentInfos[id].getGoal()){
+            break;
+        }
+        id++;
+    }
+
+    if (solutionIsGreedySolution){
+        return false;
+    }
+    // Distribute paths
+    distributeSolution(solution);
+    #ifdef DEBUG_LOGS_ON
+    Error::log("Distrubuted solution\n");
+    #endif
     return true;
 }
 

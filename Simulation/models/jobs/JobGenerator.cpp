@@ -10,7 +10,17 @@ JobGenerator::JobGenerator(int numOfStations, std::set<int> endStations, int num
     numOfStations(numOfStations),
     endStations(endStations),
     numOfEndStations((int)endStations.size()),
-    numOfJobs(numOfJobs){}
+    numOfJobs(numOfJobs)
+{
+    try {
+        argos::TConfigurationNode &t_node = argos::CSimulator::GetInstance().GetConfigurationRoot();
+        argos::TConfigurationNode &params = argos::GetNode(t_node, "experiment_settings");
+        argos::GetNodeAttribute(params, "jobs", jobGoal);
+    }
+    catch (argos::CARGoSException &e){
+        std::cerr << "Job generator job goal defaulted to: " << numOfJobs << std::endl;
+    }
+}
 
 // This function is hardcored in the way that end stations have the first IDs in the map and the stations have the
 // next IDs. After the stations, the waypoints gets IDs.
@@ -57,7 +67,23 @@ std::unique_ptr<Job> JobGenerator::getNextJob() {
 
 void JobGenerator::completedJob() {
     jobsCompleted++;
+    int simTime = argos::CSimulator::GetInstance().GetSpace().GetSimulationClock();
+    lastCompletedJobSimTime = simTime;
+    
+    std::ofstream out;
+    out.open(std::string{std::filesystem::current_path()} + "/jobProgress.txt", std::ofstream::app);
+    out << jobsCompleted << " " << simTime << "\n";
+    out.close();
 
+
+    if (jobsCompleted == jobGoal){
+        std::cout << "Completed job goal\n";
+        exit(0);
+    }
     if(jobsCompleted > numOfJobs)
         throw std::logic_error("More completed jobs than jobs generated");
+}
+
+void JobGenerator::workedAtStation(int stationId){
+    // Do nothing
 }
